@@ -21,9 +21,17 @@ Zag ships, nothing invented that Chakra UI v3 does not have, SolidJS idioms exce
 
 ## 0. The governing constraint: no runtime CSS-in-JS
 
-**No library or code in this repo may generate stylesheets at runtime.** No Emotion,
-styled-components, goober, stitches. Nothing calling `createElement("style")`, `insertRule`,
-`adoptedStyleSheets`, or maintaining a runtime sheet.
+**No runtime CSS-in-JS engine — not in this repo, not in its dependency closure.** No Emotion,
+styled-components, goober, stitches; nothing that serializes component styles into a stylesheet at
+render time. And **our own code writes no stylesheet at runtime**: nothing of ours calls
+`createElement("style")`, `insertRule` or `adoptedStyleSheets`, or maintains a runtime sheet.
+
+Those are two sentences with two different scopes, and collapsing them into one breaks the rule.
+A **dependency** is judged by what it *is* — a manifest check over the closure. **Our own source** is
+judged by what it *does* — a grep. Applying the grep to dependencies fails things that were never the
+target: a behavior library writing one static rule for the duration of a drag gesture is not a
+styling engine and does not touch build-time extraction. *Settled at the P4 gate, 2026-08-09, on the
+worked case — `zag-solid-adapter.md` §5.1, §5.3.*
 
 This makes `chakra-ui-solid` explicitly **not a 1:1 port**. It is *"as close to Chakra v3 parity as
 is achievable without runtime CSS-in-JS."* That sentence belongs in the README, `CLAUDE.md`, and the
