@@ -4,14 +4,18 @@
 > fact, not by omission. The sections exist up front so the first derivative lands into a shape that
 > already matches [`__internal__/legal.md`](__internal__/legal.md) §2 — see §2.6 there for the
 > checklist that fills a row in.
+>
+> **Revised at the P2 gate, 2026-08-09.** The **Adobe React Spectrum** section no longer forecasts a
+> carry-over: the port rule struck hope-ui's accessibility kernel, so no Apache-2.0 material is
+> planned. The section stays, empty, as a guard.
 
 chakra-ui-solid is released under the MIT License (see [`LICENSE`](LICENSE)). Portions of this
 software are derived from the projects listed below and remain subject to their original licenses.
-Nothing
-here relicenses those portions; the MIT grant in `LICENSE` covers chakra-ui-solid's own code.
+Nothing here relicenses those portions; the MIT grant in `LICENSE` covers chakra-ui-solid's own code.
 
-Where a file is derived from an Apache-2.0 work, it carries an attribution header naming the
-upstream and stating that it has been modified.
+Every project listed below is **MIT**. Should a file ever be derived from an Apache-2.0 work, it
+carries an attribution header naming the upstream and stating that it has been modified — see
+**Adobe React Spectrum**, which is retained empty for exactly that case.
 
 Reading a reference for its reasoning, its public API shape, or an ARIA pattern owes nothing and
 does not appear here. Only files that reproduce an upstream's **expression** get a row.
@@ -113,8 +117,11 @@ provenance note in their header — not as a legal requirement but so the lineag
 the next reader can find the commit that argued the design. Carried files **fork on copy**: there is
 no sync obligation in either direction.
 
-The exception is `create-hide-outside.ts`, which is an Apache-2.0 derivative in hope-ui and stays
-one here — it appears under **Adobe React Spectrum** below, not in this section.
+hope-ui's own accessibility kernel is **not** carried over. Its `create-hide-outside.ts` is an
+Apache-2.0 derivative there, and at P1 it was expected to stay one here; the P2 gate struck it, along
+with the rest of that kernel, under the rule that this project adds no accessibility behavior beyond
+what Zag ships. See **Adobe React Spectrum** below and
+[`__internal__/legal.md`](__internal__/legal.md) §1.2.
 
 | File | Carried from |
 | ---- | ------------ |
@@ -123,19 +130,29 @@ one here — it appears under **Adobe React Spectrum** below, not in this sectio
 ## Adobe React Spectrum
 
 - **Project:** https://github.com/adobe/react-spectrum (`@react-aria/*`)
-- **License:** Apache License, Version 2.0 — full text in `licenses/LICENSE-APACHE-2.0.txt`
+- **License:** Apache License, Version 2.0
 - **Copyright:** Copyright 2020 Adobe. All rights reserved.
 
-**Not yet applicable.** This section is pre-declared because a planned carry-over will trigger it:
-`createHideOutside` is a port of `@react-aria/overlays`' `ariaHideOutside.ts`, retained because Zag
-has no `inert` handling of its own. The moment that file lands, `licenses/LICENSE-APACHE-2.0.txt`
-must be added to the repo and to the owning package, and each derived file needs the Apache-2.0
-§4(b) *"This file has been modified from the original"* line in its header. See
-[`__internal__/legal.md`](__internal__/legal.md) §1.2.
+**Not applicable — and nothing planned triggers it.** This section is retained, empty, as a guard
+rather than a forecast.
+
+At P1 a carry-over was expected to trigger it: hope-ui's `createHideOutside`, a port of
+`@react-aria/overlays`' `ariaHideOutside.ts`, retained because Zag has no `inert` handling of its own.
+The P2 gate struck it. This project is a port of Chakra UI v3, Chakra is built on Ark and Ark on Zag,
+so a gap in Zag is a gap Chakra has — closing it here would add behavior the upstream does not have.
+No Apache-2.0 material enters this repository, and `licenses/LICENSE-APACHE-2.0.txt` is deliberately
+**not** present.
+
+**What would reopen it:** any decision to close a Zag accessibility gap in our own layer. That is a
+scope decision before it is a licensing one. If it is ever taken, this section becomes live and
+[`__internal__/legal.md`](__internal__/legal.md) §1.2 carries the checklist —
+`licenses/LICENSE-APACHE-2.0.txt` added to the repo **and** to the owning package's
+`package.json#files`, plus the Apache-2.0 §4(b) *"This file has been modified from the original"*
+line in every derived file's header, which MIT does not require and Apache-2.0 does.
 
 | File | Derived from |
 | ---- | ------------ |
-| _(none yet)_ | |
+| _(none — nothing planned triggers this section)_ | |
 
 ---
 

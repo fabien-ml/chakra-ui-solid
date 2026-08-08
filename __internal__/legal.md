@@ -1,7 +1,13 @@
 # Legal — licensing, attribution, trademark, and brand
 
-**Status:** written at P1. Everything version-specific below was verified against a local checkout
-or the npm registry on **2026-08-08**; each claim carries what it was verified against.
+**Status:** written at P1, **revised at the P2 gate on 2026-08-09**. Everything version-specific below
+was verified against a local checkout or the npm registry on **2026-08-08**; each claim carries what
+it was verified against.
+
+**What P2 changed, and nothing else:** the port rule (*no a11y beyond Zag; nothing Chakra does not
+have*) removes this repo's only Apache-2.0 obligation before it arrives. §0's summary table, §1.2 and
+§6 are revised; the analysis is retained rather than deleted, because it is what a reopening would
+cost. Every other section stands as written at P1.
 
 **What this document is.** The operating policy for this repository: what we owe each upstream, how
 we discharge it mechanically, what we may and may not say about Chakra UI, and how the brand was
@@ -24,14 +30,24 @@ judgement rather than text, it says so.
 | `@ark-ui/react` / `@ark-ui/solid` | `5.38.1` (checkout `8e0b749`) | MIT | **read-only reference**, not a dependency | Nothing, by policy (§1.4) |
 | `@pandacss/*` | `1.12.0` (npm) | MIT | build + runtime dependency, as published | Nothing beyond `NOTICE.md` credit |
 | hope-ui carry-overs | `e9c2f81`, `spike/zag-solid` (`ef91b69`) | MIT, same author | copied into this repo | Provenance note, not a legal duty (§1.6) |
-| **`createHideOutside`** (via hope-ui) | hope-ui `main` (`1dc059f`) | **Apache-2.0** | copied into this repo | **`@license` header + §4(b) modification notice + `licenses/LICENSE-APACHE-2.0.txt` + `NOTICE.md` rows** (§1.2) |
+| ~~`createHideOutside` (via hope-ui)~~ | ~~hope-ui `main` (`1dc059f`)~~ | ~~Apache-2.0~~ | **not copied — struck at the P2 gate** | **Nothing.** The port rule drops it before it lands (§1.2) |
 | "Chakra UI" name and logo | — | **not licensed** | the project name is mark-derived by choice; logo never used | Disclaimer, prominently and in every package (§3.3.3, §3.4) + ask the maintainers at first public release (§3.7) |
+
+**Revised at the P2 gate, 2026-08-09.** The row above was live when this document was written at P1.
+The P2 review set the **port rule** — *no accessibility behavior beyond what Zag ships; nothing
+invented that Chakra UI v3 does not have, SolidJS idioms excepted* — and `createHideOutside` is
+struck by it, because `inert` appears zero times in both `@chakra-ui/react` and `@ark-ui/react`.
+**The repo's only Apache-2.0 obligation is therefore avoided, not discharged.** §1.2 keeps the full
+analysis, because it becomes live again the instant anyone proposes an exception.
 
 **The two findings worth reading even if you skip the rest:**
 
 1. The plan's §2.7 says *"Chakra, Ark, Zag are all MIT. No Apache-2.0 obligations enter through
-   them."* That is true as written and **incomplete as a conclusion** — Apache-2.0 enters through
-   hope-ui's `createHideOutside`, which §2.11 of the plan marks *copy, mandatory*. See §1.2.
+   them."* That is true as written, and at P1 it was **incomplete as a conclusion** — Apache-2.0
+   entered through hope-ui's `createHideOutside`, which §2.11 of the plan marks *copy, mandatory*.
+   **P2 closed that route** (§1.2), so the plan's sentence is now correct in substance as well as in
+   letter: every license in this repo is MIT. The reasoning still matters, because the route was real
+   and only a scope decision closed it.
 2. **Decided: the project is `chakra-ui-solid`, under the owned `@chakra-ui-solid` scope** — a
    **private** repo on a personal account, no GitHub organization, no custom domain, and the
    maintainer message **deferred to first public release** rather than skipped (§3.3.3, §3.7). The
@@ -81,13 +97,18 @@ the copyright-and-permission notice travelling with copies of the code. A projec
 So the compatibility question has exactly one interesting form here: **which upstream code do we
 actually copy?** Three answers, in increasing order of obligation.
 
-### 1.2 One planned carry-over is Apache-2.0, not MIT
+### 1.2 The one Apache-2.0 route — real, analysed, and closed at P2
 
-`createHideOutside` is on the plan's **copy, mandatory** list (§2.11) — reversed from "drop" because
+> **Status: AVOIDED, not discharged.** Revised 2026-08-09. `createHideOutside` is **not copied**, so
+> no Apache-2.0 material enters this repo and none of the mechanism below is triggered. Nothing here
+> is deleted: the analysis is correct, and it is what makes the cost of reopening the question
+> visible. **Read the closing paragraph first, then the analysis if you need it.**
+
+`createHideOutside` was on the plan's **copy, mandatory** list (§2.11) — reversed from "drop" because
 Zag ships no `inert` handling, so every open modal raises axe `aria-hidden-focus` at *serious*
-severity, and the definition of done runs axe on every mounting test with zero allowances.
+severity, and the definition of done was to run axe on every mounting test with zero allowances.
 
-That file is **an attributed Apache-2.0 derivative in hope-ui** and stays one here.
+That file is **an attributed Apache-2.0 derivative in hope-ui** and would have stayed one here.
 `packages/primitives/src/internal/create-hide-outside.ts` at hope-ui `main` (`1dc059f`) opens with an
 `@license` block naming `@react-aria/overlays` → `src/ariaHideOutside.ts`, *Copyright 2020 Adobe. All
 rights reserved.*, the Apache-2.0 grant, and the §4(b) line *"This file has been modified from the
@@ -106,7 +127,8 @@ Two details that decide how we treat it:
   MIT-licensed project; we may not relicense that file. The MIT grant in `LICENSE` covers this
   repo's own code, and `NOTICE.md` says so in its opening paragraph.
 
-**What must land with that file, in the same commit:**
+**What would have to land with that file, in the same commit** — the trigger checklist, kept live for
+the reopening case:
 
 1. The `@license` header, copied shape-for-shape from hope-ui's, including the §4(b) modification
    line. Apache-2.0 §4(b) requires it; MIT does not, which is why the two header shapes differ.
@@ -114,15 +136,51 @@ Two details that decide how we treat it:
 3. `LICENSE-APACHE-2.0.txt` and `NOTICE.md` added to that package's `package.json#files`.
 4. A row in the root `NOTICE.md` **and** in the package's `NOTICE.md`.
 
-Deliberately **not** done at P1: the Apache-2.0 text is not in the repo yet. Adding it before any
-Apache-2.0 material exists would misstate what the repo contains. `NOTICE.md` pre-declares the
-section with an explicit *not yet applicable* marker so the trigger is impossible to miss.
+Deliberately **not** done at P1: the Apache-2.0 text is not in the repo. Adding it before any
+Apache-2.0 material exists would misstate what the repo contains. That call was provisional at P1 and
+is **now permanent** — see below.
 
-**One more to check before it lands, not after.** `createPresence` (~249 lines) and
-`createFocusRestore` (~26 lines) are on the same copy list and carry **no** upstream header in
-hope-ui, and hope-ui's `NOTICE.md` does not list them — so they are its own work. `createPresence`
-names Base UI mid-body as a design comparison, which is the reasoning tier and owes nothing.
-Re-confirm both headers at the moment of copying rather than trusting this paragraph.
+#### Why the route is closed — P2, 2026-08-09
+
+The P2 gate set the **port rule**: no accessibility behavior beyond what Zag ships, and nothing
+invented that Chakra UI v3 does not have, SolidJS idioms excepted. Chakra v3 is Ark over Zag, and
+neither layer adds anything to the machines — so any gap in Zag is a gap Chakra has, and closing it
+here would make this library *more accessible than the thing it ports*. Measured, not reasoned:
+
+```bash
+grep -rn '\binert\b' __reference-impl__/chakra-ui/packages/react/src/   # nothing
+grep -rn '\binert\b' __reference-impl__/ark-ui/packages/react/src/      # nothing
+ls __reference-impl__/chakra-ui/packages/react/src/components/dialog/   # dialog.tsx  index.ts  namespace.ts
+```
+
+`createHideOutside` is the repo's **only** planned Apache-2.0 carry-over, and the same rule removes
+the *"drop by default, adopt by exception"* mechanism that could have pulled in three more Adobe
+derivatives from hope-ui's kernel — `create-dismissable.ts`, `create-press.ts`, `scroll-into-view.ts`.
+With no exceptions, none is copied. Full evidence and the per-primitive verdicts:
+`prior-art.md` §8.2 and §9.2.
+
+**Consequences, all of them subtractive:**
+
+- `licenses/LICENSE-APACHE-2.0.txt` is **not needed**, permanently rather than pending.
+- `NOTICE.md`'s pre-declared **Adobe React Spectrum** section keeps its *not yet applicable* marker,
+  but its stated trigger — *"a planned carry-over will trigger it"* — is stale and must be reworded
+  to "no carry-over triggers it; retained against a future exception." **`NOTICE.md` is not updated
+  by this revision** (see §6 item 5).
+- The whole dependency and carry-over graph is MIT again — the state §1.1 describes with no exception.
+- The only attribution this repo still owes is the **seven `@license` headers on the `zag-solid`
+  fork** (MIT, §1.3), plus provenance notes on the hope-ui carry-overs (§1.6).
+
+**What reopens it.** Any decision to close a Zag a11y gap in our own layer. That is a scope decision
+before it is a legal one, so it belongs at a review gate — and the checklist above is what it costs.
+
+**The two files this section used to flag are moot, and one is worth recording anyway.**
+`createPresence` (~249 raw / 143 code) and `createFocusRestore` (~26 code) were on the same copy list
+and are **also struck by the port rule** — presence is rebuilt on the `@zag-js/presence` machine
+through our own adapter, and Chakra does not restore focus for a non-modal dialog either. Had they
+been copied they would have owed nothing regardless: both carry **no** upstream header in hope-ui and
+neither appears in hope-ui's `NOTICE.md`, so they are its own work, and `createPresence`'s mid-body
+mention of Base UI is a design comparison at the reasoning tier. Verified, so the question does not
+get reopened on a hunch.
 
 ### 1.3 The `@zag-js/solid` fork is a direct MIT derivative
 
@@ -900,8 +958,9 @@ also-owned `@solid-chakra` (§3.3.3, §3.7).
 | 1 | **Message the Chakra maintainers at first public release** (§3.7) | Nothing now; the trigger is defined | First `npm publish`, or a public repo/docs site — whichever is first |
 | 2 | Name the Cloudflare Pages project `chakra-ui-solid` (§3.6) | Nothing — but the subdomain is first-come | P8 — `docs-site.md`, at setup |
 | 3 | Preset consumed as a dependency, not vendored (§1.5) | The preset package's shape | P3 — `plan.md`. If `staticCss` forces re-emitting recipe definitions, revisit |
-| 4 | `createPresence` / `createFocusRestore` header re-check (§1.2) | Nothing yet | At the moment of copying, build step 5 |
-| 5 | `licenses/LICENSE-APACHE-2.0.txt` added to the repo | Nothing yet | The commit that lands `createHideOutside` |
+| 4 | ~~`createPresence` / `createFocusRestore` header re-check~~ | — | **Closed at P2** — both struck by the port rule, and verified header-free regardless (§1.2) |
+| 5 | ~~`licenses/LICENSE-APACHE-2.0.txt` added to the repo~~ | — | **Closed at P2** — no Apache-2.0 material enters. Reopens only if a Zag a11y gap is closed in our own layer (§1.2) |
 | 6 | CI checks for the attribution mechanism (§2.3, §2.5) | Nothing yet | P7 — `definition-of-done.md` |
 | 7 | The disclaimer is in **every** published package's README, not just the root (§3.3.3 item 1) | Nothing yet | P7 — make it a publish-time check, not a habit |
 | 8 | Keep `@solid-chakra` held — rung one of the exit ladder (§3.3.3); §4.2's five are rung two, unregistered | Nothing | Only if ever needed |
+| 9 | ~~Reword `NOTICE.md`'s Adobe React Spectrum section~~ | — | **Closed at P2** — done in the same revision. The section is retained empty as a guard, its trigger sentence replaced with what would reopen it |
