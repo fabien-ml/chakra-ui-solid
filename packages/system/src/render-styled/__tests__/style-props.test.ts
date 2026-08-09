@@ -3,6 +3,10 @@ import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
 import { describe, expect, it } from "vitest";
 import { HTML_PROP_RENAMES } from "../html-props";
 
+// The style-prop *vocabulary* — which names Panda treats as style props, and the five `html*`
+// escape hatches for the ones that displace an HTML attribute. `renderStyled` itself, the factory
+// that reads this vocabulary, is `render-styled.test.ts` next door.
+
 // The `unit` project is the one place a class *string* is the legitimate subject of an assertion:
 // `css()` is a pure function whose output IS a string, and there is no element here to have a
 // computed style. Everywhere an element exists — `ssr` and `browser` — a class-name assertion is

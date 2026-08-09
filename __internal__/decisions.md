@@ -1853,6 +1853,48 @@ change rather than only a finding.
 a file under `packages/system/src` and a cache hit before.
 — **Reasoning.** `plan.md` §0.2, §4.1; `testing.md` §3.
 
+**D-126 · `EnvironmentProvider.getRootNode()` throws `ReferenceError: document is not defined` on
+the server — inherited, recorded, not fixed**
+— **Decision.** Leave it. The `ssr` tests assert the provider *renders* on the server and say in a
+comment that nothing calls `getRootNode()` there; they do not assert the throw, because pinning a
+defect as a contract is how it becomes intentional.
+— **Rejected.** *Guard it with `typeof document === "undefined"`* — measured, Ark's own Solid
+provider is
+`runIfFn(props.value) ?? spanRef()?.getRootNode() ?? document`
+(`__reference-impl__/ark-ui/packages/solid/src/providers/environment/environment-provider.tsx`),
+bare `document` and all, so a guard is a fix Chakra does not have and the port rule calls that a
+divergence. *Assert the throw* — see above.
+— **Effect.** Any code that asks the environment where to look up elements during a server render
+crashes the render. Nothing does today — a machine does not start on the server — so the exposure is
+a future component that reaches for `getRootNode()` outside an effect, and the failure is loud
+rather than silent when it arrives. **One measured delta from Ark worth the reviewer's eye while
+this is open:** ours branches on `props.value !== undefined` and therefore returns whatever a
+`value` function returns, including `null`; Ark's `??` chain falls through to the probe and then to
+`document`. Both are typed non-null, so it only differs for a consumer whose getter can legitimately
+yield `null` — `() => iframe.contentDocument` is the realistic one.
+— **Settled.** Step 3 follow-up, 2026-08-09, by a throwaway `ssr` probe rendering the provider and
+calling `getRootNode()` in a child.
+— **Reasoning.** `plan.md` §7.2; `component-blueprint.md` §8; `prior-art.md` §8.2.
+
+**D-127 · The styling factory's file is named after its export: `render-styled/render-styled.tsx`**
+— **Decision.** `packages/system/src/style-props/style-props.tsx` →
+`packages/system/src/render-styled/render-styled.tsx`, directory included. `html-props.ts` moves
+with it under its own name.
+— **Rejected.** *`factory/factory.tsx`* — Chakra's word for the concept, and the one this repo's
+prose uses, but it names neither the export nor anything a reader greps for. *Keep the `style-props/`
+directory and rename only the file* — that leaves a directory named after one of the factory's
+inputs, and every sibling here (`render/`, `recipe/`, `locale/`, `environment/`) is named after what
+it exports. *Rename `html-props.ts` too* — its name already describes every export it has.
+— **Effect.** `render/render.tsx` exports `renderElement` and `render-styled/render-styled.tsx`
+exports `renderStyled`, which is the relationship between them. The hope-ui provenance note is
+unchanged and still points at `packages/components/src/system/style-props.tsx` at `e9c2f81` — a
+renamed file is still derived from it. The existing `__tests__/style-props.test.ts` **keeps its
+name**, because its subject is the style-prop vocabulary rather than the factory, so **D-115's and
+D-116's citations of `style-props.test.ts` still resolve**, now under
+`packages/system/src/render-styled/__tests__/`.
+— **Settled.** Step 3 follow-up, 2026-08-09.
+— **Reasoning.** `plan.md` §5.3 row 1; `component-blueprint.md` §4.
+
 ---
 
 ## 4. The reversals, in one place

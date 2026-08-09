@@ -1,6 +1,7 @@
 // Carried from hope-ui `e9c2f81`, `packages/components/src/system/style-props.tsx` (104 lines).
 // Same author, MIT — ours, forked on copy (`legal.md` §1.6). Three prop-surface additions on top of
-// it, each named below and each `plan.md` §2.3's.
+// it, each named below and each `plan.md` §2.3's. Renamed after what it exports: style props are
+// one of `renderStyled`'s inputs, not the thing this file is.
 
 import { css, cx } from "@chakra-ui-solid/styled-system/css";
 import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
