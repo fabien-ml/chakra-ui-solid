@@ -1,10 +1,11 @@
-export const order = 10;
-export const description = "Nothing special — and what that actually means.";
-
-# Vite
+---
+title: Using chakra-ui-solid in Vite
+description: A guide for installing chakra-ui-solid in Vite projects
+---
 
 **No special steps.** A Vite app with `vite-plugin-solid` already compiles our packages correctly,
-because that plugin is exactly the thing our published output expects to meet.
+because that plugin is exactly the thing our published output expects to meet. Follow
+[Installation](/docs/get-started/installation) and there is nothing to add here.
 
 This page exists to say so. The two settings the SolidStart and TanStack Start pages describe are
 about **server rendering** and **dependency pre-bundling**, and a client-only Vite app does
@@ -25,4 +26,5 @@ The cost is that the two places a bundler tries to *avoid* compiling a dependenc
   loads and the component renders nothing.
 
 A plain `vite build` does neither by default for a workspace app, so there is nothing to
-configure. If you add SSR, the SolidStart page's two lines apply.
+configure. If you add SSR, the [SolidStart page](/docs/get-started/frameworks/solid-start)'s two
+lines apply.

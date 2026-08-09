@@ -11,6 +11,8 @@ import withTocExport from "@stefanprobst/rehype-extract-toc/mdx";
 import { tanstackStart } from "@tanstack/solid-start/plugin/vite";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkSmartypants from "remark-smartypants";
 import { defineConfig } from "vite";
 import viteSolid from "vite-plugin-solid";
@@ -119,10 +121,18 @@ export default defineConfig(({ command }) => ({
         // markdown-derived HTML, never author-written JSX.
         elementAttributeNameCase: "html",
         stylePropertyNameCase: "css",
-        // Typographic quotes from the straight characters authors type. `dashes: false` is
-        // deliberate: this prose uses em dashes as punctuation, and dash conversion would also
-        // rewrite the `--chakra-*` custom-property names that appear in prose outside backticks.
-        remarkPlugins: [[remarkSmartypants, { dashes: false }]],
+        // `remarkFrontmatter` tokenizes the `---` block so it stops being rendered as prose;
+        // `remarkMdxFrontmatter` turns it into `export const frontmatter`, which is what
+        // `~/lib/site-map` reads for a page's title, description and outward links. The pair has
+        // to run before smartypants, or the quotes inside the YAML get curled into invalid YAML.
+        //
+        // A page's `title` lives here rather than in an `# H1`, because the header component
+        // renders it (`docs-plan.md` §8.1) — an `# H1` in the body would print it twice.
+        remarkPlugins: [
+          remarkFrontmatter,
+          remarkMdxFrontmatter,
+          [remarkSmartypants, { dashes: false }],
+        ],
         // Highlighting is **Shiki at build time**, baked into the compiled module. A client-side
         // highlighter would ship a highlighter to every reader for content that never changes,
         // and — the reason that belongs to this project — most of them create a `<style>` element

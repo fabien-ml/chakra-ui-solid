@@ -3,6 +3,7 @@
 import { css } from "@chakra-ui-solid/styled-system/css";
 import type { JSX } from "@solidjs/web";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/solid-router";
+import { shellClass } from "~/components/layout";
 import { NotFound } from "~/components/not-found";
 import { SiteFooter } from "~/components/site-footer";
 import { SiteHeader } from "~/components/site-header";
@@ -56,7 +57,7 @@ function RootLayout(props: { children: JSX.Element }) {
         */}
         <script innerHTML={colorModePrePaintScript} />
       </head>
-      <body class={css({ display: "flex", flexDirection: "column", minH: "100vh", bg: "bg" })}>
+      <body class={shellClass}>
         <SiteHeader />
         <main class={css({ flex: "1" })}>{props.children}</main>
         <SiteFooter />

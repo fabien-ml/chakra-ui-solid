@@ -1,29 +1,22 @@
-export const order = 1;
-export const description =
-  "The foundational styled primitive: every style prop, no recipe, and the element it renders is yours to choose.";
-
-# Box
-
-The foundational styled primitive. It takes the whole style-prop vocabulary — `p`, `bg`, `mt`,
-`_hover`, `colorPalette` — carries no recipe of its own, and renders a `div` unless you tell it
-otherwise.
+---
+title: Box
+description:
+  The most abstract styling component, on top of which all other components here are built.
+links:
+  source: packages/components/src/box
+  chakra: https://chakra-ui.com/docs/components/box
+---
 
 <Example name="box-basic" />
 
-Everything a component does with style props, Box does with nothing else in the way, which makes
-it the shortest path to finding out whether your Panda setup is wired correctly.
-
-**Source:** `packages/components/src/box` · **Recipe:** none · **Machine:** none ·
-[Chakra's Box](https://chakra-ui.com/docs/components/box)
-
 ## Usage
+
+The `Box` component provides an easy way to write styles with ease. It provides access to design
+tokens and an unmatched DX when writing responsive styles.
 
 ```tsx
 import { Box } from "@chakra-ui-solid/components";
 ```
-
-Box is a single element. There is no anatomy to nest and no part components — the whole API is one
-component and its props.
 
 ```tsx
 <Box />
@@ -31,35 +24,55 @@ component and its props.
 
 ## Examples
 
-### Changing the element
+### Shorthand
 
-`as` renders a different element. It stays a loose `ValidComponent` rather than a generic that
-re-types props from the element — deliberately, because the deep conditional types that would buy
-you `href` on `as="a"` also wreck editor completions across the whole library.
+Use shorthand like `bg` instead of `backgroundColor`, `m` instead of `margin`, etc.
 
-<Example name="box-as" />
+<Example name="box-with-shorthand" />
 
-### The render prop
+### Pseudo Props
 
-Polymorphism beyond `as` is the `render` prop, on Box and on every part of every component. It is
-a **function** that receives the computed props and returns the element — never a JSX element, and
-never `asChild`. A Solid JSX element is an already-constructed node by the time it reaches us and
-there is no `cloneElement`, so accepting one could only mean dropping every prop that was computed
-for it.
+Use pseudo props like `_hover` to apply styles on hover, `_focus` to apply styles on focus, etc.
 
-<Example name="box-render" />
+<Example name="box-with-pseudo-props" />
 
-That cast is real and it is the deliberate trade, not a rough edge waiting to be filed off. `as`
-stays a loose `ValidComponent` rather than a generic that re-types props from the element, because
-the deep conditional types that would buy you `href` on `as="a"` also wreck editor completions
-across every component in the library. The measured consequence is narrow and worth stating
-plainly: Box types its element props against `HTMLElement`, and Solid's `Ref<HTMLElement>` is not
-assignable to `Ref<HTMLAnchorElement>` — so a `render` target that is a **host element narrower
-than `HTMLElement`** needs a cast. Elements whose interface *is* `HTMLElement` — `section`,
-`article`, `span`, `mark` and their neighbours — need none, and neither does a component that
-accepts `JSX.HTMLAttributes<HTMLElement>`.
+### Border
+
+Use the `borderWidth` and `borderColor` prop to apply border styles.
+
+> **Good to know:** Panda's preflight sets `border-style: solid` globally, so you don't have to.
+
+<Example name="box-with-border" />
+
+### As Prop
+
+Use the `as` prop to render a different element.
+
+> Inspect the DOM to see the rendered element.
+
+<Example name="box-with-as-prop" />
+
+`as` stays a loose `ValidComponent` rather than a generic that re-types props from the element.
+That is deliberate: the deep conditional types that would buy you `href` on `as="a"` also wreck
+editor completions across every component in the library.
+
+### Shadow
+
+Use the `boxShadow` or `shadow` prop to apply shadow styles.
+
+<Example name="box-with-shadow" />
+
+### Composition
+
+Here's an example of a property card built with Box alone. Chakra's version of it composes Badge,
+HStack, Icon, Image and Text; none of those has shipped here yet, so this is the primitive doing
+the whole job.
+
+<Example name="box-property-card" />
 
 ## Props
+
+The `Box` component supports all CSS properties as props, making it easy to style elements.
 
 <PropsTable component="box" />
 
@@ -68,18 +81,19 @@ not transcribed. The inherited half is named rather than expanded: `JsxStyleProp
 style-prop vocabulary, and `PatchHtmlProps<JSX.HTMLAttributes<HTMLElement>>` is the DOM attribute
 surface with the five `html*` renames applied.
 
-## Style props take literals
+### render
 
-The one thing about Box that is not Chakra's:
+Polymorphism beyond `as` is the `render` prop, on Box and on every part of every component. It is
+a **function** that receives the computed props and returns the element — never a JSX element, and
+never `asChild`. A Solid JSX element is an already-constructed node by the time it reaches us and
+there is no `cloneElement`, so accepting one could only mean dropping every prop that was computed
+for it.
 
-```tsx
-<Box w="64" />              // ✅ a literal — Panda reads it out of this file
-<Box w={width()} />         // ❌ a class whose rule was never generated: no error, no style
-<Box w="var(--w)" style={{ "--w": width() }} />   // ✅ the escape hatch
-```
+<Example name="box-with-render-prop" />
 
-Panda extracts styles by scanning source **text** at build time, so a value it cannot read at the
-call site produces a class name with no rule behind it. Nothing errors, nothing warns, and a test
-asserting the class name passes. The route for a genuinely dynamic value is a CSS custom property
-written through the inline `style` attribute and read by a static class — which is an ordinary
-reactive write in Solid, not a concession.
+That cast is real, and it is narrow. Box types its element props against `HTMLElement`, and Solid's
+`Ref<HTMLElement>` is not assignable to `Ref<HTMLAnchorElement>` — so a `render` target that is a
+**host element narrower than `HTMLElement`** needs a cast. Elements whose interface *is*
+`HTMLElement` — `section`, `article`, `span`, `mark` and their neighbours — need none, and neither
+does a component that accepts `JSX.HTMLAttributes<HTMLElement>`. A part typed against its own
+element, like `Dialog.Trigger` against `HTMLButtonElement`, needs none either.

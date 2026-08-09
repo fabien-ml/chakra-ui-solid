@@ -8,10 +8,24 @@ import { Link } from "@tanstack/solid-router";
  * `/docs/components/box` is that route plus a `_splat` param. Wrapping it here means the router's
  * route-id types still check every destination — a slug that has no content file is a dead link,
  * and `check:docs-inventory` is what catches that half.
+ *
+ * `aria-current="page"` is passed in rather than derived, because the two places that mark a
+ * current link mean different things by it: the sidebar marks the exact page, and the section
+ * tabs mark a prefix.
  */
-export function DocLink(props: { slug: string; class?: string; children: JSX.Element }) {
+export function DocLink(props: {
+  slug: string;
+  class?: string;
+  "aria-current"?: "page" | undefined;
+  children: JSX.Element;
+}) {
   return (
-    <Link to="/docs/$" params={{ _splat: props.slug }} class={props.class}>
+    <Link
+      to="/docs/$"
+      params={{ _splat: props.slug }}
+      class={props.class}
+      aria-current={props["aria-current"]}
+    >
       {props.children}
     </Link>
   );

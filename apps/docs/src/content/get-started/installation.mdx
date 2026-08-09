@@ -1,8 +1,7 @@
-export const order = 1;
-export const description =
-  "Install the packages, write the Panda config, generate your stylesheet — and check a computed style rather than a class name.";
-
-# Installation
+---
+title: Installation
+description: How to install and set up chakra-ui-solid in your project
+---
 
 > **Requires Panda CSS in your build. Not optional — this library publishes no CSS.**
 
@@ -10,9 +9,34 @@ Every class name a component computes is a name in **your** stylesheet, produced
 run over **your** source. There is no prebuilt sheet to fall back on, and no version of this
 library that works without one.
 
-## Install
+## Framework Guide
 
-Three of ours, and one of Panda's:
+chakra-ui-solid works in your favorite SolidJS framework. Each guide below is one screen long,
+because there is one fact per framework and it is a build setting rather than a provider.
+
+<CardGroup>
+  <Card title="Vite" slug="get-started/frameworks/vite">
+    Use chakra-ui-solid with a client-rendered Vite app
+  </Card>
+  <Card title="SolidStart" slug="get-started/frameworks/solid-start">
+    The two settings a server-rendered app needs
+  </Card>
+  <Card title="TanStack Start" slug="get-started/frameworks/tanstack-start">
+    The same two, plus the plugin order this site had to get right
+  </Card>
+</CardGroup>
+
+> The minimum SolidJS version required is 2.0. Not 1.x — the packages import `@solidjs/web`, and a
+> 1.x install fails at load.
+
+## Installation
+
+To set up chakra-ui-solid in your project, follow the steps below.
+
+<Steps>
+  <Step title="Install the packages">
+
+Three of ours, and one of Panda's.
 
 ```bash
 pnpm add @chakra-ui-solid/components @chakra-ui-solid/preset @chakra-ui-solid/styled-system
@@ -23,11 +47,12 @@ pnpm add -D @pandacss/dev
 is deliberate: the install warning is the enforcement. Without it the failure is that you install,
 run the app, every component renders naked, and no tool anywhere says why.
 
-## `panda.config.ts`
+  </Step>
+  <Step title="Write panda.config.ts">
 
 ```ts
-import { defineConfig } from "@pandacss/dev";
 import { chakraConfig } from "@chakra-ui-solid/preset";
+import { defineConfig } from "@pandacss/dev";
 
 export default defineConfig({
   ...chakraConfig(),
@@ -44,7 +69,8 @@ puts it in `presets`. And **spreading is shallow**, so re-declaring `presets`, `
 `theme` replaces ours wholesale rather than adding to it; for those, Panda's own
 `mergeConfigs([chakraConfig(), { … }])` is the form that means *and also mine*.
 
-## Generate, then import the stylesheet you generated
+  </Step>
+  <Step title="Generate, then import the stylesheet you generated">
 
 ```bash
 pnpm panda codegen
@@ -54,6 +80,24 @@ Then import **your own** `styled-system-app/styles.css` from your app entry.
 
 This is the sentence that keeps *"we publish no CSS"* from reading as *"there is no CSS"*: your
 sheet exists and it is yours; ours does not exist at all.
+
+  </Step>
+  <Step title="Enjoy!">
+
+```tsx
+import { Box } from "@chakra-ui-solid/components";
+
+const Demo = () => {
+  return (
+    <Box p="4" bg="bg.panel" borderWidth="1px">
+      Click me
+    </Box>
+  );
+};
+```
+
+  </Step>
+</Steps>
 
 ## Did it work?
 

@@ -81,9 +81,24 @@ notice.
 naming. Its `src/styled-system/` is an Emotion serializer and is read for API shape only, never for
 implementation. Files that reproduce Chakra's expression get a row.
 
+**The documentation content is different, and it is a derivative.** `apps/docs/src/content` follows
+chakra-ui.com's page structure, section order, example set and — where our API has not changed the
+claim — its sentences. Chakra's docs are covered by the same single MIT grant as their code: one
+`LICENSE` at their repository root, no separate licence under `apps/www`, and `"license": "MIT"` on
+the root `package.json`. MIT permits the copy outright; its one condition is that the notice
+travels with it, which is what the row below is. The entry is **directory-scoped** rather than one
+row per page, because the content tier is one derivative rather than 111
+([`__internal__/legal.md`](__internal__/legal.md) §2.6;
+[`__internal__/decisions.md`](__internal__/decisions.md) **D-148**).
+
+Copyright is not trademark, and no licence moves the mark: this repository carries no Chakra logo,
+wordmark, favicon derivative, social card or combined mark, its site chrome says `chakra-ui-solid`,
+and the disclaimer in `legal.md` §3.4 appears on the docs home and in every page's footer
+([`__internal__/legal.md`](__internal__/legal.md) §3.6).
+
 | File | Derived from |
 | ---- | ------------ |
-| _(none yet)_ | |
+| `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 
 ## Ark UI
 

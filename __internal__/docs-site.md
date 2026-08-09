@@ -219,6 +219,23 @@ documented" into "Plan B is reachable".
 >
 > **The list is explicitly non-exhaustive.** A page with no reader is a candidate for the same
 > treatment, and the treatment is *deferred with its cost stated*, never *quietly absent*.
+>
+> **Amended again at S3b part 3, 2026-08-09**, the first time this table was read beside
+> `__reference-impl__/chakra-ui/apps/www/docs.config.ts` rather than from memory (**D-147**).
+> Four corrections, and three of them are counts this table asserted without opening the source:
+>
+> - **`/docs/reference/chakra-config` becomes `/docs/theming/chakra-config`** (**D-155**). The
+>   fifth tier this row invented is one `check:docs-inventory` rejects outright — its
+>   `SETTLED_TIERS` is the four — so the route as written was unreachable *and* a red build.
+> - **The style-prop family is 17 pages, not 18** (**D-158**). Their nav declares 16 and their
+>   content directory holds 17: `divide` has a page and no nav entry. Ours takes the 17.
+> - **The theming token family is 11 pages, not 12** (**D-158**), and §4.3's *"Token pages (13)"*
+>   is the same error counted a third way. `tokens` and `semantic-tokens` are Concepts pages with
+>   prose; the 11 rendered-from-the-preset pages are the Design Tokens group.
+> - **The nav register moves into the app as a declared tree** (**D-151**), so this table stops
+>   being the only place the site's order lives. It keeps the `Live` column and gains nothing
+>   else: order and grouping are `apps/docs/src/lib/docs-config.ts`, existence is the content
+>   tree, and obligation is `roadmap.md` §4 (**D-153**).
 
 **A structural copy of chakra-ui.com's IA, minus the tiers whose mechanism does not exist here** —
 `get-started/`, `components/`, `styling/`, `theming/`. Charts excluded (`roadmap.md` §5.7).
@@ -254,33 +271,58 @@ step that gives them content.
 | `/docs/styling/css-variables` | Route 3, and override path 1 | `plan.md` §3.5, §3.7; `component-blueprint.md` §5.3 | `docs-plan.md` §7.1 | step 4 |
 | `/docs/styling/dark-mode` | Colour mode as **our API** — the primitive, the pre-paint script, and D-113's failure mode beside it. **Rewritten from *consumer snippet* at 3c** (D-134) | `plan.md` §7.1 | `docs-plan.md` §7.2 | **3c** |
 | `/docs/styling/{focus-ring,layer-styles,text-styles,animation-styles,cascade-layers,virtual-color,color-opacity-modifier}` | Preset features, one page each | the preset | `docs-plan.md` §7.1 | step 4 |
-| `/docs/styling/style-props/*` — 18 pages | The prop→CSS-property tables | our utilities + the generated `isCssProperty` | **generated** (§4.3) | step 4 |
+| `/docs/styling/style-props/*` — **17** pages | The prop→CSS-property tables | our utilities + the generated `isCssProperty` | **generated** (§4.3) | step 4 |
 | `/docs/theming/overview` | preset → your config → your stylesheet. No runtime system | `plan.md` §3.6, §3.7 | `docs-plan.md` §7 | step 4 |
-| `/docs/theming/tokens` + 12 token pages | The token tables | the installed preset | **generated** (§4.3) | step 4 |
+| `/docs/theming/tokens` + **11** token pages | The token tables | the installed preset | **generated** (§4.3) | step 4 |
 | `/docs/theming/semantic-tokens` | The `_dark` condition contract | `plan.md` §7.1 | `docs-plan.md` §7.2 | **3c** |
 | `/docs/theming/{recipes,slot-recipes}` | The variant API is Chakra's; the resolution is a static import | `plan.md` §3.6 | `docs-plan.md` §7.3 | step 4 |
 | `/docs/theming/customization/*` — 11 pages | The four override paths, one worked example each | `plan.md` §3.7 | `docs-plan.md` §7.4 | step 4 |
 | `/docs/theming/customization/recipes` | Also: the two preset deltas we add | `definition-of-done.md` §6 | `docs-plan.md` §7.4 | step 6a |
-| `/docs/reference/chakra-config` | Every knob `chakraConfig()` owns, and `responsive`'s three grains | `plan.md` §3.3, §3.4, §3.8 | `docs-plan.md` §6 | step 4 |
+| `/docs/theming/chakra-config` | Every knob `chakraConfig()` owns, and `responsive`'s three grains. **Moved from `/docs/reference/` at S3b part 3** (**D-155**) | `plan.md` §3.3, §3.4, §3.8 | `docs-plan.md` §6 | step 4 |
 | `/docs/components/<name>` — **111 pages** | One per shipping row that is not a relocation (§2.4) | `roadmap.md` §4 | `docs-plan.md` §8 (template) | per batch |
 
-**The nav order is the table's order**, and the component index is alphabetical within it —
-`roadmap.md` §4's batch grouping is a build-order artefact and means nothing to a reader.
+**The nav order is this table's order at the section level and the register's within a section.**
+`apps/docs/src/lib/docs-config.ts` is chakra-ui.com's tree applied to our page set — section →
+group → page, with their group titles and their order — and the component tier is **grouped as
+theirs is** (Layout, Typography, Buttons, Date and Time, Forms, Collections, Overlays, Disclosure,
+Feedback, Data Display, Internationalization, Utilities) rather than alphabetical (**D-151**).
+Alphabetical was this table's original instruction, and it was wrong for the same reason
+`roadmap.md` §4's batch order is: 111 alphabetical entries is a list to scan, and their twelve
+groups are a list to navigate.
 
-**One tier is deliberately outside the top bar**: `/docs/reference/chakra-config` is reachable from
-the pages that need it rather than from a fifth nav item. A reference tier with one page in it is a
-nav item that costs every reader a scan and serves the few who came for it — the link from the
-install page and the styling overview is what those readers actually follow.
-
-One placement is deliberately not 1:1: **`chakraConfig` gets a `/docs/reference/` page** rather than
-a `get-started/` one, because it is an API reference for a function and Chakra has no analogue for it
-(its equivalent is `createSystem`, which does not exist here — `plan.md` §0.4). A new tier is
-honest; filing a reference page under "get started" would bury it.
+**One page is deliberately outside the four sections' obvious homes**: `chakra-config` is an API
+reference for a function Chakra has no analogue for — its equivalent is `createSystem`, which does
+not exist here (`plan.md` §0.4). It sits in **Theming → Concepts**, next to the pages about what a
+consumer writes in their config, and it is linked from the install page and the styling overview,
+which is how the readers who came for it actually arrive. **It does not get a `reference/` tier of
+its own** (**D-155**): the top bar is four items, and a fifth content directory fails
+`check:docs-inventory` outright rather than merely looking odd.
 
 ### 2.2 What chakra-ui.com has and we do not — one reason each
 
+> **Taken entry by entry through `docs.config.ts` at S3b part 3** (**D-152**), which is the first
+> time this table was written against their register rather than against a memory of their site.
+> Twelve rows were already here and stand unchanged. **Fourteen are new**, and they fall into
+> four shapes: their React-framework guides, their *Concepts* group, the pages whose subject is a
+> composition rather than a component, and the entries that are a **rename** rather than an
+> absence. A rename is listed here too — a reader looking for their page name needs to be told
+> where it went, and that is the same service as being told why it is gone.
+
 | Their page | Why it is absent |
 |---|---|
+| `get-started/frameworks/next-app`, `next-pages`, `remix` | **No Solid equivalent to guide.** These are React frameworks; the Solid ones are Vite, SolidStart and TanStack Start, and each has a page (§2.1). Nothing is being withheld — there is no such consumer |
+| `get-started/frameworks/tanstack-router` | **Renamed to `tanstack-start`.** Theirs documents the router because that is what a React app uses ours through; the Solid line we run against is `@tanstack/solid-start`, which is also what this site is built on (`docs-plan.md` §4.2) |
+| `get-started/changelog` | An external link to a file in a public repository. Ours is private (`legal.md` §3.5), so the nav item would point at a 404. It reappears the day the repository is public, on the same trigger as `get-started/contributing` |
+| `components/concepts/overview` | **The group is dropped, not the pages** — the four rows below say where each went. An overview page for a component tier whose index is a top-bar item is a page whose whole content is the nav |
+| `components/concepts/composition` | **Relocated to `/docs/styling/styled-factory`, and per component to `### render`** (`docs-plan.md` §8.8). Their page is largely about `asChild`, which is the one thing we are certain not to have; the replacement is a prop on every part, so it is documented on every part's page |
+| `components/concepts/animation` | **Relocated** to `/docs/styling/animation-styles` for the preset half and to each component's `### Presence` section for the behavior half (`docs-plan.md` §8.11). Splitting it is not a preference: the two halves have different owners here — one is the preset, one is the machine |
+| `components/concepts/color-mode` | **Relocated to `/docs/styling/dark-mode`**, which is where our own primitive is documented (**D-134**) and where `roadmap.md` §4.5 already files the relocation |
+| `components/close-button`, `components/icon-button` | **Documented on `/docs/components/button`.** One source folder, one page: `roadmap.md` §4.3's `button` row ships `ButtonGroup`, `IconButton` and `CloseButton`. Splitting one folder into three pages would make the component tier disagree with `check:docs-inventory`, which reads the folder |
+| `components/theme` | Their `<Theme>` component scopes a colour mode or token set to a subtree at **runtime**. There is no row for it in `roadmap.md` §4 and there will not be: it is the component form of the runtime theming `plan.md` §0.4 excludes |
+| `components/calendar`, `password-input`, `rich-text-editor`, `prose`, `toggle-tip`, `overlay-manager`, `link-overlay` | Already covered by the compositions row below; listed by name here because a reader searching this table searches for a page name |
+| `charts/*` — the whole tier, 16 pages | Already covered by the `docs/charts/*` row below. The tier is a **top-level nav item** on their site, which is the level at which its absence is visible: our top bar is four items and theirs is five |
+| `styling/chakra-factory` | Already covered below — renamed to `/docs/styling/styled-factory` |
+| `theming/customization/*` — 11 pages | **Present, not absent.** Listed here only because their group is titled *Customization* and ours is the same 11 pages under the same title; no reader should conclude from this table's length that the tier is thinner |
 | `get-started/cli` | There is no CLI. Chakra's installs snippets into a consumer's app; ours would be a product nobody has built. **And the one snippet it would matter for no longer needs installing** — colour mode is library API here (`plan.md` §7.1; **D-134**), which is the strongest form this row could take |
 | `get-started/figma` | No design kit exists |
 | `get-started/ai/mcp-server`, `get-started/ai/skills`, `get-started/ai/llms` | **We ship none of the three, for now.** `llms.txt` is not dropped — it is deferred to before first public release along with the whole AI tier (§4.6), where the cost of deferring it is stated rather than left to evaporate |
@@ -301,7 +343,9 @@ honest; filing a reference page under "get started" would bury it.
   `/docs/styling/static-extraction` until S3b** and moved here with the `guides/` tier's deletion
   (**D-136**): it was that tier's only page, there is no Guides nav item, and an unreachable page is
   a worse outcome for the loudest page on the site than a relocated one.
-- **`/docs/reference/chakra-config`** — §2.1.
+- **`/docs/theming/chakra-config`** — §2.1. It sits in Theming's *Concepts* group rather than in a
+  `reference/` tier of its own: the top bar is four items, and a fifth content directory is a
+  `check:docs-inventory` failure rather than a layout choice (**D-155**).
 - **Component pages Chakra does not document at all.** Chakra's docs cover a subset of its own
   components: `circle`, `square`, `span`, `strong`, `sticky`, `spacer`, `quote`, `loader`,
   `input-group`, `input-addon`, `input-element`, `focus-trap`, `format`, `toggle` and others have a
@@ -348,6 +392,14 @@ list that means anything here.
 > `chakra-ui-solid`, and the disclaimer on the home page and in every footer. And **rows 4–9**,
 > which were never about prose: generated tables stay generated, token tables stay rendered from
 > the installed preset, and no screenshot of chakra-ui.com appears anywhere.
+>
+> **The row was written at S3b part 3**, when the content tier first carried their prose: one
+> directory-scoped entry in the root `NOTICE.md`, under the existing **Chakra UI** section —
+> `apps/docs/src/content`, from `chakra-ui/chakra-ui`'s `apps/www/content/docs`, MIT, © 2019
+> Chakra Systems Inc. It is deliberately **not** an `attribution.config.ts` entry: that registry
+> is the expression-tier register for **code**, its three checks assert a matching `@license`
+> header per file, and 111 headers is the per-file bookkeeping D-148 collapsed. `check:notice-rows`
+> is unaffected — its orphan scan reads `packages/…` rows only.
 >
 > `legal.md` §1.4's three tiers are **unchanged for code**, which is what they were written for.
 
@@ -459,11 +511,15 @@ mechanical; the sentence beside them is prose, and it is exactly as trustworthy 
 Two page families have no prose to spec, which is why §2.1 marks them *generated* rather than
 pointing at `docs-plan.md`:
 
-- **Token pages** (13) render the installed preset's token groups — name, value, and the CSS custom
-  property each compiles to. Build-time data (§3.2 row 6).
-- **Style-prop pages** (18) render the prop → CSS-property mapping from our utilities and the
+- **Token pages** (**11**) render the installed preset's token groups — name, value, and the CSS
+  custom property each compiles to. Build-time data (§3.2 row 6). *Corrected from 13 at S3b part 3*
+  (**D-158**): their Design Tokens group is eleven pages, and `tokens` and `semantic-tokens` are
+  Concepts pages with prose to spec rather than tables to generate.
+- **Style-prop pages** (**17**) render the prop → CSS-property mapping from our utilities and the
   generated `isCssProperty`, so the list is *our* vocabulary, including the ≤95 Chakra aliases
   (`plan.md` §2.2). A hand-written list here would be wrong the first time an alias lands.
+  *Corrected from 18* (**D-158**): their nav declares sixteen and their content directory holds
+  seventeen — `divide` has a page and no nav entry — and ours takes the seventeen.
 
 Both regenerate on a preset bump, which is the point: `legal.md` §5's preset-minor trigger already
 fires `check:css-coverage`, and these pages change in the same PR rather than months later.

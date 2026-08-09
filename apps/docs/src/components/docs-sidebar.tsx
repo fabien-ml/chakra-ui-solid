@@ -1,103 +1,92 @@
 import { css } from "@chakra-ui-solid/styled-system/css";
-import { For, Show } from "solid-js";
+import { For } from "solid-js";
 import { DocLink } from "~/components/doc-link";
-import { type DocPage, groupLabel, liveTiers, pagesInTier } from "~/lib/site-map";
+import { type NavPage, sidebarGroups } from "~/lib/site-map";
 
 /**
- * Every page on the site, grouped by tier and then by its optional one-level group. Built from the
- * same content glob the routes resolve against, so adding a page is adding a file — there is no
- * second list that can disagree with the first.
+ * The left sidebar, **scoped to the current section**.
+ *
+ * That scoping is the structural thing chakra-ui.com does and this site did not: their sidebar
+ * shows the groups of whichever top-level section you are in, and the section tabs above it are
+ * how you change sections. Rendering every section at once put *Components* under *Get Started*,
+ * so the sidebar contradicted the bar above it (`decisions.md` **D-147** failure 1).
+ *
+ * Groups and their order come from `~/lib/docs-config`, which is a decision. Which of their
+ * entries render comes from the content tree, which is a fact.
  */
-export function DocsSidebar() {
+export function DocsSidebar(props: { section: string; currentSlug: string }) {
   return (
-    <nav
-      aria-label="Docs"
+    <aside
       class={css({
-        flexShrink: "0",
-        w: "60",
         display: "none",
         md: { display: "block" },
-        alignSelf: "start",
+        flexShrink: "0",
+        width: "16rem",
+        pe: "5",
+        ms: "-3",
+        py: "8",
+        fontSize: "sm",
         position: "sticky",
-        top: "20",
-        maxH: "calc(100vh - 6rem)",
+        top: "var(--header-height)",
+        height: "var(--content-height)",
         overflowY: "auto",
-        pr: "4",
+        overscrollBehavior: "contain",
       })}
     >
-      <For each={liveTiers()}>
-        {(tier) => <SidebarTier label={tier.label} pages={pagesInTier(tier.segment)} />}
-      </For>
-    </nav>
+      <nav aria-label="Docs" class={css({ display: "flex", flexDirection: "column", gap: "6" })}>
+        <For each={sidebarGroups(props.section)}>
+          {(group) => (
+            <div class={css({ display: "flex", flexDirection: "column", gap: "2" })}>
+              {/* A `div`, not a heading: the page's own `## …` are the document outline, and a
+                  sidebar group title inserted above the `<h1>` would put the outline out of
+                  order for a screen reader. chakra-ui.com's sidenav title is a `div` for the
+                  same reason. */}
+              <div class={css({ ps: "4", fontWeight: "semibold", color: "fg" })}>{group.title}</div>
+              <ul
+                class={css({
+                  listStyle: "none",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1px",
+                })}
+              >
+                <For each={group.pages}>
+                  {(page) => <SidebarLink doc={page} currentSlug={props.currentSlug} />}
+                </For>
+              </ul>
+            </div>
+          )}
+        </For>
+      </nav>
+    </aside>
   );
 }
 
-function SidebarTier(props: { label: string; pages: DocPage[] }) {
-  const ungrouped = () => props.pages.filter((page) => page.group === undefined);
-  const groups = () => [
-    ...new Set(
-      props.pages.map((page) => page.group).filter((group): group is string => group !== undefined),
-    ),
-  ];
-
+function SidebarLink(props: { doc: NavPage; currentSlug: string }) {
   return (
-    <section class={css({ mb: "6" })}>
-      <h2
+    <li>
+      <DocLink
+        slug={props.doc.slug}
+        aria-current={props.doc.slug === props.currentSlug ? "page" : undefined}
         class={css({
-          fontSize: "xs",
-          fontWeight: "semibold",
-          textTransform: "uppercase",
-          letterSpacing: "wide",
+          display: "flex",
+          alignItems: "center",
+          py: "1.5",
+          ps: "4",
+          pe: "3",
+          borderRadius: "sm",
           color: "fg.muted",
-          mb: "2",
+          textDecoration: "none",
+          _hover: { layerStyle: "fill.subtle" },
+          "&[aria-current=page]": {
+            layerStyle: "fill.subtle",
+            color: "colorPalette.fg",
+            fontWeight: "medium",
+          },
         })}
       >
-        {props.label}
-      </h2>
-      <SidebarLinks pages={ungrouped()} />
-      <For each={groups()}>
-        {(group) => (
-          <Show when={props.pages.filter((page) => page.group === group)}>
-            {(pages) => (
-              <div class={css({ mt: "3" })}>
-                <h3 class={css({ fontSize: "xs", color: "fg.subtle", mb: "1", pl: "2" })}>
-                  {groupLabel(group)}
-                </h3>
-                <SidebarLinks pages={pages()} />
-              </div>
-            )}
-          </Show>
-        )}
-      </For>
-    </section>
-  );
-}
-
-function SidebarLinks(props: { pages: DocPage[] }) {
-  return (
-    <ul class={css({ listStyle: "none", display: "flex", flexDirection: "column", gap: "1" })}>
-      <For each={props.pages}>
-        {(page) => (
-          <li>
-            <DocLink
-              slug={page.slug}
-              class={css({
-                display: "block",
-                px: "2",
-                py: "1",
-                borderRadius: "l1",
-                fontSize: "sm",
-                color: "fg.muted",
-                textDecoration: "none",
-                _hover: { bg: "bg.muted", color: "fg" },
-                "&[data-status=active]": { color: "fg", fontWeight: "medium", bg: "bg.muted" },
-              })}
-            >
-              {page.title}
-            </DocLink>
-          </li>
-        )}
-      </For>
-    </ul>
+        {props.doc.navTitle}
+      </DocLink>
+    </li>
   );
 }

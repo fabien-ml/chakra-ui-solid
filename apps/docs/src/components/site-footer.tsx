@@ -1,4 +1,5 @@
 import { css } from "@chakra-ui-solid/styled-system/css";
+import { containerClass } from "~/components/layout";
 import { DISCLAIMER } from "~/config";
 
 /**
@@ -19,7 +20,7 @@ export function SiteFooter() {
         mt: "16",
       })}
     >
-      <div class={css({ maxW: "7xl", mx: "auto", px: "6", py: "8" })}>
+      <div class={`${containerClass} ${css({ py: "8" })}`}>
         <p class={css({ fontSize: "sm", color: "fg.muted", maxW: "3xl" })}>
           {DISCLAIMER.before}
           <a href={DISCLAIMER.linkHref} class={css({ color: "fg", textDecoration: "underline" })}>

@@ -557,7 +557,11 @@ sees a fifth stops being read**, which would cost exactly the page it matters mo
 
 ---
 
-## 6. `/docs/reference/chakra-config` — the config function
+## 6. `/docs/theming/chakra-config` — the config function
+
+> **Route corrected at S3b part 3** (**D-155**), content unchanged. The `reference/` tier this
+> page was filed under is a fifth content directory, and `check:docs-inventory` rejects one — the
+> settled tiers are the four the top bar renders. It lands in **Theming → Concepts**.
 
 **Frame:** an API reference for one function. Chakra has no analogue — its equivalent is
 `createSystem`, which does not exist here — so this page's *existence* is a `plan.md` §0.4

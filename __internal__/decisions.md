@@ -2459,6 +2459,197 @@ built.
 
 ---
 
+**D-151 onward are S3b part 3**, the rework D-147 called for. The reference was open for all of
+them, which is why several are corrections to numbers the documents asserted from memory.
+
+**D-151 · The nav register is a declared tree in the app, and the sidebar is scoped to one section**
+— **Decision.** `apps/docs/src/lib/docs-config.ts` holds chakra-ui.com's `docs.config.ts` shape —
+section → group → page — applied to our page set, with their group titles and their order. It is
+the only place the site's **order and grouping** live. `site-map.ts` joins it to the content glob:
+**an entry with no `.mdx` file does not render**, so the whole settled IA is written down now
+while the sidebar shows only what a reader can open. The sidebar renders **the current section's
+groups only**.
+— **Rejected.** *Keep deriving groups from a directory glob* — a directory is a storage decision
+and a nav group is an editorial one, and the two only coincide where a group happens to nest
+(`frameworks`, `style-props`). Deriving Layout/Typography/Forms from the filesystem would mean
+111 directories. *Declare only the pages that exist today* — then the settled IA lives nowhere in
+the code, and the next tier arrives as somebody's judgement call rather than as entries becoming
+reachable. *Alphabetise the component tier*, which `docs-site.md` §2.1 originally instructed — 111
+alphabetical entries is a list to scan; their twelve groups are a list to navigate.
+— **Effect.** The failure D-147 names first is closed: the sidebar no longer renders every tier at
+once, so *Components* no longer appears under *Get Started*. Three properties are kept apart on
+purpose, and the register is not a fourth inventory (**D-153**). A content file with no register
+entry renders under a visible **Ungrouped** heading rather than vanishing — an unreachable page is
+the worse failure, and this one shows up on the page rather than only in a diff.
+
+**One trap, hit and corrected at the review.** chakra-ui.com's header has **two rows**, and copying
+that shape is copying it for the wrong reason: their first row is a **site-level** nav over five
+content types (Docs · Showcase · Spotlight · Blog · Guides) and the second appears *inside* Docs to
+pick a section. This site has one content type, so our four sections have no primary nav to be
+secondary to — **they are the top bar, in one row**, which is what `docs-site.md` §2.1 has said
+since it was written. Rendering them as a sub-bar reproduced their pixels and contradicted our own
+document.
+— **Settled.** S3b part 3, 2026-08-09, by writing it against `docs.config.ts` and
+`app/docs/sidebar.tsx`; the header row count by the reviewer, on the built site.
+— **Reasoning.** `docs-site.md` §2.1; `decisions.md` **D-140**, **D-141**, **D-147**.
+
+**D-152 · Every `docs.config.ts` entry we will not have, taken entry by entry**
+— **Decision.** Walk their register top to bottom and give every absence a `docs-site.md` §2.2 row
+with one reason. Fourteen rows are new; the twelve that were already there stand unchanged.
+**A rename gets a row too** — a reader looking for their page name needs to be told where it went,
+which is the same service as being told why it is gone.
+— **Rejected.** *Only list what a reader would miss* — that is a judgement made by the person who
+already knows the answer. *Roll the React-framework guides into one row* — three named pages are
+three searches a reader might run.
+— **Effect.** The four shapes an absence takes here, which is the useful output rather than the
+count: **no Solid equivalent to guide** (`next-app`, `next-pages`, `remix`); **the whole *Concepts*
+group relocates** rather than disappearing (`composition` → `/docs/styling/styled-factory` and
+per-component `### render`; `animation` → `/docs/styling/animation-styles` plus per-component
+`### Presence`; `color-mode` → `/docs/styling/dark-mode`; `overview` → the top-bar item itself);
+**one source folder, one page** (`close-button` and `icon-button` are documented on
+`/docs/components/button`, because `check:docs-inventory` reads the folder); and **the page is a
+runtime feature we exclude** (`components/theme` is the component form of runtime theming,
+`plan.md` §0.4). `get-started/changelog` joins `contributing` on the private-repository trigger.
+— **Settled.** S3b part 3, 2026-08-09, by reading all 450 lines of `docs.config.ts`.
+— **Reasoning.** `docs-site.md` §2.2; `roadmap.md` §4, §5; `plan.md` §0.4; `legal.md` §3.5.
+
+**D-153 · Three registers, one fact each — and `docs-site.md` §2.1 keeps its `Live` column**
+— **Decision.** **Order and grouping** is `apps/docs/src/lib/docs-config.ts`. **Existence** is the
+content tree, read by the glob. **Obligation** — which component owes a page at all — is
+`roadmap.md` §4, read by `check:docs-inventory`. §2.1 keeps its rows and its `Live` column, and is
+none of the three: it is the **schedule**, the step at which each page arrives.
+— **Rejected.** *Replace `Live` with a shipped flag on the nav tree* — a flag in the register would
+be a second claim about existence, which is exactly the duplication **D-140** was about, and it
+would need editing at the step somebody forgets. *Delete §2.1's rows now that the tree exists* —
+the tree says nothing about **when**, and a route map with no schedule cannot answer *is this page
+late or is it step 4's?*
+— **Effect.** The test that keeps this honest: nothing in the register asserts a page exists, and
+nothing in the content tree asserts a page is owed. §2.1's component tier stays **one row** for
+111 pages rather than becoming a per-page list, which is what would have made it a fourth
+register.
+— **Settled.** S3b part 3, 2026-08-09.
+— **Reasoning.** `docs-site.md` §2.1, §2.4; `roadmap.md` §4.5; **D-140**, **D-141**.
+
+**D-154 · D-136 and D-138 re-decided against the reference, and both stand**
+— **Decision.** No change to either. Both were taken without opening `docs.config.ts`, and the
+brief for this session required one look each.
+— **Effect.** **D-136 is strengthened rather than merely confirmed.** Their `guides` is not a docs
+tier at all: it is a **primary** nav item beside Showcase and Blog, over `content/guides/` —
+long-form articles, a separate content type. Deleting a `guides/` tier from a four-item docs bar
+was therefore not a deviation from their IA; keeping one would have been. `/docs/styling/static-extraction`
+lands in Styling → **Concepts**, second, immediately after `overview`, which is where
+`docs-plan.md` §7.1 already points the overview's first link. **D-138 is confirmed unchanged**:
+`Get Started → AI for Agents` is a real three-page group upstream and `AI Skills` carries their
+`status: "new"` marker, so the tier is live and growing there. Nothing about that touches the
+reason for deferring ours — the audience for a directory page to generated files does not exist
+until the files are fetchable — and the cost stays stated at `docs-site.md` §4.6.
+— **Settled.** S3b part 3, 2026-08-09, by reading `docs.config.ts` lines 25–33 and 394–422.
+— **Reasoning.** `docs-site.md` §2.3, §4.6; `docs-plan.md` §7.1; **D-136**, **D-138**.
+
+**D-155 · `/docs/reference/chakra-config` was a fifth tier the inventory check rejects**
+— **Decision.** `/docs/theming/chakra-config`, in Theming → Concepts.
+— **Rejected.** *Keep the `reference/` tier* — `check:docs-inventory`'s `SETTLED_TIERS` is the four
+the top bar renders, and a page under a fifth directory is a **red build**, not merely an odd
+placement. §2.1 argued the tier as a layout choice without noticing that the check written in the
+same session forbids it. *Put it under `get-started/`* — §2.1's own objection stands: it is an API
+reference for a function, and filing it in a setup tier buries it.
+— **Effect.** A document contradicting a check, found by trying to write the register the document
+describes. Theming is a better home than the invented tier was: the page documents what a consumer
+writes in `panda.config.ts`, which is what the whole Theming tier is about, and the two links §2.1
+names — from the install page and the styling overview — are unaffected.
+— **Settled.** S3b part 3, 2026-08-09, by reading `scripts/check-docs-inventory.mjs` against
+`docs-site.md` §2.1.
+— **Reasoning.** `docs-site.md` §2.1, §2.3; `docs-plan.md` §6; `plan.md` §0.4.
+
+**D-156 · Box's example set is Chakra's, and the axe gate forces the palette**
+— **Decision.** Ship their seven — `box-basic`, `box-with-shorthand`, `box-with-pseudo-props`,
+`box-with-border`, `box-with-as-prop`, `box-with-shadow`, `box-property-card` — under their names,
+in their order, with their sentences, plus the template-mandated `### render`
+(`docs-plan.md` §8.8). Two of their choices are changed, each for a measured reason.
+— **Rejected.** *Copy their colour values verbatim* — theirs are `tomato`/`white` and
+`colorPalette="teal" variant="solid"`, and **every docs example runs axe** (`docs-site.md` §4.1
+assertion d). Measured: white on `tomato` is 2.9:1 and white on `teal.solid` is 4.3:1, both under
+4.5:1, so both fail `color-contrast` and the build goes red. The pairs become semantic token pairs
+— `red.solid`/`red.contrast`, `teal.subtle`/`teal.fg` — which demonstrate the same thing the
+example is about and are what the preset provides them for. *Drop the Composition example because
+its dependencies have not shipped* — theirs composes Badge, HStack, Icon, Image and Text; ours is
+Box the whole way down, which is the honest form of the example at this point in the build and
+still shows a card being laid out. Their `<Image src="https://bit.ly/…">` is replaced by a
+decorative surface: a network fetch inside a mounting test is a flake and an `img` with no reachable
+source is an axe finding.
+— **Effect.** **One delta a reader will hit, and it is not the colours.** Chakra renders each
+example in a `Preview` / `Code` tab pair (`ExampleTabs`, over their own `Tabs`); we ship no Tabs
+until B2, so `<Example>` stacks the preview above the source. Both panes come from **one file**
+either way (`docs-plan.md` §8.2), so nothing about the fusion changes — only the affordance. It is
+a chrome difference rather than an API one, so it belongs here rather than on the migration page.
+Nothing in `plan.md` §0.4 blocked any of their seven examples.
+— **Settled.** S3b part 3, 2026-08-09, by running the examples through the `browser` project and
+reading axe's output.
+— **Reasoning.** `docs-site.md` §4.1; `docs-plan.md` §8.2, §8.4, §8.8; `definition-of-done.md` §5.
+
+**D-157 · Frontmatter, and the one link that cannot be a link while the repository is private**
+— **Decision.** Pages carry real YAML frontmatter — `title`, `description`, `links` — parsed by
+`remark-frontmatter` + `remark-mdx-frontmatter` into a module export the page header renders. **No
+`# H1` in a body**, because the header renders the title. A `links` value that is a URL renders as
+an anchor; **anything else renders as text.**
+— **Rejected.** *Keep `export const description` and an `# H1`* — it works and it is not what the
+reference does; more to the point, `links` has to be structured data or it goes back to being the
+body prose D-147 found. *Omit `source` until the repository is public* — the path is useful on its
+own, and a reader who wants to know where Box lives is told. *Link it anyway* — the repository is
+private (`legal.md` §3.5), so every `source` link on the site would 404.
+— **Effect.** Two MDX-only dev dependencies, and the day the repository is public the frontmatter
+value becomes a URL with nothing else changing. The **`storybook` link stays absent** — Chakra's
+frontmatter has one and `docs-plan.md` §8.1 is explicit that ours does not.
+— **Settled.** S3b part 3, 2026-08-09.
+— **Reasoning.** `docs-plan.md` §8.1; `legal.md` §3.5, §3.3.3.
+
+**D-158 · Three page counts the documents asserted without opening the reference**
+— **Decision.** Style props: **17**, not 18. Theming token pages: **11**, not 12 or 13.
+— **Effect.** Measured, not reasoned: their nav declares **16** style-prop entries and their
+`content/docs/styling/style-props/` holds **17** — `divide` has a page and no nav entry, so ours
+takes the seventeen. Their Design Tokens group is **11** pages; `tokens` and `semantic-tokens` are
+Concepts pages with prose to spec, which is why `docs-site.md` §2.1 said 12 and §4.3 said 13 and
+neither matched. Both corrections land in `docs-site.md` §2.1 and §4.3, and the nav register
+carries the corrected sets.
+— **Settled.** S3b part 3, 2026-08-09, by `ls` over their content directory against
+`docs.config.ts`.
+— **Reasoning.** `docs-site.md` §2.1, §4.3.
+
+**D-159 · Two theme surfaces are not reproducible through tokens, and the reason is a check we want**
+— **Decision.** Reproduce their surfaces, radii, type scale and spacing through tokens; do **not**
+reproduce the typeface or their `globalCss` block.
+— **Effect.** chakra-ui.com overrides `fonts.heading` and `fonts.body` to Wix Madefor Text and
+declares `--header-height` / `--content-height` in `globalCss` — both through `createSystem`, which
+for us would mean keys in `apps/docs/panda.config.ts`. That config is `chakraConfig()` plus
+`include`/`outdir` **and nothing else**, and `check:docs-consumer-config` fails on a third key
+(`docs-site.md` §1.1). So the typeface stays the preset's own Inter stack — which is what a
+consumer gets, and therefore the honest surface for a site whose job is to be evidence — and the
+two custom properties move onto the `<body>` class, where they are an ordinary Panda rule in this
+app's own sheet. **The forced difference is a check working, not a gap**: a docs site that
+overrode the preset's fonts would be showing a reader a theme they cannot get by installing.
+— **Settled.** S3b part 3, 2026-08-09, by reading `apps/www/app/theme.ts` against
+`scripts/check-docs-consumer-config.mjs`.
+— **Reasoning.** `docs-site.md` §1.1, §6.1; `plan.md` §3.4.
+
+**D-160 · `check:style-contract` rule 1 flags a component prop named after a CSS property**
+— **Decision.** Rename the prop, not the rule. `<PageHeader page={…}>` became
+`<PageHeader doc={…}>`.
+— **Rejected.** *Exempt capitalised JSX elements from rule 1* — the rule cannot know that
+`<PageHeader>` does not forward its props to a styled element, and `roadmap.md` §4 has 111
+components that do exactly that. Narrowing it to lowercase host elements would blind it to every
+part component, which is the surface it exists for. *Allow-list the file* — an allow-list entry for
+a name we chose is a rule bent around a typo.
+— **Effect.** `page` is a real CSS property (paged media), so `isCssProperty("page")` is true and
+`page={doc()}` is indistinguishable from a dynamic style prop by the only thing the rule can read.
+The check was right and the name was careless. Recorded because the next component prop named
+`filter`, `content`, `order` or `direction` will hit it, and the answer is the same each time:
+**a component prop must not be named after a CSS property**, which is a good rule in a library
+whose props *are* CSS properties.
+— **Settled.** S3b part 3, 2026-08-09, by `check:style-contract` failing on the docs route.
+— **Reasoning.** `testing.md` §6.1; `plan.md` §2.2; `definition-of-done.md` §1 rule 1.4.
+
+---
+
 ## 4. The reversals, in one place
 
 A decision that changed during the pass is more useful than one that did not, because it is where the

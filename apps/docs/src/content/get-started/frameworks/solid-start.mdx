@@ -1,14 +1,12 @@
-export const order = 11;
-export const description =
-  "Two lines: ssr.noExternal, and no client-side pre-bundling of our packages.";
-
-# SolidStart
+---
+title: Using chakra-ui-solid in SolidStart
+description: A guide for installing chakra-ui-solid in SolidStart projects
+---
 
 Two settings, and each prevents a failure whose error message names our package rather than the
 missing line.
 
-```ts
-// app.config.ts / vite.config.ts
+```ts title="app.config.ts"
 export default {
   ssr: {
     noExternal: [/^@chakra-ui-solid\//],

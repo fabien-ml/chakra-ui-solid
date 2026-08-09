@@ -1,18 +1,16 @@
-export const order = 12;
-export const description =
-  "The same two settings, plus the plugin order this site had to get right itself.";
-
-# TanStack Start
+---
+title: Using chakra-ui-solid in TanStack Start
+description: A guide for installing chakra-ui-solid in TanStack Start projects
+---
 
 The same two settings as SolidStart, for the same two reasons — `ssr.noExternal` because Node
 cannot import raw JSX, and `optimizeDeps.exclude` because the client pre-bundler compiles JSX as
 React and the component then renders nothing.
 
-```ts
-// vite.config.ts
+```ts title="vite.config.ts"
 import { tanstackStart } from "@tanstack/solid-start/plugin/vite";
-import viteSolid from "vite-plugin-solid";
 import { defineConfig } from "vite";
+import viteSolid from "vite-plugin-solid";
 
 export default defineConfig({
   ssr: { noExternal: [/^@chakra-ui-solid\//] },
@@ -30,9 +28,8 @@ export default defineConfig({
 ## This site is that config
 
 These docs are a TanStack Start app on the beta 2.x line, prerendered to static HTML, consuming
-the published packages exactly as the snippet above describes. That is deliberate: a
-documentation site that took an in-repo shortcut would prove nothing about what a reader's build
-does.
+the published packages exactly as the snippet above describes. That is deliberate: a documentation
+site that took an in-repo shortcut would prove nothing about what a reader's build does.
 
 Two things it discovered that are worth carrying:
 
