@@ -959,7 +959,10 @@ that the previous one did not, and has a gate.
 | 4 | One real slot recipe, in a throwaway consumer whose source never names the variant | `plan.md` §1's gate — `staticCss` per recipe confirmed or the ladder's rung 2 taken |
 | **5** | **Dialog** — the blueprint end to end. **Plus `Portal`**, and the render strategy split so `present` can come from a machine as well as a presence (§6.2) | `component-blueprint.md` §11 compiles; axe clean on closed-state assertions, `aria-hidden-focus` only on open (§9.2 there); SSR→hydrate round-trip |
 | **5b** | **Popover** — the floating probe (§8) | The popper `--z-index` seam is **measured**: a number, and either a sentence or a rule in `component-blueprint.md` |
-| 6 | **Workstream B** — **45 components**: 18 atomic recipes + 22 layout primitives + 4 utilities + `Presence`, plus the 7 surviving `./hooks` | The atomic recipe layer at volume; `splitVariantProps` (blueprint assumption **P5-B**); the CIJ route-3 conversions of §3.1 |
+| **3b** | **The two visual surfaces**, both rendering `Box` — Storybook (a local playground and the compile-mode canary, **never deployed**) and the **docs app shell** with its own consumer `panda.config.ts`. Added at the S1 review, **D-98** | Both run; `test:storybook` and the `docs` job go live; **P7-B**, **P8-B**, **P8-C** close |
+| **6a** | **18 atomic-recipe components** (§4.3's step-6 rows) | The atomic recipe layer at volume; `splitVariantProps` (**P5-B**); `container`'s expression-tier preset delta |
+| **6b** | **22 styled primitives and layout** (§4.4's step-6 rows) | The eight CIJ route-3 conversions of §3.1, held converted by `check:style-contract` rule 1 |
+| **6c** | **4 utilities + `Presence` + the 7 surviving `./hooks`** | The presence render strategy standalone, over both families |
 | 7+ | Machine components at volume, in batches B1–B8 | Below |
 
 **Workstream B keeps its position** — after the factory, before the machine-component *volume*
@@ -969,6 +972,15 @@ largest single step in the project — more than B1–B5 combined — and five o
 its atomic recipes (`checkmark`, `radiomark`, `colorSwatch`, `input`, `inputAddon`) are **composed
 into slot recipes by later batches**, so it is a hard prerequisite for B3, B4 and B8 rather than a
 parallel track.
+
+**Split three ways at the S1 review (D-100), and the weight is why.** 45 components in one phase is
+the longest stretch in the order with no review in it, and it is the stretch whose output is judged
+most by eye — spacing, typography and colour across Button, Badge, Text, Heading, Stack, Flex and
+Grid. The position is unchanged; the phase is now **6a** (18 atomic-recipe components), **6b** (22
+styled primitives and layout) and **6c** (4 utilities + `Presence` + the hooks), with a gate each.
+The prerequisite also **tightens usefully**: it is **6a alone** that blocks B3/B4/B8, because the
+three composed primitives live there — `input` and `inputAddon` are B3's own rows (§4.3). 6b and 6c
+gain scheduling freedom the single step did not have.
 
 ### 9.2 The batches
 

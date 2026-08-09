@@ -1310,6 +1310,92 @@ for the review to settle.
 while all three projects stayed green.
 — **Reasoning.** `testing.md` §1.7.
 
+### 3.11 S1 review — the author has no way to see the work, and the order is what caused it
+
+Four entries from one finding at the S1 gate, raised by the author and not by a document: **the build
+order gives the person whose library this is nothing to look at or interact with until 115 components
+exist.** Every surface the documents describe is a *machine* verification — computed styles, axe,
+coverage, `mount()` diagnostics. None of them can answer *"is this what I wanted?"*, and that question
+has exactly one competent judge.
+
+The four entries below re-plan the order rather than adding a check, because no check can substitute
+for it. `CLAUDE.md`'s rule applies: a review that changes a decision re-plans the affected later
+phases before work continues.
+
+**D-98 · The two visual surfaces land at a new step 3b, and they are not the same thing**
+— **Decision.** Storybook and the docs app both stand up at **step 3b**, immediately after the
+styling seam, both rendering `Box`. They are not interchangeable and neither replaces the other:
+**Storybook is a local playground and the compile-mode canary — never deployed, never user-facing**
+(`testing.md` §7.1, which already says exactly this and needs no change). **The docs site is the
+near-1:1 equivalent of `chakra-ui.com` for this library**, it deploys, and it is what the author
+reviews the work on.
+— **Rejected.** *Storybook at step 5 and docs at step 8*, the order as approved — it produces no
+rendered output for the author until after B8, which is the finding. *Fold both into step 3* — step 3
+already carries five open assumptions (3, P3-D, P3-E, P3-F, P6-F) and the docs app drags in three more
+(P8-A prerender, P8-B MDX under Solid 2.0, P8-C the props-table generator with no running system
+object); mixing them makes a red gate ambiguous about which layer failed. *Docs site only, drop
+Storybook* — it is the **only** surface that compiles `hydratable: false`, so dropping it makes the
+restrictive-content-model crash class (`component-blueprint.md` §10.4) invisible to every check in the
+repo until someone opens a Select page by hand.
+— **Effect.** First rendered output moves from step 5 to **step 3b**. P7-B (the Storybook runner under
+Solid 2.0) and P8-B/P8-C close five steps and eight batches earlier than planned, which is where their
+risk belongs. Step 3's gate is unchanged and stays test-only.
+— **Settled.** S1 review gate, 2026-08-09.
+— **Reasoning.** `testing.md` §7.1, §7.4; `docs-site.md` §1.1, §7.2.
+
+**D-99 · A component is not done until its docs page is done**
+— **Decision.** `definition-of-done.md` rule 2.15 stops being an inventory check that first fires at
+step 8 and becomes a **per-component completion criterion from the first component**: the page ships
+**in the same phase as the component**, complete — anatomy, generated props tables, examples, the
+`ids` section — not a stub backfilled later. The docs site is therefore built incrementally and is
+readable as a site at every gate from 3b onward.
+— **Rejected.** *All pages at step 8* — 113 pages written at once, from the code rather than from the
+intent, and the first time anyone reads the library as a *reader* is after it is finished. *Pages per
+batch, written after the batch lands* — better, and still backwards: a page written after the fact
+documents what was built instead of checking it against what was wanted. *A separate per-batch gallery
+artifact* — considered and dropped at the same gate; the docs page **is** the artifact, and a second
+one would need keeping in sync with it.
+— **Effect.** `check:docs-inventory`'s batch-awareness — *"a shipping row whose batch has landed"* —
+finally does something; under the approved order it could never fire before every batch had landed.
+`roadmap.md` §13 row 8's *"docs follow the batches"* becomes achievable rather than contradicted by
+`decisions.md` §5. Cost is real and is accepted: every component phase now carries its page, and
+`docs-plan.md` §8's template is load-bearing from the first component rather than from step 8.
+— **Settled.** S1 review gate, 2026-08-09.
+— **Reasoning.** `docs-site.md` §6.1; `docs-plan.md` §8; `roadmap.md` §13 row 8.
+
+**D-100 · Step 6 splits into 6a / 6b / 6c**
+— **Decision.** Workstream B's 45 components become three phases with a gate each:
+**6a** — the 18 atomic-recipe components (`roadmap.md` §4.3's step-6 rows); **6b** — the 22 styled
+primitives and layout (§4.4's step-6 rows, `box` already shipped at step 3); **6c** — the 4 utilities
+(`client-only`, `focus-trap`, `format`, `highlight`) plus `Presence` plus the 7 surviving `./hooks`.
+— **Rejected.** *Keep 45 as one phase* — the largest step in the project, more than B1–B5 combined,
+and the one whose output is judged most by eye: spacing, typography and colour across Button, Badge,
+Text, Heading, Stack, Flex and Grid. One review at the end of it is the longest blind stretch in the
+order. *Split in two* — considered; the utilities and `Presence` share nothing with either recipe or
+layout work and make a cleaner third gate than a tail on the second.
+— **Effect.** The prerequisite tightens usefully: **6a alone** blocks B3/B4/B8, because `checkmark`,
+`radiomark` and `colorSwatch` are the recipes composed into later slot recipes. 6b and 6c gain
+scheduling freedom the single step 6 did not have. Each of the three carries its own docs pages under
+D-99.
+— **Settled.** S1 review gate, 2026-08-09.
+— **Reasoning.** `roadmap.md` §4.3, §4.4, §4.5, §9.1, §9.3; `plan.md` §10.
+
+**D-101 · Step 8 is the docs' remaining content and its deployment, not "the docs site"**
+— **Decision.** With the app at 3b and the pages arriving with their components, step 8 is what is
+left: the machinery and guide tier (`/guides/static-extraction`, migration, theming, `chakraConfig`),
+the playground, `llms*.txt`, prerendering and the Cloudflare deploy — plus the checks that can only
+run against a finished site (`check:docs-links`, `check:prerender-complete`, `check:llms-fresh`).
+— **Rejected.** *Delete step 8 and fold everything into the component phases* — the guide tier is not
+per-component and has no phase to attach to; and P8-A's prerender-to-Cloudflare assumption wants one
+place to close.
+— **Effect.** `docs-site.md` §6.1's `docs` CI job now starts at **3b**, not step 8, with
+`check:docs-inventory`, `check:docs-consumer-config`, `check:no-runtime-sheet` over `apps/docs/src`
+and `check:css-coverage` against the docs app's own sheet live from that point. The docs app becomes
+the standing consumer instance from 3b rather than after B8 — `docs-site.md` §1.1's whole argument,
+eight batches earlier.
+— **Settled.** S1 review gate, 2026-08-09.
+— **Reasoning.** `docs-site.md` §1.1, §6.1; `docs-plan.md` §3–§6.
+
 ---
 
 ## 4. The reversals, in one place
@@ -1351,6 +1437,10 @@ pass learned something. Five reversed once, four reversed twice.
 | **D-80** | DoD tiers | two | **four** |
 | **D-84** | Storybook | a dev harness | a dev harness **and a required CI job** |
 | **D-96** | The `solid-contract` case count | 9 + 3 + 6, gated as "18 including the three `flush()` cases" | **10 + 3 + 7 copied, 23 with the three `flush()` cases** — measured, not predicted |
+| **D-84** *(again)* | Storybook's arrival | step 5, with the first component | **step 3b**, with `Box`. Its *status* is unchanged — a local playground and the compile-mode canary, never deployed |
+| **D-93** | *A shipping component owes a docs page* | an inventory check in the docs job, first able to fire at step 8 | **A component is not done until its page is done** — the page ships in the same phase as the component, from the first one |
+| **D-41** | Workstream B's shape | one step, sized at P6 to 45 components | **6a / 6b / 6c**, a gate each. Its *position* is unchanged; 6a alone is what blocks B3/B4/B8 |
+| **The docs site's date** | — | step 8, after all 115 components | **The app at 3b, pages with their components, step 8 is the guide tier and the deploy.** D-88 is not reversed — the docs app as a standing consumer instance becomes true eight batches earlier |
 
 ---
 
@@ -1361,23 +1451,32 @@ pass is `definition-of-done.md` §3. **This table is the single entry point that
 first implementation phase reads one list rather than re-reading two documents. Neither of those
 sections is restated here.
 
+**Amended at the S1 review** — §3.11, D-98…D-101. Two rows are new (**3b**, and **6** split three
+ways), and from 3b onward **every component phase also ships its components' docs pages** — not a
+column here, because it is a per-component rule (`definition-of-done.md` rule 2.15, as amended).
+
 | Step | What | Gate |
 |---|---|---|
-| **1** | Repo bootstrap — workspace, catalog, Biome, tsconfig, Turbo incl. `codegen`, CI skeleton, three Vitest projects, `solid-contract` | `definition-of-done.md` §3.1 step 1 — the projects are distinguishable, 18 contract cases green incl. the three new `flush()` ones |
+| **1** ✅ | Repo bootstrap — workspace, catalog, Biome, tsconfig, Turbo incl. `codegen`, CI skeleton, three Vitest projects, `solid-contract` | `definition-of-done.md` §3.1 step 1 — the projects are distinguishable, 18 contract cases green incl. the three new `flush()` ones |
 | **2** | `@chakra-ui-solid/zag-solid` + the harness (D-48) | `zag-solid-adapter.md` §6.5's seven lines, verbatim; `definition-of-done.md` §3.1 step 2 |
 | **3** | The styling seam — Panda config, preset, `renderStyled`, style props, **plus the locale and environment contexts** | `definition-of-done.md` §3.1 step 3 — `Box`'s computed styles in all three projects, a consumer override changing them, and five checks live |
+| **3b** | **The two visual surfaces, both rendering `Box`** — Storybook (local playground and compile-mode canary, **never deployed**) and the **docs app shell** with its own consumer `panda.config.ts` (D-98) | `definition-of-done.md` §3.1 step 3b — both run; `test:storybook` and the `docs` CI job go live; **P7-B**, **P8-B** and **P8-C** close |
 | **4** | One real slot recipe, in a throwaway consumer whose own source never names the variant | `plan.md` §1's gate; `definition-of-done.md` §3.1 step 4 — coverage green **there**, and flipping `hash` exits `E_CONFIG_MISMATCH` |
 | **5** | **Dialog**, plus `Portal`, plus the render-strategy split so `present` can come from a machine as well as a presence | `definition-of-done.md` §3.1 step 5 — `component-blueprint.md` §11 compiles, axe clean closed / `aria-hidden-focus` open only, SSR→hydrate round-trip |
 | **5b** | **Popover** — the floating probe (D-75) | `definition-of-done.md` §3.1 step 5b — `check:floating-zindex`, a recorded number, and either a sentence or a rule |
-| **6** | **Workstream B** — 45 components: 18 atomic recipes + 22 layout primitives + 4 utilities + `Presence` + the 7 surviving hooks | `definition-of-done.md` §3.1 step 6 — the atomic layer at volume, `splitVariantProps`, the eight route-3 conversions |
+| **6a** | **18 atomic-recipe components** (`roadmap.md` §4.3's step-6 rows) — Badge, Button, Code, ColorSwatch, Container, DownloadTrigger, Heading, Icon, Kbd, Link, Mark, Checkmark, Radiomark, Separator, Skeleton, SkipNav, Spinner, Text | `definition-of-done.md` §3.1 step 6a — the atomic recipe layer at volume, `splitVariantProps` (**P5-B**), `container`'s expression-tier preset delta |
+| **6b** | **22 styled primitives and layout** (`roadmap.md` §4.4's step-6 rows) — Flex, Stack, Grid, SimpleGrid, Center, Square, Circle, Wrap, AspectRatio, Float, Bleed, Group, Span, Sticky, … | `definition-of-done.md` §3.1 step 6b — the eight route-3 conversions of `roadmap.md` §3.1, held converted by `check:style-contract` rule 1 |
+| **6c** | **4 utilities + `Presence` + the 7 surviving hooks** — `client-only`, `focus-trap`, `format`, `highlight` | `definition-of-done.md` §3.1 step 6c — the presence render strategy standalone, exercised against both families |
 | **7+** | Machine components in batches **B1–B8** | `definition-of-done.md` §3.2, one row per batch, over §3.0's four shared lines |
-| **8** | The docs site | `docs-site.md` §6.1's docs job; assumptions P8-A…P8-D (`definition-of-done.md` §8.3b) |
+| **8** | The docs' **remaining content and its deployment** — the guide tier, migration, theming, the playground, `llms*.txt`, prerender + Cloudflare (D-101) | `check:docs-links`, `check:prerender-complete`, `check:llms-fresh`; assumption **P8-A** (`definition-of-done.md` §8.3b) |
 
-**Five ordering constraints that are not preferences** (`roadmap.md` §9.3): Workstream B before B3/B4/B8
-· step 5 before B2 · step 5b before B1 · B2 before B5/B6/B7 · B3 before B4.
+**Six ordering constraints that are not preferences** (`roadmap.md` §9.3, as amended): **6a** before
+B3/B4/B8 — it is the three composed primitives that bind, not all 45 · **step 3b before any component
+phase**, because a component with no page is not done · step 5 before B2 · step 5b before B1 · B2
+before B5/B6/B7 · B3 before B4.
 
-**The placement adds up to 115** — step 3 = 3, step 5 = 2, step 5b = 1, step 6 = 45, B1–B8 = 62,
-excluded = 2.
+**The placement still adds up to 115** — step 3 = 3, step 5 = 2, step 5b = 1, **6a = 18, 6b = 22,
+6c = 4 + `Presence`**, B1–B8 = 62, excluded = 2. Step 3b adds no component; it renders `Box`.
 
 ---
 
