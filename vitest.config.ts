@@ -97,6 +97,9 @@ export default defineConfig({
         test: {
           name: "browser",
           ...projectGlobs("browser"),
+          // The generated stylesheet, without which every `getComputedStyle` assertion here reads
+          // UA defaults and passes nothing. See the file.
+          setupFiles: ["./vitest.setup.dev-stylesheet.ts"],
           browser: {
             enabled: true,
             // Headless everywhere (locally and in CI): CI installs only the

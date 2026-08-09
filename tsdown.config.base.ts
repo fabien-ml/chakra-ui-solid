@@ -11,6 +11,21 @@ interface PackageJson {
   chakraUiSolid?: { entries?: Record<string, string> };
 }
 
+export interface TsdownOptions {
+  /**
+   * Who loads the built output, which decides the file extension and therefore the export
+   * condition the package can offer.
+   *
+   * - `"solid"` (default) — a Solid app. Ships JSX-preserved `.jsx` under the `"solid"` condition
+   *   so the consumer's own compiler produces server and client output per environment.
+   * - `"node"` — a **build tool**, not an app. `@chakra-ui-solid/preset` is read by Panda's config
+   *   loader, which resolves under Node's `import` condition; a package offering only `"solid"` is
+   *   unresolvable there, and the JSX rationale does not apply because a Panda preset is a plain
+   *   object with no JSX in it.
+   */
+  loadedBy?: "solid" | "node";
+}
+
 /**
  * Shared tsdown build config for every publishable `@chakra-ui-solid/*` package.
  *
@@ -29,7 +44,8 @@ interface PackageJson {
  * Entries come from `package.json`'s `chakraUiSolid.entries`; one `dist/<name>/index.jsx` (source)
  * plus `dist/<name>/index.d.ts` (types) per subpath.
  */
-export function createTsdownConfig(packageDir: string): UserConfig {
+export function createTsdownConfig(packageDir: string, options: TsdownOptions = {}): UserConfig {
+  const loadedBy = options.loadedBy ?? "solid";
   const pkg = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8")) as PackageJson;
 
   const entries = pkg.chakraUiSolid?.entries;
@@ -51,7 +67,7 @@ export function createTsdownConfig(packageDir: string): UserConfig {
   return defineConfig({
     entry,
     format: "esm",
-    platform: "browser",
+    platform: loadedBy === "node" ? "node" : "browser",
     outDir: join(packageDir, "dist"),
     deps: {
       // Externals, in three groups, each for its own reason:
@@ -103,7 +119,7 @@ export function createTsdownConfig(packageDir: string): UserConfig {
       };
       return options;
     },
-    outExtensions: () => ({ js: ".jsx" }),
+    outExtensions: () => ({ js: loadedBy === "node" ? ".js" : ".jsx" }),
     dts: true,
     sourcemap: false,
     // Bundle each subpath into one `.jsx`, with common code deduped into shared `.jsx` chunks the

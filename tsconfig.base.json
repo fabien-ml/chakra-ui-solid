@@ -16,6 +16,16 @@
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
 
+    // Node's globals, for the test-side code that genuinely runs in Node: the `ssr` project, the
+    // check scripts' own tests, and the harness helper that reads the generated stylesheet back off
+    // disk. It is set on the base rather than per package because a test file lives in the same
+    // TypeScript program as the source it tests, so narrowing it to the harness would only move the
+    // error to whichever package imports the harness.
+    //
+    // It is not a licence to reach for Node in a component. A `node:` import in shipped source
+    // fails the browser build loudly, which is the guard that actually holds.
+    "types": ["node"],
+
     // In-repo, `@chakra-ui-solid/*` always resolves to source — never to a sibling's `dist/`.
     // `package.json#exports` points at `dist/` for consumers, which would otherwise make the
     // editor and `tsc --noEmit` read a stale build: add an export to one package and its
@@ -29,9 +39,28 @@
     // `internal-test-utils` is private and never published; it is here for the same reason as a
     // published sibling — its consumers must read its `src`, and `check:resolution-sync` has
     // nothing to compare until both files carry the same set.
+    //
+    // Two packages are deliberately absent, and both for the same reason — they have no `src` a
+    // path could point at:
+    //
+    // - `@chakra-ui-solid/styled-system` IS Panda's output. Its `exports` map points at the
+    //   generated `styled-system/` directory, which `codegen` rewrites in place, so package
+    //   resolution is always current and there is no stale `dist` to guard against.
+    // - `@chakra-ui-solid/preset` is loaded by Panda's own config bundler under Node, not by
+    //   TypeScript or Vite, and it resolves through its `exports` map to `dist/`. That is
+    //   deliberate rather than an oversight: Turbo orders `codegen` behind `^build` precisely so
+    //   the shape Panda reads is the shape a consumer would get.
     "paths": {
       "@chakra-ui-solid/zag-solid": ["./packages/zag-solid/src/index.ts"],
-      "@chakra-ui-solid/internal-test-utils": ["./packages/internal-test-utils/src/index.ts"]
+      "@chakra-ui-solid/system": ["./packages/system/src/index.ts"],
+      "@chakra-ui-solid/components": ["./packages/components/src/index.ts"],
+      "@chakra-ui-solid/internal-test-utils": ["./packages/internal-test-utils/src/index.ts"],
+      // Its own specifier rather than a re-export from the barrel above: this helper reads the
+      // generated stylesheet with `node:fs`, and the barrel is imported by the `browser` project,
+      // where a `node:fs` import throws at module load and takes the whole test file with it.
+      "@chakra-ui-solid/internal-test-utils/stylesheet": [
+        "./packages/internal-test-utils/src/stylesheet/index.ts"
+      ]
     }
   }
 }

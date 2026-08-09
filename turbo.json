@@ -14,23 +14,32 @@
   "tasks": {
     // `@chakra-ui-solid/styled-system` is *generated* by Panda, so it must exist before anything
     // reads it — type-checking included, which otherwise fails with hundreds of unrelated errors
-    // (`plan.md` §9). No package declares `codegen` yet: the ordering is defined now so that the
-    // package which eventually does drops into a pipeline that already routes around it, rather
-    // than into one someone has to remember to rewire.
+    // (`plan.md` §9).
     //
-    // `^build` for `preset` only: Panda reads the preset, which resolves from source in dev
-    // through `tsconfig.base.json#paths`, but the *published* shape must be buildable.
+    // `^build` reaches exactly one package in practice, `@chakra-ui-solid/preset`: Panda's config
+    // loader resolves it through its `exports` map rather than through `tsconfig.base.json#paths`,
+    // so the *published* shape is the shape codegen reads.
     "codegen": {
       "dependsOn": ["^build"],
       "outputs": ["styled-system/**"]
     },
-    // The dev stylesheet the browser tests and `check:css-coverage` assert against (step 3+).
+    // Two stylesheets, from two Panda runs. `styled-system`'s is **ours** — the dev sheet the
+    // browser tests and `check:css-coverage` assert against, never published. `components`' is a
+    // **consumer's**, generated from a fixture config that spreads `chakraConfig()`, and it is what
+    // proves an override in their config changes what our components render.
+    //
+    // `^codegen` is what makes the consumer fixture wait for the generated artifacts, and reaches
+    // the preset's build through them.
     "cssgen": {
-      "dependsOn": ["codegen"],
-      "outputs": ["styled-system/styles.css"]
+      "dependsOn": ["codegen", "^codegen"],
+      "outputs": ["styled-system/styles.css", "src/**/__fixtures__/**/consumer.css"]
     },
+    // `^codegen` is what makes `system` and `components` wait for `styled-system`. Their own
+    // `codegen` does not exist, and `^build` does not reach it either, because `styled-system` has
+    // no `build` — its build IS its codegen. Without this edge a fresh `turbo run build` compiles
+    // against generated files that are not there yet.
     "build": {
-      "dependsOn": ["codegen", "^build"],
+      "dependsOn": ["codegen", "^codegen", "^build"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "!src/**/*.test.ts",
@@ -47,7 +56,7 @@
       "outputs": ["dist/**"]
     },
     "typecheck": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["codegen", "^codegen"],
       "outputs": []
     },
     // The three Vitest projects run from ONE root config, so today these are ordering
@@ -58,12 +67,15 @@
       "dependsOn": ["codegen"],
       "outputs": []
     },
+    // `ssr` and `browser` need the **stylesheet**, not only the codegen artifacts: with no DOM the
+    // `ssr` project resolves a class through the generated sheet, and the `browser` project injects
+    // the same file into the test page so `getComputedStyle` has a cascade to read.
     "test:ssr": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["cssgen"],
       "outputs": []
     },
     "test:browser": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["cssgen"],
       "outputs": []
     },
     "lint": {

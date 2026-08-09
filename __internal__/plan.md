@@ -900,8 +900,15 @@ What we own instead is the **contract**: the preset's semantic tokens are writte
 mode is a class or attribute on the root element and a documented consumer snippet. `@solid-primitives`
 or the consumer's own store does the toggling; nothing about it touches §0.
 
-Confirm at step 3: the exact selector `@pandacss/preset-base` binds to `_dark`, and therefore what a
-consumer must put on `<html>`. Unverifiable here — Panda is installed in no checkout.
+**Measured at step 3, and the class is mandatory rather than an opt-in** (`decisions.md` **D-113**).
+`_dark` is `.dark &` and `_light` is `.light &`, so the consumer writes `class="light"` or
+`class="dark"` on `<html>` — and there is no third state, because the preset gives its semantic
+colours **no base value**. All ~100 are emitted only inside `.light { … }` and `.dark { … }`, so a
+page carrying neither class resolves every one of them to an undefined custom property and computes
+`transparent`. **A consumer who ships no class has no colours at all**, silently — §0.2 at the scale
+of the whole palette. The sentence above therefore understates it: the snippet is a prerequisite,
+not a dark-mode feature, and the docs page owes the failure mode beside the instruction.
+`check:dark-selector` is what keeps the documented class and the emitted selector in agreement.
 
 ### 7.2 Direction, locale and environment: two contexts, no catalog
 

@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declarationMap": false
+  },
+  // The harness owns the ambient declaration for `virtual:hydration-fixture?id=*`, the module the
+  // hydration bridge serves, and Box's round-trip test is the first outside that package to import
+  // it. It has to be an ambient `.d.ts` rather than a `declare module` in the test file: a test file
+  // is itself a module, so a `declare module` there is read as *augmentation* of a module that does
+  // not exist.
+  "include": ["src", "../internal-test-utils/types"]
+}

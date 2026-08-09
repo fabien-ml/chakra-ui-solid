@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    // Off for the published artifact: `files: ["dist", …]` would not contain the `.ts` sources a
+    // declaration map points at, so shipping one gives the consumer's editor a dead link.
+    "declarationMap": false
+  },
+  "include": ["src"]
+}

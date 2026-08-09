@@ -1,0 +1,48 @@
+{
+  "name": "@chakra-ui-solid/styled-system",
+  "version": "0.0.0",
+  "description": "Panda CSS's generated output for chakra-ui-solid — published so the library and the consumer app share one css() runtime instance. Never exports Panda's /jsx factory, which targets Solid 1.x",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": ["styled-system", "LICENSE", "NOTICE.md"],
+  "exports": {
+    "./css": {
+      "types": "./styled-system/css/index.d.ts",
+      "default": "./styled-system/css/index.mjs"
+    },
+    "./tokens": {
+      "types": "./styled-system/tokens/index.d.ts",
+      "default": "./styled-system/tokens/index.mjs"
+    },
+    "./patterns": {
+      "types": "./styled-system/patterns/index.d.ts",
+      "default": "./styled-system/patterns/index.mjs"
+    },
+    "./recipes": {
+      "types": "./styled-system/recipes/index.d.ts",
+      "default": "./styled-system/recipes/index.mjs"
+    },
+    "./is-valid-prop": {
+      "types": "./styled-system/jsx/is-valid-prop.d.ts",
+      "default": "./styled-system/jsx/is-valid-prop.mjs"
+    },
+    "./types": {
+      "types": "./styled-system/types/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "codegen": "panda codegen --clean",
+    "cssgen": "panda cssgen --outfile styled-system/styles.css",
+    "ship": "panda ship --outfile styled-system/panda.buildinfo.json",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@pandacss/dev": "catalog:"
+  },
+  "devDependencies": {
+    "@chakra-ui-solid/preset": "workspace:*",
+    "@pandacss/dev": "catalog:"
+  }
+}

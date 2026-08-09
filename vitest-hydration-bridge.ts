@@ -40,11 +40,9 @@ const repoRoot = import.meta.dirname;
  * `*.browser.test.tsx` share. Adding a component means adding one line here and one entry module;
  * no committed fixture file, ever.
  *
- * **One entry at step 2**, and it is the helper's own probe: `definition-of-done.md` §2 rule 2.5
- * puts a round-trip fixture on every shipping component, and the first of those is Dialog at
- * milestone 5. Until then the only thing worth hydrating is the fixture harness itself
- * (`zag-solid-adapter.md` §6.4) — which is exactly why it ships with a subject of its own rather
- * than borrowing a component's.
+ * The first entry is the harness's own probe, which is component-free on purpose
+ * (`zag-solid-adapter.md` §6.4). `definition-of-done.md` §2 rule 2.5 puts a round-trip fixture on
+ * every shipping component, and `box` is the first of those.
  */
 export const HYDRATION_ENTRIES: Record<string, string> = {
   // A component-free keyed tree the `hydrateFixture` helper's own suite hydrates to pin its
@@ -53,6 +51,11 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/internal-test-utils/src/hydrate-fixture/__tests__/hydrate-fixture.ssr-entry.tsx",
   ),
+  // The first *component* subject. Box is where the class string has to survive the round trip:
+  // `css()` is pure render-time computation and `hash: false` makes its output stable, so server
+  // and client must name the same classes — and if they do not, the element is styled by whichever
+  // side won, silently.
+  box: join(repoRoot, "packages/components/src/box/__tests__/box.ssr-entry.tsx"),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

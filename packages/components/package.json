@@ -1,0 +1,50 @@
+{
+  "name": "@chakra-ui-solid/components",
+  "version": "0.0.0",
+  "description": "Chakra UI v3's component API for SolidJS 2.0 — Zag.js behavior, Panda CSS styling, no runtime CSS-in-JS",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist", "LICENSE", "NOTICE.md"],
+  "chakraUiSolid": {
+    "entries": {
+      ".": "src/index.ts",
+      "box": "src/box/index.ts",
+      "environment": "src/environment/index.ts",
+      "locale": "src/locale/index.ts"
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "solid": "./dist/index.jsx"
+    },
+    "./*": {
+      "types": "./dist/*/index.d.ts",
+      "solid": "./dist/*/index.jsx"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "cssgen": "panda cssgen --cwd src/box/__tests__/__fixtures__/consumer --outfile src/box/__tests__/__fixtures__/consumer/consumer.css"
+  },
+  "peerDependencies": {
+    "@pandacss/dev": "catalog:",
+    "@solidjs/web": "catalog:",
+    "solid-js": "catalog:"
+  },
+  "dependencies": {
+    "@chakra-ui-solid/styled-system": "workspace:*",
+    "@chakra-ui-solid/system": "workspace:*"
+  },
+  "devDependencies": {
+    "@chakra-ui-solid/internal-test-utils": "workspace:*",
+    "@chakra-ui-solid/preset": "workspace:*",
+    "@pandacss/dev": "catalog:",
+    "@solidjs/web": "catalog:",
+    "solid-js": "catalog:",
+    "tsdown": "^0.22.14"
+  }
+}

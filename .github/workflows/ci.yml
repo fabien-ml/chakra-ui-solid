@@ -38,10 +38,13 @@ jobs:
       - run: pnpm check:test-projects
       - run: pnpm check:resolution-sync
       - run: pnpm check:commit-trailers
-      # NOT YET WRITTEN — `check:style-contract` (rules 1–3) arrives with the styling seam at
-      # step 3, which is the first step that has a style prop to contract.
-      - name: check:style-contract (step 3)
-        run: echo "check:style-contract does not exist yet — it is written at step 3."
+      # Rule 1 (`style-prop-static-value`) needs the generated `isCssProperty` to know which props
+      # are style props, so codegen has to have run.
+      - run: pnpm codegen
+      # Rules 1 and 3. Rule 2 (`require-style-source`) needs `renderStyled`'s `styleSource`
+      # addition, which exists because a machine part feeds the factory a merged bag — and the
+      # first machine part is step 5.
+      - run: pnpm check:style-contract
 
   # The §0 rule, at its two boundaries: what a dependency IS (a manifest check over the whole
   # closure) and what our own code DOES (a grep over our source). Two checks, never merged.
@@ -92,13 +95,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      # NOT YET WRITTEN — nothing generates CSS before step 3, and the coverage check needs a real
-      # slot recipe in a real consumer (step 4).
-      - name: styling checks (steps 3–4)
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.10.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # Every check below reads what Panda actually emitted rather than what the config declares,
+      # because every failure this job exists for lives in the gap between the two.
+      - run: pnpm cssgen
+      # Does `[hidden]` beat a recipe's own `display`? Asserts the outcome, so it is correct
+      # whether Panda's preflight supplies the rule or our preset's `globalCss` does.
+      - run: pnpm check:preflight-hidden
+      # Do all 95 of Chakra's style-prop shorthands resolve? The set this reports missing IS the
+      # alias table our preset must carry.
+      - run: pnpm check:alias-coverage
+      # Is the class the docs put on `<html>` the one the semantic colours are keyed off? The
+      # preset gives them no base value, so a page with neither class has no colours at all.
+      - run: pnpm check:dark-selector
+      # Does an unresolvable token reference degrade quietly rather than failing the build, and
+      # does our one-key `cursor.switch` delta restore what the preset silently drops?
+      - run: pnpm check:preset-token-resolution
+      # NOT YET WRITTEN — the coverage check needs a real slot recipe in a real consumer (step 4),
+      # and the machine-facing checks need a machine (steps 4–5).
+      - name: css-coverage / anatomy-parts / data-attr-vocab / style-prop-collisions (steps 4–5)
         run: |
-          echo "css-coverage, coverage-allowlist, anatomy-parts, hash-config, preflight-hidden,"
-          echo "data-attr-vocab, style-prop-collisions, no-hand-written-data-attrs:"
-          echo "none exist yet — they are written at steps 3 and 4."
+          echo "css-coverage, coverage-allowlist, anatomy-parts, hash-config, data-attr-vocab,"
+          echo "style-prop-collisions, no-hand-written-data-attrs: none exist yet — they are"
+          echo "written at steps 4 and 5."
 
   # A story is a deliverable, not a checkbox — this job is what opens them.
   stories:
@@ -138,12 +161,14 @@ jobs:
       - run: pnpm check:license-headers --dist
       - run: pnpm check:notice-rows
       - run: pnpm check:package-files
-      # NOT YET WRITTEN — `check:exports`, `check:externals`, `check:buildinfo-fresh`,
-      # `check:peer-panda` all read the styling layer's artifacts and arrive with it at step 3;
-      # `check:bundle`'s first meaningful number is the adapter's own fixed weight, and the
-      # comparison it exists for is milestone 5 (D-55).
-      - name: exports / externals / buildinfo-fresh / peer-panda / bundle (steps 3, 5)
+      - run: pnpm check:exports
+      - run: pnpm check:externals
+      - run: pnpm check:peer-panda
+      # NOT YET WRITTEN — `check:buildinfo-fresh` needs `panda ship`'s output to be a published
+      # artifact, which is the step-4 consumer's channel; `check:bundle`'s first meaningful number
+      # is the adapter's own fixed weight, and the comparison it exists for is milestone 5 (D-55).
+      - name: buildinfo-fresh / bundle (steps 4, 5)
         run: |
-          echo "exports, externals, buildinfo-fresh, peer-panda: written at step 3 with the"
-          echo "styling layer. check:bundle: written at step 5, where the first machine closure"
-          echo "lands and the +13.4 KB gz claim has something to compare against."
+          echo "buildinfo-fresh: written at step 4, with the consumer that reads the buildinfo."
+          echo "check:bundle: written at step 5, where the first machine closure lands and the"
+          echo "+13.4 KB gz claim has something to compare against."

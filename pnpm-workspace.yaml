@@ -2,6 +2,12 @@ packages:
   - "packages/*"
   - "apps/*"
 
+# Panda loads `panda.config.ts` by bundling it, and esbuild's install script is what fetches the
+# platform binary that does the bundling. Left unapproved it is a latent failure with a confusing
+# message, on a package whose whole job is to run at build time.
+allowBuilds:
+  esbuild: true
+
 catalog:
   # The solid trio moves in lockstep — a single Solid version across the repo. A version skew
   # breaks context and hydration *silently*, so the whole repo moves together.
@@ -43,6 +49,27 @@ catalog:
   "@zag-js/core": 1.43.0
   "@zag-js/types": 1.43.0
   "@zag-js/utils": 1.43.0
+  # Two more Zag utilities, on the same pin and for the same reason. `@chakra-ui-solid/system`'s
+  # locale context takes `isRTL`/`createFilter` from `i18n-utils` and its environment context takes
+  # `getDocument`/`getWindow` from `dom-query` — the same MIT packages Chakra reaches for through
+  # Ark, rather than reimplementations (`plan.md` §7.2).
+  "@zag-js/dom-query": 1.43.0
+  "@zag-js/i18n-utils": 1.43.0
+
+  # Panda, and the Chakra preset it reads. Pinned exactly and moved together for a reason the
+  # other blocks do not have: `@pandacss/dev` is a **peerDependency** of three published packages
+  # AND a devDependency here, and the two must name the same version — a consumer resolving a
+  # different Panda than the one that generated `@chakra-ui-solid/styled-system` gets class names
+  # our runtime computes and their stylesheet does not carry, with no error anywhere
+  # (`plan.md` §3.4).
+  #
+  # `@pandacss/preset-base` is a direct dependency of `@chakra-ui-solid/preset` rather than
+  # something Panda supplies, because we set `eject: true`: that drops Panda's default presets,
+  # and `@chakra-ui/panda-preset` declares no base of its own while reaching for
+  # `utilities: { extend }` and `conditions: { extend }` (`plan.md` §3.2).
+  "@pandacss/dev": 1.12.0
+  "@pandacss/preset-base": 1.12.0
+  "@chakra-ui/panda-preset": 3.36.1
 
 # `vite-plugin-solid` depends on `babel-preset-solid` by RANGE, and a range resolves to whatever
 # is newest on the registry that day — which is how the compiler drifted a version behind the
