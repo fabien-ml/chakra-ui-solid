@@ -30,8 +30,21 @@
     //
     // `^codegen` is what makes the consumer fixture wait for the generated artifacts, and reaches
     // the preset's build through them.
+    //
+    // `inputs` has to name the source Panda *scans*, which is not the package the task runs in:
+    // `packages/styled-system/panda.config.ts#include` reads `../{system,components}/src`, and
+    // Turbo's default input set is the task's own package. Without these two lines a style prop
+    // added anywhere in the library is a cache hit — `pnpm cssgen` prints FULL TURBO, the dev
+    // stylesheet keeps its previous contents, and the new class has no rule. Both directions are
+    // silent: a new value renders unstyled, and a deleted one keeps its rule and its passing test.
+    // **These globs must stay in step with that `include`.**
     "cssgen": {
       "dependsOn": ["codegen", "^codegen"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/packages/system/src/**",
+        "$TURBO_ROOT$/packages/components/src/**"
+      ],
       "outputs": ["styled-system/styles.css", "src/**/__fixtures__/**/consumer.css"]
     },
     // `^codegen` is what makes `system` and `components` wait for `styled-system`. Their own

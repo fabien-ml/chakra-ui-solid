@@ -1829,6 +1829,30 @@ Panda minor is where that range would break.
 — **Settled.** S3 gate, by the first `panda codegen`.
 — **Reasoning.** `plan.md` §11.1; `definition-of-done.md` §8.1.
 
+**D-125 · The `cssgen` Turbo task did not depend on the source Panda scans, so the dev stylesheet
+the whole style-assertion apparatus rests on could be a cache hit against stale contents**
+— **Decision.** `turbo.json`'s `cssgen` task declares
+`$TURBO_ROOT$/packages/{system,components}/src/**` alongside `$TURBO_DEFAULT$`, and carries a
+comment naming the coupling: the globs must stay in step with
+`packages/styled-system/panda.config.ts#include`.
+— **Rejected.** *Leave it and re-run with `--force` where it matters* — nobody types `--force` when
+the suite is green, which is precisely the state this produces. *Add the globs to
+`globalDependencies`* — that invalidates every task on any source edit and hides which task
+actually depends on what. *Write a check asserting the two lists agree* — that is a new check, and
+step 3's scope is closed; `check:css-coverage` at step 4 catches the drift by its effect instead.
+— **Effect.** Measured while writing the new `renderStyled` browser tests. `packages/styled-system`
+runs Panda over `../{system,components}/src`, but Turbo's default input set is the task's **own**
+package, so a style prop added in `packages/system/src` was a cache hit: `pnpm cssgen` printed
+`FULL TURBO`, `styles.css` stayed byte-identical, `.px_1` had no rule, and the element rendered
+unstyled. **Both directions are silent** — a new value renders naked, and a *deleted* one keeps its
+rule and its passing test. That is `plan.md` §0.2's hazard arriving through the build cache rather
+than through the extractor, and it was reachable by every browser and `ssr` style assertion in the
+repo, step 3's included. The gate cannot be green and honest without it, which is why this is a
+change rather than only a finding.
+— **Settled.** Step 3 follow-up, 2026-08-09, by `pnpm cssgen` reporting a cache miss after touching
+a file under `packages/system/src` and a cache hit before.
+— **Reasoning.** `plan.md` §0.2, §4.1; `testing.md` §3.
+
 ---
 
 ## 4. The reversals, in one place
