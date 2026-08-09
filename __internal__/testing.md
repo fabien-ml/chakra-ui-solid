@@ -472,7 +472,7 @@ never a global flag:
   component: "dialog",
   rule: "aria-hidden-focus",
   scope: "open",                       // matched against the call site's scope, not a wildcard
-  issue: "https://github.com/chakra-ui/zag/issues/<A2>",   // zag-solid-adapter.md §8.2
+  inherited: "zag-solid-adapter.md §8.2; component-blueprint.md §9.2",  // OUR evidence, not a URL
   cause: "ariaHidden calls hideOthers unconditionally; the published exports map makes " +
          "suppressOthers unreachable. Chakra v3 has the identical defect (prior-art.md §7).",
   reviewAt: "each @zag-js/* minor — legal.md §5",
@@ -483,8 +483,13 @@ Four properties the register enforces, and `allowances.test.ts` (unit) asserts t
 structurally:
 
 1. **Enumerated per component and per rule.** No entry may omit `component`, `rule` or `scope`.
-2. **Every entry carries an upstream issue number.** An allowance with no filing is a defect we have
-   decided to keep, which is a different thing and is not what this register is for.
+2. **Every entry names where the gap is argued, in *our* documents** — a section reference, not a
+   URL. What the field has to prove is *"this is not ours to fix"*, and for this project that proof
+   is the **port rule**: the behavior is absent from Zag, Chakra has the identical gap, and closing
+   it here would be a divergence. An issue number would prove something weaker and something we do
+   not do — that we are waiting on a third party. **We use Zag; what Zag does not have, we do not
+   have, exactly as Chakra does not.** An entry with no reference is a defect someone decided to
+   keep quietly, which is a different thing and is not what this register is for. — D-110.
 3. **No wildcard.** `component: "*"` and `rule: "*"` are type errors.
 4. **An allowance that stops being needed is a failure.** The helper asserts *both* directions: a
    violation not in the register fails the test, **and** a registered allowance whose rule produced

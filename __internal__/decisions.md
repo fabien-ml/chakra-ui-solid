@@ -1561,6 +1561,33 @@ Neither blocks step 3, which touches no Zag machine.
 timing for A1; D-54's substance — that both are worth filing — is untouched.
 — **Reasoning.** `zag-solid-adapter.md` §8.1, §8.2; D-54; D-108.
 
+**D-110 · No upstream contact, and an axe allowance is justified by the port rule rather than by an
+issue number** ⟲
+— **Decision.** The author's standing position, set at the S2 gate: **this is an independent port
+and there is nobody to notify.** No issue is filed, no PR opened, no maintainer contacted, and it is
+not proposed again unless the author asks. Mechanically: `testing.md` §4.2's property 2 — *"every
+entry carries an upstream issue number"* — becomes *"every entry names where the gap is argued, in
+our documents"*, and the register's field is `inherited:` rather than `issue:`. `definition-of-done.md`
+§5's *"Upstream issue"* column becomes *"Where it is argued"*.
+— **Rejected.** *Keep the issue-number requirement and file the two issues* — the author declined,
+twice, and the requirement is unsatisfiable without them: `allowances.test.ts` asserts the field
+structurally, so step 5's Dialog would fail on the register's own rule rather than on anything about
+Dialog. *Drop the justification field entirely* — then the register becomes a place to hide a real
+defect behind the word "expected", which is the one thing it exists to prevent. *Wait and decide at
+step 5* — it is a one-field spec change with a settled reason; carrying it as an open question is
+how it gets rediscovered under pressure.
+— **Effect.** The field now proves the *right* thing. An `aria-hidden-focus` allowance is not "we
+are waiting on a third party" — it is **the port rule, working**: `@zag-js/aria-hidden` has no
+`inert` route, Chakra v3 has the identical gap, and closing it here would make us more accessible
+than the library we are porting, which D-12 already settled as a divergence. **We use Zag; what Zag
+does not have, we do not have, exactly as Chakra does not.** Nothing else moves: the three predicted
+rows, their scopes, and the two-directional assertion that fails an allowance which stops being
+needed are all unchanged. A1's own allowances stay **retired** — the fork fixes that one, so axe
+never raises it.
+— **Settled.** S2 gate, 2026-08-09, by the author. **⟲** Reverses `testing.md` §4.2 property 2, and
+retires D-54's second filing (`ariaHidden` → `suppressOthers`) along with the first (D-109).
+— **Reasoning.** `testing.md` §4.2; `definition-of-done.md` §5; `prior-art.md` §8.2; D-12.
+
 ---
 
 ## 4. The reversals, in one place

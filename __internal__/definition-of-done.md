@@ -174,11 +174,11 @@ construction, and a correct port must not read as a regression (`component-bluep
 `plan.md`'s ancestor promised none at all — **not achievable, and it should not be**
 (`prior-art.md` §10.1 row F).
 
-| Component | Rule | Scope | Upstream issue | Cause | Status |
+| Component | Rule | Scope | Where it is argued | Cause | Status |
 |---|---|---|---|---|---|
-| `dialog` | `aria-hidden-focus` | **open-state assertions only** | The `ariaHidden` → `suppressOthers` filing (`zag-solid-adapter.md` §8.2) | `@zag-js/aria-hidden`'s entry exports one function, which calls `hideOthers` unconditionally; `dialog.machine.ts:201` cannot redirect it; the published `exports` map makes `suppressOthers` unreachable even by deep import. **Chakra v3 has the identical defect** — `inert` appears zero times in both `chakra-ui/packages/react/src/` and `ark-ui/packages/react/src/` | **Predicted, not measured** (**P5-C**). Verified at step 5 |
-| `drawer` | `aria-hidden-focus` | open-state only | same filing | Runs on the **`dialog`** machine, not `@zag-js/drawer` (`roadmap.md` §2.2) | Predicted. Verified in B1 |
-| `popover` | `aria-hidden-focus` | open **and** `modal` | same filing | `popover.machine.ts` reaches the same call site (`zag-solid-adapter.md` §8.2). **Whether it fires only under `modal: true` is measured at 5b** | Predicted, narrower than the other two. **If it never fires, the entry is deleted at 5b** — the register fails on an unused allowance, which is how that decision gets made rather than forgotten |
+| `dialog` | `aria-hidden-focus` | **open-state assertions only** | `zag-solid-adapter.md` §8.2; `component-blueprint.md` §9.2 | `@zag-js/aria-hidden`'s entry exports one function, which calls `hideOthers` unconditionally; `dialog.machine.ts:201` cannot redirect it; the published `exports` map makes `suppressOthers` unreachable even by deep import. **Chakra v3 has the identical defect** — `inert` appears zero times in both `chakra-ui/packages/react/src/` and `ark-ui/packages/react/src/` | **Predicted, not measured** (**P5-C**). Verified at step 5 |
+| `drawer` | `aria-hidden-focus` | open-state only | same | Runs on the **`dialog`** machine, not `@zag-js/drawer` (`roadmap.md` §2.2) | Predicted. Verified in B1 |
+| `popover` | `aria-hidden-focus` | open **and** `modal` | same | `popover.machine.ts` reaches the same call site (`zag-solid-adapter.md` §8.2). **Whether it fires only under `modal: true` is measured at 5b** | Predicted, narrower than the other two. **If it never fires, the entry is deleted at 5b** — the register fails on an unused allowance, which is how that decision gets made rather than forgotten |
 
 **That is the whole list.** Every other component starts at zero, and `prior-art.md` §7's other
 finding is why that is credible rather than optimistic: **the cost does not generalise** — it belongs
@@ -196,7 +196,7 @@ pulls no `@zag-js/aria-hidden` at all.
 
 - **`aria-valid-attr-value` appearing on *open*-state calls** means a re-sync dropped the A1 fix. The
   repair is `normalize-props.ts`, not an entry.
-- **A new open-modal component failing `aria-hidden-focus`** is a row citing the existing filing —
+- **A new open-modal component failing `aria-hidden-focus`** is a row citing the same sections —
   **never** a reason to re-introduce `createHideOutside`. The kernel is struck by the port rule and
   the retained set is 12 lines that are not accessibility (`component-blueprint.md` §8).
 
