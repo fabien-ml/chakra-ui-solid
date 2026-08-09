@@ -143,6 +143,13 @@ version pin. It runs **once per Storybook preview file** — `setupGlobalFocusEv
 once-per-window and every later call early-returns. Per-component cost: **zero**. It is P7's
 Storybook configuration, not this blueprint's.
 
+**P7 also changed Storybook's status, which this section describes as a dev harness.** It is that
+*and* a **required CI job** — `test:storybook` builds and drives every story, and it must be
+Storybook rather than `composeStories` under Vitest, because the two failures it exists for are
+invisible to any other compile: the `focus`-accessor crash above, and the restrictive-content-model
+compile crash of §10.4, which only `hydratable: false` produces (`testing.md` §7.3, §7.4;
+`definition-of-done.md` rule 2.6, §10 row 7).
+
 ### 1.4 What a component actually pays
 
 | Row | hope-ui's cost | Ours |
@@ -683,7 +690,7 @@ it bites hardest.
 Reading Ark for the prop names and semantics is API-shape tier and owes nothing (`legal.md` §1.4).
 Reproducing its expression would not be.
 
-**The plan's objection is closed and does not return.** `plan.md` §8 assumption 11 doubted that
+**The plan's objection is closed and does not return.** `brief-plan` §8 assumption 11 doubted that
 animation-*name*-based presence composes with Chakra's animations. Measured across all 56 slot
 recipes: 9 use `animationName` and **not one** uses `transitionProperty` inside an `_open`/`_closed`
 block (`prior-art.md` §8.2). Zag's presence is the correct mechanism for this preset; hope-ui's
@@ -1047,7 +1054,7 @@ packages/components/src/dialog/
 ├── dialog-close-trigger.tsx     shape A
 ├── dialog-action-trigger.tsx    shape D
 ├── dialog-slots.tsx             shape C ×3 — Header, Body, Footer
-└── __tests__/                   unit · ssr · browser (plan §2.8's three projects)
+└── __tests__/                   unit · ssr · browser (`brief-plan` §2.8's three projects)
 ```
 
 `Portal` is **not** here — it is `packages/components/src/portal/` (§0.3, §11.12).
@@ -1469,8 +1476,6 @@ import { isServer, Portal as SolidPortal } from "@solidjs/web"
 import type { Component, JSX } from "solid-js"
 
 export interface PortalProps {
-  /** Render children in place instead of portalling them. Chakra's prop name. */
-  disabled?: boolean
   /** Explicit mount target. Defaults to the environment's document body or shadow root. */
   container?: Element
   children?: JSX.Element
@@ -1483,7 +1488,6 @@ export const Portal: Component<PortalProps> = (props) => {
   // than degrading, so this must never render it during SSR. A plain `if`, not `<Show>`:
   // `isServer` is a fixed per-environment constant, so there is no reactive branch.
   if (isServer) return props.children
-  if (props.disabled) return props.children
 
   return (
     <SolidPortal mount={props.container ?? environment().getRootNode()}>
@@ -1493,17 +1497,20 @@ export const Portal: Component<PortalProps> = (props) => {
 }
 ```
 
-**Three deltas against Chakra, all `React→Solid`, and the third is the one to argue with:**
+**Two deltas against Chakra, both `React→Solid`:**
 
 1. `container` is an `Element`, not a `RefObject` — Solid has no ref objects.
 2. Chakra portals each child separately via `Children.map(createPortal)`. No Solid analogue, no
    observable difference.
-3. **`disabled` is read once, so toggling it at runtime does nothing.** In React it re-renders. The
-   reactive Solid form needs `<Show>` over a `children()`-resolved accessor so the subtree is not
-   built twice — and `children()` resolves in the ambient owner, which **relocates `_hk`** for the
-   whole portalled subtree (§10.2). That is a real hydration cost for a prop nobody toggles. Shipped
-   non-reactive with this note; **P6 decides** whether any component needs the reactive form, and if
-   one does it owes an SSR→hydrate round-trip, not a green typecheck.
+
+**And one prop Chakra has that we do not ship: `disabled`.** P5 shipped it non-reactive with a note
+and assigned the reactive question to P6; **P6 decided it out and P9 applied that here.** Three
+reasons, and `roadmap.md` §5.1 owns them: a prop that is read once and silently ignores later changes
+is `plan.md` §0.2 in prop form, and **omitting it makes passing it a type error**; the reactive form
+needs `<Show>` over a `children()`-resolved accessor, which **relocates `_hk`** for the whole
+portalled subtree (§10.2) on every Dialog, Popover, Menu, Select and Tooltip; and no Chakra component
+renders a `<Portal>` with it. A consumer who wants the behavior writes `<Show>` in their own tree,
+where the hydration-key shift is local to markup they wrote. The `React→Solid` row is `plan.md` §0.4.
 
 ### 11.13 `namespace.ts` and what a consumer writes
 
@@ -1558,7 +1565,7 @@ adapter; a machine reaches them through the service object `useMachine` construc
 
 ## 12. Assumptions this blueprint rests on, and the gate for each
 
-### 12.1 `plan.md` §8 assumptions
+### 12.1 `brief-plan` §8 assumptions
 
 | # | Assumption | Status | Gate |
 |---|---|---|---|
@@ -1594,13 +1601,13 @@ adapter; a machine reaches them through the service object `useMachine` construc
 |---|---|---|---|
 | **1** | `prior-art.md` §5.2 / §8.2 / §10.1 row E, and the P5 brief: the `aria-controls` **and** `aria-labelledby` override getters are *"not taken"*, because *"Ark forwards `getTriggerProps()` / `getContentProps()` straight through"* | **Half wrong, measured.** Six Ark components carry a presence-gated `aria-controls` override, four of them with a dedicated test; Chakra inherits it. **We port it** — under the port rule it is parity, not an improvement (§1.2). `aria-labelledby` on listbox content is genuinely not overridden and stays not taken | **P6** (every presence-gated trigger part), **P7** (the DoD's allowance list — §9.2 revises the expected count from six to open-state-only) |
 | **2** | `plan.md` §2.3: `renderStyled` needs **three** additions | **Four.** `styleSource` is required because our flat layering feeds the factory a bag containing machine-emitted attributes, and `editable`'s `size: 1` is the live case (§4.1.1). Chakra avoids it structurally by nesting, not deliberately | **P7** (the lint rule), **P9** (`decisions.md`) |
-| **3** | `plan.md` §3.5 row B5 + §4.1 doc 4: document *"the `untrack`-around-`useMachine` seed idiom"* | **Deleted, not documented.** One line replaces the section: a Root calls `useMachine` bare, and a diagnostic there is a real bug (§2.1, §2.2). Restates `zag-solid-adapter.md` §10 row 1 | — (acted on here) |
-| **4** | `plan.md` §2.11 / §7 concern 3: *"drop by default, **adopt by exception**"*, with a per-component retained-primitive column in the roadmap | **The column is deleted.** The port rule removed the exception mechanism (§8). Restates `prior-art.md` §10.1 row D | **P6** — deletes a planned column |
-| **5** | `plan.md` §4.1 doc 5 lists `portal` among the *"React-idiom or Solid-native"* exclusions | **`Portal` must ship.** It is in Chakra's public API and is the canonical way to render Dialog's Content, and Solid's `Portal` has different prop names and throws server-side (§11.12). P6 records it as a component with three `React→Solid` deltas, not an exclusion — and **decides the third**, a non-reactive `disabled` | **P6** |
+| **3** | `brief-plan` §3.5 row B5 + §4.1 doc 4: document *"the `untrack`-around-`useMachine` seed idiom"* | **Deleted, not documented.** One line replaces the section: a Root calls `useMachine` bare, and a diagnostic there is a real bug (§2.1, §2.2). Restates `zag-solid-adapter.md` §10 row 1 | — (acted on here) |
+| **4** | `brief-plan` §2.11 / §7 concern 3: *"drop by default, **adopt by exception**"*, with a per-component retained-primitive column in the roadmap | **The column is deleted.** The port rule removed the exception mechanism (§8). Restates `prior-art.md` §10.1 row D | **P6** — deletes a planned column |
+| **5** | `brief-plan` §4.1 doc 5 lists `portal` among the *"React-idiom or Solid-native"* exclusions | **`Portal` must ship.** It is in Chakra's public API and is the canonical way to render Dialog's Content, and Solid's `Portal` has different prop names and throws server-side (§11.12). P6 records it as a component with three `React→Solid` deltas, not an exclusion — and **decides the third**, a non-reactive `disabled` | **P6** |
 | **6** | `plan.md` §5.3's list of what `@chakra-ui-solid/system` owns | **Two additions:** `createComponentContext` (row 6), and `RenderStrategyProps` / `PresenceApi` as public types (row 4). Also: `system` gains a direct `@zag-js/presence` dependency, and `components` gains one `@zag-js/<machine>` per component — neither appears in `plan.md` §5.2's table | **P6, P9** |
 | **7** | `plan.md` §5.5: `@chakra-ui-solid/components` mirrors Chakra's subpaths one-to-one | Chakra's namespace carries **`RootProvider`** and **`PropsProvider`** on every machine component. Deferred, not excluded — `RootProvider` needs the `./hooks` subpath's `useDialog` (§11.13) | **P6** |
 | **8** | `prior-art.md` §3.4: a *"~15-line, three-row recurring floor"* per component | **hope-ui's number, against hope-ui's stack.** Re-measured against Chakra it is two named arguments per part plus one line on presence-gated triggers (§1.4). The warning that the floor **grows by category** stands, and a floating component is still untested by anyone | **P6** (build-order risk), **P7** |
-| **9** | `plan.md` §2.11: `composeEventHandlers` is *"needed the moment a part composes a consumer handler with a machine handler"* | **A machine part never calls it** — the adapter's `mergeProps` chains `on*` across sources. It is needed for shapes C and D only (§3.4). The carry-over stands; its justification changes | **P9** |
+| **9** | `brief-plan` §2.11: `composeEventHandlers` is *"needed the moment a part composes a consumer handler with a machine handler"* | **A machine part never calls it** — the adapter's `mergeProps` chains `on*` across sources. It is needed for shapes C and D only (§3.4). The carry-over stands; its justification changes | **P9** |
 | **10** | hope-ui's parts strip `id` from consumer props | **Do not strip.** Ark and Chakra forward it; `ids` on the Root is the supported override and it is proven to work (§3.4) | **P6, P8** (docs must carry `ids`) |
 
 ---

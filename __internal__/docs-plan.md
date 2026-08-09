@@ -419,7 +419,7 @@ with `this === HTMLElement.prototype`, `ownerDocument` throws `Illegal invocatio
 crashes** (`component-blueprint.md` §1.3; `prior-art.md` §5.3). Every Zag machine pulls focus-visible
 tracking, so this hits a consumer's whole Storybook, not one story. The fix is a three-line
 `trackFocusVisible()` warm-up at module scope plus a version pin, and it is a consumer-facing hazard
-even though Storybook is only a dev harness for us (`plan.md` §2.10) — which is exactly why it is a
+even though Storybook is only a dev harness for us (`brief-plan` §2.10) — which is exactly why it is a
 docs page rather than an internal note.
 
 ### 4.3 `environments/{shadow-dom,iframe}`
@@ -609,7 +609,7 @@ depend on:
 
 `overview` is the tier's entry and its first link is `/guides/static-extraction` — before the style-
 prop reference, before conditional styles. A reader who learns style props before they learn what
-extracts will write a wrapper component in the next hour (`plan.md` §7 concern 2).
+extracts will write a wrapper component in the next hour (`brief-plan` §7 concern 2).
 
 | Page | What it must show | Source |
 |---|---|---|
@@ -708,7 +708,7 @@ exist on most components.
 | `chakra` | **the upstream page for the same component.** An outward link, and `legal.md` §3.3.3 item 2 makes it a virtue rather than a courtesy: a reader who wanted the official project should leave in one click |
 
 **No `storybook` link.** Chakra's frontmatter has one; ours does not, because Storybook here is a dev
-harness and a compile-mode canary, not user-facing docs (`plan.md` §2.10).
+harness and a compile-mode canary, not user-facing docs (`brief-plan` §2.10).
 
 ### 8.2 Live preview + code fusion
 

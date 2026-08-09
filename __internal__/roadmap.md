@@ -1,7 +1,7 @@
 # The parity matrix — every Chakra v3 component, and the order they get built in
 
 **Status:** written at P6, 2026-08-09. Builds the matrix from three **measured** enumerations, closes
-`plan.md` §8 assumption 2 (each machine's `anatomy` at Zag `1.43.0`), reconciles the preset's 56 slot
+`brief-plan` §8 assumption 2 (each machine's `anatomy` at Zag `1.43.0`), reconciles the preset's 56 slot
 recipes against Zag's 51 machines, reasons every exclusion individually, settles the fifth part shape
 and the position of the first floating component, and turns `plan.md` §10's five-step escalation into
 a sequence with gates.
@@ -13,7 +13,7 @@ serialization, whether it ships, and in which batch.
 
 **What it is not.** The evidence base (`prior-art.md`), the architecture (`plan.md`), the adapter spec
 (`zag-solid-adapter.md`), or the component pattern (`component-blueprint.md`). All four are cited by
-section rather than restated. **Where this document and `plan.md` §4.1's contents list disagree,
+section rather than restated. **Where this document and `brief-plan` §4.1's contents list disagree,
 `prior-art.md` §10, `zag-solid-adapter.md` §10 and `component-blueprint.md` §13 win** — §13 below
 lists every place P6 departs from them, so P7–P9 get re-planned before P7 begins.
 
@@ -240,7 +240,7 @@ the preset is a **mechanical flattening** of the runtime theme — `slots: switc
 a literal array, blank lines are stripped, import paths are rewritten — and a key rename applied
 across that flattening caught two definitions and missed a value.
 
-### 1.4 `plan.md` §8 assumption 2 is closed
+### 1.4 `brief-plan` §8 assumption 2 is closed
 
 > *"Each machine's `anatomy` export at 1.43.0 — asserted authoritative, not enumerated per machine."*
 
@@ -504,7 +504,7 @@ exclusion or note in this document leans on a non-Panda tier** — there is none
 | radio-group | radio-group | S:radioGroup | 6/8 | | | ships | B4 | `+itemAddon`, `+itemIndicator`. Composes the `radiomark` atomic recipe. Repeated part |
 | radio-card | **radio-group** | S:radioCard | 6/10 | | | ships | B4 | Extends Chakra's *extended* radioGroup anatomy: `+itemContent`, `+itemDescription` |
 | rating-group | rating-group | S:ratingGroup | 4/5 | | | ships | B4 | `+itemIndicator`. Repeated part |
-| scroll-area | scroll-area | S:scrollArea | 6/6 | | | ships | B7 | Browser tests keep real scrollbars (`plan.md` §2.8) |
+| scroll-area | scroll-area | S:scrollArea | 6/6 | | | ships | B7 | Browser tests keep real scrollbars (`brief-plan` §2.8) |
 | segment-group | **radio-group** | S:segmentGroup | 6/6 | | | ships | B4 | Third public component on the radio-group machine |
 | select | select | S:select | 15/16 | Z | | ships | B5 | `+indicatorGroup`. Floating. Hidden native `<select>` → restrictive-content-model hazard |
 | slider | slider | S:slider | 10/12 | | | ships | B7 | `+markerIndicator`, `+markerLabel`. Thumb offsets are machine inline `style` — legal |
@@ -550,7 +550,7 @@ exclusion or note in this document leans on a non-Panda tier** — there is none
 | container | — | **✗container** | —/1 | | ships | step 6 | **The one recipe the preset is missing** (§1.3a). One preset delta, expression-tier, `@license` + `NOTICE` rows |
 | download-trigger | — | **✗downloadTrigger** | —/1 | | ships | step 6 | Key resolves to nothing in Chakra too |
 | heading | — | A:heading | —/1 | | ships | step 6 | |
-| icon | — | A:icon | —/1 | | ships | step 6 | Plus `createIcon`; the internal chevron/check/close set (`plan.md` §2.10) |
+| icon | — | A:icon | —/1 | | ships | step 6 | Plus `createIcon`; the internal chevron/check/close set (`brief-plan` §2.10) |
 | input | — | A:input | —/1 | | ships | B3 | Styles Ark's `Field.Input` |
 | input-addon | — | A:inputAddon | —/1 | | ships | B3 | `useRecipe({ key })` directly |
 | kbd | — | A:kbd | —/1 | | ships | step 6 | |
@@ -625,7 +625,7 @@ are none.
 
 ### 5.1 `portal` — not an exclusion, but cut to the two things Solid's `Portal` gets wrong
 
-`plan.md` §4.1 doc 5 lists `portal` among the *"React-idiom or Solid-native"* exclusions.
+`brief-plan` §4.1 doc 5 lists `portal` among the *"React-idiom or Solid-native"* exclusions.
 `component-blueprint.md` §0.3 and §13 row 5 put it back: `portal` is not in Zag's `dialog` anatomy and
 not in Chakra's Dialog namespace — Chakra ships it as a **standalone component**
 (`components/portal/index.ts`, a one-line re-export of Ark's) used *inside* `Dialog.Root`.
@@ -681,7 +681,7 @@ and mismatch the server's fallback.
 
 So `ClientOnly` is neither a React idiom nor Solid-native. Its Solid form is `createSignal(false)` +
 `onMount` — a SolidJS idiom expressing the same behavior, which is the port rule's explicit exception,
-not an invention. **Ships**, ~12 lines, no styling, no machine. This corrects `plan.md` §4.1 doc 5 on
+not an invention. **Ships**, ~12 lines, no styling, no machine. This corrects `brief-plan` §4.1 doc 5 on
 the same measured basis `component-blueprint.md` §13 row 5 corrected `portal`.
 
 ### 5.3 `for` — **excluded**
@@ -1074,7 +1074,7 @@ Two shapes the matrix makes measurable that were not before:
 
 ## 12. Assumptions — closed, opened, left open
 
-### 12.1 `plan.md` §8 assumptions P6 owns
+### 12.1 `brief-plan` §8 assumptions P6 owns
 
 | # | Assumption | Status after P6 | Gate |
 |---|---|---|---|
@@ -1107,9 +1107,16 @@ preset's animations) → closed at P2, resolved the other way. `plan.md` §11.2'
 
 ## 13. What P6 changes — re-plan P7–P9 against this
 
+> **The rows marked P9 were applied at P9**, each in exactly one place: row 1 → `plan.md` §0.4's
+> exclusion note · row 1b → `plan.md` §0.4 gains the `React→Solid` row, with a pointer left on
+> `component-blueprint.md` §11.12 · row 2 → `plan.md` §10 (115 directories) · row 3 → `plan.md` §10
+> (the slot-recipe half, false by 15) · row 7 → `plan.md` §1.3 · row 7b → `plan.md` §3.3 and
+> `legal.md` §6 item 3 · row 9 → `plan.md` §5.2 · row 10 → `plan.md` §12 row 3. The full log is
+> `decisions.md` §7.
+
 | # | The source says | P6 decides | Touches |
 |---|---|---|---|
-| **1** | `plan.md` §4.1 doc 5 and §0.4: `client-only`, `environment`, `for`, `show`, `portal`, `presence` are per-component **exclusions** | **Two of the six are exclusions.** `for` and `show` are Solid-native (§5.3, §5.4). `portal` ships (P5 already), `client-only` ships (§5.2), `presence` ships (§5.6), `environment` is **relocated**, not excluded (§5.5). Charts is the one clean exclusion, on a **dependency** ground (§5.7) | **P8** (the Chakra-to-Solid mapping page), **P9** (`decisions.md`) |
+| **1** | `brief-plan` §4.1 doc 5 and §0.4: `client-only`, `environment`, `for`, `show`, `portal`, `presence` are per-component **exclusions** | **Two of the six are exclusions.** `for` and `show` are Solid-native (§5.3, §5.4). `portal` ships (P5 already), `client-only` ships (§5.2), `presence` ships (§5.6), `environment` is **relocated**, not excluded (§5.5). Charts is the one clean exclusion, on a **dependency** ground (§5.7) | **P8** (the Chakra-to-Solid mapping page), **P9** (`decisions.md`) |
 | **1b** | `component-blueprint.md` §11.12 ships `Portal` with `container`, `disabled` and a note that `disabled` is non-reactive, and assigns the reactive question to P6 | **`disabled` is not shipped at all**, and the component shrinks to ~6 lines: `container`, `children`, the `isServer` guard, the environment-aware mount (§5.1). A non-reactive prop that silently ignores changes is `plan.md` §0.2 in prop form; **omitting it makes passing it a type error.** The two reasons the component still exists — Solid's `Portal` *throws* server-side, and it mounts to `document.body` while the machine queries `getRootNode()` — are the whole justification, and neither is negotiable | **P5** (§11.12's code drops a prop and a paragraph), **P7** (`plan.md` §0.4 gains a `React→Solid` row: `disabled` absent) |
 | **2** | `prior-art.md` §10.4: *"118 Chakra component folders"*, re-confirmed | **115 directories**; 118 is the entry count and includes `index.ts`, `icons.tsx`, `theme.tsx` (§1.1). Same class as §10.2 row 9's 47→46. **No conclusion changes** | **P9** — the reconciliation pass |
 | **3** | `plan.md` §10: *"the 56 slot recipes are, correspondingly, the machine surface"* | **False by 15.** 34 slot recipes are driven by a same-named machine, 7 by a machine under another name, and **15 have no machine at all** (§2.1–2.3). The companion claim — all 18 atomic recipes are non-machine — is **exactly true** | **P7** (the DoD's per-kind rules), **P9** |

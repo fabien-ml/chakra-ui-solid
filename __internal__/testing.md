@@ -58,7 +58,7 @@ lives only in `definition-of-done.md` §8.
 
 ## 1. The three-project split, and why it is by module resolution
 
-Copied from hope-ui with its rationale intact (`prior-art.md` §9; `plan.md` §2.8's ancestor). The
+Copied from hope-ui with its rationale intact (`prior-art.md` §9; `brief-plan` §2.8's ancestor). The
 split is **not by speed, taste, or test kind**. It is by **which build of Solid the project
 resolves**, and that is a property no `describe` block can express.
 
@@ -160,18 +160,19 @@ include glob. Zero matches and two matches are both errors.
 
 ### 1.8 Sequencing: the harness and the split land at **milestone one**
 
-`plan.md` §2.8's ancestor reads as though the testing stack were a bootstrap detail and the adapter
+`brief-plan` §2.8's ancestor reads as though the testing stack were a bootstrap detail and the adapter
 were separable from it. It is not: **the fork's seven test files import `mount` and
 `expectNoA11yViolations` from `internal-test-utils`** (`zag-solid-adapter.md` §10 row 11, §1.2), so
 the harness, the three-project split, `vitest-aliases.ts`, the hydration bridge and the
 `solid-contract` files all come over in the same milestone as the adapter. There is no ordering in
 which the fork's tests run before the harness exists.
 
-> **One graph correction that follows, recorded for P9.** `plan.md` §5.2 gives
-> `internal-test-utils → system`. At milestone one that edge does not exist yet and must not be
-> created: `mount`, the axe helper and the hydrate fixture touch no styling. The edge appears at
-> **milestone 3**, when the harness first renders something styled. The table is right about the
-> direction and early about the date.
+> **One graph correction that follows — applied at P9.** `plan.md` §5.2 gave
+> `internal-test-utils → system` with no date. At milestone one that edge does not exist yet and must
+> not be created: `mount`, the axe helper and the hydrate fixture touch no styling. The edge appears
+> at **milestone 3**, when the harness first renders something styled. The table was right about the
+> direction and early about the date, and **`plan.md` §5.2 now carries the date** — this is the
+> pointer, not a second copy.
 
 ---
 
@@ -419,10 +420,10 @@ coverage check exists for, and none of them is visible to it.
 
 | Failure | Why the coverage check is blind to it | What catches it |
 |---|---|---|
-| A **consumer's** style prop that does not extract — a wrapper forwarding `props.tone` | It is their source, their Panda run, their sheet. Our sets never see it | Nothing mechanical of ours. `plan.md` §7 concern 2: it is a documentation problem, and the static-extraction page is the loudest page in the docs (`docs-plan.md` §1) |
+| A **consumer's** style prop that does not extract — a wrapper forwarding `props.tone` | It is their source, their Panda run, their sheet. Our sets never see it | Nothing mechanical of ours. `brief-plan` §7 concern 2: it is a documentation problem, and the static-extraction page is the loudest page in the docs (`docs-plan.md` §1) |
 | The **`styleSource` collision** — `editable`'s machine-emitted `size: 1` folded into `css({size: 1})` | The class it emits **does exist**. The defect is that the machine's attribute never reached the DOM | `check:style-contract` rule 2 (§6.2), and `check:style-prop-collisions` (§6.4) |
 | A **responsive variant** the consumer never opted into (`plan.md` §3.8) | Our sheet carries base conditions only *by design*, so "correctly absent" and "consumer forgot" are the same absence. And types cannot follow the flag — `size={{ base: "sm" }}` type-checks either way | The check re-run **inside the step-4 throwaway consumer**, against *their* sheet, with `check:responsive-grain` as the fixture |
-| A **`data-*` vocabulary mismatch** — the rule exists, keyed on `[data-state=open]`, and nothing emits that attribute | The class is present in both sets. It simply never matches | `check:data-attr-vocab` (§8) — plan §8 assumption 9, *the single cheapest check with the largest downside if skipped* |
+| A **`data-*` vocabulary mismatch** — the rule exists, keyed on `[data-state=open]`, and nothing emits that attribute | The class is present in both sets. It simply never matches | `check:data-attr-vocab` (§8) — `brief-plan` §8 assumption 9, *the single cheapest check with the largest downside if skipped* |
 | A rule that exists **with one declaration dropped** — the preset's `cursor: "switch"` against a token registered as `swittch` (`roadmap.md` §1.3c) | The class exists and has a rule. One property inside it is gone | A computed-style assertion (§2.2), and `check:preset-token-resolution` for the specific case (assumption **P6-F**) |
 
 ### 3.8 Where it runs
@@ -526,9 +527,14 @@ install.
 
 ### 5.2 `check:no-runtime-sheet`
 
-Greps **`packages/*/src/**`** — ours, tests excluded — for `insertRule`, `adoptedStyleSheets`,
-`new CSSStyleSheet`, `createElement("style")`, `document.head.append*` and `<style`. Zero hits, no
-allow-list.
+Greps **`packages/*/src/**` and `apps/docs/src/**`** — ours, tests excluded — for `insertRule`,
+`adoptedStyleSheets`, `new CSSStyleSheet`, `createElement("style")`, `document.head.append*` and
+`<style`. Zero hits, no allow-list.
+
+**The `apps/docs/src/**` path is P8's addition** (`docs-site.md` §8 row 1), and it is not
+completeness for its own sake: the docs app is our source too, it is the *likeliest* place a runtime
+stylesheet appears — a client-side highlighter, a theme toggle, a playground shortcut — and it is the
+most visible place for a reader to conclude the rule is negotiable.
 
 It is deliberately over-catching. A hit is adjudicated on one question — *does this serialize
 component styles at render time?* — and the answer for our own code should always be that the line
@@ -669,7 +675,7 @@ Runs per batch, because the vocabulary it intersects grows with the machines we 
 
 - The rule lands at **step 3**, with the styling seam (§6.1) — because Workstream B's route-3
   conversions at step 6 and B3's at step 7+ depend on it. `/guides/static-extraction` ships with the
-  docs site, which is the last step of the build order (`plan.md` §5 step 8).
+  docs site, which is the last step of the build order (`brief-plan` §5 step 8).
 - **The qualification: the rule runs on *our* source, not the consumer's.** The page's reader is a
   consumer, and their route-3 mistakes are in their files, scanned by their Panda run. So §1.2
   section 4 may state that the rule exists and what it enforces, and **must not** tell a reader to
@@ -688,7 +694,7 @@ Runs per batch, because the vocabulary it intersects grows with the machines we 
 
 ### 7.1 Scope, restated because it decides what is *not* built
 
-**A dev harness and a compile-mode canary. Not user-facing docs** (`plan.md` §2.10) — the docs site
+**A dev harness and a compile-mode canary. Not user-facing docs** (`brief-plan` §2.10) — the docs site
 is a separate deliverable on TanStack Start (`docs-plan.md`). No MDX authoring, no published build,
 no visual-regression suite.
 
@@ -833,7 +839,7 @@ unexplained growth is the failure, not a threshold.
 | Point | What it is | Compared against |
 |---|---|---|
 | **Milestone one** | The adapter's own **fixed weight** — what every Zag component pays before any machine. Milestone one installs `@zag-js/{core,types,utils}` only | **Nothing. It is a new number nobody has** (`zag-solid-adapter.md` §9.2). It becomes the baseline the per-component deltas are measured *from* |
-| **Milestone 5** (Dialog) | The first real machine closure | **The first comparison against `+13.4 KB gz`.** `plan.md` §5 step 2's framing expected this at milestone one; it cannot be, because no machine closure exists there |
+| **Milestone 5** (Dialog) | The first real machine closure | **The first comparison against `+13.4 KB gz`.** `brief-plan` §5 step 2's framing expected this at milestone one; it cannot be, because no machine closure exists there |
 | **End of B8** | The first library-wide figure | Nothing prior. There is no earlier honest total |
 
 **Per-batch closure growth is the metric; per-component is an arithmetic error.**
@@ -876,7 +882,7 @@ as the PR's job summary. **What fires them and who is expected to read that summ
 
 ## 12. The CI job map
 
-Seven jobs. Grouped so that a red build names a category before anyone opens a log.
+**Eight** jobs. Grouped so that a red build names a category before anyone opens a log.
 
 | Job | Runs | Contains |
 |---|---|---|
@@ -885,6 +891,7 @@ Seven jobs. Grouped so that a red build names a category before anyone opens a l
 | `test` | every push, matrix ×3 | `test:unit`, `test:ssr`, `test:browser` — the browser leg installs Chromium with `playwright install --with-deps --only-shell`, and carries `check:floating-zindex` from step 5b. Every leg fails on a `mount()` diagnostic |
 | `styling` | every push, after `codegen` + `cssgen` | `check:css-coverage`; `check:coverage-allowlist`; `check:anatomy-parts`; `check:hash-config`; `check:preflight-hidden`; `check:data-attr-vocab`; `check:style-prop-collisions`; `check:no-hand-written-data-attrs` |
 | `stories` | every push | `test:storybook` (§7.3) |
+| `docs` | every push, after `codegen` + `cssgen` | The docs build; `check:docs-inventory`; `check:extraction-fixture`; `check:docs-consumer-config`; `check:css-coverage` against the docs app's own sheet. A deploy step on PRs and on the release branch. **Added at P8** (`docs-site.md` §6.1, §8 row 2) — the docs app is a standing instance of the step-4 consumer gate, so its build failing is a distribution failure, not a documentation one |
 | `dist` | main + release PRs | build; `check:exports`; `check:externals`; `check:buildinfo-fresh`; `check:peer-panda`; `check:license-headers` (over `dist/`); `check:notice-rows`; `check:package-files`; `check:bundle` |
 | `publish` | release workflow | everything in `dist`, plus `check:readme-disclaimer`, with npm provenance |
 | `upstream` | Renovate PRs only, matrix by upstream | §11 |

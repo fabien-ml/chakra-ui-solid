@@ -216,7 +216,7 @@ conventions moves an argument by up to 40%. `prior-art.md` §6.1 has the code-li
 
 ### 2.3 v1 and v2 share the adapter **byte for byte** — a stronger claim than the plan's
 
-Plan §3.3 says *"the adapter file set is **identical** across majors."* Measured, it is more than the
+`brief-plan` §3.3 says *"the adapter file set is **identical** across majors."* Measured, it is more than the
 file set:
 
 ```bash
@@ -360,8 +360,8 @@ git -C ../hope-ui grep -o untrack ef91b69 -- packages/components/src/zag-dialog 
 
 Stated explicitly because P5 inherits this section and the plan tells it the opposite.
 
-**Plan §3.5's B5 row** prescribes *"`untrack` around the `useMachine` call, in the component."*
-**Plan §4.1's document-4 contents** instruct the blueprint to document *"the
+**`brief-plan` §3.5's B5 row** prescribes *"`untrack` around the `useMachine` call, in the component."*
+**`brief-plan` §4.1's document-4 contents** instruct the blueprint to document *"the
 `untrack`-around-`useMachine` seed idiom."*
 
 **Both would teach an idiom that no longer exists.** The fix moved *down* into the fork at `ef91b69`
@@ -377,16 +377,16 @@ the call. `seedFromProps`'s own JSDoc records the boundary: it deliberately does
 own tracking scope — *"a machine that reads props directly there has a real bug, and should keep
 getting the diagnostic."*
 
-Likewise **A3's prescribed fix is not the fix that shipped.** Plan §3.5 says *"`untrack` the
+Likewise **A3's prescribed fix is not the fix that shipped.** `brief-plan` §3.5 says *"`untrack` the
 construction pass only; per-key getters stay fully reactive."* There is no construction pass. Any
 later document describing A3 describes a lazy proxy whose *structural* traps are untracked and whose
 per-key `get` is untouched.
 
 ### 4.3 The predicted rows, re-checked — and three real deltas against `1.43.0`
 
-Plan §3.5's lower half is *predicted* rather than measured. Checked against the fork:
+`brief-plan` §3.5's lower half is *predicted* rather than measured. Checked against the fork:
 
-| Plan §3.5 predicted | State |
+| `brief-plan` §3.5 predicted | State |
 |---|---|
 | `machine.ts` — `mergeProps` from `solid-js` → `merge` | **Done.** `merge`, presence-based |
 | `machine.ts` — `onMount` → `onSettled` | **Done** |
@@ -396,7 +396,7 @@ Plan §3.5's lower half is *predicted* rather than measured. Checked against the
 | `use-sync-external-store.ts` — `onMount` → `onSettled` | **Moot** — file dropped |
 | `normalize-props.ts` — `import type { JSX }` from `@solidjs/web` | **Done** |
 
-**And the finding this re-check produced: the fork does *not* apply unchanged to `1.43.0`.** Plan §8
+**And the finding this re-check produced: the fork does *not* apply unchanged to `1.43.0`.** `brief-plan` §8
 assumption 10 calls that *"likely, not certain"*; measured, it is **false in three named places**.
 The fork was built against `1.42.0`, and `@zag-js/solid@1.43.0`'s changelog carries exactly three
 adapter-affecting changes. All three are small, all three are ours to apply, and one of them the fork
@@ -423,14 +423,14 @@ on every machine with a nullable value prop (`select`, `combobox`, `listbox`'s `
 (`prior-art.md` §8.2) does not exempt it. **Verdict: align to `!== undefined` and delete the JSDoc
 claim.** Upstream's `1.43.0` fix went that way for the same reason.
 
-**Consequence for plan §8 assumption 10:** it does not survive as written. §9 records it as
+**Consequence for `brief-plan` §8 assumption 10:** it does not survive as written. §9 records it as
 **closed-and-refuted**, with the three deltas above as the finding rather than a residual risk.
 
 ---
 
 ## 5. The §0 compliance audit of the Zag machine set
 
-Plan §8 assumption 8 — *"whether any Zag 1.43.0 machine injects a stylesheet at runtime"* — is
+`brief-plan` §8 assumption 8 — *"whether any Zag 1.43.0 machine injects a stylesheet at runtime"* — is
 **a prerequisite, not an assumption to carry**, and `plan.md` §11.1 assigns it to **step 2, this
 milestone**, because that is when `@zag-js/*` first enters the tree. It was run at P4, against the
 checkout.
@@ -488,7 +488,7 @@ false positives that have to be adjudicated once and recorded (§5.3), which is 
 grep that misses a novel injection route.
 
 **Question 2 — is anything in the dependency closure a CSS-in-JS engine?** **This is the §0 check.**
-Not a source grep; a manifest check, and the one plan §6 already specifies for CI: no `@emotion/*`,
+Not a source grep; a manifest check, and the one `brief-plan` §6 already specifies for CI: no `@emotion/*`,
 `styled-components`, `goober` or `stitches` in any `package.json` or lockfile entry. The `@zag-js/*`
 closure at 1.43.0 is `@zag-js/*` plus `@floating-ui/dom` plus `@internationalized/*`.
 
@@ -618,7 +618,7 @@ is the known case and any other disagreement is a finding.
 
 These pin **SolidJS's** behavior, not ours. They exist because the adapter's design rests on specific
 2.0 semantics, and when 2.0 beta moves, the contract test is what says so instead of thirty adapter
-tests failing with no common cause. `plan.md` §2.8 calls them *"needed from day one"* — day one is
+tests failing with no common cause. `brief-plan` §2.8 calls them *"needed from day one"* — day one is
 this milestone.
 
 Copy from hope-ui `main`, `packages/primitives/src/__tests__/`:
@@ -629,7 +629,7 @@ Copy from hope-ui `main`, `packages/primitives/src/__tests__/`:
 | `solid-contract.ssr.test.tsx` | 3 | Host element through `Dynamic` with a hydration key; `createUniqueId` consuming a hydration child id exactly as the hydrating client does; the `<Show>` `when`-gate not burning a key |
 | `solid-contract.browser.test.tsx` | 6 | `applyRef` flattening and skipping falsy entries; `sharedConfig.hydrating` marking the hydration pass and only it; a signal write from one document listener not unhooking the next mid-dispatch |
 
-**One test to add, and the plan already asked for it.** Plan §3.5 predicted that `send`'s
+**One test to add, and the plan already asked for it.** `brief-plan` §3.5 predicted that `send`'s
 `queueMicrotask` *"interacts with 2.0 microtask batching; needs a `flush()` characterization test."*
 It does not exist — `flush` is *used* throughout hope-ui's contract tests but never *characterized*.
 Add to `solid-contract.test.ts`:
@@ -649,8 +649,13 @@ Recorded so a later reader does not mistake absence for oversight:
 
 - **axe / accessibility.** `expectNoA11yViolations` ships with the harness and the fork's browser
   test does render an accessible tree, but the a11y numbers that matter are per-component and belong
-  to P7. `prior-art.md` §7 is explicit that a faithful Dialog port scores **six inherited axe
-  allowances**, and the DoD has to record them as *expected* — that is P7's shape, not this gate's.
+  to P7. A faithful Dialog port carries **inherited axe allowances**, and the DoD has to record them
+  as *expected* — that is P7's shape, not this gate's.
+  **Corrected at P9: the number is three, open-state only — not six.** `prior-art.md` §7's six is
+  ZagDialog's measurement against hope-ui's stack; the three closed-state `aria-valid-attr-value`
+  allowances do not transfer to a Chakra-faithful port, on three independent grounds
+  (`component-blueprint.md` §9.2), and the register that ships is `definition-of-done.md` §5.
+  This bullet's *instruction* was right and stands; only its number moved.
 - **Bundle size.** §9.2.
 - **Any component.** By construction. The first component is milestone 5.
 - **Hydration round-trips beyond the two SSR cases.** The `hydrate-fixture` harness comes over with
@@ -835,7 +840,7 @@ closing a gap we have decided not to close ourselves.
   boolean `aria-*` values, in both directions"* plus *"leaves non-`aria-` booleans and non-boolean
   `aria-` values alone"* — both drop into upstream's bench with no Solid 2.0 dependency.
 
-**It costs us nothing to report and it is filed at milestone one**, per plan §5 step 2 — which also
+**It costs us nothing to report and it is filed at milestone one**, per `brief-plan` §5 step 2 — which also
 means the fix is in the open before our fork is, rather than looking like a private divergence
 discovered later.
 
@@ -885,9 +890,11 @@ and adds no behavior, so an open **Chakra v3** modal has exactly this defect tod
 **Why we are not fixing it locally, restated so the filing is not mistaken for hedging.** The port
 rule (`prior-art.md` §8.2) struck `createHideOutside`: fixing it here would make us **more accessible
 than the library we are porting**, which is a divergence even though it points the pleasant way. The
-practical consequence is that **ZagDialog's six axe allowances are the baseline, not a defect** —
-they are what a faithful port of Chakra's Dialog scores, and P7's DoD has to say so explicitly or the
-first `aria-hidden-focus` failure gets "fixed" by re-introducing the kernel.
+practical consequence is that **inherited `aria-hidden-focus` allowances are the baseline, not a
+defect**, and P7's DoD has to say so explicitly or the first failure gets "fixed" by re-introducing
+the kernel. **The count, corrected at P9: `aria-hidden-focus` on open-state assertions only —
+three entries, not ZagDialog's six** (`component-blueprint.md` §9.2; the register is
+`definition-of-done.md` §5).
 
 **Filed at milestone one, alongside A1**, even though the component it affects does not exist until
 milestone 5 — because the lead time on an upstream fix is the whole point, and because P7 needs to
@@ -897,7 +904,7 @@ cite an open issue number per inherited allowance.
 
 ## 9. Assumptions this milestone rests on, and their gates
 
-### 9.1 Plan §8 assumptions
+### 9.1 `brief-plan` §8 assumptions
 
 Assumptions **2** and **10** are this milestone's; **8** is §5's audit. `plan.md` §11.1 assigned 8
 here explicitly and left 1/2/5/10 to P4/P6.
@@ -924,7 +931,7 @@ runs over an installed tree, and `@zag-js/*` is no longer installed in the hope-
 | **Byte counts** — `+13.4 KB gz`, `+9.7 KB`, the four ratios | **No — and not here.** Milestone one installs `@zag-js/core`, `@zag-js/types` and `@zag-js/utils` only. A machine closure does not enter the tree until milestone 5, so a bundle number measured now would be the adapter's own weight and not the figure §10.5 is about |
 | **The adapter's own installed weight** | **Yes, and it is new.** Once `zag-solid` builds, `esbuild --bundle --minify` over its entry gives a number nobody has: the fixed cost every Zag component pays before any machine. Record it as the baseline the per-component deltas are measured *from* |
 
-**Correction to the plan's step-2 framing:** plan §5 step 2 is where the bundle axis was expected to
+**Correction to the plan's step-2 framing:** `brief-plan` §5 step 2 is where the bundle axis was expected to
 be re-checked. It cannot be, for the reason above. The re-measurement moves to **milestone 5**
 (Dialog), where the first real machine closure lands and the `+13.4 KB` claim has something to
 compare against. P7's DoD should carry the check, not P4's gate.

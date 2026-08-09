@@ -26,10 +26,11 @@ emits a client-hydrated shell. **Silent unstyling** is this project's central ha
 whose CSS was never generated renders nothing and raises no error (`CLAUDE.md`; `plan.md` §0.2).
 
 **One citation convention, because it costs a reader ten minutes to work out.** The earlier documents
-write `plan.md` for two different files: `__internal__/plan.md` (P3's architecture) for §0–§13, and
-the **brief plan** for `§4.1 doc N`, `§5 step N` and `§8 assumption N`, which the architecture
-document has no such sections for. This document follows that convention unchanged rather than
-inventing a third. P9's reconciliation pass is where it gets a name.
+wrote `plan.md` for two different files: `__internal__/plan.md` (P3's architecture) for §0–§13, and
+the approved brief plan for `§4.1 doc N`, `§5 step N` and `§8 assumption N`, which the architecture
+document has no such sections for. **P9 named it and applied it:** `plan.md` is always
+`__internal__/plan.md`; the brief plan is always `` `brief-plan` `` (`CLAUDE.md` § Citing the two
+plans). Every citation in this document follows it.
 
 **Settled earlier, not reopened here.** The brand, the repository name and the docs-site naming
 (`legal.md` §3.3.3, §3.5, §3.6); the **port rule** (`prior-art.md` §8.2); Zag `1.43.0`; Solid
@@ -224,7 +225,7 @@ spec.
 | `/docs/get-started/frameworks/vite` | `ssr.noExternal`, `optimizeDeps` | `plan.md` §8 | `docs-plan.md` §4 |
 | `/docs/get-started/frameworks/tanstack-start` | Same, for a Start consumer | `plan.md` §8 | `docs-plan.md` §4 |
 | `/docs/get-started/frameworks/solid-start` | Same, plus `ssr.noExternal` by name | `plan.md` §8 | `docs-plan.md` §4 |
-| `/docs/get-started/frameworks/storybook` | The `@zag-js/focus-visible` warm-up and the version pin | `component-blueprint.md` §1.3; `plan.md` §2.10 | `docs-plan.md` §4 |
+| `/docs/get-started/frameworks/storybook` | The `@zag-js/focus-visible` warm-up and the version pin | `component-blueprint.md` §1.3; `brief-plan` §2.10 | `docs-plan.md` §4 |
 | `/docs/get-started/environments/shadow-dom` | The environment context and `getRootNode` | `plan.md` §7.2; `roadmap.md` §5.1 | `docs-plan.md` §4 |
 | `/docs/get-started/environments/iframe` | Same context, the other host | `plan.md` §7.2 | `docs-plan.md` §4 |
 | `/docs/get-started/migration` | The §0.4 delta table **with its Cause column**, and P6's six per-component corrections | `plan.md` §0.4; `roadmap.md` §5, §13 row 1 | `docs-plan.md` §5 |
@@ -271,7 +272,7 @@ honest; filing a reference page under "get started" would bury it.
 
 ### 2.3 What we have and chakra-ui.com does not
 
-- **`/guides/static-extraction`** — the loudest page on the site (`plan.md` §7 concern 2), and the one
+- **`/guides/static-extraction`** — the loudest page on the site (`brief-plan` §7 concern 2), and the one
   with no upstream analogue that transfers (`docs-plan.md` §1.1).
 - **`/docs/reference/chakra-config`** — §2.1.
 - **Component pages Chakra does not document at all.** Chakra's docs cover a subset of its own
@@ -467,7 +468,7 @@ Plan B (§1.7), and it does not depend on the prerender.
 **The index leads with three sentences, and they are the highest-leverage prose on the site:** no
 runtime CSS-in-JS; Panda in the consumer's build is required, not optional; a style-prop value must be
 statically extractable, declared in `staticCss`, or routed through a CSS custom property. The reason
-is `plan.md` §7 concern 2 at scale — an assistant that has not read those three sentences writes
+is `brief-plan` §7 concern 2 at scale — an assistant that has not read those three sentences writes
 `<Box w={width}>`, and the user gets silence. That is the same failure the guide page exists for,
 arriving through a channel the guide page cannot reach.
 
@@ -560,7 +561,7 @@ reconciliation item, not a change made here.
 
 ## 7. Assumptions
 
-### 7.1 `plan.md` §8 assumption 6 — the runnable gate
+### 7.1 `brief-plan` §8 assumption 6 — the runnable gate
 
 > *"`@tanstack/solid-start@2.0.0-beta.30` prerendering to static output on Cloudflare — the Solid 2.0
 > peer is verified; the prerender-to-Cloudflare path is not."*
@@ -607,15 +608,20 @@ here with their gate and carried to P9 as §8 row 3.
 
 ## 8. What P8 changes — re-plan P9 against this
 
+> **All seven were applied at P9**, each in exactly one place: row 1 → `testing.md` §5.2 · row 2 →
+> `testing.md` §12 · row 3 → `definition-of-done.md` §8.3b · row 4 → `definition-of-done.md` rule
+> 2.15 · row 5 → `plan.md` §4.4 · row 6 → `CLAUDE.md`'s document index · row 7 → the
+> document-precedence rule in `CLAUDE.md` and `decisions.md` §7. The full log is `decisions.md` §7.
+
 | # | The source says | P8 decides | Touches |
 |---|---|---|---|
 | **1** | `testing.md` §5.2: `check:no-runtime-sheet` greps **`packages/*/src/**`**, ours, tests excluded | **The scope is one path short.** `apps/docs/src` is our source too, and it is the most likely place a runtime stylesheet appears — a client-side highlighter, a theme toggle, a playground shortcut — and the most visible place for a reader to conclude the rule is negotiable (§1.4). The docs gate requires the check to cover `apps/docs/src/**`. **Not edited here**: the artefact is defined exactly once, in `testing.md` | **P9** — one path added to `testing.md` §5.2 |
 | **2** | `testing.md` §12's CI job map lists its jobs, and none of them is the docs | **A `docs` job exists** (§6.1), running after `codegen` and `cssgen`, with a deploy step on PRs and the release branch. Recorded, not written, for the same reason as row 1 | **P9** — one row in `testing.md` §12 |
-| **3** | `definition-of-done.md` §8's register holds every open assumption with its gate | **Four more** — P8-A…P8-D (§7.2). P8-A is the runnable form of `plan.md` §8 assumption 6, which §8.1 already lists as *P8's script to write*; the other three are new | **P9** — four rows in `definition-of-done.md` §8 |
+| **3** | `definition-of-done.md` §8's register holds every open assumption with its gate | **Four more** — P8-A…P8-D (§7.2). P8-A is the runnable form of `brief-plan` §8 assumption 6, which §8.1 already lists as *P8's script to write*; the other three are new | **P9** — four rows in `definition-of-done.md` §8 |
 | **4** | `definition-of-done.md` §2's per-component rules | **A shipping component owes a docs page**, enforced by `check:docs-inventory` (§6.1) — the positive form of `roadmap.md` §9.2's *a page for an unbuilt component is a promise*. There is no rule row for it today, and the docs job is where it fires | **P9** — one row in `definition-of-done.md` §2 |
 | **5** | `plan.md` §4.4's deliverable table assigns the **README first line** to **P8**: *"Requires Panda CSS in your build. Not optional — this library publishes no CSS."*, above the install snippet, before the feature list | **Carried, wording unchanged**, and it appears in three places rather than one: the README first line, the docs home (`docs-plan.md` §3), and above the install snippet on the install page (`docs-plan.md` §4). Writing the README **file** is not this pass — documents only | **P9**, and the implementation pass at step 8 |
-| **6** | The brief plan's §4.1 register lists **ten** documents, and `docs-site.md` is doc 7 | **Eleven.** `docs-plan.md` was opened between P6 and P7 and is a peer of this document, not a section of it — §0 is the split. The register has no row for it | **P9** — the document register |
-| **7** | The brief plan's §4.1 doc 7 lists *"props tables, token pages"* and the playground constraint | **All of it stands**, and three things are added it could not have known: the fixture-backed extraction catalogue as a **build gate** (§6.1), the docs app as a **standing instance of the step-4 gate** (§1.1), and `llms.txt` generated from **source** rather than rendered HTML (§4.6). Where doc 7's contents list and `roadmap.md` §5/§13, `docs-plan.md` §1 or `testing.md` §6.5 disagree, the later documents win | **P9** |
+| **6** | `brief-plan` §4.1 register lists **ten** documents, and `docs-site.md` is doc 7 | **Eleven.** `docs-plan.md` was opened between P6 and P7 and is a peer of this document, not a section of it — §0 is the split. The register has no row for it | **P9** — the document register |
+| **7** | `brief-plan` §4.1 doc 7 lists *"props tables, token pages"* and the playground constraint | **All of it stands**, and three things are added it could not have known: the fixture-backed extraction catalogue as a **build gate** (§6.1), the docs app as a **standing instance of the step-4 gate** (§1.1), and `llms.txt` generated from **source** rather than rendered HTML (§4.6). Where doc 7's contents list and `roadmap.md` §5/§13, `docs-plan.md` §1 or `testing.md` §6.5 disagree, the later documents win | **P9** |
 
 ---
 
@@ -654,13 +660,19 @@ here with their gate and carried to P9 as §8 row 3.
 
 Five rows from `definition-of-done.md` §10 that P7 recorded and deliberately did not fix. They are
 reproduced here **unedited**, including the stale wording, because a flag that gets tidied on the way
-past stops being a flag:
+past stops being a flag.
+
+> **All five were applied at P9**, each in exactly one place, with a pointer left where a reader
+> would otherwise re-derive it: row 1 → `zag-solid-adapter.md` §6.4 and §8.2 · row 3 → `plan.md` §5.2
+> · row 4 → `CLAUDE.md`'s document index and `decisions.md` · row 8 → `plan.md` §0.4 · row 9 →
+> `plan.md` §12 row 3. The table below stays as written — it is the record of what was carried, not a
+> live queue. `decisions.md` §7 is the full reconciliation log.
 
 | # | The source says | P7 decided | Still open for |
 |---|---|---|---|
 | §10 row 1 | `zag-solid-adapter.md` §6.4: *"`prior-art.md` §7 is explicit that a faithful Dialog port scores six inherited axe allowances, and the DoD has to record them as expected"* | **Three, not six, and open-state only.** §6.4's sentence is stale in its number, right in its instruction | **P9** — the reconciliation pass |
 | §10 row 3 | `plan.md` §5.2: `internal-test-utils` depends on `system` | **Right about the direction, early about the date.** The edge appears at milestone 3 | **P9** |
-| §10 row 4 | `plan.md` §4.1 doc 6: *"per-file and per-component DoD"* | **Four tiers** — per file, per component, per batch, per release | **P9** |
+| §10 row 4 | `brief-plan` §4.1 doc 6: *"per-file and per-component DoD"* | **Four tiers** — per file, per component, per batch, per release | **P9** |
 | §10 row 8 | `roadmap.md` §13 row 1b: `plan.md` §0.4 gains a `React→Solid` row — Portal's `disabled` is absent | **Recorded, not written.** Editing `plan.md` here would put the same correction in two places | **P9** |
 | §10 row 9 | `plan.md` §12 row 3: *"a **three-rung** fallback ladder (§1)"* | **Stale, and left stale on purpose.** `a8b4995` rewrote §1.5; `roadmap.md` §13 row 10 flagged it; P7 carried it forward unedited for the same reason | **P9** — the reconciliation pass |
 

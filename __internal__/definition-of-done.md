@@ -62,8 +62,8 @@ run on every push.
 
 ## 2. Per component
 
-Applies to every row of `roadmap.md` §4 that ships. Rules 2.1–2.6 apply to all of them; 2.7–2.12
-apply to machine components; 2.13–2.14 to presence-gated ones.
+Applies to every row of `roadmap.md` §4 that ships. Rules 2.1–2.6 and **2.15** apply to all of them;
+2.7–2.12 apply to machine components; 2.13–2.14 to presence-gated ones.
 
 | # | Rule | Enforced by |
 |---|---|---|
@@ -81,6 +81,7 @@ apply to machine components; 2.13–2.14 to presence-gated ones.
 | 2.12 | **The bundle budget is updated in the same commit** if the component adds an external package | `check:bundle` (`testing.md` §10) |
 | 2.13 | **One computed-style test per presence-gated part, in the failing configuration** — `unmountOnExit={false} lazyMount={false}`, asserting `display: none` on a part whose recipe slot sets an explicit `display` (`component-blueprint.md` §6.4) | The `browser` project; a class-name assertion cannot see this |
 | 2.14 | **Presence is tested against both families.** Family Z is a `@zag-js/presence` instance; family M — `collapsible` and `accordion` — takes `present` from the **collapsible machine's own `visible`** (`roadmap.md` §6.2). The render strategy is source-agnostic and both sources are exercised | Unit tests of the render strategy over both sources; the per-component tests of 2.13 |
+| 2.15 | **A shipping component owes a docs page.** The positive form of `roadmap.md` §9.2's *a page for an unbuilt component is a promise* — a built component with no page is the same defect pointing the other way, and the docs job is where it fires (`docs-site.md` §6.1, §8 row 4) | `check:docs-inventory` |
 
 **Rule 2.4 has three shapes, because the 56 slot recipes are not the machine surface**
 (`roadmap.md` §13 row 3, §2.1–2.3):
@@ -247,11 +248,19 @@ covers the part of it that could be covered.
 
 ## 8. The assumption register
 
-Every open assumption across P3–P6, plus the two P7 introduces. **Each has a runnable gate and the
-step it runs at**; §8.4 is the short, honest list of the ones whose gate is a measurement plus a
-human judgement rather than a pass/fail.
+Every open assumption across P3–P6, plus the two P7 introduces **and the four P8 does** (§8.3b, added
+at P9 — `docs-site.md` §8 row 3). **This is the one register: every open assumption in the repo has a
+row here, a runnable gate, and the step it runs at.** §8.4 is the short, honest list of the ones whose
+gate is a measurement plus a human judgement rather than a pass/fail.
 
-### 8.1 `plan.md` §8's originals
+**Counted at P9: 38 rows, and not one open assumption lacks a gate.** Eleven `brief-plan` originals
+(§8.1) + six P3 + four P4 + five P5 (§8.2) + six P6 + two P7 (§8.3) + four P8 (§8.3b). **Six are
+closed** — 1, 7, 10 and 11 outright; 2 and 8 closed with a standing re-check on every Zag minor. The
+remaining **32 are open, and every one names a script and a step.** Three of those resolve to a
+measurement plus a judgement rather than a threshold, and §8.4 lists them separately so nobody reads
+them as pass/fail.
+
+### 8.1 `brief-plan` §8's originals
 
 | # | Status | Gate | Runs at |
 |---|---|---|---|
@@ -300,6 +309,19 @@ human judgement rather than a pass/fail.
 | **P7-A** | Panda's generated recipe function exposes its variant map | `check:css-coverage`'s enumerator builds, or falls back to reading variant keys off the imported preset object — one line either way | Step 4 |
 | **P7-B** | The Storybook test runner drives a Solid 2.0 Storybook build and observes per-story console errors | `test:storybook` runs at all; its fallback is `testing.md` §13, and costs more code rather than a redesign | Step 3, first story |
 
+### 8.3b P8
+
+Four, from `docs-site.md` §7.2 (§8 row 3). **P8-A is the runnable form of `brief-plan` §8 assumption
+6**, which §8.1 lists as *"P8's script to write"* — the assumption and its gate are one row apart and
+neither is a duplicate of the other: 6 is the claim, P8-A is the script.
+
+| # | Assumption | Gate | Runs at |
+|---|---|---|---|
+| **P8-A** | `dist/client` is self-sufficient for static hosting — no route needs a server runtime | `docs-site.md` §7.1's assertions 1–4, then 5–7: a deploy smoke test over the prerendered output | **Step 8**, and every docs build thereafter |
+| **P8-B** | MDX compiles through `vite-plugin-solid` under Solid 2.0 with the `compiler: "babel"` pin, and the pin's stated expiry is the only thing that changes later | The docs build runs at all, plus one MDX-authored example mounting in the `browser` project | Step 8, first page |
+| **P8-C** | The props-table generator can read a machine's `Props` type and the preset's variant map with **no running system object** | A non-empty, correct table for Dialog — the first component page written. **Shares its fate with P7-A**, which needs the same variant map | Step 8, first component page |
+| **P8-D** | The docs app's Panda run is representative of a consumer's, so `check:css-coverage` against its sheet means what the step-4 run means | `check:docs-consumer-config`. Note what it does **not** prove: representativeness of one config, not of all | Step 8, every push |
+
 ### 8.4 The three whose gate is a measurement plus a judgement
 
 Recorded separately rather than dressed up as pass/fail:
@@ -328,7 +350,7 @@ The jobs are `testing.md` §11. The ownership is here.
 - **They fail rather than warn.** `prior-art.md` §8.1: a check verified by nobody running it is
   verified in name only.
 - **Six triggers, six jobs** — the table is `testing.md` §11. Two of them are obligations rather than
-  hygiene: the **Zag minor → anatomy diff** is what keeps `plan.md` §8 assumption 2 *closed* rather
+  hygiene: the **Zag minor → anatomy diff** is what keeps `brief-plan` §8 assumption 2 *closed* rather
   than merely answered once, and the **preset minor → coverage check** is not optional, because under
   the no-runtime-CSS rule a removed variant silently unstyles rather than erroring.
 - **Any upstream major** → the legal re-check and a re-stamped `legal.md` §1.1 table (rule 4.13).
@@ -337,15 +359,22 @@ The jobs are `testing.md` §11. The ownership is here.
 
 ## 10. What P7 changes — re-plan P8 and P9 against this
 
+> **Every row marked P9 was applied at P9**, each in exactly one place: row 1 →
+> `zag-solid-adapter.md` §6.4, §8.2 · row 3 → `plan.md` §5.2 · row 4 → `CLAUDE.md`'s document index ·
+> row 5 → `legal.md` §6 items 6 and 7 · row 6 → `legal.md` §2.6 · row 7 →
+> `component-blueprint.md` §1.3 · row 8 → `plan.md` §0.4 · row 9 → `plan.md` §12 row 3. Row 2 was
+> P8's and is discharged in `docs-plan.md` §1.2. The full log is `decisions.md` §7; this table stays
+> as the record of what was carried.
+
 | # | The source says | P7 decides | Touches |
 |---|---|---|---|
 | **1** | `zag-solid-adapter.md` §6.4: *"`prior-art.md` §7 is explicit that a faithful Dialog port scores six inherited axe allowances, and the DoD has to record them as expected"* | **Three, not six, and open-state only.** `component-blueprint.md` §9.2 revises the count on three independent grounds and P5 is the later document; §5 above records the revised register and the retired rows. §6.4's sentence is stale in its number, right in its instruction | **P9** — the reconciliation pass |
 | **2** | `docs-plan.md` §2 **D-2**: does the route-3 lint rule exist by the time the static-extraction page ships? | **Yes, by five steps — with one qualification about whose source it runs on.** The answer and its consequences for the page are `testing.md` §6.5 | **P8** — §1.2 section 4 loses its hedge and gains a scope sentence; section 6 gains the three consumer-reachable mechanisms |
 | **3** | `plan.md` §5.2: `internal-test-utils` depends on `system` | **Right about the direction, early about the date.** At milestone one the harness touches no styling and that edge must not exist; it appears at milestone 3 (`testing.md` §1.8) | **P9** |
-| **4** | `plan.md` §4.1 doc 6: *"per-file and per-component DoD"* | **Four tiers.** Per **batch** is where a batch's proof stops being prose (`roadmap.md` §13 row 8), and per **release** is where the distribution and attribution checks live | **P9** |
+| **4** | `brief-plan` §4.1 doc 6: *"per-file and per-component DoD"* | **Four tiers.** Per **batch** is where a batch's proof stops being prose (`roadmap.md` §13 row 8), and per **release** is where the distribution and attribution checks live | **P9** |
 | **5** | `legal.md` §6 items 6 and 7 are open, assigned to P7 | **Closed here, by name:** `check:license-headers`, `check:notice-rows`, `check:package-files` for item 6; `check:readme-disclaimer` as a **publish-time** gate for item 7 | **P9** — `legal.md`'s open-items table |
 | **6** | `legal.md` §2.6 describes a per-file checklist; nothing names where the list of derivatives lives | **`attribution.config.ts` at the repo root** is the registry every attribution check reads — eight entries today, seven fork files plus the `container` recipe delta | **P9** |
-| **7** | `plan.md` §2.10 / `component-blueprint.md` §1.3: Storybook is a dev harness and a canary | **It is also a required CI job.** `test:storybook` builds and drives every story; it must be Storybook, not `composeStories` under Vitest, because the two failures it exists for are invisible to any other compile (`testing.md` §7.3, §7.4) | **P9** |
+| **7** | `brief-plan` §2.10 / `component-blueprint.md` §1.3: Storybook is a dev harness and a canary | **It is also a required CI job.** `test:storybook` builds and drives every story; it must be Storybook, not `composeStories` under Vitest, because the two failures it exists for are invisible to any other compile (`testing.md` §7.3, §7.4) | **P9** |
 | **8** | `roadmap.md` §13 row 1b: `plan.md` §0.4 gains a `React→Solid` row — Portal's `disabled` is absent | **Recorded, not written.** `plan.md` is P3's document and editing it here would put the same correction in two places, exactly as with row 10 below | **P9** |
 | **9** | `plan.md` §12 row 3: *"a **three-rung** fallback ladder (§1)"* | **Stale, and left stale on purpose.** `a8b4995` rewrote §1.5 to **two** rungs — §4.4 removed the prebuilt-stylesheet floor. `roadmap.md` §13 row 10 flagged it; P7 carries it forward unedited for the same reason | **P9** — the reconciliation pass |
 

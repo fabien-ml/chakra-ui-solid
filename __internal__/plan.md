@@ -12,6 +12,13 @@ so and names the implementation step that checks it (§11).
 than restated. **Where the plan and `prior-art.md` §10 disagree, §10 wins**; §12 lists every place
 this document departs from the plan so P4 and P5 get re-planned before P4 begins.
 
+> **Reconciled at P9, 2026-08-09.** Nine corrections from P4–P8 were applied in place — §0.4 (the
+> exclusion note and a new `React→Solid` row), §1.3 (`swittch`), §2.3 (a fourth `renderStyled`
+> addition), §3.3 (two preset deltas, one of them expression-tier), §4.4 (the README line's three
+> placements), §5.2 (two edges), §5.3 (`composeEventHandlers`), §10 (115 folders; the slot-recipe
+> half), §12 row 3 (two rungs). Each is one line and cites the document that owns it. The decision
+> record is `decisions.md`.
+
 **Two things settled earlier and not reopened here.** The brand is `chakra-ui-solid`, scope
 `@chakra-ui-solid` (`legal.md` §3.3.3). The **port rule** is *no accessibility behavior beyond what
 Zag ships, nothing invented that Chakra UI v3 does not have, SolidJS idioms excepted*
@@ -42,10 +49,10 @@ weaken it.
 
 Panda's generated runtime is pure class-name computation — `css()`, `cva()` and `sva()` compute
 strings over a precomputed map, and the generator's source contains no `createElement`, `insertRule`,
-`adoptedStyleSheets`, or sheet object anywhere (plan §0.1, read from
+`adoptedStyleSheets`, or sheet object anywhere (`brief-plan` §0.1, read from
 `@pandacss/generator/src/artifacts/js/css-fn.ts`). Panda is build-time by construction. It is the
 only styling stack that satisfies §0 while giving us Chakra's tokens and recipes, which is why the
-constraint decides the stack rather than merely constraining it (plan §3.6).
+constraint decides the stack rather than merely constraining it (`brief-plan` §3.6).
 
 ### 0.2 The hazard the rule creates — the central risk of the styling layer
 
@@ -91,13 +98,16 @@ port.
 | **Responsive recipe variants** — `<Button size={{ base: "sm", md: "lg" }}>` | runtime | **Supported, off by default** — the consumer opts in per recipe or per variant key with `chakraConfig({ responsive })` (§3.8) | CSS-in-JS |
 | `useToken()` runtime token lookup | runtime dictionary | Supported, reimplemented as a read of the generated build-time token map | CSS-in-JS |
 | Token / recipe / variant styling | runtime | **Full parity** — the bulk of the surface | — |
-| `asChild` | React `cloneElement` | **`render` prop** (plan §0, fixed) | React→Solid |
+| `asChild` | React `cloneElement` | **`render` prop** (`brief-plan` §0, fixed) | React→Solid |
 | `hideMode: "activity"` on presence | React 19 `<Activity>` | **Not supported.** `"display-none"` only — there is no Solid equivalent (`prior-art.md` §8.3) | React→Solid |
 | `"use client"` / RSC-shaped API surface | React Server Components | **Absent.** SolidStart has its own model; nothing to port | React→Solid |
 | Component-level `ref` typing (`ComponentPropsWithoutRef`, `forwardRef`) | React | Solid props + `render`; `as` stays a loose `ValidComponent` rather than a generic that re-types props from the element (`prior-art.md` §2.5) | React→Solid |
+| `Portal`'s `disabled` — render children in place instead of portalling them | React re-renders on the prop | **Not shipped at all.** The reactive Solid form needs a `children()`-resolved `<Show>`, which relocates `_hk` for the whole portalled subtree; a non-reactive prop that silently ignores changes is §0.2 in prop form, so omitting it makes passing it a type error (`roadmap.md` §5.1, §13 row 1b) | React→Solid |
 
-Per-component exclusions — `client-only`, `environment`, `for`, `show`, `portal`, `presence` as
-public components — are P6's parity matrix, not this table.
+Per-component exclusions are P6's parity matrix, not this table — and P6 measured them: **only `for`,
+`show` and charts are excluded.** `portal`, `client-only` and `presence` ship, and `environment` is
+relocated to a context rather than excluded (`roadmap.md` §5, §13 row 1). The six-name list this
+paragraph used to carry was wrong by four.
 
 ### 0.5 Consequence for the reference policy
 
@@ -229,8 +239,15 @@ no rule. Ten declarations close the class of failure.
 misspelled **`swittch`** upstream (`prior-art.md` §4.2). We consume the upstream key **verbatim**:
 one exported constant, one comment, one upstream issue. Aliasing it to `switch` in
 `theme.extend.slotRecipes` would register the same `className: "switch"` body under two keys and emit
-its CSS twice; renaming it in our preset would fork the thing we depend on. The typo is invisible to
-consumers either way — it is a registry key, not a public prop.
+its CSS twice; renaming it in our preset would fork the thing we depend on.
+
+**It is not invisible to consumers, and this paragraph used to say it was.** P6 measured the second
+half: `swittch` is *also* the `cursor` **token** key, while the Switch slot recipe references
+`cursor: "switch"` — so the preset silently drops Switch's `cursor: pointer`, where Chakra's own
+runtime theme does not (`roadmap.md` §1.3c, §13 row 7). That is a **preset defect rather than Chakra
+behavior**, so inheriting it would be a divergence. Our preset therefore adds one key —
+`theme.extend.tokens.cursor.switch = { value: "pointer" }` — and the slot-recipe key stays `swittch`,
+verbatim. The upstream issue now has a concrete defect to report rather than a spelling observation.
 
 ### 1.4 What `staticCss` cannot cover
 
@@ -265,11 +282,11 @@ where one declaration lives.**
 
 ### 1.6 Rejected
 
-- **"Make every internal variant selection statically literal at the call site"** (the plan's §9 Q2
+- **"Make every internal variant selection statically literal at the call site"** (`brief-plan` §9 Q2
   fallback). Rejected: it is impossible for a variant driven by a consumer prop —
   `slots({ size: props.size })` is dynamic by definition, and making it literal means a switch over
   every value at every call site, i.e. hand-writing 488 literals into our source. It also does
-  nothing for the case that matters most (plan §7 concern 2): a consumer who wraps our `Button` and
+  nothing for the case that matters most (`brief-plan` §7 concern 2): a consumer who wraps our `Button` and
   forwards props gets silence either way.
 - **Option A (put our `dist` in the consumer's `include`)** as the answer to Q2. Rejected on the
   plan's own reasoning (§2.1): it hits the identical static-extraction limit. It stays a documented
@@ -352,6 +369,13 @@ free to adopt (`legal.md` §1.4):
 
 Item 3 is the one worth arguing about at the gate: it is a **user-visible prop rename** inherited from
 Chakra, and skipping it would leave seven HTML attributes unreachable on any styled element.
+
+**Three is now four.** P5 added `styleSource?: object` — the object whose *keys* are scanned for
+style props, defaulting to `props` — because a machine part feeds the factory a **merged** bag
+containing the machine's own DOM attributes, and `editable`'s `getInputProps()` emits a top-level
+`size: 1` that would be folded into `css({ size: 1 })` and never reach the `<input>`. Chakra avoids
+it structurally by nesting `chakra(ArkDialog.Content)`; our flat layering has to say it out loud.
+The rule, the worked failure and the lint rule that enforces it are `component-blueprint.md` §4.1.1.
 
 Two shapes to confirm rather than decide, both step 3 (they need Panda installed): that Panda's
 generated `ConditionalValue` accepts Chakra's responsive **array** form (`color={["red", "green"]}`),
@@ -453,7 +477,19 @@ opt-in of §3.8 is a change of argument rather than a change of call shape. One 
 object-or-function ambiguity.
 
 Everything the preset adds is a **key** on top of the official preset — never a recipe body, never a
-token table. That is the condition `legal.md` §6 item 3 asked P3 to check, and it holds.
+token table. That is the condition `legal.md` §6 item 3 asked P3 to check, and it holds **for the
+`staticCss` and alias deltas above**.
+
+**P6 added two deltas that this sentence does not cover, and they are not the same tier**
+(`roadmap.md` §13 row 7b; `definition-of-done.md` §6):
+
+| Delta | Tier | Consequence |
+|---|---|---|
+| `theme.extend.tokens.cursor.switch = { value: "pointer" }` (§1.3) | One word. **Owes nothing** | Must **not** enter `attribution.config.ts` — a check demanding a header for a token value would be wrong (`testing.md` §9) |
+| The **`container` recipe body**, ported from `@chakra-ui/react`'s `theme/recipes/container.ts` | **Expression** under `legal.md` §1.4 — the first such file outside the `zag-solid` fork | An `@license` header, a registry entry, and the preset package's first `NOTICE.md`. It lands with the Container component at step 6 and retires that component's coverage allow-list entry in the same commit |
+
+*Depend, do not vendor* still holds as the rule; the `container` recipe is the one measured exception,
+and it is exceptional because the preset is exactly one recipe short of Chakra's runtime theme.
 
 ### 3.4 The consumer's config, and the two knobs that silently unstyle everything
 
@@ -510,7 +546,7 @@ component's own logic picks** — hope-ui's worked case is `Flex`'s `inline` pro
 `display: inline-flex` (`prior-art.md` §2.7), which is why that row is in §1.3's `staticCss.css`
 block.
 
-Route 3 needs a lint rule, because using it accidentally as route 1 fails silently. Plan §7 concern 2
+Route 3 needs a lint rule, because using it accidentally as route 1 fails silently. `brief-plan` §7 concern 2
 is right that this is the loudest page in the docs, not a footnote in theming.
 
 ### 3.6 How a component reaches a recipe
@@ -649,7 +685,7 @@ consumption options use **`include`**; `importMap` is the correct half of the pa
 `jsx/index` asserts this in the same pass.
 
 **`./jsx` is never exported** — meaning `jsx/index`, the Solid 1.x factory, which is broken against
-Solid 2.0 in three ways at once (plan §3.1: `splitProps` is gone, `solid-js/web` does not exist, and
+Solid 2.0 in three ways at once (`brief-plan` §3.1: `splitProps` is gone, `solid-js/web` does not exist, and
 `mergeProps` survives only as an `@solidjs/web` alias with `merge`'s presence-not-value semantics).
 
 Note the precision the exports map forces: **`./is-valid-prop` resolves *inside* `jsx/`**
@@ -690,7 +726,7 @@ the package manager rather than by a sentence someone skims:
 
 | Deliverable | Shape | Owner |
 |---|---|---|
-| **README first line** | *"Requires Panda CSS in your build. Not optional — this library publishes no CSS."* Above the install snippet, before the feature list | **P8** |
+| **The Panda-prerequisite line**, wording unchanged: *"Requires Panda CSS in your build. Not optional — this library publishes no CSS."* **In three places**, not one — the README's first line above the install snippet and before the feature list; the docs home (`docs-plan.md` §3); and above the install snippet on the install page (`docs-plan.md` §4) | Prose. Writing the README **file** is the implementation pass's step 8, not the document pass | **P8** (specced), step 8 (written) |
 | **`@pandacss/dev` as a `peerDependency`** on `@chakra-ui-solid/preset`, `styled-system` and `components` | `"@pandacss/dev": "^1.12.0"`, not a `dependency` — the consumer's Panda must be the one that runs. `peerDependenciesMeta.optional` is **not** set: the warning is the point | **P7** |
 | **CI check: no published `package.json` lists a `.css` file** in `exports`, `files` or `style` | Runs beside the §4.2 `jsx/index` check, same pass | **P7** |
 
@@ -726,7 +762,7 @@ generated-CSS coverage check assert against (§0.2, §9). That output is never p
 
 @chakra-ui-solid/internal-test-utils   PRIVATE.
 
-apps/docs                          TanStack Start (beta 2.x line, plan §3.2).
+apps/docs                          TanStack Start (beta 2.x line, `brief-plan` §3.2).
 ```
 
 ### 5.2 Dependency direction — strictly downward
@@ -738,13 +774,26 @@ apps/docs                          TanStack Start (beta 2.x line, plan §3.2).
 | `styled-system` | `preset` (dev/config-time only — Panda reads it to generate) |
 | `system` | `styled-system`, `zag-solid` |
 | `components` | `system`, `styled-system`, `zag-solid` |
-| `internal-test-utils` | `system` |
+| `internal-test-utils` | `system` — **from milestone 3, not before** (see below) |
 | `apps/docs` | `components` |
 
 `zag-solid` depends on nothing here — that is what lets it be milestone one and ship before any
 styling decision is settled. `system` depending on `zag-solid` is new relative to the plan's graph and
 follows from §6: presence is a machine, so the layer that owns the presence render strategy owns an
 adapter dependency.
+
+**`internal-test-utils → system` is right about the direction and was early about the date**
+(`testing.md` §1.8; `definition-of-done.md` §10 row 3). The fork's seven test files import `mount` and
+`expectNoA11yViolations`, so the harness ships **in milestone one, alongside the adapter** — and at
+that point `mount`, the axe helper and the hydrate fixture touch no styling. The edge must not exist
+yet. It appears at **milestone 3**, when the harness first renders something styled.
+
+**This table is in-repo edges only, and the closure is wider.** P6 measured what the graph looks like
+once machines and Panda are installed (`roadmap.md` §11, §13 row 9): **37 `@zag-js/*` machine
+packages** on `components`, `@zag-js/presence` on `system`, four Zag utility packages, and
+**`@pandacss/dev` as the graph's first edge required *of the consumer*** rather than of us (§4.4).
+Growth is measured **per batch**, never as a flat per-component number — the arithmetic error
+`prior-art.md` §10.2 rows 6 and 8 correct.
 
 ### 5.3 What `@chakra-ui-solid/system` owns
 
@@ -759,7 +808,7 @@ port rule removed three of the four kernel primitives (`prior-art.md` §8.2, §1
 | 3 | **The recipe layer** — typed wrappers over the generated `cva`/`sva` functions, the slot-recipe context, `unstyled` | **build** | §3.6. This is the seam `renderStyled`'s `recipeClass` was left open for, and it is unused in the prior art (`prior-art.md` §2.5) |
 | 4 | **Presence render strategy** — `lazyMount`, `unmountOnExit`, `skipAnimationOnMount`, `hideMode` | **build** | §6 |
 | 5 | **Locale / direction / environment contexts** | **build, minimally** | §7 |
-| 6 | `withDefaults`, `composeEventHandlers`, `createKeyboardHandler`, `runIfFunction` | copy | `withDefaults` is mandatory: without it `<Dialog.Root modal={props.modal}>` with `modal` unset silently yields a non-modal dialog (`prior-art.md` §9) |
+| 6 | `withDefaults`, `composeEventHandlers`, `createKeyboardHandler`, `runIfFunction` | copy | `withDefaults` is mandatory: without it `<Dialog.Root modal={props.modal}>` with `modal` unset silently yields a non-modal dialog (`prior-art.md` §9). **`composeEventHandlers`' justification changed at P5** — a machine part never calls it, because the adapter's `mergeProps` already chains `on*` across sources; it is needed for part shapes **C and D** only (`component-blueprint.md` §3.4, §13 row 9). The carry-over stands; the reason does not |
 | 7 | `createRegisteredId` — 12 lines of `onSettled` deferral around Solid 2.0's `[REACTIVE_WRITE_IN_OWNED_SCOPE]` | copy | **Available, not a pattern.** It has no call site in a 1:1 port (`prior-art.md` §8.2) |
 | 8 | **Color mode: nothing** | — | §7 |
 
@@ -829,7 +878,7 @@ stale-closure workaround that deletes outright because Solid props are already l
 **`hideMode: "activity"` maps to React 19's `<Activity>`, which has no Solid equivalent** — we ship
 `"display-none"` only, and that is the §0.4 row, not a gap to paper over.
 
-**The plan's objection to `@zag-js/presence` is resolved and does not return.** Plan §8 assumption 11
+**The plan's objection to `@zag-js/presence` is resolved and does not return.** `brief-plan` §8 assumption 11
 doubted that Zag's animation-**name**-based presence composes with Chakra's animations. Measured
 across all 56 slot recipes: **9 use `animationName`, and not one uses `transitionProperty` inside an
 `_open`/`_closed` block** (`prior-art.md` §8.2). Zag's presence is the correct mechanism for this
@@ -889,7 +938,7 @@ setting `dir` on root elements so the CSS has something to resolve against.
 
 ## 8. Build mechanics
 
-Carried from hope-ui and proven against Solid 2.0 (`prior-art.md` §2.6, plan §2.4):
+Carried from hope-ui and proven against Solid 2.0 (`prior-art.md` §2.6, `brief-plan` §2.4):
 
 - **tsdown** (rolldown + oxc), one config per package from a shared `tsdown.config.base.ts`, with
   `transform.jsx: "preserve"`. Ship JSX-preserved `.jsx` + `.d.ts` under the **`"solid"` export
@@ -914,7 +963,7 @@ Carried from hope-ui and proven against Solid 2.0 (`prior-art.md` §2.6, plan §
 - Document **`ssr.noExternal`** for SolidStart consumers.
 - Node 24 / pnpm 11.10.0 via corepack + `devEngines`; Solid pinned at `2.0.0-beta.32` through a
   `pnpm-workspace.yaml` catalog, lockstep across `solid-js` / `@solidjs/signals` / `@solidjs/web` /
-  `babel-preset-solid`, plus `overrides: { babel-preset-solid: "catalog:" }` (plan §3.4).
+  `babel-preset-solid`, plus `overrides: { babel-preset-solid: "catalog:" }` (`brief-plan` §3.4).
 
 ---
 
@@ -946,7 +995,10 @@ Plus a `postinstall` running `codegen`, so a fresh clone type-checks.
 
 ## 10. Workstream B — the non-machine surface
 
-Chakra ships **118 component folders**; Zag ships **51 machines** (`prior-art.md` §10.4). The gap is
+Chakra ships **115 component directories** — 118 is the entry count and includes `index.ts`,
+`icons.tsx` and `theme.tsx` (`roadmap.md` §1.1, §13 row 2; the same counting-convention class as
+`prior-art.md` §10.2 row 9's 47→46, and it changes no conclusion here). Zag ships **51 machines**
+(`prior-art.md` §10.4). The gap is
 the non-machine surface: Box, Flex, Stack, Grid, SimpleGrid, Text, Heading, Container, Center, Square,
 Circle, Spacer, Wrap, AspectRatio, Bleed, Float, AbsoluteCenter, Span, Em, Strong, VisuallyHidden,
 Group, Sticky, … — pure style-props over `renderStyled`, composing Panda `/patterns` where one exists
@@ -957,8 +1009,15 @@ point.
 recipes against Zag's machine list: **all 18 atomic recipes belong to the non-machine surface** —
 `button`, `input`, `textarea`, `inputAddon`, `heading`, `code`, `kbd`, `mark`, `badge`, `link`,
 `separator`, `skeleton`, `skipNavLink`, `spinner`, `icon`, and the three shared primitives
-`checkmark`, `radiomark`, `colorSwatch` that machine components' slot recipes compose. The 56 slot
-recipes are, correspondingly, the machine surface.
+`checkmark`, `radiomark`, `colorSwatch` that machine components' slot recipes compose.
+
+**The atomic half of that sentence is exactly true; its slot-recipe half was false by 15.** P6
+measured the mapping (`roadmap.md` §2.1–§2.3, §13 row 3): of the 56 slot recipes, **34** are driven by
+a same-named machine and **7** by a machine under another name (`actionBar`→`popover`,
+`checkboxCard`→`checkbox`, `codeBlock`→`clipboard`, `drawer`→`dialog`, `progressCircle`→`progress`,
+`radioCard`→`radio-group`, `segmentGroup`→`radio-group`) — and **15 have no machine at all**. Those 15
+are multi-part components with no `connect()` to merge, which is why
+`definition-of-done.md` §2 carries three shapes of its recipe rule rather than one.
 
 So Workstream B is where **the atomic recipe layer lands at volume**, not a mop-up after the
 interesting work. That gives the build order a clean escalation:
@@ -978,7 +1037,7 @@ is not, and P6's roadmap should sequence it accordingly.
 
 ## 11. Assumptions this architecture rests on
 
-### 11.1 Plan §8 assumptions P3 depends on
+### 11.1 `brief-plan` §8 assumptions P3 depends on
 
 | # | Assumption | Status | Verified at |
 |---|---|---|---|
@@ -1013,7 +1072,7 @@ Each is unverifiable from this machine for the same reason: **Panda is installed
 |---|---|---|---|
 | 1 | §2.1's exports list: `./css`, `./tokens`, `./types`, `./patterns`, `./recipes`, `./styles.css` | **Add `./is-valid-prop`**, and it resolves *inside* `jsx/`. **Drop `./styles.css`** — no CSS is published at all (§4.4). The never-export rule sharpens to **"no export resolves to `jsx/index`, and none resolves to a `.css` file"** (§4.2) | P7 (the CI check) |
 | 2 | §2.2 / §2.11: `panda.config.ts` copied with `eject: true` + `presets: [chakraPreset]`; `prior-art.md` §10.2 row 1 fixes it in the config | **The fix moves into `@chakra-ui-solid/preset`**, which self-declares `@pandacss/preset-base`. The config keeps `eject: true` and one preset entry, and so does the consumer's (§3.2) | P9 (`decisions.md`) |
-| 3 | §2.1 / §9 Q2: *"`staticCss` shipped in the preset"* | **Per-recipe** via `theme.extend`, not a config-level block, plus an atomic `staticCss.css` block and 10 `colorPalette` values — with a three-rung fallback ladder (§1) | P5, P7 |
+| 3 | §2.1 / §9 Q2: *"`staticCss` shipped in the preset"* | **Per-recipe** via `theme.extend`, not a config-level block, plus an atomic `staticCss.css` block and 10 `colorPalette` values — with a **two-rung** fallback ladder (§1.5). *(This row read "three-rung" until P9. §4.4 removed the prebuilt-stylesheet floor and §1.5 was rewritten to two; `roadmap.md` §13 row 10 and `definition-of-done.md` §10 row 9 flagged the stale wording and carried it forward deliberately.)* | P5, P7 |
 | 4 | §9 Q2 assumes only *dynamic* variant arguments fail to extract | **No consumer-written recipe variant extracts at all** — the preset declares no `jsx` hints (measured). The problem is wider and the answer is the same (§1.1) | P5, P7 |
 | 5 | §2.5: `@<scope>/preset` is *"config-only"* | It also exports **`chakraConfig(options?)`**, a function returning a `defineConfig` fragment carrying the knobs that must match across the boundary. **One subpath `.`, no `./config`** — same consumer needs both exports. New (§3.3, §3.4) | P7, P8, P9 |
 | 13 | §1.4 leaves the responsive opt-in as a raw `staticCss` line the consumer hand-writes | **`chakraConfig({ responsive })`, three grains** (`{ button: ["size"] }` / `["button"]` / `true`), expanding to the `staticCss` form Panda already understands. The toggle is the consumer's because the stylesheet is their build's (§3.8) | P7 (preset + CI), P8 (docs) |

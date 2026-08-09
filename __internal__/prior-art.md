@@ -280,10 +280,10 @@ git -C ../hope-ui show e9c2f81:packages/styled-system/package.json
 `./css`, `./tokens`, `./patterns`, `./is-valid-prop`, `./types`, `./package.json`.
 
 Two things to notice. There is **no `./recipes`** — consistent with never having reached recipes.
-And there **is** a `./is-valid-prop`, which the plan's §2.1 exports list omits despite §2.3's reason 3
+And there **is** a `./is-valid-prop`, which `brief-plan` §2.1 exports list omits despite §2.3's reason 3
 depending on it.
 
-The dts wrinkle the plan §2.4 records is real and its rationale is in the config:
+The dts wrinkle `brief-plan` §2.4 records is real and its rationale is in the config:
 
 ```bash
 git -C ../hope-ui show e9c2f81:tsdown.config.base.ts | sed -n '58,80p'
@@ -571,7 +571,7 @@ was never generated renders nothing and raises no error. So a passing `classList
 compatible with an entirely unstyled element.
 
 hope-ui's suite could not see that, because it ran against its own dev stylesheet generated from a
-config it controlled. Ours cannot afford the same blind spot — which is exactly why the plan's §2.8
+config it controlled. Ours cannot afford the same blind spot — which is exactly why `brief-plan` §2.8
 adds computed-style assertions and a generated-CSS coverage check. **The prior art's test strategy is
 a carry-over that is provably incomplete for our hazard**, and that is worth saying here rather than
 discovering at step 4.
@@ -710,7 +710,7 @@ git -C ../hope-ui show ef91b69:packages/primitives/src/zag-solid/machine.ts | se
 because that only *registers* `track` effects whose deps are collected in their own tracking scope —
 *"a machine that reads props directly there has a real bug, and should keep getting the diagnostic."*
 
-**Consequence for later phases:** the plan's §3.5 row B5 and §4.1's instruction that the blueprint
+**Consequence for later phases:** `brief-plan` §3.5 row B5 and §4.1's instruction that the blueprint
 document *"the `untrack`-around-`useMachine` seed idiom"* describe an idiom the prior art has already
 retired. See [§10](#10-what-p2-contradicts--for-re-planning-before-p3).
 
@@ -738,7 +738,7 @@ The fork is **no longer a minimal-diff copy**, and its own `index.ts` says so at
 
 ## 7. The `inert` gap, re-measured at our target version
 
-This one **moved**, and it is the clearest example of why the plan's §1 is a hypothesis rather than a
+This one **moved**, and it is the clearest example of why `brief-plan` §1 is a hypothesis rather than a
 source.
 
 **The spike's evidence** (`zag-dialog-comparison.md` axis 4): *"`@zag-js/aria-hidden@1.42.0` exports
@@ -813,9 +813,15 @@ wiring and adds no behavior at all. So background content behind an **open Chakr
 `aria-hidden` and still in the tab order, exactly as ZagDialog measured. Under the port rule (§8.2),
 `createHideOutside` is struck: it would make us more accessible than the library we are porting.
 
-The practical consequence is that **ZagDialog's six axe allowances are the baseline, not a defect** —
-they are what a faithful port of Chakra's Dialog scores. Our definition of done has to say so
-explicitly, or the first `aria-hidden-focus` failure gets "fixed" by re-introducing the kernel.
+The practical consequence is that **inherited axe allowances are the baseline, not a defect** — they
+are what a faithful port of Chakra's Dialog scores. Our definition of done has to say so explicitly,
+or the first `aria-hidden-focus` failure gets "fixed" by re-introducing the kernel.
+
+> **Corrected at P9.** This paragraph read *"ZagDialog's six axe allowances are the baseline."* Six is
+> ZagDialog's **measurement**, and it stands as one; it is not **our** baseline. P5 measured that the
+> three closed-state `aria-valid-attr-value` allowances do not transfer, on three independent grounds
+> (`component-blueprint.md` §9.2). Ours is **`aria-hidden-focus`, open-state assertions only** —
+> `definition-of-done.md` §5 is the register.
 
 **The upstream ask stands, and is now the *only* route:** `suppressOthers` already exists in
 `@zag-js/aria-hidden` and already does the feature-detected `inert`-or-`aria-hidden` dispatch.
@@ -891,7 +897,7 @@ Zag's a11y surface **is** Chakra's a11y surface, and anything hope-ui added on t
 including the pleasant kind. The plan's §2.11 reverses four kernel primitives from *drop* to *copy,
 mandatory* on hope-ui's bar. On Chakra's bar, three of the four go back to **drop**.
 
-| Primitive | Plan §2.11 | Does Chakra/Ark have it? | Verdict under the port rule |
+| Primitive | `brief-plan` §2.11 | Does Chakra/Ark have it? | Verdict under the port rule |
 |---|---|---|---|
 | **`createHideOutside`** (128 code) | copy, **mandatory** | **No.** `inert` appears **zero times** in both `chakra-ui/packages/react/src/` and `ark-ui/packages/react/src/`. Chakra's open modal leaves the background keyboard-reachable | **DROP.** Inherit the gap. Fix it upstream in `@zag-js/aria-hidden` (§7), where it also reaches Chakra |
 | **`createFocusRestore`** (26 code) | copy | **No.** `ark-ui/.../dialog/use-dialog.ts` is `useMachine(dialog.machine, …)` + `dialog.connect(…)` and nothing else; `dialog-root.tsx` and `use-dialog.ts` contain the string `focus` **zero times**. Ark adds no focus handling, so a **non-modal** Chakra dialog does not restore focus on Escape either | **DROP.** Same behavior as the port target |
@@ -917,7 +923,7 @@ for value/state transitions, never for enter/exit. Every keyframe the recipes na
 `fade-out`, `scale-in`, `scale-out`, `slide-from-*`, `slide-to-*` — is defined in the preset's
 `keyframes.ts`.
 
-So `@zag-js/presence` is the *correct* mechanism for this preset, and the plan's §8 assumption 11
+So `@zag-js/presence` is the *correct* mechanism for this preset, and `brief-plan` §8 assumption 11
 (*"whether `createPresence` composes with Chakra's preset animations"*) resolves the other way: it is
 `@zag-js/presence` that composes, and `createPresence` that would not have needed to exist.
 
@@ -1068,7 +1074,7 @@ of the four primitives are behavior Chakra does not have.
 | **C** | §2.11: `createPresence` **copy — reversed from "drop"**; §8 assumption 11 doubts it composes with Chakra's animations | **REPLACE with our own Solid presence** over the `@zag-js/presence` **machine**, through our adapter — Ark read for API shape only, never vendored (§8.3). Assumption 11 resolves the *other* way: across all 56 slot recipes, 9 use `animationName` and **zero** use `transitionProperty` in an `_open`/`_closed` block, so Zag's animation-name-based presence is the correct mechanism and hope-ui's transition-based kernel was never the right shape here | **P5** (the blueprint's presence section is rewritten), **P6** |
 | **D** | §2.11: *"rest of `primitives/internal/*` — drop by default, **adopt by exception**"*; §7 concern 3 builds a per-component column for it | **No exceptions.** The rule removes the mechanism. `roadmap.md` does not need the per-component retained-primitive column the plan reserves | **P5, P6** — deletes a planned column |
 | **E** | §5.2 / §7: the ~3-line `aria-controls` and `aria-labelledby` override getters | **Not taken.** Chakra ships the same dangling IDREFs. The fix belongs upstream in Zag, where it reaches Chakra too | **P5, P7** |
-| **F** | §1.4 / §2.8: the DoD runs axe on every mounting test *"with zero allowances"* | **Not achievable, and should not be.** A faithful Dialog port scores ZagDialog's six allowances (`aria-valid-attr-value` closed ×3, `aria-hidden-focus` open ×3). The DoD must record inherited allowances as **expected**, with a named upstream issue each, or a correct port reads as a regression | **P7** — this is the DoD's shape, not a detail |
+| **F** | §1.4 / §2.8: the DoD runs axe on every mounting test *"with zero allowances"* | **Not achievable, and should not be.** A faithful Dialog port carries inherited allowances; the DoD must record them as **expected**, with a named upstream issue each, or a correct port reads as a regression. *(This row said "ZagDialog's six." P5 measured that only the three open-state `aria-hidden-focus` ones transfer — `component-blueprint.md` §9.2; the register is `definition-of-done.md` §5. Corrected at P9.)* | **P7** — this is the DoD's shape, not a detail |
 
 **Net:** the a11y kernel goes from ~154 retained code lines to **12** (`createRegisteredId`), and
 those 12 are a Solid 2.0 write-deferral mechanism, not accessibility. The behavior kernel is Zag's,
@@ -1114,8 +1120,14 @@ rather than three-quarters true.
 and now moot — §10.1 rows A and B); the dialog machine makes exactly 8 `getById` element lookups
 against a handmade 0; 4 axe assertions with 0 allowances against 6 with 6; the ~15-line three-row
 recurring floor; 51 Zag machines (**not 56** — P1's figure, re-confirmed by
-`ls __reference-impl__/zag/packages/machines | wc -l`); 118 Chakra component folders; and
-`@chakra-ui/panda-preset@3.36.1` depending only on `@pandacss/types@^1.4.2`.
+`ls __reference-impl__/zag/packages/machines | wc -l`); and `@chakra-ui/panda-preset@3.36.1`
+depending only on `@pandacss/types@^1.4.2`.
+
+> **One row left this list at P9.** *"118 Chakra component folders"* was confirmed here from the
+> `ls | wc -l` form, which counts three non-directories — `index.ts`, `icons.tsx`, `theme.tsx`. It is
+> **115 directories** (`roadmap.md` §1.1, §13 row 2), the same counting-convention class as §10.2
+> row 9's 47→46. It changes no conclusion — the gap argument survives at 115 — but the parity matrix
+> has 115 rows and this was the sentence a reader would have checked them against.
 
 ### 10.5 Not reproducible from git, and not disputed
 

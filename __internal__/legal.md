@@ -249,7 +249,7 @@ one as a dependency, or it **vendors** its contents.
 
 **Recommendation: depend.** Reasons, in order of weight:
 
-1. **It is the entire "for free" premise.** The preset's 19 recipes, 57 slot recipes, 17 token
+1. **It is the entire "for free" premise.** The preset's 18 recipes, 56 slot recipes, 17 token
    groups, `utilities.ts`, `breakpoints.ts`, `semantic-tokens/`, `global-css.ts`, `text-styles.ts`,
    `layer-styles.ts`, `animation-styles.ts`, and `keyframes.ts` are the value being borrowed.
    Vendoring them means owning their maintenance; depending means a version bump.
@@ -383,16 +383,29 @@ the consumer, and it is currently the easiest one in the repo to break.
 
 ### 2.6 Checklist for a new derivative file
 
+**Where the list of derivatives lives — named at P7, recorded here at P9.** One checked-in file,
+**`attribution.config.ts` at the repo root**, with one entry per expression-tier derivative:
+`{ file, upstreamProject, upstreamFile, license, package }`. Every attribution check reads it, so the
+registry is the single place a new derivative is declared and the checklist below is the single place
+it is discharged. **Eight entries today** — the seven `zag-solid` fork files and the `container`
+recipe delta (`testing.md` §9; `definition-of-done.md` §6, §10 row 6). What it must **not** gain: the
+one-word `theme.extend.tokens.cursor.switch` key, which is not expression.
+
 1. Confirm it is really the expression tier (§1.4). Most files that name a reference mid-body are
    not, and should be left alone.
-2. Add the `@license` header, correct shape for the upstream's license, naming the upstream file.
-3. Add a row to the root `NOTICE.md`, under that upstream's section — creating the section if it is
+2. **Add the entry to `attribution.config.ts`.** Steps 3–5 are what that entry then requires, and the
+   checks assert both directions — an entry with no header fails, and a header with no entry fails.
+3. Add the `@license` header, correct shape for the upstream's license, naming the upstream file.
+4. Add a row to the root `NOTICE.md`, under that upstream's section — creating the section if it is
    the first.
-4. Add a row to the owning package's `NOTICE.md`, creating the file if it is the first.
-5. If the upstream is Apache-2.0 and this is the package's first: copy
+5. Add a row to the owning package's `NOTICE.md`, creating the file if it is the first.
+6. If the upstream is Apache-2.0 and this is the package's first: copy
    `licenses/LICENSE-APACHE-2.0.txt` in and add it to `package.json#files`.
-6. Never edit `LICENSE`. The MIT grant covers this project's own code; it does not reach the
+7. Never edit `LICENSE`. The MIT grant covers this project's own code; it does not reach the
    derived portions and must not be made to look as if it does.
+
+**All of it in the same commit as the code** (`zag-solid-adapter.md` §7.3): both failure modes here
+are silent and green.
 
 ---
 
@@ -955,12 +968,12 @@ also-owned `@solid-chakra` (§3.3.3, §3.7).
 
 | # | Item | Blocks | Where it settles |
 |---|---|---|---|
-| 1 | **Message the Chakra maintainers at first public release** (§3.7) | Nothing now; the trigger is defined | First `npm publish`, or a public repo/docs site — whichever is first |
-| 2 | Name the Cloudflare Pages project `chakra-ui-solid` (§3.6) | Nothing — but the subdomain is first-come | P8 — `docs-site.md`, at setup |
-| 3 | Preset consumed as a dependency, not vendored (§1.5) | The preset package's shape | P3 — `plan.md`. If `staticCss` forces re-emitting recipe definitions, revisit |
+| 1 | **Message the Chakra maintainers at first public release** (§3.7) | Nothing now; the trigger is defined | **Open.** First `npm publish`, or a public repo/docs site — whichever is first. `docs-site.md` §1.6 step 5 notes where the trigger fires; closing it stays this document's |
+| 2 | ~~Name the Cloudflare Pages project `chakra-ui-solid` (§3.6)~~ | — | **Closed at P8** — `docs-site.md` §1.6 step 1 makes it step one of the Cloudflare setup, which is what puts the name in front of whoever creates the project |
+| 3 | ~~Preset consumed as a dependency, not vendored (§1.5)~~ | — | **Closed at P3, and re-checked at P6.** `plan.md` §1.2 declares `staticCss` as a **key** on each inherited recipe through `theme.extend` and re-emits no recipe body, which is the condition this item set. **One measured exception, taken knowingly:** the `container` recipe body (`plan.md` §3.3; `roadmap.md` §1.3a) — expression tier under §1.4, with a header, a registry entry and the preset's first `NOTICE.md`. The `cursor.switch` token key is one word and owes nothing |
 | 4 | ~~`createPresence` / `createFocusRestore` header re-check~~ | — | **Closed at P2** — both struck by the port rule, and verified header-free regardless (§1.2) |
 | 5 | ~~`licenses/LICENSE-APACHE-2.0.txt` added to the repo~~ | — | **Closed at P2** — no Apache-2.0 material enters. Reopens only if a Zag a11y gap is closed in our own layer (§1.2) |
-| 6 | CI checks for the attribution mechanism (§2.3, §2.5) | Nothing yet | P7 — `definition-of-done.md` |
-| 7 | The disclaimer is in **every** published package's README, not just the root (§3.3.3 item 1) | Nothing yet | P7 — make it a publish-time check, not a habit |
+| 6 | ~~CI checks for the attribution mechanism (§2.3, §2.5)~~ | — | **Closed at P7, by name:** `check:license-headers` (header shape, **survival into `dist/`**, and `comments.legal` still pinned with its comment), `check:notice-rows` (both files, both directions) and `check:package-files` (`LICENSE` + `NOTICE.md` in `files`, and every file an `@license` header promises). All three read `attribution.config.ts` (§2.6). Defined in `testing.md` §9; required by `definition-of-done.md` rules 1.7 and 4.6–4.8 |
+| 7 | ~~The disclaimer is in **every** published package's README, not just the root (§3.3.3 item 1)~~ | — | **Closed at P7:** `check:readme-disclaimer`, a **publish-time** gate — a `prepublishOnly` hook plus a release-workflow job — so a new package cannot ship without it (`testing.md` §9; `definition-of-done.md` rule 4.9). A habit would have failed exactly where this fails safe: a per-package README is written once and never looked at again |
 | 8 | Keep `@solid-chakra` held — rung one of the exit ladder (§3.3.3); §4.2's five are rung two, unregistered | Nothing | Only if ever needed |
 | 9 | ~~Reword `NOTICE.md`'s Adobe React Spectrum section~~ | — | **Closed at P2** — done in the same revision. The section is retained empty as a guard, its trigger sentence replaced with what would reopen it |
