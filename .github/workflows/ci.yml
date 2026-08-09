@@ -38,6 +38,9 @@ jobs:
       - run: pnpm check:test-projects
       - run: pnpm check:resolution-sync
       - run: pnpm check:commit-trailers
+      # A stale anchor index is worse than none: it points a reader at a line range that is not
+      # the section they cited, and they read the neighbour without noticing.
+      - run: pnpm check:doc-index
       # Rule 1 (`style-prop-static-value`) needs the generated `isCssProperty` to know which props
       # are style props, so codegen has to have run.
       - run: pnpm codegen

@@ -42,8 +42,9 @@ failure mean for the change in front of me*. The only deliberate seam is the two
 
 ## 1. Per file
 
-Applies to every file under `packages/*/src/`. Enforced by the `verify` and `constraint` jobs, which
-run on every push.
+Applies to every file under `packages/*/src/` — and, for the two rules whose subject is the change
+rather than the code (1.10, 1.11), to every commit. Enforced by the `verify` and `constraint` jobs,
+which run on every push.
 
 | # | Rule | Enforced by |
 |---|---|---|
@@ -57,6 +58,7 @@ run on every push.
 | 1.8 | **A test file's name resolves to exactly one Vitest project.** A mis-suffixed test is a test that never runs and nothing says so | `check:test-projects` |
 | 1.9 | `mount()` is silent in every test the file adds — no `[STRICT_READ_UNTRACKED]`, no `[REACTIVE_WRITE_IN_OWNED_SCOPE]`. **A diagnostic is a defect, not a missing wrapper** (`component-blueprint.md` §2.1, §2.2) | `mount()` itself, in all three projects (`testing.md` §1.4) |
 | 1.10 | Commit message carries the rationale only — no `Co-Authored-By`, no *"Generated with"* trailer | `check:commit-trailers` |
+| 1.11 | **A change to any `__internal__` document regenerates `INDEX.md` in the same commit.** A stale anchor points a reader at a line range that is no longer the section they cited, and they read the neighbour without noticing (`testing.md` §8) | `check:doc-index` |
 
 ---
 
@@ -253,15 +255,19 @@ that is a *gate* rather than a coding rule.
 
 ## 7b. Named, not yet written — the enforcement census
 
-**Taken at S3b, 2026-08-09, mechanically.** Every `check:*` named anywhere in `CLAUDE.md` or the
+**Re-taken at S4, 2026-08-09, mechanically.** Every `check:*` named anywhere in `CLAUDE.md` or the
 eleven `__internal__` documents, diffed against `scripts/check-*.mjs`:
 
 ```
-named across the documents   44
-written and runnable         19
+named across the documents   45
+written and runnable         20
 named but not written        25
 written but never named       0
 ```
+
+**What moved since S3b:** `check:doc-index` — named here and in `testing.md` §8, written, and live
+in the `verify` job in the same commit. The unwritten twenty-five are unchanged; none of their
+subjects arrived.
 
 **Why this section exists.** §7 lists rules that *cannot* be scripted. This is the different
 category the documents kept blurring into it: rules stated as **enforced**, with an artefact named

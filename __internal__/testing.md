@@ -842,6 +842,51 @@ failure line below is what the failure *means*, not what it prints.
 | `check:floating-zindex` | **A browser test, not a script.** The computed `z-index` / `--z-index` on a floating element survives interleaved reactive re-renders and `raf` writes, with the measured value recorded | `@zag-js/popper` writes `--z-index` **imperatively** into the floating element's `style` attribute inside a `raf`, while Solid binds that same attribute reactively, with a `MutationObserver` watching it — two writers on one attribute, one watching the other (`roadmap.md` §8.1). **Nine Chakra components inherit whatever it costs**, and nobody has measured it. Introduced at step 5b as the floating probe's whole deliverable: a number, and either a sentence in the blueprint or a rule (**P6-A**) |
 | `check:no-hand-written-data-attrs` | Zero `data-*` string literals in `packages/components/src/**` (tests excluded) | We write none — every state attribute comes from the machine's `connect()` (`component-blueprint.md` §3.7). A speculative translation getter is **invisible** when unnecessary, which is why the rule is "do not add one" and this is how that is checked |
 | `check:commit-trailers` | No commit message contains `Co-Authored-By`, `Co-authored-by` or *"Generated with"* | `CLAUDE.md`'s git convention, as a commit-msg hook plus a CI pass over the branch's commits |
+| `check:doc-index` | `__internal__/INDEX.md` is byte-identical to a fresh `pnpm docs:index` | The index disagrees with the documents, so a citation resolves to the wrong line range — §8.1 |
+
+### 8.1 `check:doc-index` — the anchor index
+
+**What the index is for.** The eleven documents are cited by section — `` `plan.md` §3.5 ``.
+Resolving one without an index means grepping for the heading, reading the line number off the
+match, and guessing how far to read. Guessing wide is what turns a 3 KB consultation into a 40 KB
+one. `INDEX.md` is the lookup: for every `##`, `###` and `####` in the corpus, its anchor as a
+citation writes it, its line range, and its size.
+
+**Input.** Every top-level `.md` in `__internal__` except `INDEX.md` itself, read in filename
+order — `readIndexableDocuments`. Both the generator and the check call it, because a check with
+its own copy of the file list keeps passing after a twelfth document is added and reports it as
+indexed by omission.
+
+**Algorithm.** Scan each document line by line, tracking fenced-code state; outside a fence, match
+`^(#{2,4})\s+(<number>)\.?\s+(<title>)`. A section ends at the next heading of the same or shallower
+level, so a `§3` row spans its `§3.5` children and reports the cost of reading the whole of §3.
+Render one block per document, plus a summary table whose *Block starts* column is computed in a
+second pass over the rendered blocks. Then regenerate and compare to the file on disk.
+
+**Failure output.** The first **three** differing lines, each with the on-disk and expected text,
+then a count of the rest. Deliberately not a full diff: inserting one heading shifts every line
+after it, so a line-by-line report is a few real differences followed by unbounded offset cascade.
+The summary table sits at the top of the index, so a changed document appears there *by name* —
+with its new line and section counts — before any of its rows do. The fix is always `pnpm
+docs:index`; `git diff __internal__/INDEX.md` is the diff.
+
+**Blind spots, three, and none of them is silent unstyling:**
+
+- **It checks currency, not correctness.** A heading numbered `§4.2` that follows `§4.7` indexes
+  exactly as written. The index reports the corpus's numbering, including its mistakes.
+- **It does not verify that a citation resolves.** `` `plan.md` §99 `` is not caught here. The
+  index makes a dead citation *findable* — the anchor is simply absent from the block — but
+  nothing fails. No check has that subject today; naming one here would put a twenty-sixth
+  unwritten script into `definition-of-done.md` §7b's census for no gain.
+- **An unnumbered heading is skipped rather than reported.** `legal.md` has one — `#### Why the
+  route is closed`. Nothing cites it, because there is nothing to cite it by. If unnumbered
+  headings ever become citable, this becomes a gap rather than a choice.
+
+**Why it copies heading titles and nothing else.** A heading names a rule; the body states it. The
+index is navigation, not a digest — a generated summary of the arguments would be a second copy of
+every rule, which is the thing `CLAUDE.md`'s three-surface split exists to prevent
+(`decisions.md` §0). The generator can only ever emit heading text, so the boundary holds by
+construction rather than by review.
 
 ---
 
