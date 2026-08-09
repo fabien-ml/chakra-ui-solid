@@ -6,7 +6,7 @@ the entry is a pointer to it.**
 
 **Three surfaces, and nothing is written in two of them.** This file: *what must I do, and where is the
 rule written down?* `__internal__/decisions.md`: *what was decided, what was rejected, and when?* The
-other ten `__internal__` documents: *why is it right?* The full split is `decisions.md` §0.
+other nine `__internal__` documents: *why is it right?* The full split is `decisions.md` §0.
 
 **When two documents disagree, the later phase wins**; within a phase, a measurement beats a
 prediction; and the approved `brief-plan` loses to all of them. — `decisions.md` §7.
@@ -74,7 +74,8 @@ fails the test**. — `component-blueprint.md` §9.
 
 **Reading a reference for reasoning, public API shape, or an ARIA pattern owes nothing. Reproducing its
 expression makes the file a derivative.** The test is a reading, not a predicate: *could someone diff
-my file against theirs and see the same structure and sequence?* — `legal.md` §1.4, §2.1.
+my file against theirs and see the same structure and sequence?* The registry, and the rule beside
+it, is `attribution.config.ts`.
 
 - **Ark is `what`, never `how`** — parts, props, prop names, machine wiring, edge cases. Never its
   composition style, never `asChild`. **Ark is not a dependency and never will be.**
@@ -83,9 +84,9 @@ my file against theirs and see the same structure and sequence?* — `legal.md` 
   — `plan.md` §0.5.
 - **`@chakra-ui/panda-preset`: depend, do not vendor.** Add keys on top of it; never re-emit a recipe
   body or a token table. One measured exception — the `container` recipe body — and it is expression
-  tier and carries the obligations to prove it. — `legal.md` §1.5; `plan.md` §3.3.
+  tier and carries the obligations to prove it. — `plan.md` §3.3.
 - **hope-ui carry-overs are ours** — same author, MIT — and still get a provenance note: path plus
-  commit, no `NOTICE.md` row. **Fork on copy, both directions.** — `legal.md` §1.6.
+  commit, no `NOTICE.md` row. **Fork on copy, both directions.**
 
 **When the tier is expression, all of this lands in the same commit as the code** — both failure modes
 are silent and green:
@@ -99,7 +100,7 @@ are silent and green:
    headers vanish from `dist/` and the published package becomes an unattributed derivative of the
    project we are porting, with a green build.
 
-— `legal.md` §2.6; `testing.md` §9; `zag-solid-adapter.md` §7.3.
+— `testing.md` §9; `zag-solid-adapter.md` §7.3.
 
 ## Method
 
@@ -186,8 +187,9 @@ without a gate is a finding rather than a formatting problem.
 
 ## The documents — one line each, by the question it answers
 
-Eleven documents in `__internal__/`, plus this file — and the ledger's entries, which are files
-rather than a twelfth document.
+Ten documents in `__internal__/`, plus this file — and the ledger's entries, which are files rather
+than an eleventh document. **Attribution has no document: the rule is above, the registry is
+`attribution.config.ts`, and three checks enforce it.**
 
 | Document | The question it answers |
 |---|---|
@@ -200,7 +202,6 @@ rather than a twelfth document.
 | `__internal__/definition-of-done.md` | **When must it pass, and what does a failure mean for the change in front of me?** The four tiers, the two live registers, the assumption gates, the CI ownership, the unenforced conventions |
 | `__internal__/docs-site.md` | **What docs exist, on what stack, and how do we know it works?** The app, the route map, the machinery pages share, the copyright and trademark boundaries, the build gate |
 | `__internal__/docs-plan.md` | **What does each page say, in what order, and which settled decision does it render?** The page specs, the tier specs, and the component template |
-| `__internal__/legal.md` | **What do we owe, to whom, and what may we say about Chakra?** License compatibility, the attribution mechanism, trademark, the brand decision and its exit ladder, upstream tracking |
 | `__internal__/decisions.md` | **What was decided, what was rejected, and when?** Q1–Q8 and their gates, the reversals, the build order, what the document pass left open, and the reconciliation log — plus §3, the table pointing at the entries |
 | `__internal__/decisions/` | **The ledger entries themselves**, one file per `§3.N`, named for their anchor: `§3.13` is `decisions/3.13-…`. Open one, not the ledger — `decisions.md` §3 |
 

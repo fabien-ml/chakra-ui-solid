@@ -27,40 +27,39 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 
 ---
 
-## The 30 indexed files
+## The 29 indexed files
 
 | Document | Size | Lines | Sections | Largest section | Block starts |
 |---|---|---|---|---|---|
-| [`component-blueprint.md`](#component-blueprintmd) | 92.1 KB | 1663 | 79 | §11 at 20.9 KB | L65 |
-| [`decisions.md`](#decisionsmd) | 47.8 KB | 481 | 14 | §6 at 11.6 KB | L149 |
-| [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.8 KB | 125 | 1 | §3.1 at 8.8 KB | L168 |
-| [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.6 KB | 143 | 1 | §3.2 at 9.6 KB | L174 |
-| [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.5 KB | 294 | 1 | §3.3 at 20.5 KB | L180 |
-| [`decisions/3.04-p4-adapter-milestone-one.md`](#decisions304-p4-adapter-milestone-onemd) | 10.4 KB | 142 | 1 | §3.4 at 10.4 KB | L186 |
-| [`decisions/3.05-p5-blueprint.md`](#decisions305-p5-blueprintmd) | 6.6 KB | 103 | 1 | §3.5 at 6.6 KB | L192 |
-| [`decisions/3.06-p6-parity-matrix.md`](#decisions306-p6-parity-matrixmd) | 8.7 KB | 130 | 1 | §3.6 at 8.7 KB | L198 |
-| [`decisions/3.07-p7-quality-bar.md`](#decisions307-p7-quality-barmd) | 5.7 KB | 85 | 1 | §3.7 at 5.7 KB | L204 |
-| [`decisions/3.08-p8-docs-site.md`](#decisions308-p8-docs-sitemd) | 4.7 KB | 73 | 1 | §3.8 at 4.7 KB | L210 |
-| [`decisions/3.09-p9-ledger-and-index.md`](#decisions309-p9-ledger-and-indexmd) | 1.1 KB | 17 | 1 | §3.9 at 1.1 KB | L216 |
-| [`decisions/3.10-s1-repo-bootstrap.md`](#decisions310-s1-repo-bootstrapmd) | 4.8 KB | 66 | 1 | §3.10 at 4.8 KB | L222 |
-| [`decisions/3.11-s1-review.md`](#decisions311-s1-reviewmd) | 6.7 KB | 86 | 1 | §3.11 at 6.7 KB | L228 |
-| [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.7 KB | 192 | 1 | §3.12 at 15.7 KB | L234 |
-| [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 23.3 KB | 309 | 1 | §3.13 at 23.3 KB | L240 |
-| [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 60.7 KB | 771 | 1 | §3.14 at 60.7 KB | L246 |
-| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 18.8 KB | 228 | 1 | §3.15 at 18.8 KB | L252 |
-| [`decisions/3.16-s4-reconciliation.md`](#decisions316-s4-reconciliationmd) | 10.0 KB | 129 | 1 | §3.16 at 10.0 KB | L258 |
-| [`definition-of-done.md`](#definition-of-donemd) | 63.1 KB | 545 | 22 | §8 at 14.8 KB | L264 |
-| [`docs-plan.md`](#docs-planmd) | 57.9 KB | 883 | 46 | §1 at 13.9 KB | L291 |
-| [`docs-site.md`](#docs-sitemd) | 75.5 KB | 825 | 37 | §2 at 19.2 KB | L342 |
-| [`legal.md`](#legalmd) | 66.5 KB | 996 | 36 | §3 at 23.2 KB | L384 |
-| [`plan.md`](#planmd) | 78.9 KB | 1167 | 51 | §3 at 14.7 KB | L425 |
-| [`prior-art.md`](#prior-artmd) | 75.7 KB | 1140 | 45 | §2 at 11.1 KB | L481 |
-| [`roadmap.md`](#roadmapmd) | 90.2 KB | 1209 | 50 | §4 at 14.6 KB | L531 |
-| [`testing.md`](#testingmd) | 70.5 KB | 1017 | 51 | §3 at 11.4 KB | L586 |
-| [`testing/8.01-doc-index.md`](#testing801-doc-indexmd) | 4.3 KB | 59 | 1 | §8.1 at 4.3 KB | L642 |
-| [`testing/8.02-skill-pointers.md`](#testing802-skill-pointersmd) | 5.1 KB | 71 | 1 | §8.2 at 5.1 KB | L648 |
-| [`testing/8.03-context-budget.md`](#testing803-context-budgetmd) | 10.2 KB | 150 | 3 | §8.3 at 10.2 KB | L654 |
-| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 76.2 KB | 1031 | 45 | §6 at 11.5 KB | L662 |
+| [`component-blueprint.md`](#component-blueprintmd) | 92.1 KB | 1663 | 79 | §11 at 20.9 KB | L64 |
+| [`decisions.md`](#decisionsmd) | 48.3 KB | 485 | 14 | §6 at 11.6 KB | L148 |
+| [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.8 KB | 125 | 1 | §3.1 at 8.8 KB | L167 |
+| [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.6 KB | 143 | 1 | §3.2 at 9.6 KB | L173 |
+| [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.5 KB | 294 | 1 | §3.3 at 20.5 KB | L179 |
+| [`decisions/3.04-p4-adapter-milestone-one.md`](#decisions304-p4-adapter-milestone-onemd) | 10.4 KB | 142 | 1 | §3.4 at 10.4 KB | L185 |
+| [`decisions/3.05-p5-blueprint.md`](#decisions305-p5-blueprintmd) | 6.6 KB | 103 | 1 | §3.5 at 6.6 KB | L191 |
+| [`decisions/3.06-p6-parity-matrix.md`](#decisions306-p6-parity-matrixmd) | 8.7 KB | 130 | 1 | §3.6 at 8.7 KB | L197 |
+| [`decisions/3.07-p7-quality-bar.md`](#decisions307-p7-quality-barmd) | 5.7 KB | 85 | 1 | §3.7 at 5.7 KB | L203 |
+| [`decisions/3.08-p8-docs-site.md`](#decisions308-p8-docs-sitemd) | 4.7 KB | 73 | 1 | §3.8 at 4.7 KB | L209 |
+| [`decisions/3.09-p9-ledger-and-index.md`](#decisions309-p9-ledger-and-indexmd) | 1.1 KB | 17 | 1 | §3.9 at 1.1 KB | L215 |
+| [`decisions/3.10-s1-repo-bootstrap.md`](#decisions310-s1-repo-bootstrapmd) | 4.8 KB | 66 | 1 | §3.10 at 4.8 KB | L221 |
+| [`decisions/3.11-s1-review.md`](#decisions311-s1-reviewmd) | 6.7 KB | 86 | 1 | §3.11 at 6.7 KB | L227 |
+| [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.7 KB | 192 | 1 | §3.12 at 15.7 KB | L233 |
+| [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 23.3 KB | 309 | 1 | §3.13 at 23.3 KB | L239 |
+| [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 60.7 KB | 771 | 1 | §3.14 at 60.7 KB | L245 |
+| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 18.8 KB | 228 | 1 | §3.15 at 18.8 KB | L251 |
+| [`decisions/3.16-s4-reconciliation.md`](#decisions316-s4-reconciliationmd) | 10.0 KB | 129 | 1 | §3.16 at 10.0 KB | L257 |
+| [`definition-of-done.md`](#definition-of-donemd) | 63.1 KB | 545 | 22 | §8 at 14.8 KB | L263 |
+| [`docs-plan.md`](#docs-planmd) | 57.9 KB | 883 | 46 | §1 at 13.9 KB | L290 |
+| [`docs-site.md`](#docs-sitemd) | 75.5 KB | 825 | 37 | §2 at 19.2 KB | L341 |
+| [`plan.md`](#planmd) | 78.9 KB | 1167 | 51 | §3 at 14.7 KB | L383 |
+| [`prior-art.md`](#prior-artmd) | 75.7 KB | 1140 | 45 | §2 at 11.1 KB | L439 |
+| [`roadmap.md`](#roadmapmd) | 90.2 KB | 1209 | 50 | §4 at 14.6 KB | L489 |
+| [`testing.md`](#testingmd) | 70.5 KB | 1017 | 51 | §3 at 11.4 KB | L544 |
+| [`testing/8.01-doc-index.md`](#testing801-doc-indexmd) | 4.3 KB | 59 | 1 | §8.1 at 4.3 KB | L600 |
+| [`testing/8.02-skill-pointers.md`](#testing802-skill-pointersmd) | 5.1 KB | 71 | 1 | §8.2 at 5.1 KB | L606 |
+| [`testing/8.03-context-budget.md`](#testing803-context-budgetmd) | 10.2 KB | 150 | 3 | §8.3 at 10.2 KB | L612 |
+| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 76.2 KB | 1031 | 45 | §6 at 11.5 KB | L620 |
 
 ## `component-blueprint.md`
 
@@ -156,13 +155,13 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §2   L107–129  3.2 KB  Q1–Q8 — the gate that settled each, and where the answer lives
 §3   L130–165  4.9 KB  The ledger
 §4   L166–214  5.8 KB  The reversals, in one place
-§5   L215–251  4.6 KB  The final build order — one list, each step's gate cited
-§6   L252–400 11.6 KB  What the document pass did **not** settle
-§6.1 L320–400  7.2 KB  The S4 marking pass — what was measured, and what was only ever predicted
-§7   L401–481 10.7 KB  The reconciliation log — what P9 changed, and where
-§7.1 L407–445  7.5 KB  Carried forward by name
-§7.2 L446–467  1.4 KB  The citation convention, and the sites it was applied to
-§7.3 L468–481  1.5 KB  Two rows found at P9 that were on nobody's list
+§5   L215–255  5.1 KB  The final build order — one list, each step's gate cited
+§6   L256–404 11.6 KB  What the document pass did **not** settle
+§6.1 L324–404  7.2 KB  The S4 marking pass — what was measured, and what was only ever predicted
+§7   L405–485 10.7 KB  The reconciliation log — what P9 changed, and where
+§7.1 L411–449  7.5 KB  Carried forward by name
+§7.2 L450–471  1.4 KB  The citation convention, and the sites it was applied to
+§7.3 L472–485  1.5 KB  Two rows found at P9 that were on nobody's list
 ```
 
 ## `decisions/3.01-p1-identity-law-reference-policy.md`
@@ -379,47 +378,6 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §8   L753–771  3.4 KB  What P8 changes — re-plan P9 against this
 §9   L772–802  2.9 KB  What P8 could not act on
 §10  L803–825  2.1 KB  The P9 flags carried forward, untouched
-```
-
-## `legal.md`
-
-```
-§0     L 22–76   4.6 KB  Summary — what this repo owes, to whom
-§0.1   L 58–76   1.3 KB  The reference checkouts these claims were verified against
-§1     L 77–303 14.6 KB  License compatibility
-§1.1   L 79–99   1.2 KB  The whole dependency graph is MIT
-§1.2   L100–184  5.6 KB  The one Apache-2.0 route — real, analysed, and closed at P2
-§1.3   L185–217  2.3 KB  The `@zag-js/solid` fork is a direct MIT derivative
-§1.4   L218–243  1.8 KB  Reading a reference owes nothing — and the line is drawn at *expression*
-§1.5   L244–274  2.0 KB  `@chakra-ui/panda-preset`: depend, do not vendor
-§1.6   L275–288  0.9 KB  hope-ui carry-overs are ours, and still get a provenance note
-§1.7   L289–303  0.8 KB  The look-and-feel question
-§2     L304–411  5.2 KB  The attribution mechanism
-§2.1   L306–311  0.2 KB  What triggers it
-§2.2   L312–341  1.2 KB  The `@license` JSDoc header
-§2.3   L342–360  1.0 KB  Why `@license` is load-bearing, not decoration
-§2.4   L361–369  0.4 KB  Root `NOTICE.md` and per-package `NOTICE.md`
-§2.5   L370–383  0.6 KB  License files in `package.json#files`
-§2.6   L384–411  1.8 KB  Checklist for a new derivative file
-§3     L412–773 23.2 KB  Trademark
-§3.1   L414–432  1.2 KB  What the MIT grant does not give us
-§3.2   L433–448  1.0 KB  What we *may* say
-§3.3   L449–462  0.9 KB  Package name and npm scope
-§3.3.1 L463–516  3.5 KB  `@chakra-ui-solid` is owned — what that does and does not settle
-§3.3.2 L517–565  3.0 KB  `@solid-chakra` is also owned — the lower-confusion form, and not the one chosen
-§3.3.3 L566–658  6.2 KB  Decision: `chakra-ui-solid`, under `@chakra-ui-solid`
-§3.4   L659–678  1.1 KB  Repo description and README disclaimer
-§3.5   L679–704  1.8 KB  The repository name
-§3.6   L705–726  1.6 KB  Docs-site naming
-§3.7   L727–773  2.9 KB  Talking to Chakra — the trigger, and the answer if they object
-§4     L774–942 11.1 KB  Brand proposal — the P1 gate
-§4.1   L785–826  2.9 KB  The descriptor — arguing with the working assumption
-§4.2   L827–856  2.3 KB  The shortlist
-§4.3   L857–902  2.9 KB  The case for and against each
-§4.4   L903–916  1.0 KB  What is deliberately not proposed
-§4.5   L917–942  1.4 KB  What the choice unblocked, and what is still outstanding
-§5     L943–973  3.3 KB  Tracking upstream over time
-§6     L974–996  3.4 KB  Open items
 ```
 
 ## `plan.md`
