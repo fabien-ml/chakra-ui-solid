@@ -843,6 +843,7 @@ failure line below is what the failure *means*, not what it prints.
 | `check:no-hand-written-data-attrs` | Zero `data-*` string literals in `packages/components/src/**` (tests excluded) | We write none — every state attribute comes from the machine's `connect()` (`component-blueprint.md` §3.7). A speculative translation getter is **invisible** when unnecessary, which is why the rule is "do not add one" and this is how that is checked |
 | `check:commit-trailers` | No commit message contains `Co-Authored-By`, `Co-authored-by` or *"Generated with"* | `CLAUDE.md`'s git convention, as a commit-msg hook plus a CI pass over the branch's commits |
 | `check:doc-index` | `__internal__/INDEX.md` is byte-identical to a fresh `pnpm docs:index` | The index disagrees with the documents, so a citation resolves to the wrong line range — §8.1 |
+| `check:skill-pointers` | Every pointer in every repo-authored skill under `.agents/skills/` resolves, and every line of one is a pointer | A skill is a reading order over the corpus and nothing else. A dead pointer sends a reader to a section that is not the one named; a rule restated in a skill is a second copy, and the copy is the one that goes stale — §8.2 |
 
 ### 8.1 `check:doc-index` — the anchor index
 
@@ -901,6 +902,77 @@ index is navigation, not a digest — a generated summary of the arguments would
 every rule, which is the thing `CLAUDE.md`'s three-surface split exists to prevent
 (`decisions.md` §0). The generator can only ever emit heading text, so the boundary holds by
 construction rather than by review.
+
+### 8.2 `check:skill-pointers` — the repo-authored skills
+
+**What a skill is here.** Five files under `.agents/skills/` — `port-a-component`, `attribution`,
+`add-a-check`, `docs-page`, `close-a-step` — each naming, for one shape of task, which sections of
+which documents to read and in what order. They exist because §8.1's index cuts the cost of *one*
+lookup and nothing else: a task that needs four documents still pays four grep-then-read cycles to
+discover which four. A skill is that discovery, written down once.
+
+**They carry anchors and never line ranges, and that is the load-bearing design choice.** A range
+in a hand-written file is invalidated by any edit above it in the document it points at — which is
+exactly why `INDEX.md` is generated and rule 1.11 exists. Five hand-written files carrying ~40
+ranges each have no generator, so every document commit would stale them silently and the repair
+would be by hand, five files at a time. An anchor is stable under any edit that does not renumber
+the section. The range is looked up in `INDEX.md` at read time; a skill's first body line says so.
+
+**Input.** Every directory under `.agents/skills/` that `skills-lock.json` does **not** claim. The
+lock file is the list of vendored skills, so it is the list this check reads — naming the five
+repo-authored ones in the script would keep passing after a sixth arrived and report it as checked
+by omission, which is `readIndexableDocuments`'s defect one surface over. A missing lock file is a
+failure rather than an empty skip, and so is finding zero repo-authored skills.
+
+**The citation grammar, exactly.** A backticked span is a **path** if it ends in a known extension
+(`.md`, `.mjs`, `.ts`, `.json`, `.yml`, …) and a **script** if it matches `pnpm <name>` or `<name>`
+with a colon in it; anything else — `@chakra-ui/panda-preset`, `anatomy`, `data-*` — is prose
+decoration and is not resolved. A `§` anchor is governed by **the nearest backticked `*.md` before
+it on the same line**, which is how the corpus already writes one: `` `legal.md` §2.2 — the
+header; §2.3 why it is load-bearing `` names the document once and carries two anchors. An anchor
+with no document before it is reported rather than guessed at.
+
+**Algorithm.** Four resolutions and two shape rules.
+
+1. **Anchors** resolve against the documents themselves, through `parseSections` — the same parser
+   `INDEX.md` is generated with, so the two cannot disagree about what an anchor is, and *is the
+   index current* stays owned by §8.1 alone. Anchors in `<name>/**` fold into `<name>.md`, so
+   `` `decisions.md` §3.15 `` resolves to the heading inside `decisions/3.15-…md` by a general
+   rule with no path named in the script.
+2. **Paths** resolve against the repo root, then against `__internal__/` — the convention
+   `CLAUDE.md` fixes, where `` `plan.md` `` means `__internal__/plan.md`.
+3. **Scripts** resolve against `package.json#scripts`.
+4. **Frontmatter**: `name` matches the directory the skill loads from, and `description` is
+   non-empty. A skill with neither is a file nothing ever triggers.
+5. **Every non-blank, non-heading, non-frontmatter line carries at least one citation.** This is
+   the shape rule that does the work: a sentence of rule text cites nothing, so there is no line in
+   a skill for one to be written on. Headings are exempt for §8.1's reason — a heading names, a
+   body states.
+6. **A pointer line carries at most 14 words outside its citations, and a skill is at most 40
+   lines.** Measured at this gate: the widest genuine line across the five carries **11** words, so
+   the ceiling is three words of headroom above what a real ordering clause needs.
+
+**Failure output.** Grouped by fault kind, each group headed by what that kind *means* rather than
+what it matched, then one `file:line — detail` per fault. Grouped rather than in file order because
+the kinds have different fixes: a dead pointer is repaired by re-reading `INDEX.md`, a
+`not-a-pointer` by deleting a sentence.
+
+**Blind spots, three:**
+
+- **It bounds the shape a restatement needs, and cannot recognise one.** *"Tests assert computed
+  styles, never class names"* is seven words and would pass beside a citation. The check makes a
+  paragraph impossible and a terse copy merely possible; the residue is registered as
+  `definition-of-done.md` §7.8 rather than claimed here.
+- **A resolving pointer can still be the wrong one.** `` `legal.md` §2.4 `` resolves whether or not
+  §2.4 is the section the task needs. Nothing mechanical distinguishes a correct reading order from
+  a plausible one.
+- **It does not check the reverse direction.** A document section that *should* be in a bundle and
+  is not produces no failure, and there is no artefact that could say which sections those are.
+
+**Why it is not merged into `check:doc-index`.** The two have different inputs and different
+failure meanings: one says *the index is stale, regenerate it*, the other *this pointer is wrong,
+re-read it*. Merged, a renumbered heading would report both at once as a single fault with one
+remedy, and the remedy for the index — `pnpm docs:index` — repairs nothing in a skill.
 
 ---
 
@@ -1004,7 +1076,7 @@ run is a green tick for work no machine performs.
 
 | Job | Runs | Contains |
 |---|---|---|
-| `verify` | every push | Biome; `tsc --noEmit`; `check:style-contract` (rules 1–3); `check:test-projects`; `check:resolution-sync`; `check:commit-trailers` |
+| `verify` | every push | Biome; `tsc --noEmit`; `check:style-contract` (rules 1–3); `check:test-projects`; `check:resolution-sync`; `check:commit-trailers`; `check:doc-index`; `check:skill-pointers` |
 | `constraint` | every push | `check:no-cij-manifest`; `check:no-runtime-sheet` |
 | `test` | every push, matrix ×3 | `test:unit`, `test:ssr`, `test:browser` — the browser leg installs Chromium with `playwright install --with-deps --only-shell`, and carries `check:floating-zindex` from step 5b. Every leg fails on a `mount()` diagnostic |
 | `styling` | every push, after `codegen` + `cssgen` | `check:css-coverage`; `check:coverage-allowlist`; `check:anatomy-parts`; `check:hash-config`; `check:preflight-hidden`; `check:data-attr-vocab`; `check:style-prop-collisions`; `check:no-hand-written-data-attrs` |

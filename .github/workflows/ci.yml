@@ -41,6 +41,10 @@ jobs:
       # A stale anchor index is worse than none: it points a reader at a line range that is not
       # the section they cited, and they read the neighbour without noticing.
       - run: pnpm check:doc-index
+      # The five repo-authored skills are pointer bundles over those same anchors. Both ways one
+      # breaks are silent: a dead pointer still reads as authoritative, and a rule restated in a
+      # skill is a second copy — the one that goes stale.
+      - run: pnpm check:skill-pointers
       # Rule 1 (`style-prop-static-value`) needs the generated `isCssProperty` to know which props
       # are style props, so codegen has to have run.
       - run: pnpm codegen

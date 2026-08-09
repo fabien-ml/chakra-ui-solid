@@ -175,7 +175,7 @@ spots.** Nothing below is a second copy of either.
 | **Per batch** | Each probe step and each of B1–B8 | `definition-of-done.md` §3 | The shared lines, plus what that batch proves that the previous one did not — **restated as a test, because prose about what a batch proves is not a gate** |
 | **Per release** | Every publish | `definition-of-done.md` §4 | The exports map, externality, the Panda peer, the attribution checks, the disclaimer, resolution sync, bundle figures, changesets |
 | **Unenforced, and labelled** | — | `definition-of-done.md` §7 | Conventions with no script, each naming what a reader is trusted to do. **Deleting an unenforceable rule is not the same as pretending it was enforced** |
-| **Named, not yet written** | The 25 `check:*` the documents name and `scripts/` does not have | `definition-of-done.md` §7b | The census, taken mechanically: **44 named, 19 live, 25 unwritten, 0 unnamed.** Most cannot be written yet because their subject does not exist; **two rows of §1 are real gaps and are named as such.** A named script is not a running one, and eleven documents written before anything was built are full of both |
+| **Named, not yet written** | The 25 `check:*` the documents name and `scripts/` does not have | `definition-of-done.md` §7b | The census, taken mechanically: **46 named, 21 live, 25 unwritten, 0 unnamed.** Most cannot be written yet because their subject does not exist; **two rows of §1 are real gaps and are named as such.** A named script is not a running one, and eleven documents written before anything was built are full of both |
 
 **CI groups them into jobs** so a red build names a category before anyone opens a log —
 `testing.md` §12. **Two live registers** carry per-change contents rather than rules: the axe
@@ -208,6 +208,9 @@ range and its size, so `` `plan.md` §3.5 `` reads as 76 lines rather than a who
 summary table says which file to read and where that file's block starts; read that block, not the
 index. Regenerate with `pnpm docs:index` in the same commit as any change to a `.md` under
 `__internal__`, a ledger entry included — `check:doc-index`.
+
+**Start a task from its skill** — `.agents/skills/{port-a-component,attribution,add-a-check,docs-page,close-a-step}/`
+name which sections to read, in order, and carry no rule text — `testing.md` §8.2.
 
 **Reference checkouts** live in `__reference-impl__/` — read-only, gitignored, never committed, and
 never a dependency.

@@ -44,16 +44,16 @@ so `§3.13` is indexed under `decisions/3.13-…` rather than under `decisions.m
 | [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.5 KB | 192 | 1 | §3.12 at 15.5 KB | L226 |
 | [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 22.8 KB | 309 | 1 | §3.13 at 22.8 KB | L232 |
 | [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 59.7 KB | 771 | 1 | §3.14 at 59.7 KB | L238 |
-| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 7.3 KB | 92 | 1 | §3.15 at 7.3 KB | L244 |
-| [`definition-of-done.md`](#definition-of-donemd) | 54.0 KB | 495 | 21 | §8 at 11.6 KB | L250 |
+| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 11.3 KB | 141 | 1 | §3.15 at 11.3 KB | L244 |
+| [`definition-of-done.md`](#definition-of-donemd) | 55.3 KB | 501 | 21 | §8 at 11.6 KB | L250 |
 | [`docs-plan.md`](#docs-planmd) | 57.3 KB | 883 | 46 | §1 at 13.7 KB | L276 |
 | [`docs-site.md`](#docs-sitemd) | 74.6 KB | 825 | 37 | §2 at 19.0 KB | L327 |
 | [`legal.md`](#legalmd) | 64.9 KB | 980 | 36 | §3 at 21.9 KB | L369 |
 | [`plan.md`](#planmd) | 76.6 KB | 1155 | 51 | §3 at 14.6 KB | L410 |
 | [`prior-art.md`](#prior-artmd) | 75.0 KB | 1140 | 45 | §2 at 11.1 KB | L466 |
 | [`roadmap.md`](#roadmapmd) | 88.0 KB | 1193 | 50 | §4 at 14.3 KB | L516 |
-| [`testing.md`](#testingmd) | 70.7 KB | 1043 | 52 | §3 at 11.3 KB | L571 |
-| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 74.5 KB | 1022 | 45 | §6 at 10.6 KB | L628 |
+| [`testing.md`](#testingmd) | 76.1 KB | 1115 | 53 | §8 at 16.6 KB | L571 |
+| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 74.5 KB | 1022 | 45 | §6 at 10.6 KB | L629 |
 
 ## `component-blueprint.md`
 
@@ -244,33 +244,33 @@ so `§3.13` is indexed under `decisions/3.13-…` rather than under `decisions.m
 ## `decisions/3.15-context-budget.md`
 
 ```
-§3.15 L 1–92 7.3 KB  The context budget — the documents as a working surface
+§3.15 L  1–141 11.3 KB  The context budget — the documents as a working surface
 ```
 
 ## `definition-of-done.md`
 
 ```
 §0    L 21–42   1.2 KB  The gate rule
-§1    L 43–64   2.5 KB  Per file
-§2    L 65–101  5.4 KB  Per component
-§3    L102–149 10.2 KB  Per batch
-§3.0  L108–119  0.5 KB  The gate every batch shares
-§3.1  L120–134  4.7 KB  The probe phase
-§3.2  L135–149  4.7 KB  The batches
-§4    L150–169  1.7 KB  Per release
-§5    L170–206  3.1 KB  The axe allowance register — as it stands today
-§6    L207–238  2.2 KB  The coverage allow-list — as it stands today
-§7    L239–256  3.4 KB  Conventions, unenforced — labelled, not hidden
-§7b   L257–314  4.0 KB  Named, not yet written — the enforcement census
-§8    L315–419 11.6 KB  The assumption register
-§8.1  L334–349  2.2 KB  `brief-plan` §8's originals
-§8.2  L350–369  2.7 KB  P3, P4 and P5
-§8.3  L370–382  2.1 KB  P6 and P7
-§8.3b L383–405  2.7 KB  P8
-§8.4  L406–419  0.7 KB  The three whose gate is a measurement plus a judgement
-§9    L420–440  1.3 KB  The scheduled checks — what fires them, who reads them
-§10   L441–463  3.4 KB  What P7 changes — re-plan P8 and P9 against this
-§11   L464–495  3.1 KB  What P7 could not act on
+§1    L 43–65   2.7 KB  Per file
+§2    L 66–102  5.4 KB  Per component
+§3    L103–150 10.2 KB  Per batch
+§3.0  L109–120  0.5 KB  The gate every batch shares
+§3.1  L121–135  4.7 KB  The probe phase
+§3.2  L136–150  4.7 KB  The batches
+§4    L151–170  1.7 KB  Per release
+§5    L171–207  3.1 KB  The axe allowance register — as it stands today
+§6    L208–239  2.2 KB  The coverage allow-list — as it stands today
+§7    L240–258  4.1 KB  Conventions, unenforced — labelled, not hidden
+§7b   L259–320  4.3 KB  Named, not yet written — the enforcement census
+§8    L321–425 11.6 KB  The assumption register
+§8.1  L340–355  2.2 KB  `brief-plan` §8's originals
+§8.2  L356–375  2.7 KB  P3, P4 and P5
+§8.3  L376–388  2.1 KB  P6 and P7
+§8.3b L389–411  2.7 KB  P8
+§8.4  L412–425  0.7 KB  The three whose gate is a measurement plus a judgement
+§9    L426–446  1.3 KB  The scheduled checks — what fires them, who reads them
+§10   L447–469  3.4 KB  What P7 changes — re-plan P8 and P9 against this
+§11   L470–501  3.1 KB  What P7 could not act on
 ```
 
 ## `docs-plan.md`
@@ -615,14 +615,15 @@ so `§3.13` is indexed under `decisions/3.13-…` rather than under `decisions.m
 §7.2 L 721–758   2.3 KB  The warm-up and the pin — P7's configuration, once per preview
 §7.3 L 759–788   2.1 KB  There is no story gate, because a story is not the validation surface
 §7.4 L 789–819   2.0 KB  What only Storybook can see
-§8   L 820–906  11.2 KB  The distribution, styling-config and structural checks
-§8.1 L 847–906   4.2 KB  `check:doc-index` — the anchor index
-§9   L 907–944   3.8 KB  The attribution checks
-§10  L 945–979   2.5 KB  The bundle measurement — `check:bundle`
-§11  L 980–998   2.5 KB  The scheduled upstream checks
-§12  L 999–1020  2.3 KB  The CI job map
-§13  L1021–1037  1.0 KB  What this apparatus assumes
-§14  L1038–1043  0.3 KB  Where this document ends
+§8   L 820–978  16.6 KB  The distribution, styling-config and structural checks
+§8.1 L 848–905   4.2 KB  `check:doc-index` — the anchor index
+§8.2 L 906–978   5.0 KB  `check:skill-pointers` — the repo-authored skills
+§9   L 979–1016  3.8 KB  The attribution checks
+§10  L1017–1051  2.5 KB  The bundle measurement — `check:bundle`
+§11  L1052–1070  2.5 KB  The scheduled upstream checks
+§12  L1071–1092  2.3 KB  The CI job map
+§13  L1093–1109  1.0 KB  What this apparatus assumes
+§14  L1110–1115  0.3 KB  Where this document ends
 ```
 
 ## `zag-solid-adapter.md`
