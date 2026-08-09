@@ -122,8 +122,8 @@ Four lines, from `roadmap.md` §9.2:
 | **1** Bootstrap | The three Vitest projects run and are distinguishable: an `ssr` test resolving the client build of either `solid-js` or `@solidjs/web` fails. **23 `solid-contract` cases green** — 20 copied (10 unit + 3 ssr + 7 browser, D-96) plus the three new `flush()` cases | `test:*`; `check:test-projects`; `check:resolution-sync` |
 | **2** `zag-solid` | `zag-solid-adapter.md` §6.5's seven lines, verbatim: 86 fork cases, 51 upstream cases in a one-time parallel run, 23 contract cases, `mount()` silent, the §0 audit green **against the installed closure**, 7 `@license` headers + both `NOTICE.md` tables, A1 filed. **86 + 51 is not 137** — `machine.browser.test.tsx` *is* the port of two upstream files (§6.2) | The milestone-one CI job; `check:no-cij-manifest`; `check:license-headers`; `check:notice-rows` |
 | **3** Styling seam | `Box` renders correct **computed styles** in unit, SSR and browser, and a consumer `panda.config.ts` override changes them. Plus: `check:preflight-hidden`, `check:alias-coverage`, `check:dark-selector`, `check:preset-token-resolution`, and `check:style-contract` rule 1 live | `styling` job; `test:*` |
-| **3b** The visual surfaces | **Two surfaces, one gate.** Storybook is a **local playground** — `pnpm storybook` renders `Box` and nothing automated opens it, so it contributes no gate line (`testing.md` §7.1; **D-133**). **The whole proof is the docs app**: its shell, its route map, `docs-plan.md` §8's component-page template, and its own `panda.config.ts` — a **standing consumer instance** from here rather than after B8 (`docs-site.md` §1.1), and from S3b the only place a component is validated as a real app uses it. Closes **P8-B** (MDX under Solid 2.0) and **P8-C** (the props-table generator); **P7-B is retired unclosed** — measured, then withdrawn, because nothing depends on it (**D-130**, **D-133**) | the `docs` job — `check:docs-inventory`, `check:docs-consumer-config`, `check:docs-examples`, `check:no-runtime-sheet` over `apps/docs/src`, `check:css-coverage` against the docs app's own sheet |
-| **4** One slot recipe | The component styles correctly **in a throwaway consumer whose own source never names the variant**, wired per `plan.md` §4.1. `check:css-coverage` green *there*; then flipping `hash` makes it exit `E_CONFIG_MISMATCH` rather than green or noisy; `check:data-attr-vocab` runs for the first time | `check:css-coverage`; `check:hash-config`; `check:responsive-grain`; `check:data-attr-vocab` |
+| **3b** The visual surfaces | **Two surfaces, one gate — discharged at S3b.** Storybook is a **local playground** — `pnpm storybook` renders `Box` and nothing automated opens it, so it contributes no gate line (`testing.md` §7.1; **D-133**). **The whole proof is the docs app**: its shell, its route map, `docs-plan.md` §8's component-page template applied once to `Box`, and its own `panda.config.ts` — a **standing consumer instance** from here rather than after B8 (`docs-site.md` §1.1), and from S3b the only place a component is validated as a real app uses it. Closes **P8-B** (MDX under Solid 2.0) and **P8-C1** (the generator's own-part-props half); **P8-C splits** and its other two thirds move to steps 4 and 5 (**D-142**); **P7-B is retired unclosed** — measured, then withdrawn, because nothing depends on it (**D-130**, **D-133**) | the `docs` job — `check:docs-inventory`, `check:docs-consumer-config`, `check:docs-examples`, `check:no-runtime-sheet` over `apps/docs/src`, and the docs build itself. **`check:css-coverage` against the docs sheet is not here** — it does not exist until step 4 and has no buildinfo to read until then (**D-139**) |
+| **4** One slot recipe | The component styles correctly **in a throwaway consumer whose own source never names the variant**, wired per `plan.md` §4.1. `check:css-coverage` green *there*; then flipping `hash` makes it exit `E_CONFIG_MISMATCH` rather than green or noisy; `check:data-attr-vocab` runs for the first time. **And the same check runs a second time against the docs app's own generated sheet** — the permanent instance of this gate (`docs-site.md` §1.1, §6.1), which is the step it first has a buildinfo to read (**D-139**) | `check:css-coverage`, in the throwaway consumer **and** in `apps/docs`; `check:hash-config`; `check:responsive-grain`; `check:data-attr-vocab` |
 | **5** Dialog | `component-blueprint.md` §11 compiles; axe clean on closed-state assertions with `aria-hidden-focus` allowed on open only; SSR→hydrate round-trip; `Portal`'s `isServer` guard tested in the `ssr` project; **the render strategy split so `present` can come from a machine as well as a presence** (`roadmap.md` §6.2) — tested against both sources before Collapsible needs it | §2's full bar; §5's register |
 | **5b** Popover | **The popper `--z-index` seam is measured**: a browser test asserting the computed `z-index`/`--z-index` on the floating element survives interleaved reactive re-renders and `raf` writes, with a recorded number. Either a sentence in the blueprint or a rule (`roadmap.md` §8.2) | `check:floating-zindex` — new at 5b, re-run at the first B5 component (**P6-A**) |
 | **6a** Atomic recipes | 18 components. The atomic recipe layer at volume; `splitVariantProps` exercised by the first `Button` (**P5-B**); `container`'s expression-tier preset delta lands **with its attribution in the same commit**. The three composed primitives (`checkmark`, `radiomark`, `colorSwatch`) exist, which is what unblocks B3/B4/B8 | `check:style-contract`; `check:css-coverage`; §2's bar |
@@ -251,6 +251,58 @@ that is a *gate* rather than a coding rule.
 
 ---
 
+## 7b. Named, not yet written — the enforcement census
+
+**Taken at S3b, 2026-08-09, mechanically.** Every `check:*` named anywhere in `CLAUDE.md` or the
+eleven `__internal__` documents, diffed against `scripts/check-*.mjs`:
+
+```
+named across the documents   44
+written and runnable         19
+named but not written        25
+written but never named       0
+```
+
+**Why this section exists.** §7 lists rules that *cannot* be scripted. This is the different
+category the documents kept blurring into it: rules stated as **enforced**, with an artefact named
+in the *Enforced by* column, whose artefact **does not exist**. A reader takes a named script as a
+running one, and eleven documents written before anything was built name twenty-five that are not.
+**Deleting an unenforceable rule is not the same as pretending it was enforced** — and neither is
+naming a script nobody has written.
+
+**Most of these are not gaps, and saying which is the point.** A check whose subject does not exist
+cannot be written, and writing it early produces a green tick for work no machine performs
+(§0; **D-133**). What is a gap is a rule presented as live whose subject exists today.
+
+| Arrives at | Checks | Why it cannot be written earlier |
+|---|---|---|
+| **Step 4** — the first slot recipe in a consumer | `css-coverage`, `coverage-allowlist`, `hash-config`, `responsive-grain`, `data-attr-vocab`, `anatomy-parts`, `buildinfo-fresh`, `props-tables`, `extraction-fixture`, `docs-links`, `docs-no-server-fns`, `docs-forbidden-claims`, `playground-values` | Thirteen of the twenty-five. Each needs a recipe, a consumer's generated sheet, a buildinfo, or a page that does not exist. `css-coverage` is the load-bearing one and **D-139** is why its docs-side run waits with it |
+| **Step 5** — the first machine | `style-prop-collisions`, `no-hand-written-data-attrs`, `bundle` | No `connect()` emits a prop bag yet, and no closure has a machine in it |
+| **Step 5b** | `floating-zindex` | It is a browser test over a popper, and there is no popper |
+| **Step 8** | `prerender-complete`, `deploy-smoke` | **P8-A.** The build already satisfies assertions 1–3; assertion 4 is known to fail (**D-145**) |
+| **Release** | `readme-disclaimer` | Nothing publishes at `0.0.0` |
+| **Scheduled / upstream** | `anatomy-diff`, `fork-drift`, `parity-matrix`, `panda-artifacts` | Renovate-triggered, per §9. They have no push-time subject by design |
+| **Deferred** | `llms-fresh` | With the AI tier (**D-138**) |
+
+**Two rows of §1 are the actual gaps, and both are stated there as enforced:**
+
+- **Rule 1.2** names `check:no-hand-written-data-attrs`, which does not exist. Its subject —
+  `packages/components/src/**` — *does* exist and would pass trivially today, so the rule is
+  currently held by nothing but the fact that no component writes a `data-*` literal yet. It bites
+  at step 5, and that is where the script lands.
+- **Rule 1.4** names `check:style-contract` rule 2, and the script's own header says
+  `NOT YET — it needs renderStyled's styleSource, which is P5's`. The rule is honest inside the
+  script and reads as live in §1's table.
+
+**Neither is rewritten here**, because both close at the step their subject arrives at and moving
+them now would be a second copy of §3.1's schedule. What changes is that §1's table is no longer the
+only place a reader looks, and this section is where *"is this actually running?"* is answered.
+
+**The inverse count is the reassuring half: zero checks exist that no document names.** Nothing has
+been built that the documents do not account for; the drift is entirely in the other direction.
+
+---
+
 ## 8. The assumption register
 
 Every open assumption across P3–P6, plus the two P7 introduces **and the four P8 does** (§8.3b, added
@@ -264,6 +316,11 @@ closed** — 1, 7, 10 and 11 outright; 2 and 8 closed with a standing re-check o
 remaining **32 are open, and every one names a script and a step.** Three of those resolve to a
 measurement plus a judgement rather than a threshold, and §8.4 lists them separately so nobody reads
 them as pass/fail.
+
+> **Recounted at S3b: 40 rows, 8 closed, 32 open.** P8-C became three rows (§8.3b) and P8-B closed,
+> so the P8 block is six rows rather than four and one more of them is done. The open count is
+> unchanged by coincidence, not by arithmetic — the split added two open rows and P8-B and P8-C1
+> closed two.
 
 ### 8.1 `brief-plan` §8's originals
 
@@ -320,12 +377,22 @@ Four, from `docs-site.md` §7.2 (§8 row 3). **P8-A is the runnable form of `bri
 6**, which §8.1 lists as *"P8's script to write"* — the assumption and its gate are one row apart and
 neither is a duplicate of the other: 6 is the claim, P8-A is the script.
 
+> **S3b moved three of the four.** P8-B **closed** — the docs build ran. P8-C **split into
+> P8-C1/C2/C3** and its first third closed, because its single gate named a component three steps
+> away while two of its three inputs could be measured now (**D-142**). P8-D's date moved from
+> step 8 to **step 4**, where its gate can first say something (**D-139**). Only P8-A is unchanged,
+> and it acquired a known failure before it runs (**D-145**). The four rows became six; the
+> register's total moves from 38 to 40, of which **8 are closed**.
+
 | # | Assumption | Gate | Runs at |
 |---|---|---|---|
-| **P8-A** | `dist/client` is self-sufficient for static hosting — no route needs a server runtime | `docs-site.md` §7.1's assertions 1–4, then 5–7: a deploy smoke test over the prerendered output | **Step 8**, and every docs build thereafter |
-| **P8-B** | MDX compiles through `vite-plugin-solid` under Solid 2.0 with the `compiler: "babel"` pin, and the pin's stated expiry is the only thing that changes later | The docs build runs at all, plus one MDX-authored example mounting in the `browser` project | Step 8, first page |
-| **P8-C** | The props-table generator can read a machine's `Props` type and the preset's variant map with **no running system object** | A non-empty, correct table for Dialog — the first component page written. **Shares its fate with P7-A**, which needs the same variant map | Step 8, first component page |
-| **P8-D** | The docs app's Panda run is representative of a consumer's, so `check:css-coverage` against its sheet means what the step-4 run means | `check:docs-consumer-config`. Note what it does **not** prove: representativeness of one config, not of all | Step 8, every push |
+| **P8-A** | `dist/client` is self-sufficient for static hosting — no route needs a server runtime | `docs-site.md` §7.1's assertions 1–4, then 5–7: a deploy smoke test over the prerendered output. **Assertion 4 already has a known failure at S3b**: the prerender emits no `404.html`, so the not-found page is the host's rather than ours (**D-145**) | **Step 8**, and every docs build thereafter |
+| ~~**P8-B**~~ | **Closed at S3b.** MDX compiles through `vite-plugin-solid` under Solid 2.0 with the `compiler: "babel"` pin | Six routes prerendered with their prose in the HTML, and an MDX page's three examples mounting in the `browser` project | — |
+| **P8-C** | **Split into three at S3b** (**D-142**) — one gate covered three inputs with three different first-existence dates, and its stated subject (Dialog) does not exist until step 5. D-117's shape | — | see the three rows below |
+| **P8-C1** | The generator reads **our own part props** from the TypeScript compiler API with no running system object | **Closed at S3b**: a correct two-row table for `Box`, types and JSDoc read from `packages/components/src/box/box.tsx` | — |
+| **P8-C2** | The generator reads the **recipe's variant map** with no running system object | The variant section of the first component page with a recipe. **Shares its fate with P7-A**, which needs the same map | Step 4 |
+| **P8-C3** | The generator reads a **machine's `Props` type** through our lockfile | A non-empty, correct Root props table for Dialog | Step 5 |
+| **P8-D** | The docs app's Panda run is representative of a consumer's, so `check:css-coverage` against its sheet means what the step-4 run means | `check:docs-consumer-config` — **live from S3b**. The coverage half needs the check itself and the buildinfo, both step 4 (**D-139**). Note what neither proves: representativeness of one config, not of all | Step 4, every push |
 
 ### 8.4 The three whose gate is a measurement plus a judgement
 

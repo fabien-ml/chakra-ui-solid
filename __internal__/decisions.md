@@ -1899,8 +1899,9 @@ D-116's citations of `style-props.test.ts` still resolve**, now under
 
 ### 3.14 S3b — the visual surfaces
 
-**Step 3b was split in two at the review**, and the split is the first entry here. Everything below
-belongs to the Storybook half; the docs app's own findings will continue this section from D-133.
+**Step 3b was split in two at the review**, and the split is the first entry here. **D-128–D-133 are
+the Storybook half; D-134 onward are the docs app's**, written when `apps/docs` was built and every
+page was opened.
 
 **D-128 · Step 3b ships as two commits — Storybook now, the docs app next — and `definition-of-done.md`
 §3.1's step-3b row is one gate spread over both**
@@ -2064,6 +2065,397 @@ real app usage, not Storybook"*, which is what moved rule 2.6 from *labelled* to
 The §10 table is left unedited — it is the record of what P7 carried, not a live queue.
 — **Reasoning.** `testing.md` §7, §12, §13; `definition-of-done.md` §0, §2 rule 2.6, §3.1 step 3b,
 §3.2 B5, §7.6, §8.3; `docs-site.md` §1.1, §4.1; `prior-art.md` §8.1.
+
+**D-134 · We ship a colour-mode primitive. The port rule does not carry, because there is nothing to
+port to** ⟲
+— **Decision.** Reverse **D-38**. `@chakra-ui-solid/system` gains a colour-mode primitive at step
+3c: a blocking pre-paint `<head>` script, a module-level signal, `.light`/`.dark` on the root and
+`color-scheme` beside it as an inline style attribute. **Still no provider** — the source of truth
+is the DOM class plus storage, so a module-level signal beats a `<ThemeProvider>` that would exist
+only to re-publish what the document already says, which is a Solid idiom and the port rule's own
+stated exception. The docs app's own module, written at this step, is the shape 3c extracts.
+— **Rejected.** *Hold D-38 and ship a documented snippet* — D-38's reasoning was *Chakra ships no
+provider, so neither do we*, and what Chakra ships is a **CLI composition over `next-themes`**.
+`next-themes` has no SolidJS equivalent, so porting that faithfully means shipping a wrapper around
+nothing and leaving every consumer to rediscover the same 80 lines — three of which decide whether
+their page has colours at all. *Carry `../hope-ui/apps/docs/src/lib/color-mode.ts`* — it is
+temporary glue written under different constraints, and it is wrong here in four measurable ways
+(below), which is what made it a specification in negative rather than a template.
+— **Effect.** A divergence **in the pleasant direction, flagged rather than absorbed** — D-116's
+precedent, and the rule is `component-blueprint.md` §8's: adding a fix Chakra does not have is a
+divergence even pointing the pleasant way. It owes, and has, in this commit: a `plan.md` §0.4 delta
+row (`React→Solid`), an amendment to `plan.md` §7.1, a `roadmap.md` §4.5 row, and the folder
+arithmetic that moves with it — **115 → 116 folders, 113 → 114 shipping, 2 → 3 relocations**, in
+§4.5's table, its closing sum, and `docs-site.md` §2.4's count trap.
+
+**The four ways hope-ui's module is wrong *here*, which are the specification in negative:**
+
+| # | hope-ui's module | Why it does not transfer |
+|---|---|---|
+| 1 | Toggles **only `.dark`** | hope's preset gives its colours a base value, so "no class" is a valid light state there. Ours does not (**D-113**), so "no class" is a **colourless page** |
+| 2 | Seeds to `"light"` and applies the stored preference **after mount** | A deliberate flash it can afford. Ours would flash from *no colours*, not from the wrong ones |
+| 3 | No `color-scheme` on the root | Native controls and scrollbars stay light in dark mode |
+| 4 | No cross-tab sync | Two open tabs disagree after one toggles |
+
+**Re-measured at S3b rather than argued**, in a real browser on a prerendered page, swapping the
+root class and reading `getComputedStyle(document.body).backgroundColor`: `.light` →
+`rgb(255,255,255)`, `.dark` → `rgb(9,9,11)`, **no class → `rgba(0,0,0,0)`**. That third value is
+requirement 1's whole justification.
+
+**Deferred with the reason, not silently:** `forcedTheme`, arbitrary theme lists beyond
+light/dark/system, a CSP `nonce`, and a `themes` array. `disableTransitionOnChange` is 3c's and
+takes the **Panda route** — a `globalCss` rule in `@chakra-ui-solid/preset`, generated into the
+consumer's stylesheet at build time, with the runtime only setting an attribute on `<html>` — with
+one unverified thing to probe there: whether `!important` clears Panda's cascade layers as expected.
+— **Settled.** S3b, 2026-08-09, by the reviewer's direction, and confirmed by the browser
+measurement above. **⟲** Reverses **D-38**.
+— **Reasoning.** `plan.md` §7.1, §0.4; `roadmap.md` §4.5; `component-blueprint.md` §8;
+`docs-plan.md` §7.2; **D-113**, **D-116**.
+
+**D-135 · The docs app's colour-mode module is app code with a library shape, and one thing about it
+should change on the way out**
+— **Decision.** `apps/docs/src/lib/color-mode.ts` — 4 exports, ~60 lines with comments. The
+pre-paint script is a **string constant** interpolating the same storage key the module writes, so
+the two cannot drift; the signal is seeded from the **document** on the client and from a constant
+on the server; every write path is behind `isServer`; a module-scope `storage` listener does
+cross-tab sync.
+— **Rejected.** *Seed the signal to `"light"` and correct it in an effect* — hope-ui's shape, and
+requirement 2 is exactly that it is wrong here. Reading the class back off the document costs one
+DOM read at module evaluation and makes the signal agree with the paint on the **first** client
+render, so no attribute driven by it is ever momentarily wrong after hydration. *Put the toggle's
+icon behind the signal* — the icon is chosen by the **cascade** (`_light`/`_dark` on two rendered
+SVGs), so it is right on the first paint too; only the button's accessible name reads the signal,
+and an attribute is not a paint.
+— **Effect.** **What 3c should change on the way out**, stated now while the reasons are fresh:
+(1) the module-scope `storage` listener has no removal path, which is correct for a singleton in an
+app and wrong for a library primitive a consumer may want to own — 3c gives it an explicit
+`watchColorMode()` returning a disposer, or moves the listener behind first use; (2) the storage
+key is a literal here and must become an option in the library, because two apps on one origin
+would otherwise share a preference; (3) the pre-paint script is exported as a **string** and the
+app renders it — 3c should keep exactly that shape rather than growing a component, because a
+component cannot be rendered before its own framework boots, which is the one thing this script has
+to do. The SSR write-never property is what 3c's `ssr` test asserts, the way B8 will for
+`createToaster`.
+— **Settled.** S3b, 2026-08-09, by writing it and rendering it.
+— **Reasoning.** `plan.md` §7.1; **D-134**; `prior-art.md` §8.1.
+
+**D-136 · The `guides/` tier is deleted and its one page moves to `/docs/styling/static-extraction`**
+— **Decision.** `/guides/static-extraction` → `/docs/styling/static-extraction`. The route changes;
+`docs-plan.md` §1's spec is unchanged in content.
+— **Rejected.** *Keep the tier for one page* — the nav is exactly four items and none of them is
+Guides (`docs-site.md` §2.1), so the tier's only page would have been reachable by URL alone. **An
+unreachable page is a worse outcome for the loudest page on the site than a relocated one**, and it
+is the page a reader arrives at from a broken build. *Put it under `get-started/`* — a reader hits
+the failure it fixes while writing components, not while installing.
+— **Effect.** Five sites moved in this commit: `docs-site.md` §2.1's row and §2.3's entry,
+`docs-plan.md` §0's table and §1's heading, and `testing.md` §6.5. The inbound links the reviewer
+named — the docs home, the install page's troubleshooting, `/docs/styling/overview`'s first link —
+are written against the new route from the start, because none of those pages existed before this
+commit.
+— **Settled.** S3b, 2026-08-09, by the reviewer's direction.
+— **Reasoning.** `docs-site.md` §2.1, §2.3; `docs-plan.md` §1.
+
+**D-137 · `frameworks/storybook` is deleted as a page; its measured hazard becomes a section on
+`frameworks/vite`, at step 5**
+— **Decision.** No `/docs/get-started/frameworks/storybook`. The three framework pages are **vite,
+solid-start, tanstack-start**. The `@zag-js/focus-visible` warm-up and the version pin move to a
+section on the `vite` page, landing with the first machine component.
+— **Rejected.** *Drop the hazard with the nav item* — it is real, **measured** (**D-130**), and
+reaches any consumer who runs a Zag machine in Storybook, which is most of them. Letting a measured
+consumer hazard fall out of the docs because a nav item did is the failure this project keeps
+naming. *Keep the page* — Storybook is a local playground here and contributes no gate (**D-133**),
+so a top-level framework page for it would be the only nav item on the site pointing at something
+we do not treat as a deliverable, and a reader would reasonably infer we test against it.
+— **Effect.** `docs-plan.md` §4.2 loses a row and gains the section, with the measurement in place
+of the carried claim: at Storybook 10.5.7 `HTMLElement.prototype.focus` **is** an accessor and
+reading it off the prototype throws, while the `browser` Vitest project on the same Chromium sees a
+plain data property. **Step 5, not now**: the crash needs a machine, and there is none until Dialog.
+`docs-site.md` §2.2 gains the row saying where it went.
+— **Settled.** S3b, 2026-08-09.
+— **Reasoning.** `docs-plan.md` §4.2; `docs-site.md` §2.2; `testing.md` §7.2; **D-130**, **D-133**.
+
+**D-138 · The AI tier and the five `/llms*.txt` routes are deferred to before first public release,
+and the cost is stated where it is deferred**
+— **Decision.** The five generated routes leave `docs-site.md` §2.1, `check:llms-fresh` is not
+written, §4.6 and `docs-plan.md` §4.4 are marked deferred with the trigger, and §2.2's `ai/*` row
+becomes *we ship none of the three, for now*.
+— **Rejected.** *Ship them now* — the audience does not exist until the site is public, and a
+generated file nobody can fetch is a maintenance obligation with no reader, kept current through
+eight batches of churn. *Drop them* — §4.6's argument is not weakened by being postponed, and
+deleting it would lose it.
+— **Effect.** **The cost is written at §4.6 rather than allowed to evaporate**, in the terms the
+argument was made in: the index's three lead sentences are the highest-leverage prose on the site,
+because an assistant that has not read them writes `<Box w={width}>` and the user gets silence —
+the same failure `/docs/styling/static-extraction` exists for, arriving through a channel that page
+cannot reach. **For as long as this is deferred that channel is uncovered, nothing else in the docs
+closes it, and no check reports it missing.** It returns alongside `legal.md` §3.7's launch
+trigger, which fires at the same moment and for the same reason: both are about the site having
+readers.
+— **Settled.** S3b, 2026-08-09, by the reviewer's direction.
+— **Reasoning.** `docs-site.md` §2.2, §4.6; `docs-plan.md` §4.4; `legal.md` §3.7.
+
+**D-139 · `check:css-coverage` against the docs app's sheet lands at step 4, and the reason is the
+buildinfo rather than scheduling**
+— **Decision.** Step 4. `definition-of-done.md` §3.1 step 3b's gate line for it is removed, step 4's
+row gains it, and `docs-site.md` §6.1 and `testing.md` §12 say the same thing. The two documents
+that disagreed now do not.
+— **Rejected.** *Write it here* — the check does not exist at all yet (it is `testing.md` §3, and it
+arrives with the step-4 throwaway consumer), so "write it early" means writing two checks at once.
+*Leave both documents standing and let step 4 sort it out* — that is the state the question was
+asked about.
+— **Effect.** A second reason, which is the load-bearing one and is not a scheduling argument: the
+docs app's Panda run reaches values *our* components name through the **buildinfo**, and
+`@chakra-ui-solid/components` emits none until it has a recipe to declare — step 4. A coverage check
+with no buildinfo to read has nothing to be wrong about. Both halves of the wiring are in place
+now: `apps/docs/panda.config.ts` names the buildinfo path, and `apps/docs/turbo.json`'s `cssgen`
+`inputs` declare the cross-package coupling (D-125's fix, carried rather than rediscovered), so the
+check is the only piece still missing. **P8-D's date moves from step 8 to step 4** with it.
+— **Settled.** S3b, 2026-08-09.
+— **Reasoning.** `docs-site.md` §6.1; `definition-of-done.md` §3.1, §8.3b; `testing.md` §3, §12;
+**D-125**.
+
+**D-140 · The component tier is 111 pages, not 113 — a relocated row owes no component page**
+— **Decision.** `check:docs-inventory` expects a `/docs/components/<name>` page for every
+`roadmap.md` §4 row whose `Status` begins with `ships` **and** whose directory exists under
+`packages/components/src`. A `relocated` row owes none.
+— **Rejected.** *Derive "has this batch landed" from a hand-maintained list of landed batches* — a
+list needs editing at every step, and the step where somebody forgets is the step the check stops
+meaning anything. The source tree is the same fact, mechanically. *Give the relocations component
+pages anyway, to make the count 113* — `environment` and `locale` are re-export directories whose
+mechanism is a context, documented on `/docs/get-started/environments/*`; `color-mode` (D-134) is
+documented on `/docs/styling/dark-mode`. A component page for each would be three pages describing
+something other than a component.
+— **Effect.** The arithmetic, once: **116 folders → 114 shipping rows → 111 component pages**.
+`docs-site.md` §2.4's count trap is corrected, and the correction **strengthens** it — the two
+numbers were never comparable, and now they are not even equal, so nothing invites the arithmetic.
+`roadmap.md` §4.5's closing sum carries the same three-step derivation so the check and the register
+cannot drift apart.
+— **Settled.** S3b, 2026-08-09, by writing `check:docs-inventory` and having to name the set it
+checks. It reports `111 that will` today, against 1 landed.
+— **Reasoning.** `docs-site.md` §2.4, §6.1; `roadmap.md` §4.5; `definition-of-done.md` rule 2.15.
+
+**D-141 · The top bar renders only the tiers that have a page**
+— **Decision.** The nav is declared as the settled four — Get Started · Components · Styling ·
+Theming — in one module (`apps/docs/src/lib/site-map.ts`), and a tier renders once it has at least
+one content file. Today two render.
+— **Rejected.** *Render all four from the start* — Styling and Theming have no page until step 4,
+so two of the four would 404. *Render them disabled* — a greyed-out nav item is a promise with worse
+ergonomics than an absence, and `roadmap.md` §9.2's rule is about promises. *Declare only the two
+that exist* — then the settled IA lives nowhere in the code and the third tier arrives as a
+judgement call rather than as an entry appearing.
+— **Effect.** The site is readable as a site at every gate, which is what
+`definition-of-done.md` rule 2.15 asks for, without any gate rendering a link to nothing. The same
+module is what the sidebar and `check:docs-inventory`'s tier assertion read, so there is one
+declaration rather than three.
+— **Settled.** S3b, 2026-08-09.
+— **Reasoning.** `docs-site.md` §2.1; `definition-of-done.md` rule 2.15; `roadmap.md` §9.2.
+
+**D-142 · P8-C is three assumptions with three different first-existence dates, and the first is
+closed**
+— **Decision.** Split. **P8-C1** — the generator reads our own part props from the TypeScript
+compiler API — **closed at S3b** with a correct two-row table for `Box`. **P8-C2** — the recipe's
+variant map — step 4, sharing P7-A's fate and its gate. **P8-C3** — a machine's `Props` type — step
+5, with Dialog.
+— **Rejected.** *Close it here on Box alone* — Box has no recipe and no machine, so two thirds of
+the claim would be closed by a component that cannot exercise them. *Re-date the whole thing to step
+5* — the own-part-props half is measurable now, and carrying a measurable assumption two steps is
+what D-117 was written about.
+— **Effect.** D-117's shape again, and the same resolution: `definition-of-done.md` §3.1's step-3b
+row and `docs-site.md` §7.2's *"step 8, first component page"* were each right about a different
+third. **The measurement that closed C1 turned up a defect on the way** — see D-144. The register
+goes from 38 rows to 40, and from 6 closed to 8 (P8-B closed too: the docs build ran, six routes
+prerendered with prose in the HTML, and an MDX page's three examples mount in the `browser`
+project).
+— **Settled.** S3b, 2026-08-09, by running the generator over `packages/components/src`.
+— **Reasoning.** `docs-site.md` §4.2, §7.2; `definition-of-done.md` §8.3b, §3.1; **D-117**.
+
+**D-143 · A `render` target narrower than the part's own element type needs a cast, and that is the
+measured price of `as` staying loose**
+— **Decision.** Record it and document it; change nothing in the library. Box's page states it
+beside the `render` example, and `docs-plan.md` §8.8 makes it a template sentence for the layout
+surface.
+— **Rejected.** *Make `RenderProp` generic over the target element* — that is precisely the
+deep-conditional polymorphic typing `prior-art.md` §2.5 rejected for wrecking editor completions,
+and re-adopting it here would trade an occasional cast for a permanent cost on every part of every
+component. *Drop `ref` from the props the factory forwards* — it would fix the type error by
+removing a feature, which is the port rule's other direction.
+— **Effect.** Measured while writing Box's `render` example. `BoxProps`' element type is
+`JSX.HTMLAttributes<HTMLElement>`, Solid's `Ref<T>` is invariant, and
+`Ref<HTMLElement>` is therefore not assignable to `Ref<HTMLAnchorElement>` — so
+`render={(props) => <a {...props} href="…" />}` is a type error **on `ref` alone**, and
+`<Dynamic component="a" {...props}>` fails identically. Three forms work: a host element whose
+interface *is* `HTMLElement` (`section`, `article`, `span`, `mark`), a component accepting
+`JSX.HTMLAttributes<HTMLElement>`, or a cast. **The example ships the cast rather than an evasion**,
+because an example that hides a required cast teaches the wrong thing. It is narrow: a part typed
+against its own element — `Dialog.Trigger` against `HTMLButtonElement` — needs none.
+— **Settled.** S3b, 2026-08-09, by `tsc --noEmit` over `apps/docs`, twice.
+— **Reasoning.** `plan.md` §0.4; `prior-art.md` §2.5; `component-blueprint.md` §3.5;
+`docs-plan.md` §8.8.
+
+**D-144 · `ts.getJSDocCommentsAndTags` returns an empty list without parent pointers, so a
+type-reading generator emits a table with every description blank and exits 0**
+— **Decision.** `scripts/generate-props-tables.mjs` reads JSDoc from `ts.getLeadingCommentRanges`
+over the source text rather than from the JSDoc API.
+— **Rejected.** *Set `setParentNodes` and keep the API call* — `ts.createProgram` has no such
+option; it belongs to `ts.createSourceFile`, and reaching for it would mean parsing every file twice
+or hand-rolling a program. *Ship the blank descriptions and fill them in later* — a generated table
+whose every description is empty looks like source that has no JSDoc, which is the reading a
+reviewer would take.
+— **Effect.** A defect rather than a gap, and it is this repo's characteristic shape in a new place:
+the API **does not throw** when parent pointers are unset, it returns `[]`. The first run emitted
+both of Box's props with `"description": ""` and exited 0. Nothing downstream would have failed —
+the page would have rendered a table with two rows and two blank cells, and it reads as a component
+whose props are undocumented. Recorded because the next reader of that generator will reach for the
+same API for the same reason.
+— **Settled.** S3b, 2026-08-09, by running the generator and reading its output.
+— **Reasoning.** `docs-site.md` §4.2; `prior-art.md` §8.1.
+
+**D-145 · The prerender emits no `404.html`, so `docs-site.md` §7.1 assertion 4 has a known failure
+before it is written**
+— **Decision.** Record it against **P8-A**; fix it at step 8, where the assertion lives.
+— **Rejected.** *Fix it now* — the prerender's route list, the Cloudflare `_redirects` mapping and
+the smoke test are one piece of work and they belong to P8-A, which is step 8's. *Leave it
+unrecorded because the assertion is not written yet* — an assumption whose gate is already known to
+fail is worth more written down than discovered by the gate.
+— **Effect.** Measured: `pnpm build:docs` prerenders **6 routes** and `dist/client` contains one
+`index.html` per route and no `404.html`. Serving `dist/client` alone, an unknown path falls through
+to the host's 404 rather than to our not-found page — which is the difference between a reader
+seeing the site's own *"this is built one batch at a time"* message and seeing a bare error.
+`docs-site.md` §7.1's assertions 1–3 already hold today: every route has an `index.html`, every one
+carries its rendered `<h1>` and real paragraphs (**not** an SPA shell), and `dist/client` serves
+standalone with no request outside itself.
+— **Settled.** S3b, 2026-08-09, by building and serving `dist/client` from a plain static file
+server.
+— **Reasoning.** `docs-site.md` §1.5, §7.1; `definition-of-done.md` §8.3b.
+
+**D-146 · Panda scans `.mdx` and `check:style-contract` does not, so a style prop written in an MDX
+page is unchecked**
+— **Decision.** Record the gap and state the convention it implies: **styling lives in `.tsx`;
+`.mdx` carries prose, fenced code and `<Example>`/`<PropsTable>`.** No check is written here.
+— **Rejected.** *Add `.mdx` to `check:style-contract`'s scan set* — it parses with oxc, which cannot
+parse MDX, so this means an MDX-aware parser in a lint rule, which is a `testing.md` §6 artefact
+change and outside this step's scope. *Drop `.mdx` from `panda.config.ts#include`* — then a style
+prop in a content page would render unstyled instead of merely being unchecked, which is worse in
+exactly the direction §0.2 is about.
+— **Effect.** The exposure is bounded and asymmetric. `listOurSourceFiles` scans
+`.ts/.tsx/.js/.jsx/.mts/.mjs` under `packages/*/src` and `apps/docs/src`, so `.mdx` is outside both
+`check:style-contract` rule 1 **and** `check:no-runtime-sheet` — while `apps/docs/panda.config.ts`
+deliberately includes `.mdx` so a style prop written there does generate CSS. So the failure mode is
+a *dynamic* value in an MDX page: no rule generated, nothing unstyled that a check would notice.
+Every example on the site is a `.tsx` file under `src/examples/` precisely because that is the
+scanned half, and `check:docs-examples` asserts each one is rendered by a page — which is what keeps
+the convention from being a note nobody applies.
+— **Settled.** S3b, 2026-08-09, by reading `scripts/lib/no-runtime-sheet.mjs`'s extension list
+against `apps/docs/panda.config.ts#include`.
+— **Reasoning.** `testing.md` §5.2, §6.1; `plan.md` §0.2; `docs-site.md` §4.1.
+
+**D-147 · The docs site shipped at S3b is not the near-1:1 copy of chakra-ui.com the documents
+specify, and the cause is that the reference was never opened** ⟲
+— **Decision.** Record the failure and rework the site against
+`__reference-impl__/chakra-ui/apps/www` in a dedicated session. The app, the four Vite knobs, the
+Panda consumer config, the three checks, the colour-mode module and the build are **kept**; the
+**IA, the navigation, the theme and every page's content are reworked**.
+— **Rejected.** *Patch Box's page and move on* — the same cause produced the navigation, the
+landing page and the tier structure, so fixing one page leaves three instances of it standing.
+*Treat the delta as a deliberate divergence* — it was not decided, it was not measured, and no
+document asks for it.
+— **Effect.** Four failures, and the fourth is the cause of the other three:
+
+1. **The navigation is wrong.** chakra-ui.com scopes the left sidebar to the **current top-level
+   section**; `apps/docs/src/components/docs-sidebar.tsx` renders every tier at once, so
+   *Components* appears under *Get Started*. The top bar is right and the sidebar contradicts it.
+2. **Box's page is not the template applied.** Their page is preview-first with `links` in
+   frontmatter and **six** examples (Shorthand, Pseudo Props, Border, As Prop, Shadow, Composition
+   — their pages run 7–14); ours buries the preview under two paragraphs, inlines the links as body
+   text, and ships **two**. Every missing example works here unchanged; nothing about `plan.md` §0
+   blocks one of them.
+3. **A section on Box's page that `docs-plan.md` §8.10 forbids.** *Style props take literals* states
+   globally what §8.10 says is stated **once**, on `/docs/styling/static-extraction`; the
+   per-component note belongs only to the eight CIJ-marked rows, and Box is not one.
+4. **The reference was never opened.** Box's page was written from `docs-plan.md` §8's template
+   alone — and that template's own frame is *"Chakra's component page structure, **copied
+   exactly**"*. A spec that says *copy this* cannot be executed without reading the thing.
+   `prior-art.md` §8.1's rule applies to a reference exactly as it applies to a dependency: **open
+   it, do not reason about it.** `__reference-impl__/chakra-ui/apps/www` was in the checkout the
+   whole time.
+
+**What does not change, because it is the part §3.2 keeps:** structure, section order, the example
+set, part names and nav shape are **API shape and structure** and owe nothing; each example's
+explanatory sentence and each page's `description` are **expression** and stay ours
+(`legal.md` §1.4; `docs-site.md` §3.2 rows 1–3, §3.3). Reworking to 1:1 means the *shape* converges
+and the *sentences* do not — and §3.3's proxy is unchanged: **no `@license` header and no
+`NOTICE.md` row anywhere under `apps/docs/src/**`**, or the writing-it-fresh rule failed.
+— **Settled.** S3b review, 2026-08-09, by the reviewer, after opening the built site: *"you made
+another website, not a chakra-ui docs using solidjs website"*. **⟲** Reverses the IA as applied at
+D-136/D-141 to the extent that the rework changes it; D-136's relocation and D-138's deferral stand
+on their own reasons and are re-decided against the reference rather than assumed.
+— **Reasoning.** `docs-plan.md` §8, §8.10; `docs-site.md` §2.1, §3.2, §3.3; `prior-art.md` §8.1;
+`legal.md` §1.4.
+
+**D-148 · Chakra's docs prose is MIT. `legal.md`'s "rewrite every sentence" was a policy on top of
+the licence, and the policy is dropped** ⟲
+— **Decision.** The docs site **copies Chakra's pages** — structure, section order, example set,
+*and prose* — adapting what our API changes. The obligation is **one `NOTICE.md` row** covering
+`apps/docs/src/content`, naming `chakra-ui/apps/www`, MIT, © 2019 Chakra Systems Inc.
+`docs-site.md` §3.2's *rewritten* tier and §3.3's *no `@license` header and no `NOTICE.md` row
+anywhere under `apps/docs/src/**`* proxy are **retired** for the content tier.
+— **Rejected.** *Keep the rewrite policy* — it was written as though the licence required it, and
+it does not. Measured: `__reference-impl__/chakra-ui/LICENSE` is a single MIT grant at the repo
+root; there is no separate licence under `apps/www` and no `license` field on `apps/www/package.json`,
+so the root `"license": "MIT"` covers the docs content exactly as it covers the code. MIT permits
+copying and modification outright; its one condition is that the notice travels with substantial
+portions. *Keep it as a style preference* — it produced a site that did not read as Chakra's docs
+at all (**D-147**), which is the cost the policy was never priced against.
+— **Effect.** The policy's two stated reasons are answered rather than dismissed: per-file
+bookkeeping collapses to **one row** because the content tier is one derivative rather than 111
+(`legal.md` §2.6's mechanism already supports a directory-scoped entry); and *"not reading as a
+clone"* was the goal that produced the wrong site. **What does not move is trademark**, which is a
+separate control and is unaffected by any licence: no Chakra logo, wordmark, favicon derivative,
+social card or combined mark, page titles and chrome saying `chakra-ui-solid`, and the §3.4
+disclaimer on the home page and in every footer (`legal.md` §3.6, and §3.6's own closing line —
+the copyright control and the trademark control do not substitute for each other).
+— **Settled.** S3b, 2026-08-09, by the reviewer, after the licence was re-read: *"legal.md is only
+here to credit code source"*. Verified against the checkout rather than taken on the sentence.
+— **⟲** Reverses `docs-site.md` §3.2 rows 1–3 and §3.3 for the content tier, and `legal.md` §1.4's
+application to docs prose. `legal.md` §1.4 stands unchanged for **code**, which is what it was
+written for.
+— **Reasoning.** `legal.md` §1.4, §2.6, §3.6; `docs-site.md` §3.2, §3.3; **D-147**.
+
+**D-149 · The enforcement census: 44 checks named, 19 live, 25 unwritten, 0 unnamed**
+— **Decision.** Take the census mechanically and record it as `definition-of-done.md` **§7b**, with
+a row in `CLAUDE.md`'s enforced-rule index. Correct the three stale *"planned, not yet written"*
+claims in `CLAUDE.md` — `check:no-cij-manifest`, `check:no-runtime-sheet` and
+`attribution.config.ts` have all been live since steps 1–2.
+— **Rejected.** *Rewrite the twenty-five rules to say "not yet"* — twenty-three of them cannot be
+written because their subject does not exist, and restating §3.1's schedule inside every rule would
+be a second copy of it. *Leave it* — a named script reads as a running one, which is the failure
+mode the whole repo is organised against, aimed at its own documents.
+— **Effect.** **Two rows of `definition-of-done.md` §1 are real gaps**, both stated there as
+enforced: rule 1.2 names `check:no-hand-written-data-attrs`, which does not exist and whose subject
+does; rule 1.4 names `check:style-contract` rule 2, which the script's own header says is not
+implemented. Both close at step 5. **The inverse count is the reassuring half — zero checks exist
+that no document names**, so the drift is entirely in one direction: documents ahead of code, never
+code ahead of documents. **This is the mechanical half of the reconciliation the reviewer asked
+for.** The prose half — every document sentence that asserts behaviour nobody has run — is not
+covered here and is its own pass.
+— **Settled.** S3b, 2026-08-09, by
+`grep -ohE 'check:[a-z0-9-]+' __internal__/*.md CLAUDE.md | sort -u` diffed against
+`ls scripts/check-*.mjs`.
+— **Reasoning.** `definition-of-done.md` §0, §1, §7, §7b; `CLAUDE.md`'s enforced-rule index.
+
+**D-150 · The CI `docs` job was a stub asserting the docs app does not exist**
+— **Decision.** Wire it: `pnpm build:docs`, then `check:docs-consumer-config`,
+`check:docs-inventory`, `check:docs-examples`. The step-4 checks keep an explicit *not yet written*
+line naming what each waits for.
+— **Rejected.** *Leave it until step 8* — the job's body was
+`echo "the docs app does not exist yet — it is built at step 8."`, which became false in this
+commit. A job that echoes a false statement is a **green tick for work no machine performs**, which
+is the exact thing `definition-of-done.md` §0 and **D-133** deleted the `stories` job for.
+— **Effect.** Caught by the census (**D-149**) rather than by anything failing, which is the
+point of taking one. `testing.md` §12's `docs` row and this job now say the same thing.
+— **Settled.** S3b, 2026-08-09, by reading `.github/workflows/ci.yml` against what had just been
+built.
+— **Reasoning.** `testing.md` §12; `definition-of-done.md` §0, §7b; **D-133**.
 
 ---
 

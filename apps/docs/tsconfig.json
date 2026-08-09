@@ -1,0 +1,31 @@
+{
+  "//": "Self-contained, and deliberately does NOT extend ../../tsconfig.base.json. The base config carries `@chakra-ui-solid/* -> packages/*/src` paths — the in-repo 'always resolve to src' invariant (`plan.md` §9). Inheriting them here would defeat `docs-site.md` §1.3's 'build resolves to dist': `tsc --noEmit` must type against the published `dist` `.d.ts` a real consumer resolves through `exports`, because that is the surface a consumer actually gets. Carried from hope-ui `main` (b2df60d), `apps/docs/tsconfig.json` — same author, MIT.",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", ".output", ".tanstack"],
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "jsxImportSource": "@solidjs/web",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "target": "ES2022",
+    "isolatedModules": true,
+    // `vite.config.ts` imports `../../solid-babel-options.ts` and `../../vitest-aliases.ts` with
+    // their extensions, because Vite 8.2's native config loader warns on extensionless relative
+    // config imports and is slated to make that an error. Safe under `noEmit` — nothing here is
+    // compiled to JS by tsc.
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node", "vite/client"],
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "noEmit": true
+  }
+}

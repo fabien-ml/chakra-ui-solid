@@ -1,0 +1,28 @@
+export const order = 10;
+export const description = "Nothing special — and what that actually means.";
+
+# Vite
+
+**No special steps.** A Vite app with `vite-plugin-solid` already compiles our packages correctly,
+because that plugin is exactly the thing our published output expects to meet.
+
+This page exists to say so. The two settings the SolidStart and TanStack Start pages describe are
+about **server rendering** and **dependency pre-bundling**, and a client-only Vite app does
+neither — so a reader looking for a Vite-specific step should be able to find out in one screen
+that there isn't one, rather than concluding they missed it.
+
+## Why there is anything to say at all
+
+We publish **JSX-preserved `.jsx`** under the `"solid"` export condition, with no `"import"` or
+`"default"` fallback. Your toolchain compiles it, which is what lets one published artefact
+produce per-environment output — client, server, hydrating client — instead of us guessing which
+one you need.
+
+The cost is that the two places a bundler tries to *avoid* compiling a dependency both break:
+
+- **Server-side externalization.** Node cannot import raw JSX.
+- **Client-side dependency pre-bundling.** The pre-bundler compiles JSX as React, so the module
+  loads and the component renders nothing.
+
+A plain `vite build` does neither by default for a workspace app, so there is nothing to
+configure. If you add SSR, the SolidStart page's two lines apply.

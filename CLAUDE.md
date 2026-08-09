@@ -27,8 +27,8 @@ are two separate checks and **neither may be merged into the other** — `plan.m
 
 | | Scope | Judged by | Script |
 |---|---|---|---|
-| **The rule proper** | Our source **and the whole dependency closure** | What a dependency **is** — a manifest check | `check:no-cij-manifest` — **planned, not yet written** |
-| **Hygiene on ourselves** | `packages/*/src/**` and `apps/docs/src/**` only | What our code **does** — a grep | `check:no-runtime-sheet` — **planned, not yet written** |
+| **The rule proper** | Our source **and the whole dependency closure** | What a dependency **is** — a manifest check | `check:no-cij-manifest` — **live**, in the `constraint` job |
+| **Hygiene on ourselves** | `packages/*/src/**` and `apps/docs/src/**` only | What our code **does** — a grep | `check:no-runtime-sheet` — **live**, in the `constraint` job |
 
 **Allowed, and routinely needed:** the DOM `style` attribute (Zag's `normalizeProps` — the function
 turning a state machine's framework-agnostic prop bag into Solid props — emits `style` objects for
@@ -90,7 +90,7 @@ my file against theirs and see the same structure and sequence?* — `legal.md` 
 are silent and green:
 
 1. An entry in **`attribution.config.ts`** at the repo root, the registry every check reads
-   — **planned, not yet created**.
+   — **live**, with the fork's seven entries.
 2. An `@license` header naming the **upstream file**.
 3. A row in the root `NOTICE.md` **and** in the owning package's.
 4. `LICENSE` and `NOTICE.md` in that package's `package.json#files`.
@@ -175,6 +175,7 @@ spots.** Nothing below is a second copy of either.
 | **Per batch** | Each probe step and each of B1–B8 | `definition-of-done.md` §3 | The shared lines, plus what that batch proves that the previous one did not — **restated as a test, because prose about what a batch proves is not a gate** |
 | **Per release** | Every publish | `definition-of-done.md` §4 | The exports map, externality, the Panda peer, the attribution checks, the disclaimer, resolution sync, bundle figures, changesets |
 | **Unenforced, and labelled** | — | `definition-of-done.md` §7 | Conventions with no script, each naming what a reader is trusted to do. **Deleting an unenforceable rule is not the same as pretending it was enforced** |
+| **Named, not yet written** | The 25 `check:*` the documents name and `scripts/` does not have | `definition-of-done.md` §7b | The census, taken mechanically: **44 named, 19 live, 25 unwritten, 0 unnamed.** Most cannot be written yet because their subject does not exist; **two rows of §1 are real gaps and are named as such.** A named script is not a running one, and eleven documents written before anything was built are full of both |
 
 **CI groups them into jobs** so a red build names a category before anyone opens a log —
 `testing.md` §12. **Two live registers** carry per-change contents rather than rules: the axe

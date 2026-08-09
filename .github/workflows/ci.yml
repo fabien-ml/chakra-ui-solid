@@ -129,14 +129,44 @@ jobs:
   # to run would be the third thing, a green tick for work no machine performs. What Storybook
   # would have caught is now `definition-of-done.md` §7.7: a labelled, unenforced convention.
 
+  # The docs app is a **standing consumer instance**, so a red build here is a distribution failure
+  # rather than a documentation one: it installs our packages by name, resolves them through
+  # `exports` → `dist` under the `"solid"` condition, and runs its own Panda build
+  # (`docs-site.md` §1.1). From S3b it is also the only place a component is validated the way a
+  # consumer uses it — there is no story gate (D-133).
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      # NOT YET WRITTEN — the docs app is step 8. Its build failing is a distribution failure
-      # rather than a documentation one: it is a standing instance of the step-4 consumer gate.
-      - name: docs build + inventory (step 8)
-        run: echo "the docs app does not exist yet — it is built at step 8."
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.10.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # The build resolves our packages through `dist`, so it has to come first — and it is itself
+      # an assertion: `failOnError` on the prerender is the difference between a broken route and
+      # a silently missing page.
+      - run: pnpm build:docs
+      # Is the site still built the way a consumer's app is? `chakraConfig()` plus include/outdir
+      # and nothing else, no `src` alias in the production build, no import of the repo's own dev
+      # stylesheet. The moment one of those slips, the site proves nothing.
+      - run: pnpm check:docs-consumer-config
+      # Does the component tier match the parity matrix, in both directions? A page for an unbuilt
+      # component is a promise; a shipped component with no page is one nobody can find.
+      - run: pnpm check:docs-inventory
+      # The one that replaced the story canary. Every example typechecks against `dist`, imports
+      # only subpaths that exist, **mounts** with a non-empty root and no console error, and runs
+      # axe. Verified against deliberate failures rather than trusted: an example that throws and
+      # one that renders nothing both pass Biome, tsc and check:style-contract, and both fail here.
+      - run: pnpm check:docs-examples
+      # NOT YET WRITTEN — each needs something the site does not have yet. `check:css-coverage`
+      # against the docs sheet needs the check itself *and* a buildinfo to read, both step 4
+      # (D-139); the rest arrive with the pages they check.
+      - name: css-coverage / extraction-fixture / docs-links / no-server-fns / forbidden-claims (step 4)
+        run: |
+          echo "css-coverage against the docs sheet: step 4 — no buildinfo exists to read before it."
+          echo "extraction-fixture, docs-links, docs-no-server-fns, docs-forbidden-claims: step 4,"
+          echo "with the styling tier and the pages they check."
 
   dist:
     runs-on: ubuntu-latest

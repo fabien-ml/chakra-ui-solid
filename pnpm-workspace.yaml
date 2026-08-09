@@ -90,6 +90,21 @@ catalog:
   "@pandacss/preset-base": 1.12.0
   "@chakra-ui/panda-preset": 3.36.1
 
+  # TanStack Start and Router — the docs app's framework (`docs-site.md` §1.1). They are here
+  # rather than in `apps/docs/package.json` for a reason no other entry in this file has: **two of
+  # Plan B's three exit triggers are version facts about this exact pair** (`docs-site.md` §1.7,
+  # B2 and B3). B2 fires when a release moves the `solid-js` peer off the 2.x range; B3 fires when
+  # the line stalls for two consecutive Solid bumps. Under a floating range either one arrives as
+  # an unreproducible local breakage on whichever day the registry moved, and the exit criteria
+  # stop being observable.
+  #
+  # **`beta` is the line, and `latest` is not it.** On 2026-08-09 the dist-tags are
+  # `beta: 2.0.0-beta.30` / `latest: 1.168.40` for Start and `beta: 2.0.0-beta.29` /
+  # `latest: 1.170.23` for Router. The 1.x `latest` line does not peer SolidJS 2.0 at all, so
+  # `^`-ranging these would silently pull the wrong major.
+  "@tanstack/solid-start": 2.0.0-beta.30
+  "@tanstack/solid-router": 2.0.0-beta.29
+
 # `vite-plugin-solid` depends on `babel-preset-solid` by RANGE, and a range resolves to whatever
 # is newest on the registry that day — which is how the compiler drifted a version behind the
 # runtime without anyone changing a file. The catalog entry above only governs the root

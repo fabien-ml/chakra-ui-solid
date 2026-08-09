@@ -21,6 +21,12 @@ apps/*/styled-system/
 .output/
 .tanstack/
 .nitro/
+apps/docs/src/routeTree.gen.ts
+
+# The docs site's generated props tables — read out of `packages/components/src` by
+# `scripts/generate-props-tables.mjs` on every `codegen`. Committed, they would be a second copy of
+# the types that could disagree with the first (`docs-site.md` §4.2).
+apps/docs/src/generated/
 
 # Test artifacts
 coverage/

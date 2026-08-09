@@ -1,0 +1,41 @@
+{
+  "name": "@chakra-ui-solid/docs",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The chakra-ui-solid documentation site — and the standing consumer instance the library is validated against",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "codegen": "node ../../scripts/generate-props-tables.mjs",
+    "cssgen": "panda cssgen --outfile styled-system/styles.css"
+  },
+  "dependencies": {
+    "@chakra-ui-solid/components": "workspace:*",
+    "@chakra-ui-solid/styled-system": "workspace:*",
+    "@solidjs/web": "catalog:",
+    "@tanstack/solid-router": "catalog:",
+    "@tanstack/solid-start": "catalog:",
+    "solid-js": "catalog:"
+  },
+  "devDependencies": {
+    "@chakra-ui-solid/internal-test-utils": "workspace:*",
+    "@chakra-ui-solid/preset": "workspace:*",
+    "@mdx-js/rollup": "3.1.1",
+    "@pandacss/dev": "catalog:",
+    "@stefanprobst/rehype-extract-toc": "3.0.0",
+    "@types/mdx": "2.0.14",
+    "@types/node": "26.2.0",
+    "rehype-pretty-code": "0.14.5",
+    "rehype-slug": "6.0.0",
+    "remark-smartypants": "3.0.3",
+    "shiki": "4.4.2",
+    "typescript": "6.0.3",
+    "vite": "8.2.1",
+    "vite-plugin-solid": "catalog:",
+    "vitest": "4.1.10"
+  }
+}

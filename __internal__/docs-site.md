@@ -209,48 +209,68 @@ documented" into "Plan B is reachable".
 
 ### 2.1 The route map
 
-**A 1:1 structural copy of chakra-ui.com's IA** — `get-started/`, `components/`, `styling/`,
-`theming/`, plus the `guides/` tier `docs-plan.md` §1's page already lives in. Charts excluded
-(`roadmap.md` §5.7). **Structure is not expression; a sentence is** (`legal.md` §1.4) — §3 is where
-that line is drawn page by page, and it is not re-derived here.
+> **Amended at S3b, 2026-08-09**, when the app was built and the list met a reader for the first
+> time. Six changes, each with a `decisions.md` §3.14 entry: the `guides/` tier is deleted and its
+> one page moves under Styling (**D-136**); `frameworks/storybook` is gone and its measured hazard
+> relocated (**D-137**); the whole AI tier and the five generated `/llms*.txt` routes are
+> **deferred to before first public release**, with their cost stated at §4.6 (**D-138**);
+> `get-started/migration` is deferred, not dropped (**D-139**); the framework pages are **three**;
+> and the component tier is **111** rows rather than 113 (**D-140**, §2.4).
+>
+> **The list is explicitly non-exhaustive.** A page with no reader is a candidate for the same
+> treatment, and the treatment is *deferred with its cost stated*, never *quietly absent*.
+
+**A structural copy of chakra-ui.com's IA, minus the tiers whose mechanism does not exist here** —
+`get-started/`, `components/`, `styling/`, `theming/`. Charts excluded (`roadmap.md` §5.7).
+**Structure is not expression; a sentence is** (`legal.md` §1.4) — §3 is where that line is drawn
+page by page, and it is not re-derived here.
+
+**The top bar is exactly four items: Get Started · Components · Styling · Theming.** No sponsor
+button, no version dropdown, no Docs/Showcase/Blog/Guides split, no Charts. A tier renders in the
+bar once it has a page (**D-141**) — the site is built incrementally and is meant to be readable at
+every gate (`definition-of-done.md` rule 2.15), and a nav item pointing at an empty tier is a 404
+with a promise attached.
 
 `Spec` is the seam of §0: every row points at the `docs-plan.md` section that says what the page
 contains, at the component template, or at *generated* — a page rendered from data with no prose to
-spec.
+spec. **`Live`** is when the page exists: `3b` shipped with the app, and the rest arrive with the
+step that gives them content.
 
-| Route | Renders | Source | Spec |
-|---|---|---|---|
-| `/` | The parity sentence verbatim, the disclaimer, the Panda prerequisite | `plan.md` §0, §4.4; `legal.md` §3.4 | `docs-plan.md` §3 |
-| `/docs/get-started/installation` | The prerequisite above the install snippet; the consumer's `panda.config.ts` | `plan.md` §4.4, §3.4 | `docs-plan.md` §4 |
-| `/docs/get-started/frameworks/vite` | `ssr.noExternal`, `optimizeDeps` | `plan.md` §8 | `docs-plan.md` §4 |
-| `/docs/get-started/frameworks/tanstack-start` | Same, for a Start consumer | `plan.md` §8 | `docs-plan.md` §4 |
-| `/docs/get-started/frameworks/solid-start` | Same, plus `ssr.noExternal` by name | `plan.md` §8 | `docs-plan.md` §4 |
-| `/docs/get-started/frameworks/storybook` | The `@zag-js/focus-visible` warm-up and the version pin | `component-blueprint.md` §1.3; `brief-plan` §2.10 | `docs-plan.md` §4 |
-| `/docs/get-started/environments/shadow-dom` | The environment context and `getRootNode` | `plan.md` §7.2; `roadmap.md` §5.1 | `docs-plan.md` §4 |
-| `/docs/get-started/environments/iframe` | Same context, the other host | `plan.md` §7.2 | `docs-plan.md` §4 |
-| `/docs/get-started/migration` | The §0.4 delta table **with its Cause column**, and P6's six per-component corrections | `plan.md` §0.4; `roadmap.md` §5, §13 row 1 | `docs-plan.md` §5 |
-| `/docs/get-started/ai/llms` | The `llms.txt` directory | §4.5 | `docs-plan.md` §4 |
-| `/guides/static-extraction` | The dynamic-value contract as a consumer contract | `plan.md` §3.5, §1.4, §0.2 | `docs-plan.md` §1 |
-| `/docs/styling/overview` | Where a class comes from; the first link is the guide above | `plan.md` §3.5, §3.6 | `docs-plan.md` §7.1 |
-| `/docs/styling/styled-factory` | `renderStyled`, the `styled` factory, `render`, precedence | `component-blueprint.md` §3.4, §3.5; `prior-art.md` §2.5 | `docs-plan.md` §7.1 |
-| `/docs/styling/conditional-styles` | Panda conditions over the machine's `data-*` | `component-blueprint.md` §3.7 | `docs-plan.md` §7.1 |
-| `/docs/styling/responsive-design` | Responsive **style props** work; responsive **recipe variants** are the opt-in | `plan.md` §3.8, §1.4 | `docs-plan.md` §7.1 |
-| `/docs/styling/css-variables` | Route 3, and override path 1 | `plan.md` §3.5, §3.7; `component-blueprint.md` §5.3 | `docs-plan.md` §7.1 |
-| `/docs/styling/dark-mode` | Color mode as a **consumer snippet**, not library API | `plan.md` §7.1 | `docs-plan.md` §7.2 |
-| `/docs/styling/{focus-ring,layer-styles,text-styles,animation-styles,cascade-layers,virtual-color,color-opacity-modifier}` | Preset features, one page each | the preset | `docs-plan.md` §7.1 |
-| `/docs/styling/style-props/*` — 18 pages | The prop→CSS-property tables | our utilities + the generated `isCssProperty` | **generated** (§4.3) |
-| `/docs/theming/overview` | preset → your config → your stylesheet. No runtime system | `plan.md` §3.6, §3.7 | `docs-plan.md` §7 |
-| `/docs/theming/tokens` + 12 token pages | The token tables | the installed preset | **generated** (§4.3) |
-| `/docs/theming/semantic-tokens` | The `_dark` condition contract | `plan.md` §7.1 | `docs-plan.md` §7.2 |
-| `/docs/theming/{recipes,slot-recipes}` | The variant API is Chakra's; the resolution is a static import | `plan.md` §3.6 | `docs-plan.md` §7.3 |
-| `/docs/theming/customization/*` — 11 pages | The four override paths, one worked example each | `plan.md` §3.7 | `docs-plan.md` §7.4 |
-| `/docs/theming/customization/recipes` | Also: the two preset deltas we add | `definition-of-done.md` §6 | `docs-plan.md` §7.4 |
-| `/docs/reference/chakra-config` | Every knob `chakraConfig()` owns, and `responsive`'s three grains | `plan.md` §3.3, §3.4, §3.8 | `docs-plan.md` §6 |
-| `/docs/components/<name>` — **113 pages** | One per shipping row | `roadmap.md` §4 | `docs-plan.md` §8 (template) |
-| `/llms.txt`, `/llms-full.txt`, `/llms-components.txt`, `/llms-styling.txt`, `/llms-theming.txt` | The whole site, for a model | §4.5 | **generated** |
+| Route | Renders | Source | Spec | Live |
+|---|---|---|---|---|
+| `/` | The parity sentence verbatim, the disclaimer, the Panda prerequisite | `plan.md` §0, §4.4; `legal.md` §3.4 | `docs-plan.md` §3 | **3b** |
+| `/docs/get-started/installation` | The prerequisite above the install snippet; the consumer's `panda.config.ts` | `plan.md` §4.4, §3.4 | `docs-plan.md` §4 | **3b** |
+| `/docs/get-started/frameworks/vite` | That there is no special step, and why there is anything to say | `plan.md` §8 | `docs-plan.md` §4 | **3b** |
+| `/docs/get-started/frameworks/tanstack-start` | Same two settings, for a Start consumer | `plan.md` §8 | `docs-plan.md` §4 | **3b** |
+| `/docs/get-started/frameworks/solid-start` | `ssr.noExternal` and `optimizeDeps.exclude`, by name | `plan.md` §8 | `docs-plan.md` §4 | **3b** |
+| `/docs/get-started/environments/shadow-dom` | The environment context and `getRootNode` | `plan.md` §7.2; `roadmap.md` §5.1 | `docs-plan.md` §4 | step 5 |
+| `/docs/get-started/environments/iframe` | Same context, the other host | `plan.md` §7.2 | `docs-plan.md` §4 | step 5 |
+| `/docs/get-started/migration` | The §0.4 delta table **with its Cause column**, and P6's six per-component corrections | `plan.md` §0.4; `roadmap.md` §5, §13 row 1 | `docs-plan.md` §5 | **deferred** — the table it renders is mostly about components that do not exist yet, so it lands with B8 |
+| `/docs/styling/static-extraction` | The dynamic-value contract as a consumer contract. **Moved here from `/guides/`** (D-136) | `plan.md` §3.5, §1.4, §0.2 | `docs-plan.md` §1 | step 4, behind `check:extraction-fixture` |
+| `/docs/styling/overview` | Where a class comes from; the first link is the guide above | `plan.md` §3.5, §3.6 | `docs-plan.md` §7.1 | step 4 |
+| `/docs/styling/styled-factory` | `renderStyled`, the `styled` factory, `render`, precedence | `component-blueprint.md` §3.4, §3.5; `prior-art.md` §2.5 | `docs-plan.md` §7.1 | step 4 |
+| `/docs/styling/conditional-styles` | Panda conditions over the machine's `data-*` | `component-blueprint.md` §3.7 | `docs-plan.md` §7.1 | step 5 |
+| `/docs/styling/responsive-design` | Responsive **style props** work; responsive **recipe variants** are the opt-in | `plan.md` §3.8, §1.4 | `docs-plan.md` §7.1 | step 4 |
+| `/docs/styling/css-variables` | Route 3, and override path 1 | `plan.md` §3.5, §3.7; `component-blueprint.md` §5.3 | `docs-plan.md` §7.1 | step 4 |
+| `/docs/styling/dark-mode` | Colour mode as **our API** — the primitive, the pre-paint script, and D-113's failure mode beside it. **Rewritten from *consumer snippet* at 3c** (D-134) | `plan.md` §7.1 | `docs-plan.md` §7.2 | **3c** |
+| `/docs/styling/{focus-ring,layer-styles,text-styles,animation-styles,cascade-layers,virtual-color,color-opacity-modifier}` | Preset features, one page each | the preset | `docs-plan.md` §7.1 | step 4 |
+| `/docs/styling/style-props/*` — 18 pages | The prop→CSS-property tables | our utilities + the generated `isCssProperty` | **generated** (§4.3) | step 4 |
+| `/docs/theming/overview` | preset → your config → your stylesheet. No runtime system | `plan.md` §3.6, §3.7 | `docs-plan.md` §7 | step 4 |
+| `/docs/theming/tokens` + 12 token pages | The token tables | the installed preset | **generated** (§4.3) | step 4 |
+| `/docs/theming/semantic-tokens` | The `_dark` condition contract | `plan.md` §7.1 | `docs-plan.md` §7.2 | **3c** |
+| `/docs/theming/{recipes,slot-recipes}` | The variant API is Chakra's; the resolution is a static import | `plan.md` §3.6 | `docs-plan.md` §7.3 | step 4 |
+| `/docs/theming/customization/*` — 11 pages | The four override paths, one worked example each | `plan.md` §3.7 | `docs-plan.md` §7.4 | step 4 |
+| `/docs/theming/customization/recipes` | Also: the two preset deltas we add | `definition-of-done.md` §6 | `docs-plan.md` §7.4 | step 6a |
+| `/docs/reference/chakra-config` | Every knob `chakraConfig()` owns, and `responsive`'s three grains | `plan.md` §3.3, §3.4, §3.8 | `docs-plan.md` §6 | step 4 |
+| `/docs/components/<name>` — **111 pages** | One per shipping row that is not a relocation (§2.4) | `roadmap.md` §4 | `docs-plan.md` §8 (template) | per batch |
 
 **The nav order is the table's order**, and the component index is alphabetical within it —
 `roadmap.md` §4's batch grouping is a build-order artefact and means nothing to a reader.
+
+**One tier is deliberately outside the top bar**: `/docs/reference/chakra-config` is reachable from
+the pages that need it rather than from a fifth nav item. A reference tier with one page in it is a
+nav item that costs every reader a scan and serves the few who came for it — the link from the
+install page and the styling overview is what those readers actually follow.
 
 One placement is deliberately not 1:1: **`chakraConfig` gets a `/docs/reference/` page** rather than
 a `get-started/` one, because it is an API reference for a function and Chakra has no analogue for it
@@ -261,9 +281,13 @@ honest; filing a reference page under "get started" would bury it.
 
 | Their page | Why it is absent |
 |---|---|
-| `get-started/cli` | There is no CLI. Chakra's installs snippets into a consumer's app; ours would be a product nobody has built. The one snippet it would matter for — color mode — is on `/docs/styling/dark-mode`, in full (`plan.md` §7.1) |
+| `get-started/cli` | There is no CLI. Chakra's installs snippets into a consumer's app; ours would be a product nobody has built. **And the one snippet it would matter for no longer needs installing** — colour mode is library API here (`plan.md` §7.1; **D-134**), which is the strongest form this row could take |
 | `get-started/figma` | No design kit exists |
-| `get-started/ai/mcp-server`, `get-started/ai/skills` | We ship neither. `llms.txt` we do ship, and it is the one of the three that costs nothing to keep current (§4.5) |
+| `get-started/ai/mcp-server`, `get-started/ai/skills`, `get-started/ai/llms` | **We ship none of the three, for now.** `llms.txt` is not dropped — it is deferred to before first public release along with the whole AI tier (§4.6), where the cost of deferring it is stated rather than left to evaporate |
+| `get-started/playground` | The playground is §4.4's, and §4.4's own constraint is why it is not a `get-started/` page: a live editor accepting arbitrary style props is impossible without a build step, so what ships is prebuilt examples plus controls over pre-generated value sets. That belongs beside the components it varies, not in a setup tier |
+| `get-started/frameworks/storybook` | **Dropped as a page; the hazard it carried is not** (**D-137**). Storybook is a local playground here and contributes no gate (**D-133**), so a top-level framework page for it would be the only nav item on the site pointing at something we do not treat as a deliverable. The measured crash — Storybook 10.5 makes `HTMLElement.prototype.focus` an accessor and Zag's read of it throws `Illegal invocation` (**D-130**) — reaches any consumer running a Zag machine in Storybook, so it moves to a **section on `/docs/get-started/frameworks/vite`**, which is where a reader configuring a Vite-based dev harness already is. It lands with the first machine component (step 5), which is the first moment the hazard can actually bite a reader |
+| `components/server-component` | No Solid equivalent. React Server Components are a React-specific model and SolidStart has its own; there is nothing to port and nothing to warn about |
+| `components/testing` | Deferred. What it would say that no other page says is *assert computed styles, never class names* — and that already appears in its highest-value position, at the end of the install page's *did it work?* section, where a reader is looking for exactly it |
 | `get-started/contributing` | The repository is private (`legal.md` §3.5). The page reappears the day it is not |
 | `docs/charts/*` | **Excluded on a dependency ground**, not a styling one: `@chakra-ui/charts` peer-depends on `recharts >= 3` and `react >= 18`, and there is no Solid charting substrate to bind to (`roadmap.md` §5.7). The reason belongs on the migration page, where a reader looking for charts will actually be |
 | `docs/styling/chakra-factory` | **Renamed**, not dropped — `/docs/styling/styled-factory`. Naming a page after their factory uses the mark as an identifier for our own API surface, which is exactly the line `legal.md` §3.2 draws |
@@ -272,8 +296,11 @@ honest; filing a reference page under "get started" would bury it.
 
 ### 2.3 What we have and chakra-ui.com does not
 
-- **`/guides/static-extraction`** — the loudest page on the site (`brief-plan` §7 concern 2), and the one
-  with no upstream analogue that transfers (`docs-plan.md` §1.1).
+- **`/docs/styling/static-extraction`** — the loudest page on the site (`brief-plan` §7 concern 2),
+  and the one with no upstream analogue that transfers (`docs-plan.md` §1.1). **It lived at
+  `/docs/styling/static-extraction` until S3b** and moved here with the `guides/` tier's deletion
+  (**D-136**): it was that tier's only page, there is no Guides nav item, and an unreachable page is
+  a worse outcome for the loudest page on the site than a relocated one.
 - **`/docs/reference/chakra-config`** — §2.1.
 - **Component pages Chakra does not document at all.** Chakra's docs cover a subset of its own
   components: `circle`, `square`, `span`, `strong`, `sticky`, `spacer`, `quote`, `loader`,
@@ -283,9 +310,20 @@ honest; filing a reference page under "get started" would bury it.
 
 ### 2.4 The count trap
 
-Chakra's docs directory holds **113 component pages**; our component tier also holds **113**. **The
-two numbers are a coincidence and the sets are different.** Ours is `roadmap.md` §4's 113 shipping
-rows out of 115 directories (`for` and `show` excluded). Theirs includes pages for `for` and `show`,
+> **Corrected at S3b** (**D-140**), when `check:docs-inventory` was written and had to name the set
+> it checks. **Our component tier holds 111 pages, not 113**, and the arithmetic is:
+> `roadmap.md` §4's **116** directories → **114** shipping rows (`for` and `show` excluded) →
+> **111** component pages, because the three relocations (`color-mode`, `environment`, `locale`) are
+> documented where their mechanism lives rather than in the component tier. The check reads that
+> rule directly: a row whose `Status` begins with `ships` owes a `/docs/components/<name>` page, a
+> `relocated` row does not.
+>
+> **This makes §2.4's point stronger rather than weaker.** The two numbers were never comparable,
+> and now they are not even equal, so nothing invites the arithmetic in the first place.
+
+Chakra's docs directory holds **113 component pages**; our component tier holds **111**. **The
+sets are different and neither count means anything about the other.** Theirs includes pages for
+`for` and `show`,
 pages for compositions that are not components (§2.2), and pages named for a different granularity
 than the source folder — `radio` for `radio-group`, `rating` for `rating-group`,
 `segmented-control` for `segment-group`, `icon-button` and `close-button` for members of the Button
@@ -298,6 +336,20 @@ list that means anything here.
 ---
 
 ## 3. The copyright boundary — every place upstream expression would be reproduced
+
+> **§3.2 rows 1–3 and §3.3 are RETIRED for the content tier, S3b, 2026-08-09** (**D-148**).
+> Chakra's docs are under the same single MIT grant as their code — one `LICENSE` at their repo
+> root, none under `apps/www`, and `"license": "MIT"` on the root `package.json`. MIT permits
+> copying their prose outright; the one condition is that the notice travels with it. **So the
+> content tier copies their pages and owes one `NOTICE.md` row**, not a rewrite.
+>
+> What stays exactly as written: **§3.4, the trademark control**, which no licence touches — no
+> logo, wordmark, favicon derivative, social card or combined mark, chrome saying
+> `chakra-ui-solid`, and the disclaimer on the home page and in every footer. And **rows 4–9**,
+> which were never about prose: generated tables stay generated, token tables stay rendered from
+> the installed preset, and no screenshot of chakra-ui.com appears anywhere.
+>
+> `legal.md` §1.4's three tiers are **unchanged for code**, which is what they were written for.
 
 ### 3.1 The rule, cited
 
@@ -457,7 +509,25 @@ Recommended order if it is ever picked up: **d**, then **c** as the escape hatch
 cannot reach. **b** only after a probe. **a** only if the deployment changes, which is a bigger
 decision than a playground.
 
-### 4.6 `llms.txt`
+### 4.6 `llms.txt` — deferred to before first public release, with its cost stated
+
+> **Deferred at S3b, 2026-08-09** (**D-138**), not dropped. The five `/llms*.txt` routes leave
+> §2.1, `check:llms-fresh` is not written, `docs-plan.md` §4.4's `ai/llms` page goes with them, and
+> §2.2's `ai/*` row becomes *we ship none of the three, for now*.
+>
+> **The trigger is `legal.md` §3.7's**, and it is the same moment: the first public release. That is
+> not a coincidence and it is the whole reason the deferral is affordable — **the audience for
+> these files does not exist until the site is public.** A generated file nobody can fetch is a
+> maintenance obligation with no reader, and keeping it current through eight batches of churn
+> would cost more than writing it once at the end.
+>
+> **What the deferral costs, stated where it is paid rather than left to evaporate.** The paragraph
+> below is the argument, and it does not weaken by being postponed: the index's three lead
+> sentences are the **highest-leverage prose on the site**, because an assistant that has not read
+> them writes `<Box w={width}>` and the user gets silence. That is the same failure
+> `/docs/styling/static-extraction` exists for, arriving through a channel that page cannot reach —
+> and for as long as this is deferred, **that channel is uncovered**. Nothing else in the docs
+> closes it, and no check will report it missing.
 
 Five generated files: `/llms.txt` (the index), `/llms-full.txt`, and the split
 `components` / `styling` / `theming` files for limited context windows.
@@ -488,7 +558,7 @@ attached.
 | 2 | **That a prebuilt stylesheet exists**, or name any published `.css` entry point | It was rejected on three grounds and removed, not deferred (`plan.md` §4.4). `check:exports` asserts no published `package.json` exposes one, so the docs would be the last surviving trace of a tier that does not exist |
 | 3 | **That a non-Panda consumer tier exists** — "CSS-variable overrides only", "default theme only" | Same decision. A half-functional tier costs more in docs and issues than it earns, and every knob added afterwards would have to be documented twice |
 | 4 | **That `createSystem` works**, or that theming happens at runtime | Build-time `panda.config.ts` only (`plan.md` §0.4). This is the single most likely wrong assumption a Chakra v3 reader arrives with, which is why the migration page states it in the delta table rather than in prose |
-| 5 | **That a `css` prop or style prop accepts a runtime value** | It accepts one that Panda can evaluate at the call site. Anything else is route 2 or route 3 (`plan.md` §3.5), and the failure is silence — `/guides/static-extraction` is the whole page about it |
+| 5 | **That a `css` prop or style prop accepts a runtime value** | It accepts one that Panda can evaluate at the call site. Anything else is route 2 or route 3 (`plan.md` §3.5), and the failure is silence — `/docs/styling/static-extraction` is the whole page about it |
 | 6 | **That `asChild` is supported** | Polymorphism is a `render` prop, and it is a **function**, never a JSX element — a Solid JSX element is an already-constructed node with no `cloneElement` to apply props to, so accepting one could only mean dropping every computed prop (`component-blueprint.md` §3.5) |
 | 7 | **That a consumer can run our lint rule** | `check:style-contract` runs on **our** source (`testing.md` §6.5). A consumer's route-3 mistakes are in their files, scanned by their Panda run, and no consumer-facing equivalent ships at v1. The page may say the rule exists and what it enforces; it must not tell a reader to run it |
 | 8 | **That `hideMode: "activity"` exists** | React 19's `<Activity>` has no Solid equivalent and Ark's own Solid package does not ship the prop (`component-blueprint.md` §7.3). Documenting it would describe a prop that type-errors |
@@ -503,7 +573,7 @@ convention that cannot be fully mechanized.
 
 Two allowed exceptions, so the check does not fight the pages that exist to discuss these: the
 migration page names `asChild`, `createSystem` and the rest as **the thing that is absent**, and
-`/guides/static-extraction` shows a class-name assertion as **the thing not to write**. Both are
+`/docs/styling/static-extraction` shows a class-name assertion as **the thing not to write**. Both are
 allow-listed by path, and the allow-list has two entries.
 
 ---
@@ -515,22 +585,36 @@ allow-listed by path, and the allow-list has two entries.
 One new job, `docs`, and the checks it contains. Each is a script defined here and nowhere else,
 except the three marked *reused*, which are existing artefacts pointed at a second input.
 
-| Check | Asserts | A failure means |
-|---|---|---|
-| `check:docs-links` | Every internal link and heading anchor in the content tier resolves to a prerendered route and an id that exists in it | A dead link, or a heading renamed out from under a cross-reference. The site is a graph and its edges are the only navigation a reader has |
-| `check:docs-examples` | §4.1: every example typechecks, imports only real subpaths, **mounts** with no console error and a non-empty root, and runs axe | The example is a file, not a deliverable — the exact failure `prior-art.md` §8.1's fourth clause is named after |
-| `check:extraction-fixture` | `docs-plan.md` §1.4's catalogue: each ✅ row's class is present in the fixture's generated sheet and each ❌ row's is absent, and the page's tables are regenerated from the result | A row on the loudest page in the docs became false. Prose cannot hold that claim across a Panda minor (`docs-plan.md` §1.4) |
-| `check:prerender-complete` | §7.1's four assertions on `dist/client` | The static deployment is incomplete or is an SPA shell. Both look like a working `pnpm dev` |
-| `check:docs-inventory` | Every `/docs/components/*` route has a shipping row in `roadmap.md` §4 whose batch has landed, and every landed component has a route | A page for an unbuilt component is a promise (`roadmap.md` §9.2); a built component with no page is a component nobody finds |
-| `check:props-tables` | §4.2: an entry for every part component `check:anatomy-parts` knows about | A missing table renders as an empty box, and an empty box looks intentional |
-| `check:playground-values` | §4.4: every control's value set is a subset of the recipe's variant map or a `staticCss`-declared set | The playground offers a value that renders nothing — `plan.md` §0.2 shipped as a feature |
-| `check:llms-fresh` | Regenerating `llms*.txt` is a no-op | A machine-readable document that is confidently stale, with no reader positioned to notice |
-| `check:docs-consumer-config` | The docs app's `panda.config.ts` is `chakraConfig()` plus `include`/`outdir` only, and its production build carries no `src` alias for our packages | §1.1. The site stops being evidence the moment it is built differently from a consumer's app |
-| `check:docs-no-server-fns` | No server function, server route, or Start-only data API in the content tier | §1.7's exit stops being cheap, and nobody notices until B1–B3 fires |
-| `check:docs-forbidden-claims` | §5's string forms, with two path allow-list entries | Catches strings, not claims — a tripwire under a review contract |
-| **reused** — `check:css-coverage` | Runs a second time against the **docs app's own generated sheet** | The permanent instance of the step-4 gate (§1.1). A variant the docs emit that the docs' own Panda run never generated is the whole hazard, reproduced in the one place a reader will see it |
-| **reused** — `check:no-runtime-sheet` | Extended to `apps/docs/src/**` | §1.4. Today its scope is `packages/*/src/**` (`testing.md` §5.2) and the docs app is invisible to it — §8 row 1 |
-| **reused** — `check:resolution-sync` | Already covers the docs app's Vite alias (`plan.md` §9) | Nothing new; named so §1.3 is not re-implemented as a local rule |
+**`Live`** is the step each check starts running at. Three landed at **S3b** with the app; the rest
+arrive with the machinery they check, and a check with nothing to check is not written early
+(`definition-of-done.md` §0).
+
+| Check | Asserts | A failure means | Live |
+|---|---|---|---|
+| `check:docs-links` | Every internal link and heading anchor in the content tier resolves to a prerendered route and an id that exists in it | A dead link, or a heading renamed out from under a cross-reference. The site is a graph and its edges are the only navigation a reader has | step 4 |
+| `check:docs-examples` | §4.1: every example typechecks, imports only real subpaths, **mounts** with no console error and a non-empty root, and runs axe | The example is a file, not a deliverable — the exact failure `prior-art.md` §8.1's fourth clause is named after | **S3b** |
+| `check:extraction-fixture` | `docs-plan.md` §1.4's catalogue: each ✅ row's class is present in the fixture's generated sheet and each ❌ row's is absent, and the page's tables are regenerated from the result | A row on the loudest page in the docs became false. Prose cannot hold that claim across a Panda minor (`docs-plan.md` §1.4) | step 4, with the page |
+| `check:prerender-complete` | §7.1's four assertions on `dist/client` | The static deployment is incomplete or is an SPA shell. Both look like a working `pnpm dev` | step 8 (**P8-A**) |
+| `check:docs-inventory` | Every `/docs/components/*` route has a `roadmap.md` §4 row whose `Status` begins with `ships` and whose directory exists under `packages/components/src`, and every such component has a route. A `relocated` row owes no component page (§2.4) | A page for an unbuilt component is a promise (`roadmap.md` §9.2); a built component with no page is a component nobody finds | **S3b** |
+| `check:props-tables` | §4.2: an entry for every part component `check:anatomy-parts` knows about | A missing table renders as an empty box, and an empty box looks intentional | step 4, with `check:anatomy-parts` |
+| `check:playground-values` | §4.4: every control's value set is a subset of the recipe's variant map or a `staticCss`-declared set | The playground offers a value that renders nothing — `plan.md` §0.2 shipped as a feature | step 4, with the first playground |
+| ~~`check:llms-fresh`~~ | **Not written** — deferred with the AI tier (§4.6, **D-138**) | — | before first public release |
+| `check:docs-consumer-config` | The docs app's `panda.config.ts` is `chakraConfig()` plus `include`/`outdir` only, its production build carries no `src` alias for our packages and its dev build does, and nothing under `apps/docs/src` imports the repo's own dev stylesheet | §1.1. The site stops being evidence the moment it is built differently from a consumer's app | **S3b** |
+| `check:docs-no-server-fns` | No server function, server route, or Start-only data API in the content tier | §1.7's exit stops being cheap, and nobody notices until B1–B3 fires | step 4 |
+| `check:docs-forbidden-claims` | §5's string forms, with two path allow-list entries | Catches strings, not claims — a tripwire under a review contract | step 4 |
+| **reused** — `check:css-coverage` | Runs a second time against the **docs app's own generated sheet** | The permanent instance of the step-4 gate (§1.1). A variant the docs emit that the docs' own Panda run never generated is the whole hazard, reproduced in the one place a reader will see it | **step 4** (**D-139**) |
+| **reused** — `check:no-runtime-sheet` | Extended to `apps/docs/src/**` | §1.4. Its scope was `packages/*/src/**` (`testing.md` §5.2) and the docs app was invisible to it — §8 row 1, applied | **S3b** |
+| **reused** — `check:resolution-sync` | Already covers the docs app's Vite alias (`plan.md` §9). Reports **5 resolutions across 3 files** from S3b | Nothing new; named so §1.3 is not re-implemented as a local rule | **S3b** |
+| **reused** — `check:test-projects` | Extended to `apps/docs/src/**`, because the docs app now owns a test — the examples' mounting run | A mis-suffixed test there never runs and nothing says so, in the one place the repo validates a component the way a consumer uses it | **S3b** |
+
+**`check:css-coverage` against the docs sheet lands at step 4, and the reason is not scheduling**
+(**D-139**). The check does not exist yet — it is `testing.md` §3 and arrives with the step-4
+throwaway consumer — and there is a second reason it could not mean anything here even if it did:
+the docs app's Panda run reaches values *our* components name through the **buildinfo**, which
+`@chakra-ui-solid/components` does not emit until it has a recipe to declare. A coverage check with
+no buildinfo to read has nothing to be wrong about. `apps/docs/panda.config.ts` already names the
+path, and `apps/docs/turbo.json`'s `cssgen` inputs already declare the coupling, so the check is
+the only piece still missing at step 4. §3.1 step 4 and this row now say the same thing.
 
 The `docs` job runs on every push, after `codegen` and `cssgen`, and its deploy step runs on pull
 requests (preview) and the release branch (production).
@@ -600,9 +684,12 @@ here with their gate and carried to P9 as §8 row 3.
 | # | Assumption | Gate | Runs at |
 |---|---|---|---|
 | **P8-A** | `dist/client` is self-sufficient for static hosting — no route needs a server runtime | §7.1 assertions 1–4, then 5–7 | Step 8, and every docs build thereafter |
-| **P8-B** | MDX compiles through `vite-plugin-solid` under Solid 2.0 with the `compiler: "babel"` pin (§1.4), and the pin's stated expiry is the only thing that changes later | The docs build runs at all; plus one MDX-authored example mounting in the `browser` project (§4.1) | Step 8, first page |
-| **P8-C** | The props-table generator can read a machine's `Props` type and the preset's variant map with no running system object (§4.2) | A non-empty, correct table for Dialog — the first component page written. Shares its fate with **P7-A**, which needs the same variant map | Step 8, first component page |
-| **P8-D** | The docs app's Panda run is representative of a consumer's, so `check:css-coverage` against its sheet means what the step-4 run means | `check:docs-consumer-config` (§6.1). Note what it does **not** prove: representativeness of one config, not of all | Step 8, every push |
+| ~~**P8-B**~~ | **Closed at S3b.** MDX compiles through `vite-plugin-solid` under Solid 2.0 with the `compiler: "babel"` pin (§1.4) | The docs build ran, six routes prerendered with their prose in the HTML, and an MDX page rendering three examples mounts them in the `browser` project | — |
+| **P8-C** | **Split into three at S3b** (**D-142**), because one gate covered three subjects with three different first-existence dates. §4.2 gives the generator three inputs and P8-C asserted all of them at once against a Dialog that does not exist until step 5 | — | see below |
+| **P8-C1** | The generator reads **our own part props** from the TypeScript compiler API with no running system object | **Closed at S3b**: a non-empty, correct table for `Box` — `as` and `render`, with their types and their JSDoc, read from `packages/components/src/box/box.tsx` | — |
+| **P8-C2** | The generator reads the **recipe's variant map** with no running system object | The variant section of the first component page with a recipe. **Shares its fate with P7-A**, which needs the same map and is already dated step 4 | Step 4 |
+| **P8-C3** | The generator reads a **machine's `Props` type** from `@zag-js/<machine>` through our lockfile | A non-empty, correct Root props table for Dialog — the first component page with a machine | Step 5 |
+| **P8-D** | The docs app's Panda run is representative of a consumer's, so `check:css-coverage` against its sheet means what the step-4 run means | `check:docs-consumer-config` (§6.1) — **live from S3b**, which is the half that can pass now. The coverage half needs the check itself and the buildinfo, both step 4 (**D-139**). Note what neither proves: representativeness of one config, not of all | Step 4, every push |
 
 ---
 

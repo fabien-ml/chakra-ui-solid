@@ -160,8 +160,13 @@ Each project's `include` glob keys off the filename: `*.test.ts` → `unit`, `*.
 matches none of them, **so it never runs and nothing says so** — a green suite with a whole file
 missing from it, which is this repo's characteristic failure shape in a new place.
 
-The check asserts every `**/*test*` file under `packages/*/src/` matches **exactly one** project's
-include glob. Zero matches and two matches are both errors.
+The check asserts every `**/*test*` file under `packages/*/src/` **and `apps/docs/src/`** matches
+**exactly one** project's include glob. Zero matches and two matches are both errors.
+
+**`apps/docs/src` joined the scan — and the `browser` project's include glob — at S3b**, because the
+docs app owns one test and it is the one `prior-art.md` §8.1's fourth rule now points at: every docs
+example mounts (§7.3). A mis-suffixed file there would never run and nothing would say so, in the
+one place the repo validates a component the way a consumer uses it.
 
 ### 1.8 Sequencing: the harness and the split land at **milestone one**
 
@@ -684,7 +689,7 @@ Runs per batch, because the vocabulary it intersects grows with the machines we 
 **Yes, by five steps, and with one qualification P8 must carry.**
 
 - The rule lands at **step 3**, with the styling seam (§6.1) — because Workstream B's route-3
-  conversions at step 6 and B3's at step 7+ depend on it. `/guides/static-extraction` ships with the
+  conversions at step 6 and B3's at step 7+ depend on it. `/docs/styling/static-extraction` ships with the
   docs site, which is the last step of the build order (`brief-plan` §5 step 8).
 - **The qualification: the rule runs on *our* source, not the consumer's.** The page's reader is a
   consumer, and their route-3 mistakes are in their files, scanned by their Panda run. So §1.2
@@ -774,6 +779,12 @@ substitute even if a gate were wanted: it reproduces neither the `focus` accesso
 `hydratable: false` compile below, so it is green on precisely the two failures Storybook is the only
 witness to. §13's shape — driving the built Storybook — is what a gate would have to be. Neither is
 built.
+
+**The real gate exists from S3b, and it is the docs app's.** `check:docs-examples` runs
+`apps/docs/src/examples/__tests__/examples.browser.test.tsx` in the `browser` project, and it was
+verified against deliberate failures rather than trusted: an example that **throws** at mount, and
+an example that **renders nothing**, both pass Biome, `tsc` and `check:style-contract` and both fail
+here. That is the ZagListbox failure, caught — by the surface a consumer actually shares.
 
 ### 7.4 What only Storybook can see
 
@@ -938,7 +949,7 @@ run is a green tick for work no machine performs.
 | `constraint` | every push | `check:no-cij-manifest`; `check:no-runtime-sheet` |
 | `test` | every push, matrix ×3 | `test:unit`, `test:ssr`, `test:browser` — the browser leg installs Chromium with `playwright install --with-deps --only-shell`, and carries `check:floating-zindex` from step 5b. Every leg fails on a `mount()` diagnostic |
 | `styling` | every push, after `codegen` + `cssgen` | `check:css-coverage`; `check:coverage-allowlist`; `check:anatomy-parts`; `check:hash-config`; `check:preflight-hidden`; `check:data-attr-vocab`; `check:style-prop-collisions`; `check:no-hand-written-data-attrs` |
-| `docs` | every push, after `codegen` + `cssgen` | The docs build; `check:docs-inventory`; `check:extraction-fixture`; `check:docs-consumer-config`; `check:css-coverage` against the docs app's own sheet. A deploy step on PRs and on the release branch. **Added at P8** (`docs-site.md` §6.1, §8 row 2) — the docs app is a standing instance of the step-4 consumer gate, so its build failing is a distribution failure, not a documentation one |
+| `docs` | every push, after `codegen` + `cssgen` | **Live from S3b:** the docs build (prerendered, not an SPA shell); `check:docs-inventory`; `check:docs-consumer-config`; `check:docs-examples`. **Joining at step 4:** `check:extraction-fixture`, `check:docs-links`, `check:docs-no-server-fns`, `check:docs-forbidden-claims`, and `check:css-coverage` against the docs app's own sheet — which is the step it first has a buildinfo to read (`decisions.md` **D-139**). A deploy step on PRs and on the release branch. **Added at P8** (`docs-site.md` §6.1, §8 row 2) — the docs app is a standing instance of the step-4 consumer gate, so its build failing is a distribution failure, not a documentation one |
 | `dist` | main + release PRs | build; `check:exports`; `check:externals`; `check:buildinfo-fresh`; `check:peer-panda`; `check:license-headers` (over `dist/`); `check:notice-rows`; `check:package-files`; `check:bundle` |
 | `publish` | release workflow | everything in `dist`, plus `check:readme-disclaimer`, with npm provenance |
 | `upstream` | Renovate PRs only, matrix by upstream | §11 |

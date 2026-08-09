@@ -34,7 +34,14 @@ export const testProjects: TestProject[] = [
   },
   {
     name: "browser",
-    include: ["packages/*/src/**/*.browser.test.{ts,tsx}"],
+    // `apps/docs` is here for one test, and it is the one `prior-art.md` §8.1's fourth rule now
+    // points at: every docs example **mounts**. A story renders a component in a harness we
+    // control; an example renders it the way a consumer writes it, which is why the deliverable
+    // that must be opened moved from one to the other (`decisions.md` D-133).
+    include: [
+      "packages/*/src/**/*.browser.test.{ts,tsx}",
+      "apps/docs/src/**/*.browser.test.{ts,tsx}",
+    ],
     exclude: NEVER_SCANNED,
   },
 ];

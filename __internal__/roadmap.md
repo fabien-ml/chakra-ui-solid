@@ -597,10 +597,11 @@ Pure style props over `renderStyled`, composing Panda `/patterns` where one exis
 | visually-hidden | | ships | step 6 | |
 | wrap | | ships | step 6 | Plus `WrapItem` |
 
-### 4.5 Utilities, providers and re-exports — 8 rows, 9 folders
+### 4.5 Utilities, providers and re-exports — 9 rows, 10 folders
 
 | Component | Status | Batch | Reason |
 |---|---|---|---|
+| color-mode | **relocated** | **step 3c** | **A divergence, flagged rather than absorbed** (`plan.md` §0.4, §7.1; `decisions.md` **D-134**, reversing D-38). Chakra ships colour mode as a CLI snippet over `next-themes`, which has no SolidJS equivalent — porting that faithfully ships a wrapper around nothing. The primitive lives in `@chakra-ui-solid/system` and is re-exported from `components/color-mode`, the same shape as the two rows below. **No provider**: a pre-paint script, a module-level signal, `.light`/`.dark` plus `color-scheme` on the root. Documented on `/docs/styling/dark-mode`, not in the component tier |
 | portal | **ships, cut to ~6 lines** | **step 5** | Not an exclusion, but only `container` + `children` + the SSR guard + the environment-aware mount. **`disabled` is not shipped** — §5.1 |
 | client-only | **ships** | step 6 | Not an exclusion — §5.2 |
 | environment | **relocated** | step 3 | The context lives in `@chakra-ui-solid/system` (`plan.md` §7.2) and is re-exported from `components/environment` so Chakra's import path resolves. Not a component |
@@ -610,9 +611,20 @@ Pure style props over `renderStyled`, composing Panda `/patterns` where one exis
 | highlight | ships | step 6 | Over `@zag-js/highlight-word`. Plus `useHighlight` |
 | for / show | **excluded** | — | §5.3, §5.4 |
 
-**115 folders: 45 + 15 + 21 + 25 + 9 = 115.** Of those, **113 ship**, **2 are excluded** (`for`,
-`show`), and **2 of the 113 are relocations** (`environment`, `locale`) rather than new components.
-Charts is a 116th exclusion that is not one of the 115, because it is not a component folder (§1.1).
+**116 folders: 45 + 15 + 21 + 25 + 10 = 116.** Of those, **114 ship**, **2 are excluded** (`for`,
+`show`), and **3 of the 114 are relocations** (`color-mode`, `environment`, `locale`) rather than
+new components. Charts is a further exclusion that is not one of the 116, because it is not a
+component folder (§1.1).
+
+**The tenth folder in §4.5 is `color-mode`, and it is the one row here Chakra has no counterpart
+for** — added at S3b with the D-38 reversal (`decisions.md` **D-134**). The arithmetic moved with
+it: 115 → 116 folders, 113 → 114 shipping, 2 → 3 relocations.
+
+**Shipping rows and component pages are not the same count.** The three relocations are documented
+where their mechanism lives — `environment` and `locale` on `/docs/get-started/environments/*`,
+`color-mode` on `/docs/styling/dark-mode` — so the component tier holds **111** pages, not 114.
+`check:docs-inventory` reads exactly that rule: a row whose `Status` begins with `ships` owes a
+`/docs/components/<name>` page, and a `relocated` row does not (`docs-site.md` §2.4).
 
 ---
 

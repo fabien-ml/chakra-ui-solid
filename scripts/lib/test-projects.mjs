@@ -49,7 +49,15 @@ export function findMisroutedTestFiles(relativePaths, projects) {
     .filter((result) => result.claimedBy.length !== 1);
 }
 
-/** Every file under each package's `src` directory, repo-relative and `/`-separated. */
+/**
+ * Every file under each package's `src` directory **and under `apps/docs/src`**, repo-relative and
+ * `/`-separated.
+ *
+ * The docs app is in scope because it owns a real test: every example mounts, in the `browser`
+ * project (`docs-site.md` §4.1). A mis-suffixed file there would never run and nothing would say
+ * so — the same failure this check exists for, in the one place the repo now validates a component
+ * the way a consumer uses it.
+ */
 export function listPackageSourceFiles(repoRoot) {
   const packagesDir = join(repoRoot, "packages");
   const files = [];
@@ -67,12 +75,14 @@ export function listPackageSourceFiles(repoRoot) {
     }
   };
 
-  for (const entry of readdirSync(packagesDir, { withFileTypes: true })) {
-    if (!entry.isDirectory()) {
-      continue;
-    }
+  const roots = readdirSync(packagesDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => join(packagesDir, entry.name, "src"));
+  roots.push(join(repoRoot, "apps", "docs", "src"));
+
+  for (const root of roots) {
     try {
-      walk(join(packagesDir, entry.name, "src"));
+      walk(root);
     } catch (error) {
       if (error.code !== "ENOENT") {
         throw error;

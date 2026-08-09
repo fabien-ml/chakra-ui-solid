@@ -1,0 +1,47 @@
+export const order = 12;
+export const description =
+  "The same two settings, plus the plugin order this site had to get right itself.";
+
+# TanStack Start
+
+The same two settings as SolidStart, for the same two reasons — `ssr.noExternal` because Node
+cannot import raw JSX, and `optimizeDeps.exclude` because the client pre-bundler compiles JSX as
+React and the component then renders nothing.
+
+```ts
+// vite.config.ts
+import { tanstackStart } from "@tanstack/solid-start/plugin/vite";
+import viteSolid from "vite-plugin-solid";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  ssr: { noExternal: [/^@chakra-ui-solid\//] },
+  optimizeDeps: {
+    exclude: [
+      "@chakra-ui-solid/components",
+      "@chakra-ui-solid/system",
+      "@chakra-ui-solid/styled-system",
+    ],
+  },
+  plugins: [tanstackStart(), viteSolid({ ssr: true })],
+});
+```
+
+## This site is that config
+
+These docs are a TanStack Start app on the beta 2.x line, prerendered to static HTML, consuming
+the published packages exactly as the snippet above describes. That is deliberate: a
+documentation site that took an in-repo shortcut would prove nothing about what a reader's build
+does.
+
+Two things it discovered that are worth carrying:
+
+- **Pre-bundling discovery.** Vite's dependency scanner runs with JSX disabled, so it throws on
+  first-party `.tsx` source. At startup Vite catches that and skips pre-bundling; the automatic
+  re-discovery that fires when an edit adds an import re-runs the same scan and takes the dev
+  server down. The symptom is *"dev crashes after every change"*. Setting
+  `optimizeDeps.noDiscovery` removes the scan.
+- **Prerender, not SPA mode.** `tanstackStart({ prerender: { enabled: true, crawlLinks: true,
+  failOnError: true } })` renders every route into full static HTML. SPA mode prerenders a
+  client-hydrated shell instead, which leaves the prose out of the markup. `failOnError` is the
+  difference between a broken route and a silently missing page.

@@ -1,0 +1,88 @@
+export const order = 1;
+export const description =
+  "Install the packages, write the Panda config, generate your stylesheet — and check a computed style rather than a class name.";
+
+# Installation
+
+> **Requires Panda CSS in your build. Not optional — this library publishes no CSS.**
+
+Every class name a component computes is a name in **your** stylesheet, produced by **your** Panda
+run over **your** source. There is no prebuilt sheet to fall back on, and no version of this
+library that works without one.
+
+## Install
+
+Three of ours, and one of Panda's:
+
+```bash
+pnpm add @chakra-ui-solid/components @chakra-ui-solid/preset @chakra-ui-solid/styled-system
+pnpm add -D @pandacss/dev
+```
+
+`@pandacss/dev` is declared as a **non-optional peer dependency** of three of our packages, which
+is deliberate: the install warning is the enforcement. Without it the failure is that you install,
+run the app, every component renders naked, and no tool anywhere says why.
+
+## `panda.config.ts`
+
+```ts
+import { defineConfig } from "@pandacss/dev";
+import { chakraConfig } from "@chakra-ui-solid/preset";
+
+export default defineConfig({
+  ...chakraConfig(),
+  include: [
+    "./node_modules/@chakra-ui-solid/components/dist/panda.buildinfo.json",
+    "./src/**/*.{ts,tsx}",
+  ],
+  outdir: "styled-system-app",
+});
+```
+
+Two things about that, and no more. The preset is not imported here — `chakraConfig()` already
+puts it in `presets`. And **spreading is shallow**, so re-declaring `presets`, `staticCss` or
+`theme` replaces ours wholesale rather than adding to it; for those, Panda's own
+`mergeConfigs([chakraConfig(), { … }])` is the form that means *and also mine*.
+
+## Generate, then import the stylesheet you generated
+
+```bash
+pnpm panda codegen
+```
+
+Then import **your own** `styled-system-app/styles.css` from your app entry.
+
+This is the sentence that keeps *"we publish no CSS"* from reading as *"there is no CSS"*: your
+sheet exists and it is yours; ours does not exist at all.
+
+## Did it work?
+
+Render something, then read a **computed style**:
+
+```tsx
+import { Box } from "@chakra-ui-solid/components";
+
+<Box p="4" bg="bg.panel" />;
+
+// then, in a test or the console:
+getComputedStyle(el).padding; // "16px"
+```
+
+Read `getComputedStyle(el).padding`, not `el.classList.contains("p_4")`. A class-name check passes
+on a completely unstyled element, so an install that silently did nothing looks identical to one
+that worked. This is the highest-value paragraph on the page, and it belongs here at the end of
+setup rather than in a testing guide.
+
+## Everything renders naked
+
+Three causes, in the order they actually occur.
+
+1. **Panda never ran**, or it ran before the file that uses a style prop existed. Re-run `codegen`
+   and check that the class you expected is in the generated sheet.
+2. **`hash` or `prefix` disagrees across the boundary.** Our published runtime emits `p_4`. If your
+   config sets `hash: true`, your sheet carries hashed names instead — so every class we compute is
+   absent from your sheet, with no error anywhere. Spreading `chakraConfig()` is what makes this
+   unconstructable; a hand-written config is what makes it possible.
+3. **A recipe variant needs the responsive opt-in.** Responsive *style props* work with no
+   configuration. A responsive *recipe variant* — `<Button size={{ base: "sm", md: "lg" }}>` — is
+   generated only for the recipes you opt in, through `chakraConfig({ responsive })`.

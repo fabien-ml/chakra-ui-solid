@@ -103,6 +103,7 @@ port.
 | `"use client"` / RSC-shaped API surface | React Server Components | **Absent.** SolidStart has its own model; nothing to port | React→Solid |
 | Component-level `ref` typing (`ComponentPropsWithoutRef`, `forwardRef`) | React | Solid props + `render`; `as` stays a loose `ValidComponent` rather than a generic that re-types props from the element (`prior-art.md` §2.5) | React→Solid |
 | `Portal`'s `disabled` — render children in place instead of portalling them | React re-renders on the prop | **Not shipped at all.** The reactive Solid form needs a `children()`-resolved `<Show>`, which relocates `_hk` for the whole portalled subtree; a non-reactive prop that silently ignores changes is §0.2 in prop form, so omitting it makes passing it a type error (`roadmap.md` §5.1, §13 row 1b) | React→Solid |
+| **Colour mode** | A **CLI snippet** over `next-themes`, installed into the consumer's app — not library API (`colorMode` appears zero times in `@chakra-ui/react`) | **We ship a built-in primitive** — a pre-paint script, a module-level signal, `.light`/`.dark` on the root and `color-scheme` beside it. **A divergence in the pleasant direction, flagged rather than absorbed** (D-116's precedent): `next-themes` has no SolidJS equivalent, so porting the composition faithfully would ship a wrapper around nothing and leave every consumer to rediscover the same 80 lines. §7.1 | React→Solid |
 
 Per-component exclusions are P6's parity matrix, not this table — and P6 measured them: **only `for`,
 `show` and charts are excluded.** `portal`, `client-only` and `presence` ship, and `environment` is
@@ -888,7 +889,33 @@ preset; hope-ui's transition-based `createPresence` was never the right shape he
 
 ## 7. Color mode, direction, locale, environment
 
-### 7.1 Color mode: we ship no provider
+### 7.1 Color mode: we ship a primitive, and no provider
+
+> **Amended at S3b, 2026-08-09 (`decisions.md` D-134), reversing D-38.** The measurement below is
+> unchanged and the contract below is unchanged. What changed is the conclusion drawn from them.
+>
+> **We ship a built-in colour-mode primitive** — a blocking pre-paint script, a module-level signal,
+> `.light`/`.dark` on the root element and `color-scheme` beside it as an inline style. Still **no
+> provider**: the source of truth is the DOM class plus storage, so a module-level signal beats a
+> `<ThemeProvider>` that would exist only to re-publish what the document already says. That is a
+> Solid idiom, which the port rule names as its own exception.
+>
+> **Why the port rule does not carry here.** D-38's reasoning was *Chakra ships no provider, so
+> neither do we*. What Chakra actually ships is a **CLI composition over `next-themes`**, and
+> `next-themes` has no SolidJS equivalent — so porting that faithfully means shipping a wrapper
+> around nothing and leaving every consumer to rediscover the same 80 lines, three of which
+> (the pre-paint script) are the difference between a page with colours and a page with none.
+> The rule this project actually optimises for is the best DX achievable with built-in solutions.
+>
+> **It is a divergence and it is flagged, not absorbed** — D-116's precedent. Its §0.4 delta row is
+> above, its inventory row is `roadmap.md` §4.5, and the primitive itself lands at **step 3c**;
+> `apps/docs/src/lib/color-mode.ts` is the shape it is extracted from, written at 3b so the site had
+> a toggle on day one.
+>
+> **Deferred with the reason, rather than silently:** `forcedTheme`, arbitrary theme lists beyond
+> light/dark/system, a CSP `nonce`, and a `themes` array. `disableTransitionOnChange` is 3c's and
+> takes the **Panda route** — a `globalCss` rule in `@chakra-ui-solid/preset`, generated into the
+> consumer's stylesheet at build time, with the runtime only setting an attribute on `<html>`.
 
 Measured: `colorMode` and `ColorMode` appear **zero times** in
 `__reference-impl__/chakra-ui/packages/react/src/`. Chakra v3 ships color mode as a **CLI snippet**
@@ -909,6 +936,12 @@ page carrying neither class resolves every one of them to an undefined custom pr
 of the whole palette. The sentence above therefore understates it: the snippet is a prerequisite,
 not a dark-mode feature, and the docs page owes the failure mode beside the instruction.
 `check:dark-selector` is what keeps the documented class and the emitted selector in agreement.
+
+**Confirmed a second time at S3b, in a real browser, on a prerendered page.** Reading
+`getComputedStyle(document.body).backgroundColor` on the docs site with the root class swapped:
+`.light` → `rgb(255, 255, 255)`, `.dark` → `rgb(9, 9, 11)`, **no class → `rgba(0, 0, 0, 0)`**. That
+third value is the whole argument for the primitive above: the blocking pre-paint script is not a
+flash-of-unstyled nicety, it is what stands between a prerendered page and no colours at all.
 
 ### 7.2 Direction, locale and environment: two contexts, no catalog
 

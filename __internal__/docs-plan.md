@@ -42,13 +42,20 @@ Seven specs: **four page specs, two tier specs, and one template applied 113 tim
 
 | # | Spec | Renders | Source |
 |---|---|---|---|
-| **§1** | `/guides/static-extraction` | §3.5's dynamic-value contract, as a consumer-facing contract rather than an architecture note | `plan.md` §3.5, §1.4, §0.2 |
+| **§1** | `/docs/styling/static-extraction` | §3.5's dynamic-value contract, as a consumer-facing contract rather than an architecture note | `plan.md` §3.5, §1.4, §0.2 |
 | **§3** | Docs home | The parity sentence, verbatim: *"as close to Chakra v3 parity as is achievable without runtime CSS-in-JS"* | `plan.md` §0; `legal.md` §3.4, §4.1 |
 | **§4** | Install / setup, and the `get-started/` tier | Panda as a hard prerequisite — the non-optional `peerDependency`, and the README's first line above the install snippet | `plan.md` §4.4, §3.4, §8, §12 row 14 |
 | **§5** | Coming from Chakra UI (React) | The §0.4 delta table with its **Cause** column, plus the six per-component rows P6 corrected (`for`/`show` excluded, `portal`/`client-only`/`presence` shipped, `environment` relocated, charts excluded) | `plan.md` §0.4; `roadmap.md` §5, §13 row 1 |
 | **§6** | `chakraConfig` reference | The preset's function export and its knobs, `responsive` among them | `plan.md` §3.3, §3.4, §3.8 |
-| **§7** | The styling and theming tiers | Tokens, recipes, override paths 1–4, color mode as a consumer snippet | `plan.md` §3.6, §3.7, §7.1, §7.3 |
-| **§8** | **The component page** — one template, applied 113 times | Anatomy, props, `ids`, `render`, the provider surface, the CIJ note | `roadmap.md` §4, §10; `component-blueprint.md` §3.4, §3.5 |
+| **§7** | The styling and theming tiers | Tokens, recipes, override paths 1–4, and colour mode — **our API** from S3b, not a consumer snippet (**D-134**) | `plan.md` §3.6, §3.7, §7.1, §7.3 |
+| **§8** | **The component page** — one template, applied 111 times | Anatomy, props, `ids`, `render`, the provider surface, the CIJ note | `roadmap.md` §4, §10; `component-blueprint.md` §3.4, §3.5 |
+
+> **Amended at S3b, 2026-08-09.** §1's page moved from `/guides/static-extraction` to
+> `/docs/styling/static-extraction` with the `guides/` tier's deletion (**D-136**); its content is
+> unchanged. §7.2's colour-mode page becomes *our API* rather than *a snippet to paste*, rewritten
+> at step 3c when the primitive ships (**D-134**). §8's template is applied **111** times rather
+> than 113 (**D-140**). §4.2 lost its `storybook` row and §4.4 is deferred with the AI tier
+> (**D-137**, **D-138**).
 
 Two page families have **no spec and need none**: the token pages and the style-prop pages are
 rendered from the installed preset and from our generated `isCssProperty` (`docs-site.md` §4.3).
@@ -62,7 +69,7 @@ writing a config lands on §6.
 
 ---
 
-## 1. `/guides/static-extraction`
+## 1. `/docs/styling/static-extraction`
 
 **Title:** "What extracts, what doesn't, and the escape hatches."
 
@@ -328,7 +335,7 @@ by nobody**; three items and a link get read.
 
 **4 — Install**, four lines, linking §4 for the config.
 
-**5 — Where to go next**, three links and no more: `/guides/static-extraction` (described as the page
+**5 — Where to go next**, three links and no more: `/docs/styling/static-extraction` (described as the page
 to read *before* you write a wrapper component), the component index, theming.
 
 **6 — What is not here yet.** Charts, with its one-line reason (a dependency ground — there is no
@@ -395,25 +402,37 @@ setup, where a reader is looking for exactly this.
 ran; `hash` or `prefix` disagrees across the boundary (`plan.md` §3.4 — our published runtime emits
 `p_4`, a hashed sheet carries something else, and every class we compute is then absent from their
 sheet with no error anywhere); or a recipe variant needs the responsive opt-in (§6, and
-`/guides/static-extraction`).
+`/docs/styling/static-extraction`).
 
 ### 4.2 `frameworks/*` — one page each, one fact each
 
+**Three pages, not four** (**D-137**).
+
 | Page | The fact |
 |---|---|
-| `vite` | Nothing special. Stated, because a page that exists to say "no special steps" saves a reader looking for them |
+| `vite` | Nothing special. Stated, because a page that exists to say "no special steps" saves a reader looking for them. **Plus, from step 5, the Storybook section below** |
 | `tanstack-start` | `ssr.noExternal` for our packages, and no client-side pre-bundling of them |
 | `solid-start` | The same two, by name (`plan.md` §8's *"document `ssr.noExternal` for SolidStart consumers"*) |
-| `storybook` | The `@zag-js/focus-visible` warm-up and the Storybook version pin |
 
-The first three are one fact wearing three hats, and the fact is `plan.md` §8's: we ship
+The three are one fact wearing three hats, and the fact is `plan.md` §8's: we ship
 **JSX-preserved `.jsx`** under the `"solid"` export condition with no fallback, so the consumer's
 toolchain compiles it. Externalized during SSR, Node cannot import it; pre-bundled on the client, the
 JSX is compiled as React and the component renders nothing. The page shows the two config lines and
 says which symptom each prevents, because both symptoms name *our* package in the error and neither
 names the cause.
 
-**`storybook` is the page that saves someone a day.** Storybook replaces `HTMLElement.prototype.focus`
+**The Storybook hazard is a section on the `vite` page, not a page of its own** (**D-137**). It was
+*"the page that saves someone a day"*, and the hazard is real and now **measured** rather than
+carried: at Storybook 10.5.7, in a real browser, `HTMLElement.prototype.focus` **is an accessor**
+and reading it off the prototype throws; in the `browser` Vitest project, on the same Chromium, it
+is a plain data property (**D-130**). What changed is where it lives. Storybook is a local
+playground here and contributes no gate (**D-133**), so a top-level framework page for it would be
+the only nav item on the site pointing at something we do not treat as a deliverable — and the
+reader who needs this is configuring a Vite-based dev harness, which is the `vite` page. It lands
+at **step 5**, with the first machine component, because that is the first moment the crash can
+reach anybody.
+
+**What the section must say**, unchanged from the page it replaces. Storybook replaces `HTMLElement.prototype.focus`
 with an accessor; `@zag-js/focus-visible` reads that property off the prototype, so the getter runs
 with `this === HTMLElement.prototype`, `ownerDocument` throws `Illegal invocation`, and **every story
 crashes** (`component-blueprint.md` §1.3; `prior-art.md` §5.3). Every Zag machine pulls focus-visible
@@ -430,10 +449,18 @@ at that root. Our `Portal` defaults its mount target to the environment's root r
 `document.body` for the same reason — and the failure it prevents is **silent**: a machine that cannot
 find its content simply does nothing (`roadmap.md` §5.1). That sentence is the page.
 
-### 4.4 `ai/llms`
+### 4.4 `ai/llms` — deferred to before first public release
 
-The directory page for the generated files: what each contains, when to use the split ones, and the
-three sentences `/llms.txt` leads with (`docs-site.md` §4.6). Short, and the only page whose audience
+**Deferred at S3b with the whole AI tier and the five generated files it indexes** (`docs-site.md`
+§4.6; **D-138**), on the same trigger as `legal.md` §3.7's maintainer message, because the audience
+for a directory page to generated files does not exist until those files are fetchable.
+
+The spec below is not deleted, and the cost of deferring it is stated at `docs-site.md` §4.6 rather
+than here, so it is paid in one place: the index's three lead sentences are the highest-leverage
+prose on the site, and for as long as this is deferred **that channel is uncovered**.
+
+*(Spec, held.)* The directory page for the generated files: what each contains, when to use the
+split ones, and the three sentences `/llms.txt` leads with. Short, and the only page whose audience
 is a person configuring a tool rather than writing code.
 
 ### 4.5 What this tier renders
@@ -489,7 +516,7 @@ rule cost them charts (`roadmap.md` §5.7).
 **3 — Translations you need on day one**, as a table: `asChild` → the `render` prop, **a function,
 never a JSX element** (`component-blueprint.md` §3.5); `useRecipe`/`useSlotRecipe` → a static import
 from the generated recipes; `createSystem` → `panda.config.ts`; a `css` prop with runtime values →
-the three routes, linking `/guides/static-extraction`; `useToken()` → a read of the build-time token
+the three routes, linking `/docs/styling/static-extraction`; `useToken()` → a read of the build-time token
 map; `forwardRef`/`ComponentPropsWithoutRef` → Solid props plus `render`; the seven `./hooks` that
 have no Solid meaning, each with its one-line reason, and the seven that ship (`roadmap.md` §5.8).
 
@@ -565,7 +592,7 @@ answer.
 carries the variants our components emit but your source never writes — and Option A (adding our
 `dist` to `include`) named as the documented escape hatch it is (`plan.md` §4.1), with the warning
 that it does **not** solve dynamic values and is not an escape hatch for extraction limits
-(`/guides/static-extraction` §1.2's *rejected* note).
+(`/docs/styling/static-extraction` §1.2's *rejected* note).
 
 **4 — Spreading is shallow.** The one gotcha with real consequences: any key you re-declare replaces
 ours wholesale. Fine for `include` and `outdir`; a hazard for `presets`, `staticCss` and `theme`,
@@ -578,7 +605,7 @@ top-level block rather than through `theme.extend` (`plan.md` §3.8). **And the 
 matter: types cannot follow the flag.** `size={{ base: "sm", md: "lg" }}` type-checks whether or not
 the rules were generated, because the prop types come from our recipes while the CSS comes from your
 config — so forgetting the opt-in is a silent unstyling with no type error. The *failure* and its
-diagnosis stay on `/guides/static-extraction` §1.2 section 4; this page links there rather than
+diagnosis stay on `/docs/styling/static-extraction` §1.2 section 4; this page links there rather than
 retelling it (§0's boundary).
 
 **6 — What it is not.** Not a theme, not a runtime system, no `createSystem`. Theming is §7.
@@ -607,7 +634,7 @@ depend on:
 
 ### 7.1 The styling tier
 
-`overview` is the tier's entry and its first link is `/guides/static-extraction` — before the style-
+`overview` is the tier's entry and its first link is `/docs/styling/static-extraction` — before the style-
 prop reference, before conditional styles. A reader who learns style props before they learn what
 extracts will write a wrapper component in the next hour (`brief-plan` §7 concern 2).
 
@@ -628,14 +655,27 @@ who expected `as="a"` to type `href` deserves the reason rather than a gap.
 
 ### 7.2 `dark-mode` and `semantic-tokens` — the contract, and the snippet
 
-**We ship no color-mode provider**, because Chakra ships none either: it distributes color mode as a
-snippet installed into the consumer's app, and the port rule follows that (`plan.md` §7.1). So this
-page is unusual — it is a docs page that *is* the feature.
+> **Rewritten at S3b, and the rewrite lands at step 3c** (**D-134**, reversing **D-38**). This page
+> was *a docs page that is the feature* — a snippet to paste, because Chakra ships none. **We now
+> ship a colour-mode primitive**, so the page documents **our API**: `next-themes` has no SolidJS
+> equivalent, and porting Chakra's composition faithfully would have shipped a wrapper around
+> nothing (`plan.md` §7.1).
+>
+> **What does not change is the failure mode, and it stays beside the instruction** — the paragraph
+> below about the selector being our entire contract is the whole reason the primitive's blocking
+> pre-paint script exists. Re-measured at S3b in a real browser on a prerendered page: `.light` →
+> `rgb(255,255,255)`, `.dark` → `rgb(9,9,11)`, **no class → `rgba(0,0,0,0)`** (**D-113**).
 
-What it must contain, in order: the snippet, in full, ready to paste; the selector it must produce on
-the root element; and the statement that the preset's semantic tokens are written against Panda's
-`_dark` condition, so **the selector is our entire contract**. `@solid-primitives` or the consumer's
-own store does the toggling and nothing about it touches `plan.md` §0.
+**We ship a colour-mode primitive, and no provider.** What the page must contain, in order: the
+import and the API — the accessor, the setter, the toggle, and the `<head>` script the app has to
+render; the class it writes on the root and the `color-scheme` beside it; and the statement that
+the preset's semantic tokens are written against Panda's `_dark` condition, so **the selector is
+our entire contract**. Then the failure mode: a page that reaches the browser with neither class
+has no colours at all, silently, which is why the script is blocking and why it is not optional.
+
+Deferred, with the reason rather than silently: `forcedTheme`, arbitrary theme lists beyond
+light/dark/system, a CSP `nonce`, and a `themes` array. `disableTransitionOnChange` takes the Panda
+route — a `globalCss` rule in the preset, with the runtime only setting an attribute.
 
 The selector is verified rather than asserted — `check:dark-selector` runs a computed-colour
 assertion under exactly the attribute this page tells consumers to set (`testing.md` §8). **The page
@@ -685,11 +725,18 @@ link, once per tier, not per page.
 
 ---
 
-## 8. The component page — one template, applied 113 times
+## 8. The component page — one template, applied 111 times
 
 **Frame:** Chakra's component page structure, copied exactly — frontmatter, preview, `## Usage`,
 `## Examples`, `## Props`. **Structure is not expression** (`legal.md` §1.4); the sentences inside it
 are ours (`docs-site.md` §3.2 rows 1 and 2).
+
+**Applied once at S3b, to `Box`** — the only component that exists. What that first application
+settled, so the next 110 do not re-derive it: the sections a component with no machine, no recipe
+and no anatomy legitimately has are **Usage, Examples, Props and `### render`**, and every other
+section below is omitted rather than left empty (the rule this section opens with). Box's page also
+carries one thing the template did not anticipate and every polymorphic component will need — see
+§8.8.
 
 The template is a spec, not a file: every section below is either generated (and therefore identical
 across pages) or written per component against a stated question. **A section is omitted, never left
@@ -768,6 +815,17 @@ is an already-constructed node by the time it reaches us and there is no `cloneE
 one could only mean dropping every computed prop (`component-blueprint.md` §3.5). One example per
 page, on the part where it is most used.
 
+**And the section owes one sentence the template did not anticipate, measured at S3b on Box's own
+page** (**D-143**). A part whose element props are typed against a **wider** element than the
+`render` target needs a cast: `Ref<T>` is invariant in Solid's JSX types, so
+`render={(props) => <a {...props} />}` on a part typed against `HTMLElement` is a type error on
+`ref` alone. That is not a rough edge waiting to be filed off — it is the measured price of `as`
+staying a loose `ValidComponent` rather than a generic that re-types props from the element
+(`prior-art.md` §2.5), and a reader who hits it will otherwise assume they are doing it wrong. It
+applies to the layout surface, where the element type is `HTMLElement`; a part typed against its
+own element — `Dialog.Trigger` against `HTMLButtonElement` — needs no cast, so the sentence appears
+only where it bites.
+
 ### 8.9 `### Context`, `### RootProvider`, `### PropsProvider`
 
 **Only where the component has them**, and the counts are why the template has three separate slots
@@ -795,7 +853,7 @@ The per-component CIJ note. **Only on the marked rows**, and the two marks get d
 Two things are deliberately outside this note (`roadmap.md` §3.1):
 machine-emitted inline `style` — legal, not a delta, and marking every positioned component would
 turn the column into "has inline styles" — and consumer style props, which carry the delta on **every**
-styled component and are therefore stated once, globally, on `/guides/static-extraction`.
+styled component and are therefore stated once, globally, on `/docs/styling/static-extraction`.
 
 ### 8.11 `### Presence` — only on presence-gated components
 
