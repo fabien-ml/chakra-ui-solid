@@ -50,11 +50,21 @@ export function resolveServerEntry(packageName: string): string {
  * this directly: a fix was edited, the owning package's own tests went green, and the dependant's
  * tests kept failing identically against the stale pre-fix `dist`.
  *
- * **Empty at step 1** — no package exports anything yet. The first entry is
- * `@chakra-ui-solid/zag-solid` at step 2. Every entry added here owes a matching
- * `tsconfig.base.json#paths` entry in the same commit; `check:resolution-sync` is what says so.
+ * Every entry here owes a matching `tsconfig.base.json#paths` entry **in the same commit**;
+ * `check:resolution-sync` is what says so. Both packages have a root barrel and no subpaths, so
+ * these are exact-anchored matches rather than wildcards — an unanchored `find` would also capture
+ * `@chakra-ui-solid/zag-solid-something`, and the check rejects one.
  */
-export const chakraSolidAlias: { find: RegExp; replacement: string }[] = [];
+export const chakraSolidAlias: { find: RegExp; replacement: string }[] = [
+  {
+    find: /^@chakra-ui-solid\/zag-solid$/,
+    replacement: join(import.meta.dirname, "packages/zag-solid/src/index.ts"),
+  },
+  {
+    find: /^@chakra-ui-solid\/internal-test-utils$/,
+    replacement: join(import.meta.dirname, "packages/internal-test-utils/src/index.ts"),
+  },
+];
 
 export const serverBuildAlias = [
   { find: /^solid-js$/, replacement: resolveServerEntry("solid-js") },

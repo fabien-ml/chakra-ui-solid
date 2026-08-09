@@ -26,8 +26,12 @@
     // Relative paths in an inherited config resolve against the config that declares them, so
     // these are repo-root-relative and every package inherits them unchanged.
     //
-    // Empty at step 1: no package exports anything yet. `@chakra-ui-solid/zag-solid` is the
-    // first entry, at step 2.
-    "paths": {}
+    // `internal-test-utils` is private and never published; it is here for the same reason as a
+    // published sibling — its consumers must read its `src`, and `check:resolution-sync` has
+    // nothing to compare until both files carry the same set.
+    "paths": {
+      "@chakra-ui-solid/zag-solid": ["./packages/zag-solid/src/index.ts"],
+      "@chakra-ui-solid/internal-test-utils": ["./packages/internal-test-utils/src/index.ts"]
+    }
   }
 }

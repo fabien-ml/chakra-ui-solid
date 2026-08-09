@@ -30,6 +30,20 @@ catalog:
   vite-plugin-solid: 3.0.0-next.23
   babel-preset-solid: 2.0.0-beta.32
 
+  # The three Zag packages `@chakra-ui-solid/zag-solid` binds to Solid. Pinned exactly and moved
+  # together: `@zag-js/core` owns `mergeProps` (which our own `mergeProps` delegates to for the
+  # composing keys) and the `Bindable`/`Machine`/`Service` contracts the adapter implements, so a
+  # skew between core and the machine packages is a behavior change with no type error to announce
+  # it. The machine packages themselves (`@zag-js/dialog`, …) arrive at milestone 5 and join this
+  # block at the same version.
+  #
+  # 1.43.0 is the fork's *target*; 1.42.0 is the baseline it was taken from and the number a
+  # re-sync diffs against (`NOTICE.md`, `legal.md` §1.3). The three deltas between them are
+  # `zag-solid-adapter.md` §4.3.
+  "@zag-js/core": 1.43.0
+  "@zag-js/types": 1.43.0
+  "@zag-js/utils": 1.43.0
+
 # `vite-plugin-solid` depends on `babel-preset-solid` by RANGE, and a range resolves to whatever
 # is newest on the registry that day — which is how the compiler drifted a version behind the
 # runtime without anyone changing a file. The catalog entry above only governs the root

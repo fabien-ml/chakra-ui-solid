@@ -825,7 +825,7 @@ number measured then would be the adapter's weight and not the figure in questio
 — **Reasoning.** `zag-solid-adapter.md` §9.2; `testing.md` §10.
 
 **D-56 · The milestone-one gate is seven lines, and `mount()` silent is the load-bearing one**
-— **Decision.** 86 fork cases, 51 upstream cases in a one-time parallel run, 18 contract cases,
+— **Decision.** 86 fork cases, 51 upstream cases in a one-time parallel run, 23 contract cases,
 `mount()` silent, the §0 audit green against the **installed** closure, seven headers + both
 `NOTICE.md` tables, A1 filed.
 — **Rejected.** *Count 86 + 51 as 137* — `machine.browser.test.tsx` **is** the port of two of the four
@@ -1396,6 +1396,171 @@ eight batches earlier.
 — **Settled.** S1 review gate, 2026-08-09.
 — **Reasoning.** `docs-site.md` §1.1, §6.1; `docs-plan.md` §3–§6.
 
+### 3.12 S2 — `@chakra-ui-solid/zag-solid`, milestone one
+
+Six entries. Nothing here touches §3.11's re-planned order: step 2 depends on nothing in-repo and
+nothing in-repo yet depends on it.
+
+**D-102 · A fourth delta, and it is against Solid rather than Zag — `renderToStringAsync` is gone at
+`2.0.0-beta.32`** ⟲
+— **Decision.** `machine.ssr.test.tsx`'s two cases move from `renderToStringAsync` to
+`renderToStream`. `@solidjs/web@2.0.0-beta.32`'s server build exports `renderToString` (sync) and
+`renderToStream` (awaitable); the fork was written at hope-ui's then-pinned **`2.0.0-beta.19`**,
+where `renderToStringAsync` existed. Both assertions pass unchanged after the swap, so the semantics
+are the same.
+— **Rejected.** *`renderToString`* — synchronous, so it does not resolve resources, and both cases
+`await` the render. *Pin an older `@solidjs/web`* — the catalog exists to keep one Solid version
+across the repo, and beta.19 is thirteen betas behind the one `solid-contract` characterizes.
+— **Effect.** `zag-solid-adapter.md` §4.3 lists **three** deltas, all against Zag `1.43.0`. There is
+a second axis nothing in the document pass named: the fork is pinned to a *Solid* beta as well as to
+a Zag minor, and only the Zag axis had a delta list. Every future carry-over from `ef91b69` owes the
+same two-axis check — the components at step 5 most of all, since they carry far more Solid surface
+than seven adapter files do.
+— **Settled.** S2 gate, 2026-08-09; measured against the installed server build, not read from a
+changelog. **⟲** Extends `zag-solid-adapter.md` §4.3, which is otherwise unchanged.
+— **Reasoning.** `zag-solid-adapter.md` §4.3, §6.2.
+
+**D-103 · Upstream's 51 needed four porting rules, not two — and one of them exposed a real semantic
+difference that is not a defect**
+— **Decision.** §6.1 names two rules: `renderHook` → `mount()`, and `await Promise.resolve()` →
+`flush()`. Measured, the second is wrong as a *replacement*: it is `await Promise.resolve()` **and
+then** `flush()`, because the two drain different queues — `send` defers into a microtask (upstream's
+design) and Solid 2.0 additionally defers the state write. Rule three: a synchronous signal write
+inside a `createRoot` callback throws `[REACTIVE_WRITE_IN_OWNED_SCOPE]` in 2.0, so two `merge-props`
+cases had their writes hoisted out of the owned scope. Rule four is the finding below.
+— **Rejected.** *Treat the microtask drain as redundant once `flush()` is there* — measured: exactly
+2 of `machine.test.ts`'s 35 cases fail that way, the two calling `result.send` directly rather than
+through the helper. *Silence the owned-scope throw* — it is the diagnostic `mount()` exists for.
+— **Effect.** **51/51 green** (9 merge-props + 35 machine + 7 nested-states); the consolidation into
+the fork's 38-case `machine.browser.test.tsx` lost nothing. The one case needing more than a
+mechanical rewrite is *"reactive props with Solid signals"*, which fires three raw same-tick
+`INCREMENT`s and expects the context writes to **compound**. Under Solid 1.x they do — a signal write
+is visible to the next read immediately. Under 2.0 the write defers, all three read `0`, and the
+count lands on `1`. **Not behavior the fork lost:** React's adapter has the same shape, its `get()`
+returning a captured `value` a same-tick `setValue` does not change either. The compounding is an
+artefact of Solid 1.x, not a Zag contract — which is why the fork's own version sends the three
+through `await send(...)`, one tick each, and asserts the same three outcomes. **What this costs
+P5:** an action that writes context and an action that reads it cannot share a tick unless the
+bindable's `sync` flag is set; a component relying on that would be relying on Solid 1.x.
+— **Settled.** S2 gate, 2026-08-09, by running it. The parallel-run files were deleted after, per
+§6.2.
+— **Reasoning.** `zag-solid-adapter.md` §6.1, §6.2; P4-C.
+
+**D-104 · D3 shipped with no test, so the fork suite is 87 — 86 carried plus one**
+— **Decision.** Add one case to `bindable.test.ts`: *"treats `value: null` as controlled-with-null,
+not as uncontrolled"*. The fork suite is **87**; the gate's **86 carried cases are green** and the
+87th is named rather than folded into the count.
+— **Rejected.** *Ship D3 on the 86* — `definition-of-done.md` §2 rule 2.11 names *"`bindable.test.ts`'s
+controlled cases"* as its enforcer, and none of the 14 carried cases touches the `null` boundary, so
+a revert to `!=` would have gone green. *Leave it as a finding for the review* — the rule already
+exists and the gap is one case; carrying a known-untested semantic change is the failure
+`definition-of-done.md` §0 exists to prevent.
+— **Effect.** Rule 2.11 gains a live unit-level enforcer at milestone one instead of at the first
+component with a nullable value prop. Verified as a real tripwire: reverting the predicate to `!=`
+fails exactly this case and nothing else.
+— **Settled.** S2 gate, 2026-08-09.
+— **Reasoning.** `zag-solid-adapter.md` §4.3 D3; `definition-of-done.md` §2 rule 2.11.
+
+**D-105 · P4-A holds, and question 1 was confirmed against tarballs rather than the installed tree**
+— **Decision.** §5.5 makes step 2 where the P4 audit stops being provisional. Question 2 (the
+manifest check) runs against the installed closure and is green. **Question 1 cannot**: its four
+adjudicated hits live in `@zag-js/{splitter,number-input,auto-resize}`, and milestone one installs
+only `@zag-js/{core,types,utils}`. Confirmed instead by `npm pack`-ing the three published `1.43.0`
+tarballs and grepping their `dist` — all four hits present, none new.
+— **Rejected.** *Defer question 1 to milestone 5* — it would leave the P4 result provisional through
+three more steps for want of one `npm pack`. *Install the machine packages early to complete the
+closure* — a machine closure four steps before any component needs one, and D-55 moved the bundle
+measurement to milestone 5 precisely to avoid measuring against a tree assembled for a check.
+— **Effect.** **P4-A holds.** Published `@zag-js/solid@1.43.0` matches the `421844f` checkout at all
+three sites the deltas rest on — no `aria-*` rule in `normalizeProps` (A1 is live), the
+`status !== Started` guard in `onCleanup` (D1), and `!== void 0` in `bindable` (D3) — and installed
+`@zag-js/core@1.43.0` carries the `ownedBy` union branch (D2). `legal.md` §5's per-minor re-run
+inherits the tarball route until milestone 5.
+— **Settled.** S2 gate, 2026-08-09.
+— **Reasoning.** `zag-solid-adapter.md` §5.3, §5.5, §9.3.
+
+**D-106 · Where the carried-over design notes live, and the one §1.2 item not carried**
+— **Decision.** The fork's six per-file notes land at **`__internal__/zag-solid/`** (hope-ui keeps
+them under `__internal__/primitives/`, and this repo has no `primitives` package); the harness's three
+at **`__internal__/internal-test-utils/`**. Each gets an HTML-comment provenance header saying that
+every `__internal__/…` path, `CLAUDE.md` reference and `@hope-ui/*` specifier *inside* it is
+hope-ui's at that commit, not this repo's. **`__internal__/solid-2.0-notes.md` is not carried.**
+— **Rejected.** *Rewrite the notes' cross-references to this repo* — most point at hope-ui spike
+findings with no equivalent here, and a rewritten note stops being the record of why the divergence
+exists. *Carry `solid-2.0-notes.md` and prune it, as §1.2's row says* — its 246 lines are mostly
+`createFocusTrap` / `createDismissable` / `createPresence` / `withDefaults`, none of which exists
+here, and its one live citation (`bindable.test.ts`) is better served by `solid-contract.test.ts`,
+which pins the same `createSignal(fn)` semantics as a **running test** rather than as prose. A
+deferral, not a deletion: §1.2's row stands and step 3 is the first step with primitives to describe.
+— **Effect.** Four in-code references were re-pointed rather than left dangling — `bindable.ts` and
+`bindable.test.ts` (hope-ui's `CLAUDE.md` / `solid-2.0-notes.md` → the contract test and the design
+note), `index.ts` and `normalize-props.ts` (the notes' new path). With D1–D3 those are the **only**
+edits to the fork's source; a diff against `ef91b69` shows nothing else, formatting included.
+— **Settled.** S2 gate, 2026-08-09.
+— **Reasoning.** `zag-solid-adapter.md` §1.1, §1.2.
+
+**D-107 · An `.ssr-entry.tsx` sits one character outside `check:test-projects`' scan set**
+— **Decision.** Leave it. `hydrate-fixture.ssr-entry.tsx` is a real source module — it exports the
+`Tree` the browser test hydrates and the `renderFixture()` the bridge invokes — so the check is right
+not to demand that it resolve to a Vitest project. D-97's rule is a `.ssr.` **dot-segment**, and
+`.ssr-entry.` is `.ssr-`, so the miss is by the letter of the rule rather than by luck.
+— **Rejected.** *Rename it to something with no `ssr` in it* — the name is what tells a reader which
+project's build renders it, and the bridge's registry is keyed by that convention. *Widen the scan
+set to `.ssr`* — it would then demand that a legitimate source file be a test.
+— **Effect.** Recorded because the margin is one character: renaming it `hydrate-fixture.ssr.entry.tsx`
+makes `check:test-projects` fail it, correctly, and a reader who does that will not otherwise know
+why. Every component gains one of these from milestone 5, so the convention is about to be repeated
+40+ times.
+— **Settled.** S2 gate, 2026-08-09; verified by enumerating the scan set — 13 files, each resolving
+to exactly one project.
+— **Reasoning.** `testing.md` §1.5, §1.7; D-97.
+
+**D-108 · A1 is not a 1.x bug — Solid 1.x's DOM layer stringified the boolean for free, and 2.0
+stopped** ⟲
+— **Decision.** A1's *code* premise stands: `@zag-js/solid@1.43.0`'s `normalizeProps` has no
+`aria-*` rule. Its *impact* premise does not. Measured on the published packages: `solid-js@1.9.14`'s
+`setAttribute` is `value == null ? remove : setAttribute(name, value)`, so a boolean `aria-expanded`
+is coerced to `"false"` by the DOM and comes out correct. `@solidjs/web@2.0.0-beta.32` added
+`value === false ? remove : setAttribute(name, value === true ? "" : value)`, which drops the
+attribute for `false` and writes `""` for `true`. **A1 is a Solid-2.0 defect that upstream's code
+does not yet guard against — not a bug 1.x users are living with.**
+— **Rejected.** *Take `zag-solid-adapter.md` §4.1's and §8.1's wording at face value* — it says
+*"Upstream `@zag-js/solid@1.43.0` has the identical bug"*, which is true of the source and false of
+the behavior, and would have put a wrong reproduction in a public issue. `prior-art.md` §8.1's rule
+is the one that caught it: measure the dependency, do not reason about its source. *Drop the filing
+now that 1.x is unaffected* — `zag-solid-adapter.md` §2.3 measured `@zag-js/solid@2.0.0-next.1` as
+**byte-identical** to `1.43.0`, with a peer range of `solid-js: ">=1.1.3"` that admits 2.x; so a
+consumer moving to Solid 2.0 gets malformed ARIA with no peer warning and no change on Zag's side.
+— **Effect.** The filing is reframed rather than withdrawn — *"this breaks when you move to Solid
+2.0, here is the four-line guard that is correct on both majors"* — and it gains a reproduction
+that actually reproduces. The fork's own fix and its two regression cases are unchanged; what moves
+is only the claim about who is affected today. `zag-solid-adapter.md` §8.1 carries the correction
+inline, because that section is the filing's specification and a wrong premise there would ship.
+— **Settled.** S2 gate, 2026-08-09; measured against `solid-js@1.9.14` and `@solidjs/web@2.0.0-beta.32`,
+then confirmed end to end by a throwaway browser probe with and without the fix.
+— **Reasoning.** `zag-solid-adapter.md` §4.1, §8.1, §2.3; `prior-art.md` §8.1.
+
+**D-109 · A1 is not filed at milestone one — the gate line is carried open, not ticked** ⟲
+— **Decision.** The author's call at the S2 gate: **do not post**. The filing is written and kept at
+`__internal__/upstream/a1-boolean-aria.md`, reproduction and fix included. `zag-solid-adapter.md`
+§6.5's seventh gate line — *"A1 filed upstream"* — is therefore **the one line of seven that is not
+green**, and it is recorded as open rather than quietly dropped or marked done.
+— **Rejected.** *File it anyway* — not the agent's call to make; publishing to a third party's
+public tracker is the author's. *Delete the draft and drop A1 from the gate* — D-108 shows the bug
+is real and reaches every Zag framework the day Solid 2.0 ships, and §8.2's second filing has the
+same shape; withdrawing the obligation because the draft is inconvenient is the failure
+`definition-of-done.md` §0 names. *Mark the gate line satisfied because the draft exists* — that is
+literally the file-existence check `prior-art.md` §8.1 forbids.
+— **Effect.** Two things move. **P7 cannot cite an open issue number per inherited axe allowance**
+(`definition-of-done.md` §5), which was D-54's stated reason for filing at milestone one rather than
+at milestone 5 — so either the register carries the draft's path instead of an issue URL, or the
+filings happen before step 5. And **§8.2's `ariaHidden` → `suppressOthers` filing is unaffected but
+unstarted**; it was never in this step's deliverable list and is now the older of the two debts.
+Neither blocks step 3, which touches no Zag machine.
+— **Settled.** S2 gate, 2026-08-09, by the author. **⟲** Reverses D-54's *"both at milestone one"*
+timing for A1; D-54's substance — that both are worth filing — is untouched.
+— **Reasoning.** `zag-solid-adapter.md` §8.1, §8.2; D-54; D-108.
+
 ---
 
 ## 4. The reversals, in one place
@@ -1437,6 +1602,7 @@ pass learned something. Five reversed once, four reversed twice.
 | **D-80** | DoD tiers | two | **four** |
 | **D-84** | Storybook | a dev harness | a dev harness **and a required CI job** |
 | **D-96** | The `solid-contract` case count | 9 + 3 + 6, gated as "18 including the three `flush()` cases" | **10 + 3 + 7 copied, 23 with the three `flush()` cases** — measured, not predicted |
+| **D-102** | The fork's deltas against its pins | three, all against Zag `1.43.0` | **four, on two axes** — `renderToStringAsync` is gone at `@solidjs/web@2.0.0-beta.32`, and only the Zag axis had a delta list |
 | **D-84** *(again)* | Storybook's arrival | step 5, with the first component | **step 3b**, with `Box`. Its *status* is unchanged — a local playground and the compile-mode canary, never deployed |
 | **D-93** | *A shipping component owes a docs page* | an inventory check in the docs job, first able to fire at step 8 | **A component is not done until its page is done** — the page ships in the same phase as the component, from the first one |
 | **D-41** | Workstream B's shape | one step, sized at P6 to 45 components | **6a / 6b / 6c**, a gate each. Its *position* is unchanged; 6a alone is what blocks B3/B4/B8 |
@@ -1457,7 +1623,7 @@ column here, because it is a per-component rule (`definition-of-done.md` rule 2.
 
 | Step | What | Gate |
 |---|---|---|
-| **1** ✅ | Repo bootstrap — workspace, catalog, Biome, tsconfig, Turbo incl. `codegen`, CI skeleton, three Vitest projects, `solid-contract` | `definition-of-done.md` §3.1 step 1 — the projects are distinguishable, 18 contract cases green incl. the three new `flush()` ones |
+| **1** ✅ | Repo bootstrap — workspace, catalog, Biome, tsconfig, Turbo incl. `codegen`, CI skeleton, three Vitest projects, `solid-contract` | `definition-of-done.md` §3.1 step 1 — the projects are distinguishable, 23 contract cases green incl. the three new `flush()` ones |
 | **2** | `@chakra-ui-solid/zag-solid` + the harness (D-48) | `zag-solid-adapter.md` §6.5's seven lines, verbatim; `definition-of-done.md` §3.1 step 2 |
 | **3** | The styling seam — Panda config, preset, `renderStyled`, style props, **plus the locale and environment contexts** | `definition-of-done.md` §3.1 step 3 — `Box`'s computed styles in all three projects, a consumer override changing them, and five checks live |
 | **3b** | **The two visual surfaces, both rendering `Box`** — Storybook (local playground and compile-mode canary, **never deployed**) and the **docs app shell** with its own consumer `panda.config.ts` (D-98) | `definition-of-done.md` §3.1 step 3b — both run; `test:storybook` and the `docs` CI job go live; **P7-B**, **P8-B** and **P8-C** close |

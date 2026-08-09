@@ -6,5 +6,9 @@
     // package's tsconfig reads the same as its siblings'.
     "declarationMap": false
   },
-  "include": ["src"]
+  // `types/` carries the ambient declaration for `virtual:hydration-fixture?id=*`, the module the
+  // hydration bridge serves. It has to be an ambient `.d.ts` rather than a `declare module` inside
+  // a test file: a test file is itself a module, so a `declare module` there is read as
+  // *augmentation* of a module that does not exist.
+  "include": ["src", "types"]
 }

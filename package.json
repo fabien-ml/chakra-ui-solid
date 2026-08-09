@@ -21,6 +21,11 @@
     "check:test-projects": "node scripts/check-test-projects.mjs",
     "check:resolution-sync": "node scripts/check-resolution-sync.mjs",
     "check:commit-trailers": "node scripts/check-commit-trailers.mjs",
+    "check:no-cij-manifest": "node scripts/check-no-cij-manifest.mjs",
+    "check:no-runtime-sheet": "node scripts/check-no-runtime-sheet.mjs",
+    "check:license-headers": "node scripts/check-license-headers.mjs",
+    "check:notice-rows": "node scripts/check-notice-rows.mjs",
+    "check:package-files": "node scripts/check-package-files.mjs",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo run build --filter='./packages/*' && changeset publish"

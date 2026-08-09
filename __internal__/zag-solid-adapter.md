@@ -623,11 +623,15 @@ this milestone.
 
 Copy from hope-ui `main`, `packages/primitives/src/__tests__/`:
 
+**Corrected at step 2, from D-96's measurement:** the copied counts below are **10 unit + 3 ssr +
+7 browser = 20**, and 23 with the three `flush()` cases. The 9/3/6 this table used to carry was
+never true of any hope-ui ref.
+
 | File | Cases | Already pins |
 |---|---:|---|
-| `solid-contract.test.ts` | 9 | **`merge` resolves a key by presence, not by value** (both directions) — the semantic every `merge` call site in `machine.ts` depends on. **`createSignal(fn)` is the memo overload** — divergence 3's premise, pinned both ways (invokes a function argument; stores it once boxed). `useContext` throwing without a Provider. Sibling effect ordering, incl. **reverse-order cleanup on owner disposal** |
+| `solid-contract.test.ts` | 10 | **`merge` resolves a key by presence, not by value** (both directions) — the semantic every `merge` call site in `machine.ts` depends on. **`createSignal(fn)` is the memo overload** — divergence 3's premise, pinned both ways (invokes a function argument; stores it once boxed). `useContext` throwing without a Provider. Sibling effect ordering, incl. **reverse-order cleanup on owner disposal** |
 | `solid-contract.ssr.test.tsx` | 3 | Host element through `Dynamic` with a hydration key; `createUniqueId` consuming a hydration child id exactly as the hydrating client does; the `<Show>` `when`-gate not burning a key |
-| `solid-contract.browser.test.tsx` | 6 | `applyRef` flattening and skipping falsy entries; `sharedConfig.hydrating` marking the hydration pass and only it; a signal write from one document listener not unhooking the next mid-dispatch |
+| `solid-contract.browser.test.tsx` | 7 | `applyRef` flattening and skipping falsy entries — **and returning a default without throwing**, the half that catches a *narrowing*; `sharedConfig.hydrating` marking the hydration pass and only it; a signal write from one document listener not unhooking the next mid-dispatch |
 
 **One test to add, and the plan already asked for it.** `brief-plan` §3.5 predicted that `send`'s
 `queueMicrotask` *"interacts with 2.0 microtask batching; needs a `flush()` characterization test."*
@@ -808,9 +812,28 @@ closing a gap we have decided not to close ourselves.
 
 ### 8.1 A1 — boolean `aria-*` in `@zag-js/solid`
 
-**A live bug for every Solid Zag consumer on the 1.x line.** Verified present in the checkout at
-`1.43.0`: `packages/frameworks/solid/src/normalize-props.ts` has a `readOnly === false` rule and **no
-`aria-*` rule**, so machine-emitted booleans reach `@solidjs/web` untouched.
+> **Corrected at the S2 gate, 2026-08-09 — the premise below was measured wrong, and the filing
+> changes shape.** *"A live bug for every Solid Zag consumer on the 1.x line"* is **false**. The
+> *code* claim holds — `packages/frameworks/solid/src/normalize-props.ts` has a `readOnly === false`
+> rule and **no `aria-*` rule** at `1.43.0` — but the defect is created by **Solid's DOM layer, and
+> only from 2.0**. Measured on the published packages:
+>
+> | | `setAttribute(node, name, value)` | `aria-expanded={false}` | `aria-modal={true}` |
+> |---|---|---|---|
+> | **`solid-js@1.9.14`** | `value == null ? remove : setAttribute(name, value)` | `"false"` ✅ | `"true"` ✅ |
+> | **`@solidjs/web@2.0.0-beta.32`** | `value == null \|\| value === false ? remove : setAttribute(name, value === true ? "" : value)` | *absent* ❌ | `""` ❌ |
+>
+> On 1.x the DOM coerces the boolean to a string on the way in, so the missing rule never surfaces.
+> 2.0 added the `=== false` / `=== true` special-casing and the coercion is gone. Confirmed end to
+> end by a throwaway browser probe against `2.0.0-beta.32`, both with and without the fork's fix.
+>
+> **The filing is still worth making, and the reason is `§2.3`:** `@zag-js/solid@2.0.0-next.1` is
+> **byte-identical** to `1.43.0`, and its peer range is `solid-js: ">=1.1.3"`, which admits 2.x. So
+> any consumer who moves to Solid 2.0 gets malformed ARIA with no peer warning and no code change on
+> Zag's side. It is a latent bug on `main` and a live one on the `v2` prerelease line the moment
+> Solid 2.0 ships. Everything below stands except the two sentences this note replaces — including
+> the fix, which is correct on **both** major lines.
+> — `decisions.md` D-108.
 
 **What the filing says:**
 

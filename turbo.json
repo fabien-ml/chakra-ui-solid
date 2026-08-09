@@ -7,6 +7,8 @@
     "vitest.config.ts",
     "vitest-aliases.ts",
     "vitest-projects.ts",
+    "vitest-hydration-bridge.ts",
+    "attribution.config.ts",
     "pnpm-workspace.yaml"
   ],
   "tasks": {

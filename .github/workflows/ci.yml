@@ -54,12 +54,14 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      # NOT YET WRITTEN — both arrive at step 2, which is the first step to install `@zag-js/*`
-      # and therefore the first closure worth auditing (`zag-solid-adapter.md` §5.5).
-      - name: check:no-cij-manifest (step 2)
-        run: echo "check:no-cij-manifest does not exist yet — it is written at step 2."
-      - name: check:no-runtime-sheet (step 2)
-        run: echo "check:no-runtime-sheet does not exist yet — it is written at step 2."
+      # What a dependency IS — a manifest check over the whole installed closure. A failure here
+      # is a STOP: there is no local mitigation for a machine that took a styling dependency.
+      - run: pnpm check:no-cij-manifest
+      # What our own code DOES — a grep over `packages/*/src` (and `apps/docs/src`, from step 8).
+      # Never merged with the check above: merged, it would have failed Splitter's audited
+      # gesture-cursor stylesheet and cost the library a component on a false positive
+      # (`testing.md` §5.3).
+      - run: pnpm check:no-runtime-sheet
 
   # The three Vitest projects, one leg each. The split is by which build of Solid the project
   # resolves, so they must not share a leg. Every leg fails on a `mount()` diagnostic once the
@@ -122,9 +124,26 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
     steps:
       - uses: actions/checkout@v5
-      # NOT YET WRITTEN — nothing is published, and no package builds before step 2.
-      - name: build + distribution and attribution checks (step 2 onward)
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.10.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      # `--dist` is the half that matters and it needs the build above: rolldown strips every
+      # unmarked block comment, so an `@license` header that lost its tag — or a `comments.legal`
+      # someone unpinned — vanishes from `dist/` and the published package becomes an
+      # unattributed derivative of the project we are porting, with a green build
+      # (`legal.md` §2.3).
+      - run: pnpm check:license-headers --dist
+      - run: pnpm check:notice-rows
+      - run: pnpm check:package-files
+      # NOT YET WRITTEN — `check:exports`, `check:externals`, `check:buildinfo-fresh`,
+      # `check:peer-panda` all read the styling layer's artifacts and arrive with it at step 3;
+      # `check:bundle`'s first meaningful number is the adapter's own fixed weight, and the
+      # comparison it exists for is milestone 5 (D-55).
+      - name: exports / externals / buildinfo-fresh / peer-panda / bundle (steps 3, 5)
         run: |
-          echo "exports, externals, buildinfo-fresh, peer-panda, license-headers, notice-rows,"
-          echo "package-files, bundle: none exist yet. The attribution three arrive at step 2"
-          echo "with the zag-solid fork, which is this repo's first third-party derivative."
+          echo "exports, externals, buildinfo-fresh, peer-panda: written at step 3 with the"
+          echo "styling layer. check:bundle: written at step 5, where the first machine closure"
+          echo "lands and the +13.4 KB gz claim has something to compare against."

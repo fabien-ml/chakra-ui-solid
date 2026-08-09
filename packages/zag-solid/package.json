@@ -1,0 +1,40 @@
+{
+  "name": "@chakra-ui-solid/zag-solid",
+  "version": "0.0.0",
+  "description": "The SolidJS 2.0 adapter for Zag.js machines — a fork of @zag-js/solid, which targets Solid 1.x",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist", "LICENSE", "NOTICE.md"],
+  "chakraUiSolid": {
+    "entries": {
+      ".": "src/index.ts"
+    }
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "solid": "./dist/index.jsx"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@solidjs/web": "catalog:",
+    "solid-js": "catalog:"
+  },
+  "dependencies": {
+    "@zag-js/core": "catalog:",
+    "@zag-js/types": "catalog:",
+    "@zag-js/utils": "catalog:"
+  },
+  "devDependencies": {
+    "@chakra-ui-solid/internal-test-utils": "workspace:*",
+    "@solidjs/web": "catalog:",
+    "solid-js": "catalog:",
+    "tsdown": "^0.22.14"
+  }
+}

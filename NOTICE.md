@@ -36,9 +36,19 @@ No obligation beyond this notice.
 Solid 1.x (see [`__internal__/legal.md`](__internal__/legal.md) §1.3). Every forked file carries an
 `@license` header and a row here.
 
+The fork was taken from **`@zag-js/solid@1.42.0`** and is maintained against **`1.43.0`**. `1.42.0`
+is the baseline a re-sync diffs against — a reader who only knows `1.43.0` would diff the wrong
+direction and mistake upstream's three changes for ours.
+
 | File | Derived from |
 | ---- | ------------ |
-| _(none yet)_ | |
+| `packages/zag-solid/src/machine.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/machine.ts` |
+| `packages/zag-solid/src/bindable.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/bindable.ts` |
+| `packages/zag-solid/src/merge-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/merge-props.ts` |
+| `packages/zag-solid/src/normalize-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/normalize-props.ts` |
+| `packages/zag-solid/src/refs.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/refs.ts` |
+| `packages/zag-solid/src/track.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/track.ts` |
+| `packages/zag-solid/src/index.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/index.ts` |
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and

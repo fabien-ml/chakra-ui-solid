@@ -7,6 +7,7 @@ import solid from "vite-plugin-solid";
 import { defineConfig } from "vitest/config";
 import { solidPluginOptions } from "./solid-babel-options.ts";
 import { chakraSolidAlias, serverBuildAlias } from "./vitest-aliases.ts";
+import { hydrationFixtureBridge } from "./vitest-hydration-bridge.ts";
 import { testProjects } from "./vitest-projects.ts";
 
 // Three projects, one job each, and **the split is by which build of Solid the project
@@ -86,7 +87,12 @@ export default defineConfig({
       {
         // Client DOM compile, but `hydratable: true` so `hydrate()` can claim the server-rendered
         // nodes (the SSR project emits matching `_hk` keys) instead of re-creating them.
-        plugins: [solid(solidPluginOptions({ hydratable: true }))],
+        //
+        // `hydrationFixtureBridge` serves `virtual:hydration-fixture?id=<subject>` — genuine server
+        // HTML rendered fresh in-process by a nested SSR Vite server, so a hydration round-trip
+        // needs no committed `.html` fixture at any component count. See
+        // `vitest-hydration-bridge.ts`.
+        plugins: [solid(solidPluginOptions({ hydratable: true })), hydrationFixtureBridge()],
         resolve: { alias: chakraSolidAlias },
         test: {
           name: "browser",

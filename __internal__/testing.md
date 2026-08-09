@@ -140,13 +140,18 @@ from the server DOM by anything other than event listeners.
 
 These pin **SolidJS's** behavior, not ours, so that when the 2.0 beta line moves, one red contract
 test says so instead of thirty adapter tests failing with no common cause. Copied from hope-ui `main`
-and extended (`zag-solid-adapter.md` §6.3): 9 unit + 3 ssr + 6 browser cases, **plus the three
-`flush()` cases** that section adds — a plain write invisible until the next `flush()`, `flush(fn)`
-draining before it returns, and a write queued inside `queueMicrotask` landing after the current
-synchronous flush, which is the ordering `send` relies on.
+and extended (`zag-solid-adapter.md` §6.3): **10 unit + 3 ssr + 7 browser = 20 copied**, **plus the
+three `flush()` cases** that section adds — a plain write invisible until the next `flush()`,
+`flush(fn)` draining before it returns, and a write queued inside `queueMicrotask` landing after the
+current synchronous flush, which is the ordering `send` relies on.
 
-**Eighteen cases, and they are day-one work**, because the adapter's design rests on exactly those
-semantics.
+**Twenty-three cases, and they are day-one work**, because the adapter's design rests on exactly
+those semantics.
+
+> **Corrected at step 2** — this section previously read *"9 unit + 3 ssr + 6 browser"* and
+> concluded *"Eighteen cases"*, which is the sum **without** the three `flush()` cases and so could
+> not be read both ways. D-96 measured the copied set at 20 and left this site standing for the
+> phase that next read it; step 2 is that phase, and the suite it runs is 13 + 3 + 7 = **23**.
 
 ### 1.7 `check:test-projects` — a mis-suffixed test is a test that never runs
 
