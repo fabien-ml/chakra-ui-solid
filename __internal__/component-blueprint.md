@@ -584,7 +584,7 @@ the ordering guarantee (§3.4 order 2) that an inline `style` beats any class.
 Dialog's slot recipe writes `--dialog-z-index`, `--dialog-margin` and `--dialog-base-margin`, and its
 `size: cover|full` variants set `--dialog-margin: 0`. That is the same mechanism, authored upstream —
 and it is what makes `plan.md` §3.7's override path 1 (a CSS custom property on any element) work with
-no build participation, which is the only override available to a consumer on the prebuilt stylesheet.
+no build participation at all — the cheapest override, reachable from a consumer's runtime.
 
 ### 5.4 Making the rule checkable, because route 3 used as route 1 fails silently
 

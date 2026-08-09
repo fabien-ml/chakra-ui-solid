@@ -254,10 +254,11 @@ ladder, in order, so a refutation costs a config line rather than a redesign:
    does not reach a consumer's codegen at all, this bypasses preset merging entirely and costs the
    consumer one documented line. §3.4 ships this fragment **anyway**, for a different reason, so this
    rung is already built.
-3. **Promote the prebuilt stylesheet from secondary to primary** (§4.4) — consumers import
-   `@chakra-ui-solid/styled-system/styles.css` and do not run Panda. This is the only rung with a real
-   cost: consumer-side theming is lost, which is itself a §0.4-scale regression. It is the floor, not
-   a plan.
+**There is no third rung, by decision** (§4.4). Shipping a prebuilt stylesheet was the former floor;
+it is now excluded, because it is a build artifact that cannot carry consumer style props and would
+create a second, half-functional support tier. If rungs 1 *and* 2 both fail, `staticCss` does not
+reach a consumer's codegen by any route — that is a defect in Panda, not a fallback situation, and it
+invalidates §0's approach rather than this section's.
 
 Rung 2 is the realistic worst case. **Q2 is therefore not a project risk; it is a question about
 where one declaration lives.**
@@ -526,8 +527,7 @@ Four override paths, from cheapest to widest:
 
 1. **CSS custom properties** on any element — the recipes are written against tokens that compile to
    custom properties, so `style={{ "--dialog-z-index": … }}` retunes one instance. The only path that
-   needs no build participation, and therefore the only one available to a consumer on the prebuilt
-   stylesheet (§4.4).
+   needs no build participation at all.
 2. **Style props / `css` prop** on any part — extracted from the consumer's own source, full parity.
 3. **`theme.extend.slotRecipes.<key>`** in the consumer's config — deep-merges into the preset's
    recipe exactly as our own `staticCss` deltas do (§1.2). This is the Chakra-equivalent of
@@ -581,8 +581,10 @@ consumption options use **`include`**; `importMap` is the correct half of the pa
 | `./recipes` | `styled-system/recipes` — **new vs hope-ui**, which never reached recipes (`prior-art.md` §2.6) |
 | `./is-valid-prop` | `styled-system/jsx/is-valid-prop` |
 | `./types` | `styled-system/types` (types only) |
-| `./styles.css` | the prebuilt sheet (§4.4) |
 | `./package.json` | itself |
+
+**No subpath resolves to a `.css` file** (§4.4). The CI check that asserts no export resolves to
+`jsx/index` asserts this in the same pass.
 
 **`./jsx` is never exported** — meaning `jsx/index`, the Solid 1.x factory, which is broken against
 Solid 2.0 in three ways at once (plan §3.1: `splitProps` is gone, `solid-js/web` does not exist, and
@@ -603,16 +605,30 @@ model, which kept `styled-system` private and inlined its runtime into the compo
 is silent, and it defeats the single-instance guarantee that makes `hash: false` merely useful rather
 than load-bearing.
 
-### 4.4 The prebuilt-CSS secondary path
+### 4.4 We ship zero CSS — Panda is a prerequisite, not a preference
 
-For consumers who do not run Panda at all: `panda cssgen --outfile dist/styles.css`, shipped as
-`@chakra-ui-solid/styled-system/styles.css`. With §1.3's per-recipe `staticCss` already declared, a
-plain `cssgen` over our own `include` produces it — no separate `staticCss: { recipes: "*" }` config
-is needed.
+**No `.css` file is published from any package in this repo, ever.** Panda in the consumer's build is
+a hard requirement: without it there is no supported way to use this library.
 
-Documented as **"default theme + recipe variants + CSS-variable overrides only."** It cannot carry
-consumer style props by construction (§0.2), so override path 1 in §3.7 is the only one available on
-it. This is also rung 3 of §1.5's ladder.
+An earlier draft of this section offered a prebuilt `panda cssgen` sheet as a secondary path for
+consumers who do not run Panda. It is rejected, on three grounds:
+
+- **It cannot carry consumer style props**, by construction (§0.2). `<Box p={4}>` in *their* source is
+  extracted by *their* Panda run — a sheet frozen at our build has no rule for it. That is the single
+  capability the library is best known for.
+- **It cannot carry consumer theming.** Only override path 1 of §3.7 (CSS custom properties) survives;
+  paths 2–4 all require build participation.
+- **It creates a second support tier.** Every knob added afterwards — the responsive opt-in of §1.4
+  being the live example — has to be documented twice and either works or silently does not depending
+  on which tier the reader is on. A half-functional tier costs more in docs and issues than it earns.
+
+The cost is stated plainly rather than hidden: a consumer who will not run Panda is not a consumer of
+this library. The README's first line says so, and `@pandacss/dev` is declared a **peer dependency**
+so the package manager warns instead of the app rendering unstyled (§0.2's silent-failure mode at
+project scale).
+
+`cssgen` keeps its internal role — it produces the dev stylesheet the browser tests and the
+generated-CSS coverage check assert against (§0.2, §9). That output is never published.
 
 ---
 
@@ -924,7 +940,7 @@ Each is unverifiable from this machine for the same reason: **Panda is installed
 
 | # | Plan says | P3 decides | Touches |
 |---|---|---|---|
-| 1 | §2.1's exports list: `./css`, `./tokens`, `./types`, `./patterns`, `./recipes`, `./styles.css` | **Add `./is-valid-prop`**, and it resolves *inside* `jsx/`. The never-export rule sharpens to **"no export resolves to `jsx/index`"** (§4.2) | P7 (the CI check) |
+| 1 | §2.1's exports list: `./css`, `./tokens`, `./types`, `./patterns`, `./recipes`, `./styles.css` | **Add `./is-valid-prop`**, and it resolves *inside* `jsx/`. **Drop `./styles.css`** — no CSS is published at all (§4.4). The never-export rule sharpens to **"no export resolves to `jsx/index`, and none resolves to a `.css` file"** (§4.2) | P7 (the CI check) |
 | 2 | §2.2 / §2.11: `panda.config.ts` copied with `eject: true` + `presets: [chakraPreset]`; `prior-art.md` §10.2 row 1 fixes it in the config | **The fix moves into `@chakra-ui-solid/preset`**, which self-declares `@pandacss/preset-base`. The config keeps `eject: true` and one preset entry, and so does the consumer's (§3.2) | P9 (`decisions.md`) |
 | 3 | §2.1 / §9 Q2: *"`staticCss` shipped in the preset"* | **Per-recipe** via `theme.extend`, not a config-level block, plus an atomic `staticCss.css` block and 10 `colorPalette` values — with a three-rung fallback ladder (§1) | P5, P7 |
 | 4 | §9 Q2 assumes only *dynamic* variant arguments fail to extract | **No consumer-written recipe variant extracts at all** — the preset declares no `jsx` hints (measured). The problem is wider and the answer is the same (§1.1) | P5, P7 |
