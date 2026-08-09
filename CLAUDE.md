@@ -2,17 +2,14 @@
 
 **The operative index: the enforced rules, and a pointer to where each is argued.** Rules and pointers
 only. **If an entry here needs a paragraph to justify it, the paragraph belongs in `__internal__/` and
-the entry is a pointer to it.** The git and reply conventions are carried from hope-ui's `CLAUDE.md`
-(`develop`); same author, MIT, no sync obligation — `__internal__/legal.md` §1.6.
+the entry is a pointer to it.**
 
 **Three surfaces, and nothing is written in two of them.** This file: *what must I do, and where is the
 rule written down?* `__internal__/decisions.md`: *what was decided, what was rejected, and when?* The
 other ten `__internal__` documents: *why is it right?* The full split is `decisions.md` §0.
 
-**When two documents disagree, the later phase wins.** That is what each document's *"what P\_ changes"*
-table records, and `decisions.md` §7 is where the earlier document was brought into line. Within a
-phase, a measurement beats a prediction. The approved `brief-plan` is the oldest document in the set
-and loses to all of them.
+**When two documents disagree, the later phase wins**; within a phase, a measurement beats a
+prediction; and the approved `brief-plan` loses to all of them. — `decisions.md` §7.
 
 ---
 
@@ -25,17 +22,13 @@ review gate.
 **Nothing writes a stylesheet at runtime.** No Emotion, styled-components, goober or stitches — not
 as a dependency, not anywhere in the dependency closure. And none of our own code calls
 `createElement("style")` or `insertRule`, touches `adoptedStyleSheets`, or maintains a sheet. Those
-are two different checks, and merging them breaks the rule in both directions:
+are two separate checks and **neither may be merged into the other** — `plan.md` §0;
+`zag-solid-adapter.md` §5.1; `testing.md` §5.
 
 | | Scope | Judged by | Script |
 |---|---|---|---|
-| **The rule proper** | Our source **and the whole dependency closure** | What a dependency **is** — a manifest check | `check:no-cij-manifest` |
-| **Hygiene on ourselves** | `packages/*/src/**` and `apps/docs/src/**` only | What our code **does** — a grep | `check:no-runtime-sheet` |
-
-Merging them *up* fails a behavior library writing one static cursor rule for the duration of a drag,
-which is not a styling engine and would cost us a component on a false positive. Merging them *down*
-misses our own code growing a "just inject one keyframe" fix, which installs clean and defeats
-build-time extraction from the inside. — `plan.md` §0; `zag-solid-adapter.md` §5.1; `testing.md` §5.
+| **The rule proper** | Our source **and the whole dependency closure** | What a dependency **is** — a manifest check | `check:no-cij-manifest` — **planned, not yet written** |
+| **Hygiene on ourselves** | `packages/*/src/**` and `apps/docs/src/**` only | What our code **does** — a grep | `check:no-runtime-sheet` — **planned, not yet written** |
 
 **Allowed, and routinely needed:** the DOM `style` attribute (Zag's `normalizeProps` — the function
 turning a state machine's framework-agnostic prop bag into Solid props — emits `style` objects for
@@ -56,33 +49,25 @@ failing test. An unstyled component and a green suite look identical. Two standi
 - **Tests assert computed styles, never class names.** `classList.contains("p_4")` passes on a
   completely unstyled element. — `plan.md` §0.2.
 
-This is why `chakra-ui-solid` is **not a 1:1 port**, and the phrasing is fixed: *"as close to Chakra
-v3 parity as is achievable without runtime CSS-in-JS."* The parity delta is `plan.md` §0.4 — cite a row,
-never re-argue it.
+`chakra-ui-solid` is **not a 1:1 port**, and the phrasing is fixed: *"as close to Chakra v3 parity as
+is achievable without runtime CSS-in-JS."* The parity delta is `plan.md` §0.4 — cite a row, never
+re-argue it.
 
 ## The port rule
 
 **No accessibility behavior beyond what Zag ships. Nothing invented that Chakra UI v3 does not have.
 SolidJS idioms excepted** — those are what the port *is*. — `prior-art.md` §8.2.
 
-It is not a lowered bar, it is a *fixed* one: Chakra v3 is Ark over Zag and neither layer adds
-behavior, so **Zag's a11y surface is Chakra's**. Three consequences that get re-litigated if they are
-not written down:
-
-- **Adding a fix Chakra does not have is a divergence**, even pointing the pleasant way. The retained
-  kernel is `createRegisteredId` — 12 lines of Solid 2.0 write-deferral, not accessibility.
-  `createHideOutside` and `createFocusRestore` are struck; `createPresence` is replaced by a build over
-  the `@zag-js/presence` machine. — `component-blueprint.md` §8.
-- **Removing behavior Chakra has is the same divergence.** Splitter ships with its audited gesture-
-  cursor stylesheet for exactly this reason. — `zag-solid-adapter.md` §5.3.
+- **Adding a fix Chakra does not have is a divergence**, even pointing the pleasant way.
+  — `component-blueprint.md` §8.
+- **Removing behavior Chakra has is the same divergence.** — `zag-solid-adapter.md` §5.3.
 - **An inherited defect is fixed upstream, not locally** — that is the only route that also reaches the
   library we are porting. — `zag-solid-adapter.md` §8.
 
 **A faithful port carries inherited axe allowances, and a correct port must not read as a regression.**
 Every mounting test runs axe; allowances are enumerated per component and per rule in
 `definition-of-done.md` §5, each citing an upstream issue; **an allowance that stops being needed
-fails the test**. Today that register is three entries — `aria-hidden-focus`, open-state only. Never
-"fix" one by re-introducing the kernel. — `component-blueprint.md` §9.
+fails the test**. — `component-blueprint.md` §9.
 
 ## Reference use, and the expression tier
 
@@ -104,7 +89,8 @@ my file against theirs and see the same structure and sequence?* — `legal.md` 
 **When the tier is expression, all of this lands in the same commit as the code** — both failure modes
 are silent and green:
 
-1. An entry in **`attribution.config.ts`** at the repo root. It is the registry every check reads.
+1. An entry in **`attribution.config.ts`** at the repo root, the registry every check reads
+   — **planned, not yet created**.
 2. An `@license` header naming the **upstream file**.
 3. A row in the root `NOTICE.md` **and** in the owning package's.
 4. `LICENSE` and `NOTICE.md` in that package's `package.json#files`.
@@ -118,8 +104,7 @@ are silent and green:
 
 - **Measure the dependency; do not reason about its source.** A finding that says *"impossible"* or
   *"unfixable"* gets a probe before it reaches a verdict. A test whose premise is a defect gets run in
-  isolation before it is believed. Two of the three findings that drove the spike's first verdict were
-  wrong, and both errors ran this direction. — `prior-art.md` §8.1.
+  isolation before it is believed. — `prior-art.md` §8.1.
 - **A story is a deliverable, not a checkbox — open it.** A definition-of-done item verified only by a
   file-existence check is verified in name only. — `prior-art.md` §8.1; `definition-of-done.md` §0.
 - **State the counting convention every time a volume figure is quoted** — **raw** (`wc -l`) or **code**
@@ -131,12 +116,10 @@ are silent and green:
 
 **`plan.md` always means `__internal__/plan.md`** — P3's architecture, §0–§13. **The approved brief
 plan is always `` `brief-plan` ``** — it is the only thing that owns `§4.1 doc N`, `§5 step N`,
-`§8 assumption N`, `§9 QN`, `§2.11` and `§7 concern N`.
-
-Both documents have a §1.5, §2.4, §3.5, §4.1, §5, §7 and §8, with **different content in every case**,
-so `plan.md §4.1` without this convention sends a reader to the distribution model when the brief plan's
-document register was meant. Never write `plan.md` for the brief plan, and never write a bare *"the
-plan"* for either. — `decisions.md` §0.1, §7.2.
+`§8 assumption N`, `§9 QN`, `§2.11` and `§7 concern N`. Both documents have a §1.5, §2.4, §3.5, §4.1,
+§5, §7 and §8 with different content in every case, so an unqualified citation sends the reader to the
+wrong document. Never write `plan.md` for the brief plan, and never write a bare *"the plan"* for
+either. — `decisions.md` §0.1, §7.2.
 
 ## Git conventions
 
@@ -150,8 +133,7 @@ vendored skills) gets its own commit, so the phase commit still reads as the pha
 the implementation pass as much as the document pass.
 
 **A review that changes a decision re-plans the affected later phases before work continues.** An
-approved plan is not a licence to run ahead of it — P1 settling the brand is the worked example: it
-rewrote what P2 onward can assume.
+approved plan is not a licence to run ahead of it.
 
 ## Replies lead with the answer, in plain language
 
@@ -167,21 +149,15 @@ Panda CSS.**
 
 ## Code style
 
-Names carry the meaning; comments are the exception.
+The global code-style rules apply unchanged. Two additions this repo needs:
 
-- **Meaningful, unabbreviated names** (`previousFocus`, not `pf`). Single letters only for trivial
-  loop indices or math.
-- **Comments explain _why_, not _what_.** A comment restating the next line is noise — delete it.
-  Keep them for rationale, non-obvious constraints, spec/issue links, and **the hazards this repo
-  tracks (SSR/hydration, Solid 2.0, and silent unstyling — a Panda class whose CSS was never
-  generated renders nothing and raises no error)**. Self-explanatory code gets none; JSDoc on public
+- **Comments stay for the hazards this repo tracks** — SSR/hydration, Solid 2.0, and silent unstyling
+  (a Panda class whose CSS was never generated renders nothing and raises no error). JSDoc on public
   API stays.
-- **A comment reads for the same reader as a reply** (above) — the hazard ones stay, they just have
-  to land with no repo knowledge: `// keyed on _hk, so an inserted sibling shifts the trigger's key`
-  → `// Solid matches server and client nodes by position (its "_hk" key), so inserting any sibling
-  before this one breaks hydration.` Applies to comments you write or touch, never a repo-wide sweep.
-- **A function needing a paragraph of comment is the problem.** Extract helpers, split
-  responsibilities, rename. Refactor instead of annotating.
+- **A comment reads for the same reader as a reply** (above), so a hazard comment has to land with no
+  repo knowledge: `// keyed on _hk, so an inserted sibling shifts the trigger's key` → `// Solid
+  matches server and client nodes by position (its "_hk" key), so inserting any sibling before this
+  one breaks hydration.` Applies to comments you write or touch, never a repo-wide sweep.
 
 ---
 
@@ -194,37 +170,35 @@ spots.** Nothing below is a second copy of either.
 
 | Tier | Applies to | Where | The shape of it |
 |---|---|---|---|
-| **Per file** | Every file under `packages/*/src/` | `definition-of-done.md` §1 | 10 rules — types and lint; the style contract's three rules; **no runtime stylesheet, no CSS-in-JS in the closure**; attribution in the same commit; one Vitest project per test file; `mount()` silent; no `Co-Authored-By` |
-| **Per component** | Every shipping row of the parity matrix | `definition-of-done.md` §2 | 15 rules — axe through the register; computed-style assertions; coverage green or allow-listed; an SSR→hydrate fixture; a story per part shape; anatomy ∩ slots; consumer `id` reaches the element; no style-prop collision; the provider surface; controlled `value={null}`; the bundle budget; the presence tests; **a docs page** |
-| **Per batch** | Each probe step and each of B1–B8 | `definition-of-done.md` §3 | Four shared lines, plus what that batch proves that the previous one did not — **restated as a test, because prose about what a batch proves is not a gate** |
-| **Per release** | Every publish | `definition-of-done.md` §4 | 13 rules — the exports map, externality, buildinfo freshness, the Panda peer, `hash: false`, the four attribution checks, the disclaimer, resolution sync, bundle figures, changesets, the re-stamped license table |
-| **Unenforced, and labelled** | — | `definition-of-done.md` §7 | Five conventions with no script. Each says what a reader is trusted to do and what mechanical proxy covers the rest. **Deleting an unenforceable rule is not the same as pretending it was enforced** |
+| **Per file** | Every file under `packages/*/src/` | `definition-of-done.md` §1 | Types and lint, the style contract, §0 compliance, attribution in the same commit, test-project registration |
+| **Per component** | Every shipping row of the parity matrix | `definition-of-done.md` §2 | Axe through the register, computed-style assertions, coverage, an SSR→hydrate fixture, stories, the bundle budget, a docs page |
+| **Per batch** | Each probe step and each of B1–B8 | `definition-of-done.md` §3 | The shared lines, plus what that batch proves that the previous one did not — **restated as a test, because prose about what a batch proves is not a gate** |
+| **Per release** | Every publish | `definition-of-done.md` §4 | The exports map, externality, the Panda peer, the attribution checks, the disclaimer, resolution sync, bundle figures, changesets |
+| **Unenforced, and labelled** | — | `definition-of-done.md` §7 | Conventions with no script, each naming what a reader is trusted to do. **Deleting an unenforceable rule is not the same as pretending it was enforced** |
 
-**CI groups them into eight jobs** so a red build names a category before anyone opens a log —
+**CI groups them into jobs** so a red build names a category before anyone opens a log —
 `testing.md` §12. **Two live registers** carry per-change contents rather than rules: the axe
 allowances (`definition-of-done.md` §5) and the coverage allow-list (§6). **One assumption register**
-(§8) holds every open assumption with its runnable gate and the step it runs at — 38 rows, and an
-assumption without a gate is a finding rather than a formatting problem.
+(§8) holds every open assumption with its runnable gate and the step it runs at — and an assumption
+without a gate is a finding rather than a formatting problem.
 
 ## The documents — one line each, by the question it answers
 
-Eleven documents in `__internal__/`, plus this file. *(The `brief-plan`'s register had ten **rows**;
-`docs-plan.md` made it eleven. Rows and files differ by one: `testing.md` and `definition-of-done.md`
-share one row.)*
+Eleven documents in `__internal__/`, plus this file.
 
 | Document | The question it answers |
 |---|---|
-| `__internal__/plan.md` | **How is this thing built?** §0's constraint, the styling layer, the dynamic-value contract, the distribution model, the package graph, presence, build mechanics. Settles Q2 and Q4 |
-| `__internal__/prior-art.md` | **What is already known, and what is only assumed?** hope-ui's two branches re-measured, the ten-axis scorecard and its retractions, the measured adapter defects, the three standing taxes — and the negative result: the recipe layer is unevidenced. Sets the port rule and the methodology rule |
-| `__internal__/zag-solid-adapter.md` | **What is milestone one, and when is it done?** The fork's file set, the four defects at their current state, the three deltas against 1.43.0, the §0 compliance audit, the test plan, the attribution checklist, the two upstream filings. Settles Q6 |
-| `__internal__/component-blueprint.md` | **What shape is a component?** Machine instantiation, anatomy → part components, precedence, the `recipeClass` seam, where inline `style` is legal, the `hidden`-vs-`display` rule, presence, the a11y baseline, SSR/hydration — then Dialog worked fully through. Settles Q7 |
-| `__internal__/roadmap.md` | **What gets built, and in what order?** 115 rows against 51 machines and 18 + 56 recipes, every exclusion reasoned individually, the presence families, the floating seam, and the build order with a gate per step and batch |
+| `__internal__/plan.md` | **How is this thing built?** §0's constraint through the styling layer, the distribution model, the package graph and build mechanics. Settles Q2 and Q4 |
+| `__internal__/prior-art.md` | **What is already known, and what is only assumed?** hope-ui's two branches re-measured, the scorecard and its retractions, the standing taxes. Sets the port rule and the methodology rule |
+| `__internal__/zag-solid-adapter.md` | **What is milestone one, and when is it done?** The fork's file set, defects, deltas, §0 compliance audit, test plan, attribution checklist and upstream filings. Settles Q6 |
+| `__internal__/component-blueprint.md` | **What shape is a component?** Machine instantiation through part components, precedence, the `recipeClass` seam, presence, the a11y baseline and SSR — then Dialog worked fully through. Settles Q7 |
+| `__internal__/roadmap.md` | **What gets built, and in what order?** The parity matrix, every exclusion reasoned individually, the presence families, the floating seam, and the build order with a gate per step and batch |
 | `__internal__/testing.md` | **How does each check work?** Every enforcing artefact defined exactly once — input, algorithm, failure output, blind spots |
 | `__internal__/definition-of-done.md` | **When must it pass, and what does a failure mean for the change in front of me?** The four tiers, the two live registers, the assumption gates, the CI ownership, the unenforced conventions |
 | `__internal__/docs-site.md` | **What docs exist, on what stack, and how do we know it works?** The app, the route map, the machinery pages share, the copyright and trademark boundaries, the build gate |
-| `__internal__/docs-plan.md` | **What does each page say, in what order, and which settled decision does it render?** Four page specs, two tier specs, one component template applied 113 times |
+| `__internal__/docs-plan.md` | **What does each page say, in what order, and which settled decision does it render?** The page specs, the tier specs, and the component template |
 | `__internal__/legal.md` | **What do we owe, to whom, and what may we say about Chakra?** License compatibility, the attribution mechanism, trademark, the brand decision and its exit ladder, upstream tracking |
-| `__internal__/decisions.md` | **What was decided, what was rejected, and when?** 94 entries with their rejected alternatives, Q1–Q8 and their gates, the reversals, the build order, what the document pass left open, and the reconciliation log |
+| `__internal__/decisions.md` | **What was decided, what was rejected, and when?** The entries with their rejected alternatives, Q1–Q8 and their gates, the reversals, the build order, what the document pass left open, and the reconciliation log |
 
 **Reference checkouts** live in `__reference-impl__/` — read-only, gitignored, never committed, and
 never a dependency.
