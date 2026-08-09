@@ -66,7 +66,8 @@ SolidJS idioms excepted** — those are what the port *is*. — `prior-art.md` �
 
 **A faithful port carries inherited axe allowances, and a correct port must not read as a regression.**
 Every mounting test runs axe; allowances are enumerated per component and per rule in
-`definition-of-done.md` §5, each citing an upstream issue; **an allowance that stops being needed
+`definition-of-done.md` §5, each naming **where the gap is argued in our own documents** — nothing is
+filed upstream and nobody is contacted (`decisions.md` D-110); **an allowance that stops being needed
 fails the test**. — `component-blueprint.md` §9.
 
 ## Reference use, and the expression tier

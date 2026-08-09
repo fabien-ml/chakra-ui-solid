@@ -726,6 +726,22 @@ it regardless, and writing it now costs nothing, which is why it is already in t
 
 ### 3.7 Talking to Chakra — the trigger, and the answer if they object
 
+> **S — contradicted, and not resolved here. Marked at S4, 2026-08-10.** This section was written at
+> P1 (2026-08-08). At the S2 gate (2026-08-09) **D-110** set a standing position in the author's own
+> words: *"this is an independent port and there is nobody to notify. No issue is filed, no PR
+> opened, **no maintainer contacted**, and it is not proposed again unless the author asks."* Under
+> the later-phase-wins rule (`decisions.md` §7) D-110 governs and **nothing below fires**.
+>
+> The two are not obviously about the same thing — D-110's subject is **defect filings** upstream
+> (§8.1's A1, §8.2's `suppressOthers`), and this section's is a **trademark courtesy about the
+> name**, on a trigger that has not arrived. That is why this is marked rather than deleted:
+> **deleting a section because a broader-sounding decision seems to cover it is how a considered
+> position gets lost.** Whether D-110 reaches trademark as well as defects is the author's call, and
+> it does not need making until the trigger below does.
+>
+> **Nothing here is a live instruction.** Nothing publishes at `0.0.0` and the repo is private, so
+> the trigger is unreached either way.
+
 **The message is deferred, not skipped** (§3.3.3). Sending it today means asking the Chakra team to
 weigh in on an empty private repository that may never go live. It is worth sending when there is
 something real to point at.

@@ -760,6 +760,8 @@ generated-CSS coverage check assert against (§0.2, §9). That output is never p
 @chakra-ui-solid/system            PUBLIC, hand-written. §5.3.
 
 @chakra-ui-solid/components        PUBLIC. The components. Ships dist/panda.buildinfo.json.
+                                   ^ P — no `ship` script and no buildinfo today. Gate: step 4,
+                                     with check:buildinfo-fresh (DoD §7b).
 
 @chakra-ui-solid/internal-test-utils   PRIVATE.
 
@@ -768,15 +770,25 @@ apps/docs                          TanStack Start (beta 2.x line, `brief-plan` �
 
 ### 5.2 Dependency direction — strictly downward
 
-| Package | Depends on, in-repo |
-|---|---|
-| `preset` | nothing |
-| `zag-solid` | nothing |
-| `styled-system` | `preset` (dev/config-time only — Panda reads it to generate) |
-| `system` | `styled-system`, `zag-solid` |
-| `components` | `system`, `styled-system`, `zag-solid` |
-| `internal-test-utils` | `system` — **from milestone 3, not before** (see below) |
-| `apps/docs` | `components` |
+> **This table is the FINISHED graph, not today's** — **D-119** says so in as many words, and a
+> reader who takes it for a description of `packages/*/package.json` will look for two edges that
+> are not there. Marked at S4 against the real manifests. The **P** rows are predictions with a
+> gate; the rest are **I**.
+>
+> The graph **as it actually stands today**, measured from the manifests:
+> `panda-preset → nothing`, `zag-solid → nothing`, `styled-system → panda-preset` (dev),
+> `system → styled-system`, `components → system + styled-system`,
+> `internal-test-utils → styled-system` (dev), `apps/docs → components + styled-system`.
+
+| Package | Depends on, in-repo | Today |
+|---|---|---|
+| `panda-preset` | nothing | **I** — and the package is `panda-preset`, not `preset`, since **D-161** |
+| `zag-solid` | nothing | **I** |
+| `styled-system` | `panda-preset` (dev/config-time only — Panda reads it to generate) | **I** |
+| `system` | `styled-system`, `zag-solid` | `styled-system` **I**. **`zag-solid` is P — the edge does not exist. Gate: step 5**, when the presence render strategy lands, because the edge exists *because presence is a machine* (**D-40**, **D-119**) |
+| `components` | `system`, `styled-system`, `zag-solid` | `system` and `styled-system` **I**. **`zag-solid` is P — same gate, same reason** |
+| `internal-test-utils` | `system` — **from milestone 3, not before** (see below) | **P — still not there at step 3b.** The edge today is `internal-test-utils → styled-system`, which this table does not list. Gate: the first test helper that renders something styled |
+| `apps/docs` | `components` | **I**, and it also depends on `styled-system` directly — the docs app is a *consumer instance* (`docs-site.md` §1.1), so it takes the generated surface the way any consumer does |
 
 `zag-solid` depends on nothing here — that is what lets it be milestone one and ship before any
 styling decision is settled. `system` depending on `zag-solid` is new relative to the plan's graph and

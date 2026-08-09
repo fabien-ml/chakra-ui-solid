@@ -71,8 +71,8 @@ Applies to every row of `roadmap.md` §4 that ships. Rules 2.1–2.6 and **2.15*
 
 | # | Rule | Enforced by |
 |---|---|---|
-| 2.1 | **Every mounting test runs axe**, through the register — no inline allowance is expressible (`component-blueprint.md` §9.3) | `expectNoA11yViolations({ component, scope })` (`testing.md` §4.1) |
-| 2.2 | **Every allowance it needs is in §5**, per rule and per scope, with an upstream issue number; and **an allowance that stops being needed fails the test** | The register's two-directional assertion (`testing.md` §4.2); `allowances.test.ts` |
+| 2.1 | **Every mounting test runs axe**, through the register — no inline allowance for a *violation* is expressible (`component-blueprint.md` §9.3). **P — the register half has not been built. Gate: step 5.** What ships today is `expectNoA11yViolations(container, { allowIncomplete })`, called by 11 browser tests; it takes a container rather than `{ component, scope }`, and `allowIncomplete` **is** a call-site escape — for axe's *undecided* results, not its violations, which is a narrower thing than the rule reads as forbidding. Reconciling the two is step 5's work, not a licence to widen `allowIncomplete` | `expectNoA11yViolations({ component, scope })` (`testing.md` §4.1) — **the signature is P**; `packages/internal-test-utils/src/axe/axe.ts` is what exists |
+| 2.2 | **Every allowance it needs is in §5**, per rule and per scope, **naming where the gap is argued in our own documents** — not an upstream issue number: this is an independent port, nothing is filed and nobody is contacted (**D-110**). And **an allowance that stops being needed fails the test**. **P — `allowances.ts` and `allowances.test.ts` do not exist. Gate: step 5**, the first component with an allowance | The register's two-directional assertion (`testing.md` §4.2); `allowances.test.ts` — **neither is written** |
 | 2.3 | **Every visual assertion reads a computed style. Class-name assertions are banned** in the `browser` and `ssr` projects — `classList.contains("p_4")` passes on a completely unstyled element (`prior-art.md` §4.4) | `check:style-contract` rule 3 |
 | 2.4 | **Its recipe key is in the coverage check's consumed set, and the check is green** — or the component is on §6's allow-list with a reason and an expiry | `check:css-coverage`; `check:coverage-allowlist` |
 | 2.5 | **An SSR→hydrate round-trip fixture exists and passes.** A green typecheck is not a substitute: `children()` is not key-neutral, so adding or removing one moves `_hk` for the subtree (`component-blueprint.md` §10.2) | The `ssr` + `browser` round-trip bridge (`testing.md` §1.5) |
@@ -111,8 +111,8 @@ batch proves something the previous one did not — and prose about what a batch
 
 Four lines, from `roadmap.md` §9.2:
 
-1. **axe on every mounting test**, with §5's register — no batch may add an allowance without an
-   upstream issue.
+1. **axe on every mounting test**, with §5's register — no batch may add an allowance without naming
+   where the gap is argued in our own documents (**D-110**; not an upstream issue — nothing is filed).
 2. **Computed-style assertions, never class-name assertions** (`check:style-contract` rule 3).
 3. **`check:css-coverage` green**, with §6's allow-list and the seven duplicate slot recipes
    deduplicated before comparison.
@@ -124,7 +124,7 @@ Four lines, from `roadmap.md` §9.2:
 | Step | The proof, as a test | Enforced by |
 |---|---|---|
 | **1** Bootstrap | The three Vitest projects run and are distinguishable: an `ssr` test resolving the client build of either `solid-js` or `@solidjs/web` fails. **23 `solid-contract` cases green** — 20 copied (10 unit + 3 ssr + 7 browser, D-96) plus the three new `flush()` cases | `test:*`; `check:test-projects`; `check:resolution-sync` |
-| **2** `zag-solid` | `zag-solid-adapter.md` §6.5's seven lines, verbatim: 86 fork cases, 51 upstream cases in a one-time parallel run, 23 contract cases, `mount()` silent, the §0 audit green **against the installed closure**, 7 `@license` headers + both `NOTICE.md` tables, A1 filed. **86 + 51 is not 137** — `machine.browser.test.tsx` *is* the port of two upstream files (§6.2) | The milestone-one CI job; `check:no-cij-manifest`; `check:license-headers`; `check:notice-rows` |
+| **2** `zag-solid` | `zag-solid-adapter.md` §6.5's seven lines, verbatim: 86 fork cases, 51 upstream cases in a one-time parallel run, 23 contract cases, `mount()` silent, the §0 audit green **against the installed closure**, 7 `@license` headers + both `NOTICE.md` tables, A1 filed. **86 + 51 is not 137** — `machine.browser.test.tsx` *is* the port of two upstream files (§6.2). **Six of the seven are M — discharged at `046d0d2`. The seventh, *A1 filed*, is carried OPEN and is not ticked** (**D-109**), and under **D-110** it is not going to be: no issue is filed, no maintainer contacted. The draft is `__internal__/upstream/a1-boolean-aria.md` and stays unposted | The milestone-one CI job; `check:no-cij-manifest`; `check:license-headers`; `check:notice-rows` |
 | **3** Styling seam | `Box` renders correct **computed styles** in unit, SSR and browser, and a consumer `panda.config.ts` override changes them. Plus: `check:preflight-hidden`, `check:alias-coverage`, `check:dark-selector`, `check:preset-token-resolution`, and `check:style-contract` rule 1 live | `styling` job; `test:*` |
 | **3b** The visual surfaces | **Two surfaces, one gate — discharged at S3b.** Storybook is a **local playground** — `pnpm storybook` renders `Box` and nothing automated opens it, so it contributes no gate line (`testing.md` §7.1; **D-133**). **The whole proof is the docs app**: its shell, its route map, `docs-plan.md` §8's component-page template applied once to `Box`, and its own `panda.config.ts` — a **standing consumer instance** from here rather than after B8 (`docs-site.md` §1.1), and from S3b the only place a component is validated as a real app uses it. Closes **P8-B** (MDX under Solid 2.0) and **P8-C1** (the generator's own-part-props half); **P8-C splits** and its other two thirds move to steps 4 and 5 (**D-142**); **P7-B is retired unclosed** — measured, then withdrawn, because nothing depends on it (**D-130**, **D-133**) | the `docs` job — `check:docs-inventory`, `check:docs-consumer-config`, `check:docs-examples`, `check:no-runtime-sheet` over `apps/docs/src`, and the docs build itself. **`check:css-coverage` against the docs sheet is not here** — it does not exist until step 4 and has no buildinfo to read until then (**D-139**) |
 | **4** One slot recipe | The component styles correctly **in a throwaway consumer whose own source never names the variant**, wired per `plan.md` §4.1. `check:css-coverage` green *there*; then flipping `hash` makes it exit `E_CONFIG_MISMATCH` rather than green or noisy; `check:data-attr-vocab` runs for the first time. **And the same check runs a second time against the docs app's own generated sheet** — the permanent instance of this gate (`docs-site.md` §1.1, §6.1), which is the step it first has a buildinfo to read (**D-139**) | `check:css-coverage`, in the throwaway consumer **and** in `apps/docs`; `check:hash-config`; `check:responsive-grain`; `check:data-attr-vocab` |
@@ -261,15 +261,33 @@ that is a *gate* rather than a coding rule; 7.7 came with the ledger shard, 7.8 
 
 ## 7b. Named, not yet written — the enforcement census
 
-**Re-taken at S4, 2026-08-09, mechanically.** Every `check:*` named anywhere in `CLAUDE.md` or in
-any `.md` under `__internal__` — which since the two shards means the fifteen `decisions/` entries
-and the three `testing/` definitions as well — diffed against `scripts/check-*.mjs`:
+**Re-taken at S4, 2026-08-10, mechanically. The numbers did not move; the procedure did.** Every
+`check:*` named anywhere in `CLAUDE.md` or in any `.md` under `__internal__` — which since the two
+shards means the fifteen `decisions/` entries and the three `testing/` definitions as well — diffed
+against `scripts/check-*.mjs`:
 
 ```
 named across the documents   47
 written and runnable         22
 named but not written        25
 written but never named       0
+```
+
+**One name is excluded, and the procedure has to say so or it does not reproduce these figures.** A
+literal grep returns **48 named / 26 unwritten**, because it matches `check:context-sessions` — a
+name that appears exactly once in the corpus, three paragraphs below, in the sentence explaining
+that it is *not* a check. The census counts artefacts a reader could mistake for enforcement, and a
+name introduced in order to be ruled out is not one. Excluding it is the honest count; **failing to
+write the exclusion down was a defect**, because the next person to run the procedure gets 48 and
+cannot tell whether something was added or whether they ran it wrong. The runnable form is:
+
+```bash
+grep -rhoE 'check:[a-z0-9-]+' CLAUDE.md __internal__ --include='*.md' \
+  | sed 's/^check://' | sort -u | grep -v '^context-sessions$' > /tmp/named
+ls scripts/check-*.mjs | sed -E 's|.*/check-||; s|\.mjs$||' | sort -u  > /tmp/written
+comm -12 /tmp/named /tmp/written | wc -l   # written and runnable
+comm -23 /tmp/named /tmp/written | wc -l   # named but not written
+comm -13 /tmp/named /tmp/written | wc -l   # written but never named
 ```
 
 **What moved with the budget check:** `check:context-budget` — named here and in `testing.md` §8.3,
@@ -346,6 +364,11 @@ them as pass/fail.
 > so the P8 block is six rows rather than four and one more of them is done. The open count is
 > unchanged by coincidence, not by arithmetic — the split added two open rows and P8-B and P8-C1
 > closed two.
+>
+> **Recounted at S4: 42 rows, 8 closed, 34 open.** §8.3c adds **S4-A** and **S4-B**, both open. Both
+> were already load-bearing and neither was written down as an assumption — which is what makes the
+> arithmetic the point rather than the bookkeeping: the register's claim is *every* open assumption
+> has a row, and for two of them that was false until the marking pass looked.
 
 ### 8.1 `brief-plan` §8's originals
 
@@ -418,6 +441,17 @@ neither is a duplicate of the other: 6 is the claim, P8-A is the script.
 | **P8-C2** | The generator reads the **recipe's variant map** with no running system object | The variant section of the first component page with a recipe. **Shares its fate with P7-A**, which needs the same map | Step 4 |
 | **P8-C3** | The generator reads a **machine's `Props` type** through our lockfile | A non-empty, correct Root props table for Dialog | Step 5 |
 | **P8-D** | The docs app's Panda run is representative of a consumer's, so `check:css-coverage` against its sheet means what the step-4 run means | `check:docs-consumer-config` — **live from S3b**. The coverage half needs the check itself and the buildinfo, both step 4 (**D-139**). Note what neither proves: representativeness of one config, not of all | Step 4, every push |
+
+### 8.3c S4 — the reconciliation pass
+
+Two rows, both found by the S4 marking pass and both **assumptions that were being carried as
+statements of fact**. §8's own rule is why they are here rather than in a footnote: an assumption
+without a gate is a finding, not a formatting problem.
+
+| # | Assumption | Runnable gate | Runs at |
+|---|---|---|---|
+| **S4-A** | **The published tarballs contain no `.css` file.** `CLAUDE.md` §0 and `plan.md` §4.4 state it as a rule; **nothing asserts it.** Measured 2026-08-10: after `pnpm cssgen`, `npm pack` on `@chakra-ui-solid/styled-system` includes `styled-system/styles.css` at **319 KB**, because `files: ["styled-system"]` is a directory and `check:exports` tests `files` entries for a `.css` *suffix*. The release path escapes it only by ordering — `codegen` runs `panda codegen --clean`, which deletes the sheet, and `build` depends on `codegen`, never on `cssgen`. **A publish from any tree where `cssgen` ran ships the CSS, green** | `npm pack --dry-run --json` per published package, asserting zero `.css` entries — the tarball, not the manifest. It belongs in `check:exports`, whose third assertion is already *"no published `package.json` exposes a `.css` file, anywhere"* and is one indirection short of true | **Before the first publish.** Nothing is publishable at `0.0.0` (§7b, `readme-disclaimer`), so this is not urgent — it is a gate that must exist before it can be needed, which is the category §7b exists to keep honest |
+| **S4-B** | **A citation resolves.** Rule 1.11 keeps `INDEX.md` current and `check:skill-pointers` holds the five skills, but **no artefact checks a `` `file.md` §N `` citation in the prose** — `testing/8.01-doc-index.md` names this as blind spot 2 and declines to add a script for it. Measured 2026-08-10 over `CLAUDE.md` + `__internal__` + `.agents/skills`: **347 distinct citations resolve, 1 did not** — `zag-solid-adapter.md`'s `` `legal.md` §9.2 ``, pointing into a document whose headings stop at §6. Fixed in place to §1.2. So the blind spot is real and its first victim was already in the corpus | The resolver is 60 lines over `INDEX.md`'s own anchor table and the shard-folding rule `buildAnchorResolver` already implements — **plus one thing this run lacked: telling a citation from a quotation of one.** This row quotes the dead anchor to record it, so a naive re-run now reports three failures where there are none. **Whether it becomes a `check:*` is a judgement**, and the standing argument against — a twenty-sixth unwritten name for no gain (8.01 blind spot 2) — is weaker now that the failure rate is known to be non-zero rather than assumed to be | **Undecided, deliberately.** Re-run the one-off at each phase gate; promote it to a script the second time a dead citation survives a sweep |
 
 ### 8.4 The three whose gate is a measurement plus a judgement
 

@@ -676,8 +676,17 @@ Milestone one is done when **all** of these are true, as one CI job:
 ✅  mount() SILENT — zero [STRICT_READ_UNTRACKED], zero [REACTIVE_WRITE_IN_OWNED_SCOPE]
 ✅  §5's audit script green against the INSTALLED closure (manifest check = the §0 rule)
 ✅  7 @license headers present; root + package NOTICE.md rows present (§7)
-✅  A1 filed upstream (§8.1)
+⬜  A1 filed upstream (§8.1)          OPEN — see below. Not ticked, and not going to be.
 ```
+
+**Six of the seven were green at `046d0d2`. The seventh is open and stays open**, and it is written
+as `⬜` because D-109's whole point was that it is *"recorded as open rather than quietly dropped or
+marked done"* — a `✅` beside it was this document marking satisfied the one line the ledger says is
+not. **D-110** then settled the standing position: this is an independent port, **no issue is filed,
+no PR opened, no maintainer contacted, and it is not proposed again unless the author asks.** The
+draft stays at `__internal__/upstream/a1-boolean-aria.md`, unposted, because the analysis is worth
+keeping even when the filing is not happening. Nothing downstream waits on it: the axe register
+justifies an allowance by the port rule, not by an issue number (`testing.md` §4.2 property 2).
 
 **`mount()` silent is the load-bearing one**, and it is not a style check. Every one of A2, A3 and B5
 was *discovered* by that gate and would be invisible without it: Solid 1.x has no strict-read phase,
@@ -787,7 +796,7 @@ Following `legal.md` §2.6, with the milestone-one specifics filled in:
 - [ ] **4.** `packages/zag-solid/NOTICE.md` — created, seven rows, same baseline, MIT text.
 - [ ] **5.** Not applicable — upstream is MIT, so no `licenses/LICENSE-APACHE-2.0.txt` and no §4(b)
       line is *required* (it is included anyway because it is honest and costs nothing).
-      `legal.md` §9.2 records that the port rule removed the repo's only Apache-2.0 route; nothing
+      `legal.md` §1.2 records that the port rule removed the repo's only Apache-2.0 route; nothing
       here reopens it.
 - [ ] **6.** `LICENSE` **untouched.** The MIT grant covers our own code and must not be made to look
       as if it reaches the derived portions.

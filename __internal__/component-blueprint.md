@@ -1,5 +1,24 @@
 # The component blueprint — the pattern every machine component is stamped from
 
+> **Provenance, marked at S4, 2026-08-10 — read this before citing anything below as evidence.**
+> **This document is a design, not a report.** It was written at P5, before any component existed,
+> and **no machine component exists yet**: the first is Dialog at step 5. So unless a passage names a
+> decision (`D-nnn`), a shipped file, or a measurement, treat it as **P — a prediction nobody has
+> run.** That includes every line of §11's worked Dialog, which the document itself says will
+> *"compile once the packages exist"* and which nothing has compiled.
+>
+> **The parts that are not P**, because their subject shipped at steps 1–3b:
+> §1.3 (`@zag-js/focus-visible`, measured — `f57403b`), §2.1–§2.2 (`useMachine` and the
+> `[STRICT_READ_UNTRACKED]` rule, exercised by `machine.browser.test.tsx`), §3.4's precedence and
+> §3.5's `render` prop (**I** — `packages/system/src/render-styled/`, with tests), §9's a11y baseline
+> (**M** for the retired allowances, **P** for the three predicted ones — `definition-of-done.md` §5
+> marks each row itself), and §10's `_hk` hazard (**M** — the hydrate fixture is
+> `packages/internal-test-utils/src/hydrate-fixture/`).
+>
+> **Marking each remaining claim inline was rejected.** The document is 90 KB and the honest ratio is
+> *nearly all of it*; a `— P` after every sentence would be noise carrying one bit. The bit is here
+> instead, once, at the top, where a reader arrives.
+
 **Status:** written at P5, 2026-08-09. Settles **Q7** (Dialog vs Accordion, §0) and fixes the shape
 every machine component is written to — the 56 slot recipes are the machine surface (`plan.md` §10),
 and each one is several parts. It gets stamped 100+ times, so it is cheap to argue with here and
@@ -919,8 +938,10 @@ the first `aria-hidden-focus` failure getting "fixed" by re-introducing the kern
 P7 owns the wording; the shape this blueprint requires is:
 
 - Every mounting test runs axe. **Non-negotiable, unchanged.**
-- Allowances are **enumerated per component and per rule**, never a global flag, and each carries the
-  upstream issue number.
+- Allowances are **enumerated per component and per rule**, never a global flag, and each names
+  **where the gap is argued in our own documents** — not an upstream issue number. *(This bullet said
+  "the upstream issue number." **D-110** replaced the requirement in `testing.md` §4.2 and
+  `definition-of-done.md` §5 and this restatement was missed by that sweep; corrected at S4.)*
 - An allowance that stops being needed is a **failure** — a rule that is allowed but no longer
   violated means the upstream fix landed, and the allowance has to go.
 - `plan.md`'s ancestor promised *"axe on every mounting test with zero allowances."* **Not achievable,

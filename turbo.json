@@ -24,9 +24,18 @@
       "outputs": ["styled-system/**"]
     },
     // Two stylesheets, from two Panda runs. `styled-system`'s is **ours** — the dev sheet the
-    // browser tests and `check:css-coverage` assert against, never published. `components`' is a
-    // **consumer's**, generated from a fixture config that spreads `chakraConfig()`, and it is what
-    // proves an override in their config changes what our components render.
+    // browser tests and `check:css-coverage` assert against. `components`' is a **consumer's**,
+    // generated from a fixture config that spreads `chakraConfig()`, and it is what proves an
+    // override in their config changes what our components render.
+    //
+    // The dev sheet is NOT published, and that holds by task ordering rather than by any check.
+    // Measured at S4: `@chakra-ui-solid/styled-system` declares `files: ["styled-system", …]`, so
+    // after a `cssgen` run `npm pack` puts `styled-system/styles.css` (319 KB) in the tarball —
+    // `check:exports` tests `files` entries for a `.css` *suffix* and a directory is not one. The
+    // release path escapes it only because `codegen` runs `panda codegen --clean`, which deletes
+    // the sheet, and `build` depends on `codegen` and never on `cssgen`. Publishing from a working
+    // tree where anyone ran `pnpm cssgen` ships the CSS this library promises never to ship, with
+    // a green build (`CLAUDE.md` §0; `plan.md` §4.4; DoD §8 row S4-A).
     //
     // `^codegen` is what makes the consumer fixture wait for the generated artifacts, and reaches
     // the preset's build through them.

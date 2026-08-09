@@ -129,7 +129,7 @@ other seven rows.
 
 ## 3. The ledger
 
-**One file per entry, under [`decisions/`](decisions/).** 166 decisions, D-01 … D-166, in fifteen
+**One file per entry, under [`decisions/`](decisions/).** 172 decisions, D-01 … D-172, in sixteen
 files grouped by the phase that settled them. Reversals are marked **⟲** and collected in §4.
 
 **The anchors did not move when the bodies did.** `` `decisions.md` §3.13 `` still names the S3
@@ -159,6 +159,7 @@ is cited. **A D-number is found by grepping `__internal__/decisions/`**, not thi
 | **3.13** | [S3 — the styling seam](decisions/3.13-s3-styling-seam.md) | D-111 … D-127 | Step 3 closed, every entry a measurement: 17 aliases not 95, `_dark` as `.dark &`, and an unresolvable token that emits its own name and fails silently |
 | **3.14** | [S3b — the visual surfaces](decisions/3.14-s3b-visual-surfaces.md) | D-128 … D-161 | Step 3b closed: Storybook demoted to a local playground, the docs site reworked against the open reference, and Chakra's docs prose found to be plain MIT |
 | **3.15** | [The context budget — the documents as a working surface](decisions/3.15-context-budget.md) | D-162 … D-166 | Not a build-order step: the anchor index, this shard, five pointer-only skills, and the 25 KB ceiling that guards all three |
+| **3.16** | [S4 — the reconciliation pass, measured against predicted](decisions/3.16-s4-reconciliation.md) | D-167 … D-172 | Not a build-order step: the eleven documents marked M/I/P/S against what was actually built. Fifteen stale claims, seven of them survivors of one sweep — the register is §6.1 |
 
 ---
 
@@ -307,13 +308,93 @@ register.
 **Open with a trigger rather than a step**
 - `legal.md` §6 item 1 — message the Chakra maintainers at first public release (D-03). Not an
   assumption and not gated by a build; the trigger is defined and the answer is either a fact or the
-  first rung of the exit ladder.
+  first rung of the exit ladder. **⚠ Contradicted by D-110** — *"no maintainer contacted"* — and
+  marked, not resolved, at `legal.md` §3.7. The trigger is unreached either way.
 - `legal.md` §6 item 8 — keep `@solid-chakra` held. Costs a renewal and nothing else.
 
 **Three whose gate is a measurement plus a judgement**, listed here as well because they are the ones
 most likely to be read as pass/fail: **P5-E** (the presence instance count — *acceptable* is a review
 call against a budget nobody can set today), **P6-E** (whether the cost was comparable), **P6-A**
 (whether the seam is *free* is the reading of a number). `definition-of-done.md` §8.4 owns them.
+
+### 6.1 The S4 marking pass — what was measured, and what was only ever predicted
+
+**Taken 2026-08-10, over `CLAUDE.md` and the eleven documents plus their eighteen shards.** The
+section above says what the *document pass* did not settle. This one says something narrower and
+more embarrassing: **which of its claims were being carried as fact.** Four marks —
+**M** measured, **I** implemented, **P** prediction with nothing run, **S** stale.
+
+**The rule this applies is the repo's own and had never been applied systematically:** *a
+measurement beats a prediction* (§7). Steps 1–3b produced 166 decisions; the eleven documents were
+written before any of them, and nothing had gone back through them.
+
+#### What the pass found
+
+| Document | Verdict | Notes |
+|---|---|---|
+| `CLAUDE.md` | 1 S, rest M/I | Every mechanical claim in it re-verified: the two `constraint`-job scripts, the fork's seven `attribution.config.ts` entries, `comments.legal` pinned in `tsdown.config.base.ts`, the eleven-documents count, `__reference-impl__` gitignored. All M |
+| `definition-of-done.md` | 5 S, 2 new §8 rows | §1's **thirteen** rules (not ten): 11 live, 2 unwritten and already named in §7b. §2's fifteen: 2.6 deleted, 2.15 live, 2.1/2.2 S+P, **2.7–2.14 all P — no machine component exists.** §3.1's steps 1–3b are M; 4 onward are P |
+| `testing.md` + `testing/` | 1 S | §8's three shards are the strongest documents in the corpus — `8.03` already carries its own measurements *and* a finding against the plan it implements. §4.1 was the one stale spot |
+| `plan.md` | 1 S, 1 P marked | §0.4's delta table survives row by row. §5.2's graph asserts two edges that do not exist (S); §5.1's *"Ships `dist/panda.buildinfo.json`"* has no `ship` script behind it (P, step 4) |
+| `prior-art.md` | 1 S | Confirmed rather than assumed, as instructed. It is the most measurement-shaped document here and it held |
+| `zag-solid-adapter.md` | 2 S | Step 2 shipped, so most is M. §5's audit and §6.5's gate are M **except** the one line that is not |
+| `component-blueprint.md` | 1 S, banner | **Almost entirely P** and now says so at the top. No machine component exists; §11's Dialog has never been compiled |
+| `roadmap.md` | banner | **§1–§2 M, §3–§13 P.** One shipping row of 115 exists. A `ships` cell is an intention with no column saying so |
+| `docs-site.md`, `docs-plan.md` | 0 S | The expected drift **was not there**: D-147…D-161 had already swept them after the rework. Route map, the 11/17 counts, `SETTLED_TIERS`, `docs-config.ts` — all M |
+| `legal.md` | 1 S | D-148 already retired the docs-prose policy. §3.7 is the survivor |
+
+#### The S list, each with what contradicted it and when
+
+**One sweep left seven survivors, and that is the finding of the pass.** Commit `e4f5d91`
+(2026-08-09) implemented **D-110** — an axe allowance names where the gap is argued in *our*
+documents, never an upstream issue, because nothing is filed and nobody is contacted. It fixed
+`definition-of-done.md` §5's column and `testing.md` §4.2's property 2 and **missed every
+restatement**:
+
+| # | Where | What it said | Contradicted by | When |
+|---|---|---|---|---|
+| 1 | `CLAUDE.md`, the port rule | *"each citing an upstream issue"* | **D-110** | 2026-08-09 |
+| 2 | `definition-of-done.md` rule 2.2 | *"with an upstream issue number"* | **D-110** | 2026-08-09 |
+| 3 | `definition-of-done.md` §3.0 line 1 | *"without an upstream issue"* | **D-110** | 2026-08-09 |
+| 4 | `testing.md` §4.1 | *"a reason and an issue number"* — two paragraphs above §4.2's corrected text | **D-110** | 2026-08-09 |
+| 5 | `component-blueprint.md` §9.3 | *"each carries the upstream issue number"* | **D-110** | 2026-08-09 |
+| 6 | `prior-art.md` §10.1 row F | *"with a named upstream issue each"* | **D-110** | 2026-08-09 |
+| 7 | `legal.md` §3.7 + §6 above | *message the Chakra maintainers at first public release* | **D-110** (*"no maintainer contacted"*) | 2026-08-09 |
+| 8 | `zag-solid-adapter.md` §6.5 | `✅ A1 filed upstream` — **a green tick on the one line that is open** | **D-109**, which required it recorded as open *"rather than quietly dropped or marked done"* | 2026-08-09 |
+| 9 | `definition-of-done.md` §3.1 step 2 | *"A1 filed"* listed among a discharged step's proofs | **D-109** | 2026-08-09 |
+| 10 | `definition-of-done.md` rule 2.1 | *"no inline allowance is expressible"* | The shipped helper: `expectNoA11yViolations(container, { allowIncomplete })`, whose own docstring says to name a rule *"at the call site"* | step 1 |
+| 11 | `plan.md` §5.2 | `system → zag-solid` and `components → zag-solid` as current edges | **D-119**, which says in as many words that the table is the *finished* graph | S3 gate |
+| 12 | `zag-solid-adapter.md` §7.3 | `` `legal.md` §9.2 `` — **a dead citation**; that document's headings stop at §6 | The corpus-wide resolver run below | 2026-08-10 |
+| 13 | `turbo.json` | the dev stylesheet is *"never published"* | `npm pack` — see **§8.3c S4-A** | 2026-08-10 |
+| 14 | `scripts/check-resolution-sync.mjs` | *"apps/docs does not exist yet; it joins at step 8"* | **D-133** — it joined at 3b and is a standing consumer instance | 2026-08-09 |
+| 15 | `definition-of-done.md` §7b | a census procedure that **does not reproduce its own figures** — a literal grep returns 48/26, not 47/25 | Re-running it | 2026-08-10 |
+
+**All fifteen are fixed in place**, except **7**, which is marked and left for the author: D-110's
+subject is defect filings and §3.7's is a trademark courtesy, and deleting a considered position
+because a broader-sounding decision appears to cover it is not a repair.
+
+#### Two measurements the pass made that nothing in the repo makes
+
+- **The census now reproduces.** 47 named / 22 live / 25 unwritten / 0 unnamed — **unmoved across
+  three commits**, but the procedure needed the one exclusion written down, because
+  `check:context-sessions` appears in the corpus exactly once, in the sentence saying it is not a
+  check. §7b now carries the runnable form.
+- **Citations resolve, 347 of 348** — measured before the fixes below. No artefact checks this;
+  `testing/8.01`'s blind spot 2 names the gap and declines to fill it. Run once here: one dead
+  citation, row 12. It is now `definition-of-done.md` §8.3c row **S4-B**, deliberately undecided, to
+  be promoted to a script the second time a dead citation survives a sweep. **A re-run reports three
+  unresolved `` `legal.md` §9.2 `` and not zero** — the prose above, D-171 and §8.3c each *quote* the
+  dead citation to say it was dead. A resolver cannot tell a citation from a quotation of one, which
+  is the same artifact that makes `` `plan.md` §99 `` unresolvable in `testing/8.01` and is worth
+  knowing before anyone reads a non-zero count as a regression.
+
+#### What the pass deliberately did not do
+
+**No claim was deleted for being untested.** Marking is the whole output; deleting a hazard note is
+the one move evidence cannot undo (D-131). **No ceiling was raised and no finding was trimmed to
+fit** — `CLAUDE.md` absorbed its one fix with 0.3 KB to spare and `legal.md` §3 with 1.8 KB, so
+nothing needed sharding. And **no `check:*` was added**, including the two the findings argue for:
+both are §8 rows with a stated trigger instead, which is what §7b asks for.
 
 ---
 

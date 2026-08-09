@@ -1,5 +1,21 @@
 # The parity matrix — every Chakra v3 component, and the order they get built in
 
+> **Provenance, marked at S4, 2026-08-10.** This document splits cleanly in two, and the split is
+> not visible from its table of contents.
+>
+> - **§1–§2 are M.** The three enumerations, the 56-vs-51 reconciliation, the seven duplicate slots,
+>   the `swittch` token defect — all measured against `__reference-impl__` with the commands printed
+>   beside the numbers. §1.3's `(a)`/`(b)`/`(c)` are the load-bearing ones and they are re-derivable
+>   from the shell in the document.
+> - **§3–§13 are P.** The matrix's 115 rows, the batch order, the presence families, the floating
+>   seam and every per-step gate describe **work that has not been done**: exactly **one** shipping
+>   row exists today — `Box` — and no machine component does. A row's `ships`/`B7` cell is an
+>   intention, not a status, and the matrix has no column that says which.
+>
+> **Where a claim here has since been measured, the ledger holds it, not this table** — the
+> component tier is 111 pages not 113 (**D-140**), the nav is a declared tree (**D-151**), and
+> Storybook stopped being a gate (**D-133**). §4's rows were not rewritten for any of them.
+
 **Status:** written at P6, 2026-08-09. Builds the matrix from three **measured** enumerations, closes
 `brief-plan` §8 assumption 2 (each machine's `anatomy` at Zag `1.43.0`), reconciles the preset's 56 slot
 recipes against Zag's 51 machines, reasons every exclusion individually, settles the fifth part shape

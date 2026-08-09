@@ -465,7 +465,19 @@ await expectNoA11yViolations(node, { component: "dialog", scope: "open" })
 
 The helper looks the allowances up in the register itself. An inline `allow` array does not exist as
 an option, so an allowance cannot be added at a call site — only in the register, where it needs a
-reason and an issue number.
+reason and **where the gap is argued in our own documents** (§4.2 property 2; **D-110**). Not an
+issue number: nothing is filed upstream.
+
+> **P — this signature has not been built. Gate: step 5.** What ships is
+> `expectNoA11yViolations(container, { allowIncomplete })`
+> (`packages/internal-test-utils/src/axe/axe.ts`), called by 11 browser tests. Two differences a
+> reader must not skip past: it takes the **container**, not `{ component, scope }`, so there is no
+> register lookup at all; and `allowIncomplete` **is** a call-site option, which the paragraph above
+> reads as forbidding. It is narrower than it looks — it accepts axe results the engine could not
+> *decide* (`color-contrast` headless is the standing case), never a **violation**, and every
+> violation still throws. But *"an allowance cannot be added at a call site"* is true of §4.2's
+> register and not of the helper in the repo, and step 5 is where the two have to be reconciled —
+> by building the register, not by widening `allowIncomplete`.
 
 ### 4.2 The allowance register — shape
 

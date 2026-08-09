@@ -61,5 +61,9 @@ const total = sources[0].entries.length;
 console.log(
   `check:resolution-sync — ${total} workspace resolution(s) agree across ${sources.length} file(s): ` +
     `${sources.map((source) => source.name).join(", ")}.` +
-    (docsPresent ? "" : " (apps/docs does not exist yet; it joins at step 8.)"),
+    // `apps/docs` joined at step 3b, not step 8 (D-133), and it is a standing consumer instance
+    // from there on — so its absence is a broken checkout rather than a schedule.
+    (docsPresent
+      ? ""
+      : " (apps/docs is MISSING — it has been part of the workspace since step 3b.)"),
 );

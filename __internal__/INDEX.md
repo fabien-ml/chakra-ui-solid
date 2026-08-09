@@ -27,122 +27,123 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 
 ---
 
-## The 29 indexed files
+## The 30 indexed files
 
 | Document | Size | Lines | Sections | Largest section | Block starts |
 |---|---|---|---|---|---|
-| [`component-blueprint.md`](#component-blueprintmd) | 90.4 KB | 1642 | 79 | §11 at 20.9 KB | L64 |
-| [`decisions.md`](#decisionsmd) | 40.1 KB | 400 | 13 | §7 at 10.7 KB | L148 |
-| [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.8 KB | 125 | 1 | §3.1 at 8.8 KB | L166 |
-| [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.6 KB | 143 | 1 | §3.2 at 9.6 KB | L172 |
-| [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.5 KB | 294 | 1 | §3.3 at 20.5 KB | L178 |
-| [`decisions/3.04-p4-adapter-milestone-one.md`](#decisions304-p4-adapter-milestone-onemd) | 10.4 KB | 142 | 1 | §3.4 at 10.4 KB | L184 |
-| [`decisions/3.05-p5-blueprint.md`](#decisions305-p5-blueprintmd) | 6.6 KB | 103 | 1 | §3.5 at 6.6 KB | L190 |
-| [`decisions/3.06-p6-parity-matrix.md`](#decisions306-p6-parity-matrixmd) | 8.7 KB | 130 | 1 | §3.6 at 8.7 KB | L196 |
-| [`decisions/3.07-p7-quality-bar.md`](#decisions307-p7-quality-barmd) | 5.7 KB | 85 | 1 | §3.7 at 5.7 KB | L202 |
-| [`decisions/3.08-p8-docs-site.md`](#decisions308-p8-docs-sitemd) | 4.7 KB | 73 | 1 | §3.8 at 4.7 KB | L208 |
-| [`decisions/3.09-p9-ledger-and-index.md`](#decisions309-p9-ledger-and-indexmd) | 1.1 KB | 17 | 1 | §3.9 at 1.1 KB | L214 |
-| [`decisions/3.10-s1-repo-bootstrap.md`](#decisions310-s1-repo-bootstrapmd) | 4.8 KB | 66 | 1 | §3.10 at 4.8 KB | L220 |
-| [`decisions/3.11-s1-review.md`](#decisions311-s1-reviewmd) | 6.7 KB | 86 | 1 | §3.11 at 6.7 KB | L226 |
-| [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.7 KB | 192 | 1 | §3.12 at 15.7 KB | L232 |
-| [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 23.3 KB | 309 | 1 | §3.13 at 23.3 KB | L238 |
-| [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 60.7 KB | 771 | 1 | §3.14 at 60.7 KB | L244 |
-| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 18.8 KB | 228 | 1 | §3.15 at 18.8 KB | L250 |
-| [`definition-of-done.md`](#definition-of-donemd) | 57.6 KB | 511 | 21 | §8 at 11.7 KB | L256 |
-| [`docs-plan.md`](#docs-planmd) | 57.9 KB | 883 | 46 | §1 at 13.9 KB | L282 |
-| [`docs-site.md`](#docs-sitemd) | 75.5 KB | 825 | 37 | §2 at 19.2 KB | L333 |
-| [`legal.md`](#legalmd) | 65.3 KB | 980 | 36 | §3 at 22.1 KB | L375 |
-| [`plan.md`](#planmd) | 77.3 KB | 1155 | 51 | §3 at 14.7 KB | L416 |
-| [`prior-art.md`](#prior-artmd) | 75.7 KB | 1140 | 45 | §2 at 11.1 KB | L472 |
-| [`roadmap.md`](#roadmapmd) | 89.1 KB | 1193 | 50 | §4 at 14.6 KB | L522 |
-| [`testing.md`](#testingmd) | 69.5 KB | 1005 | 51 | §3 at 11.4 KB | L577 |
-| [`testing/8.01-doc-index.md`](#testing801-doc-indexmd) | 4.3 KB | 59 | 1 | §8.1 at 4.3 KB | L633 |
-| [`testing/8.02-skill-pointers.md`](#testing802-skill-pointersmd) | 5.1 KB | 71 | 1 | §8.2 at 5.1 KB | L639 |
-| [`testing/8.03-context-budget.md`](#testing803-context-budgetmd) | 10.2 KB | 150 | 3 | §8.3 at 10.2 KB | L645 |
-| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 75.3 KB | 1022 | 45 | §6 at 10.7 KB | L653 |
+| [`component-blueprint.md`](#component-blueprintmd) | 92.1 KB | 1663 | 79 | §11 at 20.9 KB | L65 |
+| [`decisions.md`](#decisionsmd) | 47.8 KB | 481 | 14 | §6 at 11.6 KB | L149 |
+| [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.8 KB | 125 | 1 | §3.1 at 8.8 KB | L168 |
+| [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.6 KB | 143 | 1 | §3.2 at 9.6 KB | L174 |
+| [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.5 KB | 294 | 1 | §3.3 at 20.5 KB | L180 |
+| [`decisions/3.04-p4-adapter-milestone-one.md`](#decisions304-p4-adapter-milestone-onemd) | 10.4 KB | 142 | 1 | §3.4 at 10.4 KB | L186 |
+| [`decisions/3.05-p5-blueprint.md`](#decisions305-p5-blueprintmd) | 6.6 KB | 103 | 1 | §3.5 at 6.6 KB | L192 |
+| [`decisions/3.06-p6-parity-matrix.md`](#decisions306-p6-parity-matrixmd) | 8.7 KB | 130 | 1 | §3.6 at 8.7 KB | L198 |
+| [`decisions/3.07-p7-quality-bar.md`](#decisions307-p7-quality-barmd) | 5.7 KB | 85 | 1 | §3.7 at 5.7 KB | L204 |
+| [`decisions/3.08-p8-docs-site.md`](#decisions308-p8-docs-sitemd) | 4.7 KB | 73 | 1 | §3.8 at 4.7 KB | L210 |
+| [`decisions/3.09-p9-ledger-and-index.md`](#decisions309-p9-ledger-and-indexmd) | 1.1 KB | 17 | 1 | §3.9 at 1.1 KB | L216 |
+| [`decisions/3.10-s1-repo-bootstrap.md`](#decisions310-s1-repo-bootstrapmd) | 4.8 KB | 66 | 1 | §3.10 at 4.8 KB | L222 |
+| [`decisions/3.11-s1-review.md`](#decisions311-s1-reviewmd) | 6.7 KB | 86 | 1 | §3.11 at 6.7 KB | L228 |
+| [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.7 KB | 192 | 1 | §3.12 at 15.7 KB | L234 |
+| [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 23.3 KB | 309 | 1 | §3.13 at 23.3 KB | L240 |
+| [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 60.7 KB | 771 | 1 | §3.14 at 60.7 KB | L246 |
+| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 18.8 KB | 228 | 1 | §3.15 at 18.8 KB | L252 |
+| [`decisions/3.16-s4-reconciliation.md`](#decisions316-s4-reconciliationmd) | 10.0 KB | 129 | 1 | §3.16 at 10.0 KB | L258 |
+| [`definition-of-done.md`](#definition-of-donemd) | 63.1 KB | 545 | 22 | §8 at 14.8 KB | L264 |
+| [`docs-plan.md`](#docs-planmd) | 57.9 KB | 883 | 46 | §1 at 13.9 KB | L291 |
+| [`docs-site.md`](#docs-sitemd) | 75.5 KB | 825 | 37 | §2 at 19.2 KB | L342 |
+| [`legal.md`](#legalmd) | 66.5 KB | 996 | 36 | §3 at 23.2 KB | L384 |
+| [`plan.md`](#planmd) | 78.9 KB | 1167 | 51 | §3 at 14.7 KB | L425 |
+| [`prior-art.md`](#prior-artmd) | 75.7 KB | 1140 | 45 | §2 at 11.1 KB | L481 |
+| [`roadmap.md`](#roadmapmd) | 90.2 KB | 1209 | 50 | §4 at 14.6 KB | L531 |
+| [`testing.md`](#testingmd) | 70.5 KB | 1017 | 51 | §3 at 11.4 KB | L586 |
+| [`testing/8.01-doc-index.md`](#testing801-doc-indexmd) | 4.3 KB | 59 | 1 | §8.1 at 4.3 KB | L642 |
+| [`testing/8.02-skill-pointers.md`](#testing802-skill-pointersmd) | 5.1 KB | 71 | 1 | §8.2 at 5.1 KB | L648 |
+| [`testing/8.03-context-budget.md`](#testing803-context-budgetmd) | 10.2 KB | 150 | 3 | §8.3 at 10.2 KB | L654 |
+| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 76.2 KB | 1031 | 45 | §6 at 11.5 KB | L662 |
 
 ## `component-blueprint.md`
 
 ```
-§0     L  38–85    3.7 KB  Q7 — Dialog, and what Accordion would not have exercised
-§0.1   L  40–56    1.7 KB  The answer: Dialog
-§0.2   L  57–75    1.3 KB  Accordion, rejected — and the one thing it would have covered that Dialog does not
-§0.3   L  76–85    0.5 KB  One correction to the brief's part list — `Portal` is not a Dialog part
-§1     L  86–181   5.8 KB  The recurring floor, re-measured against Chakra
-§1.1   L  92–105   0.9 KB  Row 1 — `hidden` vs the recipe's `display`: a global rule, not a per-component one
-§1.2   L 106–138   1.8 KB  Row 2 — the labelling IDREF: half of it is Ark's, and we port it
-§1.3   L 139–161   1.6 KB  Row 3 — `@zag-js/focus-visible` crashing Storybook: once per preview, not per component
-§1.4   L 162–181   1.2 KB  What a component actually pays
-§2     L 182–273   5.0 KB  Machine instantiation
-§2.1   L 184–198   0.7 KB  A Root calls `useMachine` bare — and the idiom the plan teaches no longer exists
-§2.2   L 199–214   1.0 KB  Where a `[STRICT_READ_UNTRACKED]` at that call site *is* a genuine defect
-§2.3   L 215–235   1.0 KB  The four things every Root injects, and where they come from
-§2.4   L 236–243   0.5 KB  Read the machine's prop list, do not invent one
-§2.5   L 244–257   0.9 KB  `withDefaults`, never `merge`
-§2.6   L 258–273   0.9 KB  The controlled-mode predicate, and the parts it touches
-§3     L 274–428   8.5 KB  `anatomy` → part components
-§3.1   L 276–306   1.7 KB  Two lists that are not the same set
-§3.2   L 307–317   0.7 KB  The four part shapes
-§3.3   L 318–339   1.2 KB  Context: composition, not inheritance
-§3.4   L 340–377   2.1 KB  Prop forwarding and precedence
-§3.5   L 378–390   0.5 KB  The `render` prop
-§3.6   L 391–405   0.8 KB  Ref handling
-§3.7   L 406–428   1.3 KB  `data-*` state attributes
-§4     L 429–571   7.6 KB  `renderStyled` and the `recipeClass` seam
-§4.1   L 436–496   3.7 KB  The four additions `renderStyled` needs
-§4.1.1 L 447–496   2.8 KB  Addition 4, and the failure that forces it
-§4.2   L 497–531   1.4 KB  Slot-recipe consumption: resolve once on the Root
-§4.3   L 532–552   1.2 KB  What we depend on in the generated surface, and what we do not
-§4.4   L 553–561   0.4 KB  `unstyled`, at two levels
-§4.5   L 562–571   0.5 KB  The seam has no precedent — so the first component is a probe
-§5     L 572–622   3.1 KB  Where inline `style` and CSS custom properties are legal
-§5.1   L 574–583   0.9 KB  The three routes, at part level
-§5.2   L 584–597   0.7 KB  What the machine emits as inline `style`, and why it is legal
-§5.3   L 598–604   0.5 KB  The recipe's own custom properties are route 3, done by the recipe
-§5.4   L 605–622   0.9 KB  Making the rule checkable, because route 3 used as route 1 fails silently
-§6     L 623–685   3.4 KB  The `hidden`-vs-`display` rule
-§6.1   L 625–637   0.7 KB  Both worked failures, so the mechanism is not re-derived
-§6.2   L 638–647   0.6 KB  Chakra pays neither half, by two mechanisms that are ours to port
-§6.3   L 648–671   1.6 KB  The rule, written to survive either answer to P3-E
-§6.4   L 672–685   0.4 KB  The test that pins it
-§7     L 686–842   7.8 KB  Presence — a build over a machine, not a carry-over
-§7.1   L 688–707   1.5 KB  The split, drawn exactly
-§7.2   L 708–801   4.0 KB  The render strategy, in full
-§7.3   L 802–809   0.5 KB  `hideMode: "activity"` has no Solid equivalent
-§7.4   L 810–822   0.7 KB  `hidden` and `data-state` come from presence, overriding the machine
-§7.5   L 823–842   1.1 KB  Where a presence is created
-§8     L 843–869   1.6 KB  Retained primitives: none. The column is deleted.
-§9     L 870–935   4.2 KB  The a11y baseline, stated so a correct port cannot read as a regression
-§9.1   L 872–889   1.2 KB  What a faithful Dialog port scores, and why
-§9.2   L 890–916   1.9 KB  What is **not** an allowance — and this changes the expected count
-§9.3   L 917–935   1.0 KB  How the definition of done has to say it
-§10    L 936–1042  6.8 KB  SSR and hydration
-§10.1  L 944–960   1.1 KB  `_hk` — Solid matches server and client nodes by position
-§10.2  L 961–989   2.0 KB  The `children()` decision procedure
-§10.3  L 990–1015  1.4 KB  Portal-guarded cross-scope writes — and why a 1:1 port makes none
-§10.4  L1016–1031  1.1 KB  Two hazards a machine component inherits from the compiler
-§10.5  L1032–1042  0.8 KB  What is inferred, and where it gets checked
-§11    L1043–1574 20.9 KB  Dialog, worked fully through
-§11.1  L1048–1070  1.2 KB  File layout
-§11.2  L1071–1102  1.3 KB  `dialog-context.ts`
-§11.3  L1103–1217  4.5 KB  `dialog-root.tsx`
-§11.4  L1218–1257  1.7 KB  `dialog-trigger.tsx` — shape A, plus the one line §1.2 buys
-§11.5  L1258–1307  1.7 KB  `dialog-backdrop.tsx` — shape B, owning its own presence
-§11.6  L1308–1331  0.8 KB  `dialog-positioner.tsx` — shape A, gated on the shared presence
-§11.7  L1332–1379  1.8 KB  `dialog-content.tsx` — shape B, sharing the Root's presence
-§11.8  L1380–1400  0.8 KB  `dialog-title.tsx` and `dialog-description.tsx` — shape A at its smallest
-§11.9  L1401–1417  0.5 KB  `dialog-close-trigger.tsx` — shape A on a button
-§11.10 L1418–1442  0.8 KB  `dialog-slots.tsx` — shape C, ×3
-§11.11 L1443–1478  1.3 KB  `dialog-action-trigger.tsx` — shape D, and the only `composeEventHandlers` in the family
-§11.12 L1479–1523  2.0 KB  `Portal` — a standalone component, in its own folder
-§11.13 L1524–1557  1.3 KB  `namespace.ts` and what a consumer writes
-§11.14 L1558–1574  1.0 KB  Everything it imports, and where each thing comes from
-§12    L1575–1606  3.3 KB  Assumptions this blueprint rests on, and the gate for each
-§12.1  L1577–1586  1.3 KB  `brief-plan` §8 assumptions
-§12.2  L1587–1594  0.6 KB  `plan.md` §11.2's P3 assumptions this blueprint depends on
-§12.3  L1595–1606  1.3 KB  New assumptions P5 introduces
-§13    L1607–1623  3.8 KB  What P5 changes — re-plan P6 before P6 is written
-§14    L1624–1642  2.4 KB  What P5 could not act on
+§0     L  57–104   3.7 KB  Q7 — Dialog, and what Accordion would not have exercised
+§0.1   L  59–75    1.7 KB  The answer: Dialog
+§0.2   L  76–94    1.3 KB  Accordion, rejected — and the one thing it would have covered that Dialog does not
+§0.3   L  95–104   0.5 KB  One correction to the brief's part list — `Portal` is not a Dialog part
+§1     L 105–200   5.8 KB  The recurring floor, re-measured against Chakra
+§1.1   L 111–124   0.9 KB  Row 1 — `hidden` vs the recipe's `display`: a global rule, not a per-component one
+§1.2   L 125–157   1.8 KB  Row 2 — the labelling IDREF: half of it is Ark's, and we port it
+§1.3   L 158–180   1.6 KB  Row 3 — `@zag-js/focus-visible` crashing Storybook: once per preview, not per component
+§1.4   L 181–200   1.2 KB  What a component actually pays
+§2     L 201–292   5.0 KB  Machine instantiation
+§2.1   L 203–217   0.7 KB  A Root calls `useMachine` bare — and the idiom the plan teaches no longer exists
+§2.2   L 218–233   1.0 KB  Where a `[STRICT_READ_UNTRACKED]` at that call site *is* a genuine defect
+§2.3   L 234–254   1.0 KB  The four things every Root injects, and where they come from
+§2.4   L 255–262   0.5 KB  Read the machine's prop list, do not invent one
+§2.5   L 263–276   0.9 KB  `withDefaults`, never `merge`
+§2.6   L 277–292   0.9 KB  The controlled-mode predicate, and the parts it touches
+§3     L 293–447   8.5 KB  `anatomy` → part components
+§3.1   L 295–325   1.7 KB  Two lists that are not the same set
+§3.2   L 326–336   0.7 KB  The four part shapes
+§3.3   L 337–358   1.2 KB  Context: composition, not inheritance
+§3.4   L 359–396   2.1 KB  Prop forwarding and precedence
+§3.5   L 397–409   0.5 KB  The `render` prop
+§3.6   L 410–424   0.8 KB  Ref handling
+§3.7   L 425–447   1.3 KB  `data-*` state attributes
+§4     L 448–590   7.6 KB  `renderStyled` and the `recipeClass` seam
+§4.1   L 455–515   3.7 KB  The four additions `renderStyled` needs
+§4.1.1 L 466–515   2.8 KB  Addition 4, and the failure that forces it
+§4.2   L 516–550   1.4 KB  Slot-recipe consumption: resolve once on the Root
+§4.3   L 551–571   1.2 KB  What we depend on in the generated surface, and what we do not
+§4.4   L 572–580   0.4 KB  `unstyled`, at two levels
+§4.5   L 581–590   0.5 KB  The seam has no precedent — so the first component is a probe
+§5     L 591–641   3.1 KB  Where inline `style` and CSS custom properties are legal
+§5.1   L 593–602   0.9 KB  The three routes, at part level
+§5.2   L 603–616   0.7 KB  What the machine emits as inline `style`, and why it is legal
+§5.3   L 617–623   0.5 KB  The recipe's own custom properties are route 3, done by the recipe
+§5.4   L 624–641   0.9 KB  Making the rule checkable, because route 3 used as route 1 fails silently
+§6     L 642–704   3.4 KB  The `hidden`-vs-`display` rule
+§6.1   L 644–656   0.7 KB  Both worked failures, so the mechanism is not re-derived
+§6.2   L 657–666   0.6 KB  Chakra pays neither half, by two mechanisms that are ours to port
+§6.3   L 667–690   1.6 KB  The rule, written to survive either answer to P3-E
+§6.4   L 691–704   0.4 KB  The test that pins it
+§7     L 705–861   7.8 KB  Presence — a build over a machine, not a carry-over
+§7.1   L 707–726   1.5 KB  The split, drawn exactly
+§7.2   L 727–820   4.0 KB  The render strategy, in full
+§7.3   L 821–828   0.5 KB  `hideMode: "activity"` has no Solid equivalent
+§7.4   L 829–841   0.7 KB  `hidden` and `data-state` come from presence, overriding the machine
+§7.5   L 842–861   1.1 KB  Where a presence is created
+§8     L 862–888   1.6 KB  Retained primitives: none. The column is deleted.
+§9     L 889–956   4.5 KB  The a11y baseline, stated so a correct port cannot read as a regression
+§9.1   L 891–908   1.2 KB  What a faithful Dialog port scores, and why
+§9.2   L 909–935   1.9 KB  What is **not** an allowance — and this changes the expected count
+§9.3   L 936–956   1.2 KB  How the definition of done has to say it
+§10    L 957–1063  6.8 KB  SSR and hydration
+§10.1  L 965–981   1.1 KB  `_hk` — Solid matches server and client nodes by position
+§10.2  L 982–1010  2.0 KB  The `children()` decision procedure
+§10.3  L1011–1036  1.4 KB  Portal-guarded cross-scope writes — and why a 1:1 port makes none
+§10.4  L1037–1052  1.1 KB  Two hazards a machine component inherits from the compiler
+§10.5  L1053–1063  0.8 KB  What is inferred, and where it gets checked
+§11    L1064–1595 20.9 KB  Dialog, worked fully through
+§11.1  L1069–1091  1.2 KB  File layout
+§11.2  L1092–1123  1.3 KB  `dialog-context.ts`
+§11.3  L1124–1238  4.5 KB  `dialog-root.tsx`
+§11.4  L1239–1278  1.7 KB  `dialog-trigger.tsx` — shape A, plus the one line §1.2 buys
+§11.5  L1279–1328  1.7 KB  `dialog-backdrop.tsx` — shape B, owning its own presence
+§11.6  L1329–1352  0.8 KB  `dialog-positioner.tsx` — shape A, gated on the shared presence
+§11.7  L1353–1400  1.8 KB  `dialog-content.tsx` — shape B, sharing the Root's presence
+§11.8  L1401–1421  0.8 KB  `dialog-title.tsx` and `dialog-description.tsx` — shape A at its smallest
+§11.9  L1422–1438  0.5 KB  `dialog-close-trigger.tsx` — shape A on a button
+§11.10 L1439–1463  0.8 KB  `dialog-slots.tsx` — shape C, ×3
+§11.11 L1464–1499  1.3 KB  `dialog-action-trigger.tsx` — shape D, and the only `composeEventHandlers` in the family
+§11.12 L1500–1544  2.0 KB  `Portal` — a standalone component, in its own folder
+§11.13 L1545–1578  1.3 KB  `namespace.ts` and what a consumer writes
+§11.14 L1579–1595  1.0 KB  Everything it imports, and where each thing comes from
+§12    L1596–1627  3.3 KB  Assumptions this blueprint rests on, and the gate for each
+§12.1  L1598–1607  1.3 KB  `brief-plan` §8 assumptions
+§12.2  L1608–1615  0.6 KB  `plan.md` §11.2's P3 assumptions this blueprint depends on
+§12.3  L1616–1627  1.3 KB  New assumptions P5 introduces
+§13    L1628–1644  3.8 KB  What P5 changes — re-plan P6 before P6 is written
+§14    L1645–1663  2.4 KB  What P5 could not act on
 ```
 
 ## `decisions.md`
@@ -153,14 +154,15 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §0.2 L 74–91   1.0 KB  Changing a decision after this pass
 §1   L 92–106  0.7 KB  The entry shape, fixed once
 §2   L107–129  3.2 KB  Q1–Q8 — the gate that settled each, and where the answer lives
-§3   L130–164  4.6 KB  The ledger
-§4   L165–213  5.8 KB  The reversals, in one place
-§5   L214–250  4.6 KB  The final build order — one list, each step's gate cited
-§6   L251–319  4.3 KB  What the document pass did **not** settle
-§7   L320–400 10.7 KB  The reconciliation log — what P9 changed, and where
-§7.1 L326–364  7.5 KB  Carried forward by name
-§7.2 L365–386  1.4 KB  The citation convention, and the sites it was applied to
-§7.3 L387–400  1.5 KB  Two rows found at P9 that were on nobody's list
+§3   L130–165  4.9 KB  The ledger
+§4   L166–214  5.8 KB  The reversals, in one place
+§5   L215–251  4.6 KB  The final build order — one list, each step's gate cited
+§6   L252–400 11.6 KB  What the document pass did **not** settle
+§6.1 L320–400  7.2 KB  The S4 marking pass — what was measured, and what was only ever predicted
+§7   L401–481 10.7 KB  The reconciliation log — what P9 changed, and where
+§7.1 L407–445  7.5 KB  Carried forward by name
+§7.2 L446–467  1.4 KB  The citation convention, and the sites it was applied to
+§7.3 L468–481  1.5 KB  Two rows found at P9 that were on nobody's list
 ```
 
 ## `decisions/3.01-p1-identity-law-reference-policy.md`
@@ -253,30 +255,37 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §3.15 L  1–228 18.8 KB  The context budget — the documents as a working surface
 ```
 
+## `decisions/3.16-s4-reconciliation.md`
+
+```
+§3.16 L  1–129 10.0 KB  S4 — the reconciliation pass, measured against predicted
+```
+
 ## `definition-of-done.md`
 
 ```
 §0    L 21–42   1.2 KB  The gate rule
 §1    L 43–66   3.2 KB  Per file
-§2    L 67–103  5.5 KB  Per component
-§3    L104–151 10.3 KB  Per batch
-§3.0  L110–121  0.5 KB  The gate every batch shares
-§3.1  L122–136  4.8 KB  The probe phase
+§2    L 67–103  6.3 KB  Per component
+§3    L104–151 10.7 KB  Per batch
+§3.0  L110–121  0.6 KB  The gate every batch shares
+§3.1  L122–136  5.1 KB  The probe phase
 §3.2  L137–151  4.8 KB  The batches
 §4    L152–171  1.7 KB  Per release
 §5    L172–208  3.1 KB  The axe allowance register — as it stands today
 §6    L209–240  2.2 KB  The coverage allow-list — as it stands today
 §7    L241–261  4.9 KB  Conventions, unenforced — labelled, not hidden
-§7b   L262–330  4.8 KB  Named, not yet written — the enforcement census
-§8    L331–435 11.7 KB  The assumption register
-§8.1  L350–365  2.2 KB  `brief-plan` §8's originals
-§8.2  L366–385  2.7 KB  P3, P4 and P5
-§8.3  L386–398  2.1 KB  P6 and P7
-§8.3b L399–421  2.7 KB  P8
-§8.4  L422–435  0.7 KB  The three whose gate is a measurement plus a judgement
-§9    L436–456  1.3 KB  The scheduled checks — what fires them, who reads them
-§10   L457–479  3.5 KB  What P7 changes — re-plan P8 and P9 against this
-§11   L480–511  3.2 KB  What P7 could not act on
+§7b   L262–348  5.9 KB  Named, not yet written — the enforcement census
+§8    L349–469 14.8 KB  The assumption register
+§8.1  L373–388  2.2 KB  `brief-plan` §8's originals
+§8.2  L389–408  2.7 KB  P3, P4 and P5
+§8.3  L409–421  2.1 KB  P6 and P7
+§8.3b L422–444  2.7 KB  P8
+§8.3c L445–455  2.8 KB  S4 — the reconciliation pass
+§8.4  L456–469  0.7 KB  The three whose gate is a measurement plus a judgement
+§9    L470–490  1.3 KB  The scheduled checks — what fires them, who reads them
+§10   L491–513  3.5 KB  What P7 changes — re-plan P8 and P9 against this
+§11   L514–545  3.2 KB  What P7 could not act on
 ```
 
 ## `docs-plan.md`
@@ -392,7 +401,7 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §2.4   L361–369  0.4 KB  Root `NOTICE.md` and per-package `NOTICE.md`
 §2.5   L370–383  0.6 KB  License files in `package.json#files`
 §2.6   L384–411  1.8 KB  Checklist for a new derivative file
-§3     L412–757 22.1 KB  Trademark
+§3     L412–773 23.2 KB  Trademark
 §3.1   L414–432  1.2 KB  What the MIT grant does not give us
 §3.2   L433–448  1.0 KB  What we *may* say
 §3.3   L449–462  0.9 KB  Package name and npm scope
@@ -402,15 +411,15 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §3.4   L659–678  1.1 KB  Repo description and README disclaimer
 §3.5   L679–704  1.8 KB  The repository name
 §3.6   L705–726  1.6 KB  Docs-site naming
-§3.7   L727–757  1.7 KB  Talking to Chakra — the trigger, and the answer if they object
-§4     L758–926 11.1 KB  Brand proposal — the P1 gate
-§4.1   L769–810  2.9 KB  The descriptor — arguing with the working assumption
-§4.2   L811–840  2.3 KB  The shortlist
-§4.3   L841–886  2.9 KB  The case for and against each
-§4.4   L887–900  1.0 KB  What is deliberately not proposed
-§4.5   L901–926  1.4 KB  What the choice unblocked, and what is still outstanding
-§5     L927–957  3.3 KB  Tracking upstream over time
-§6     L958–980  3.4 KB  Open items
+§3.7   L727–773  2.9 KB  Talking to Chakra — the trigger, and the answer if they object
+§4     L774–942 11.1 KB  Brand proposal — the P1 gate
+§4.1   L785–826  2.9 KB  The descriptor — arguing with the working assumption
+§4.2   L827–856  2.3 KB  The shortlist
+§4.3   L857–902  2.9 KB  The case for and against each
+§4.4   L903–916  1.0 KB  What is deliberately not proposed
+§4.5   L917–942  1.4 KB  What the choice unblocked, and what is still outstanding
+§5     L943–973  3.3 KB  Tracking upstream over time
+§6     L974–996  3.4 KB  Open items
 ```
 
 ## `plan.md`
@@ -448,25 +457,25 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §4.2  L 671–697   1.4 KB  The exports map
 §4.3  L 698–706   0.5 KB  External, not inlined
 §4.4  L 707–741   2.7 KB  We ship zero CSS — Panda is a prerequisite, not a preference
-§5    L 742–860   7.4 KB  The package graph
-§5.1  L 744–768   1.1 KB  The graph
-§5.2  L 769–798   1.7 KB  Dependency direction — strictly downward
-§5.3  L 799–820   2.3 KB  What `@chakra-ui-solid/system` owns
-§5.4  L 821–833   0.7 KB  Seams
-§5.5  L 834–860   1.4 KB  Subpath exports
-§6    L 861–890   2.4 KB  Presence — a package-graph decision, not a component detail
-§7    L 891–979   5.6 KB  Color mode, direction, locale, environment
-§7.1  L 893–946   4.0 KB  Color mode: we ship a primitive, and no provider
-§7.2  L 947–969   1.0 KB  Direction, locale and environment: two contexts, no catalog
-§7.3  L 970–979   0.5 KB  RTL and logical properties
-§8    L 980–1010  2.1 KB  Build mechanics
-§9    L1011–1036  1.4 KB  Dev-time resolution and codegen ordering
-§10   L1037–1078  2.6 KB  Workstream B — the non-machine surface
-§11   L1079–1109  3.0 KB  Assumptions this architecture rests on
-§11.1 L1081–1093  1.5 KB  `brief-plan` §8 assumptions P3 depends on
-§11.2 L1094–1109  1.4 KB  New assumptions P3 introduces
-§12   L1110–1130  4.1 KB  What P3 changes in the plan — re-plan P4 and P5 against this
-§13   L1131–1155  1.9 KB  What P3 could not settle
+§5    L 742–872   8.9 KB  The package graph
+§5.1  L 744–770   1.3 KB  The graph
+§5.2  L 771–810   3.2 KB  Dependency direction — strictly downward
+§5.3  L 811–832   2.3 KB  What `@chakra-ui-solid/system` owns
+§5.4  L 833–845   0.7 KB  Seams
+§5.5  L 846–872   1.4 KB  Subpath exports
+§6    L 873–902   2.4 KB  Presence — a package-graph decision, not a component detail
+§7    L 903–991   5.6 KB  Color mode, direction, locale, environment
+§7.1  L 905–958   4.0 KB  Color mode: we ship a primitive, and no provider
+§7.2  L 959–981   1.0 KB  Direction, locale and environment: two contexts, no catalog
+§7.3  L 982–991   0.5 KB  RTL and logical properties
+§8    L 992–1022  2.1 KB  Build mechanics
+§9    L1023–1048  1.4 KB  Dev-time resolution and codegen ordering
+§10   L1049–1090  2.6 KB  Workstream B — the non-machine surface
+§11   L1091–1121  3.0 KB  Assumptions this architecture rests on
+§11.1 L1093–1105  1.5 KB  `brief-plan` §8 assumptions P3 depends on
+§11.2 L1106–1121  1.4 KB  New assumptions P3 introduces
+§12   L1122–1142  4.1 KB  What P3 changes in the plan — re-plan P4 and P5 against this
+§13   L1143–1167  1.9 KB  What P3 could not settle
 ```
 
 ## `prior-art.md`
@@ -522,56 +531,56 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 ## `roadmap.md`
 
 ```
-§1    L  38–254  11.5 KB  The three enumerations, measured
-§1.1  L  43–66    1.3 KB  Chakra — 115 component directories, not 118 entries
-§1.2  L  67–113   2.3 KB  Zag — 51 machines, 49 anatomy exports, 406 parts
-§1.3  L 114–242   7.2 KB  The preset — 18 recipes + 56 slot recipes, and three things the count hides
-§1.4  L 243–254   0.6 KB  `brief-plan` §8 assumption 2 is closed
-§2    L 255–392   7.9 KB  The 56-vs-51 reconciliation
-§2.1  L 257–284   1.3 KB  Both of `plan.md` §10's sentences cannot be exactly true, and one of them is not
-§2.2  L 285–303   1.2 KB  The seven slot recipes that reach a machine under a different name
-§2.3  L 304–326   1.1 KB  The fifteen slot recipes with no machine
-§2.4  L 327–361   2.4 KB  The seventeen machines with no slot recipe — and the thirteen with no Chakra component
-§2.5  L 362–392   1.8 KB  Four components whose recipe key resolves to nothing — in Chakra too
-§3    L 393–468   5.1 KB  The matrix — columns, and the one that needs re-pointing
-§3.1  L 411–468   4.0 KB  What the CIJ column means, and what it must not become
-§4    L 469–630  14.6 KB  The matrix
-§4.1  L 471–520   6.4 KB  Machine components — 45 rows
-§4.2  L 521–540   1.5 KB  Multi-part components with no machine — 15 rows
-§4.3  L 541–566   2.1 KB  Atomic-recipe components — 21 rows
-§4.4  L 567–599   1.8 KB  Styled primitives and layout — 25 rows
-§4.5  L 600–630   2.8 KB  Utilities, providers and re-exports — 9 rows, 10 folders
-§5    L 631–774   8.9 KB  Exclusions, one reason each
-§5.1  L 638–684   3.1 KB  `portal` — not an exclusion, but cut to the two things Solid's `Portal` gets wrong
-§5.2  L 685–698   1.0 KB  `client-only` — **not an exclusion** either
-§5.3  L 699–710   0.7 KB  `for` — **excluded**
-§5.4  L 711–719   0.5 KB  `show` — **excluded**
-§5.5  L 720–731   0.7 KB  `environment` — **not excluded; relocated**
-§5.6  L 732–743   0.7 KB  `presence` — **not excluded**
-§5.7  L 744–754   0.6 KB  Charts — **excluded**, and the reason is a dependency, not a style
-§5.8  L 755–774   1.2 KB  Seven of the fourteen `./hooks` — **excluded individually**
-§6    L 775–841   3.2 KB  The presence-gated set — two families, not one
-§6.1  L 780–799   0.9 KB  Family Z — a `@zag-js/presence` instance
-§6.2  L 800–820   1.2 KB  Family M — machine-owned visibility, no presence instance
-§6.3  L 821–841   0.9 KB  The `aria-controls` override, by component
-§7    L 842–897   3.8 KB  The fifth part shape — the repeated part
-§7.1  L 848–873   2.0 KB  The component that settles it: **Accordion**
-§7.2  L 874–897   1.5 KB  What Accordion must prove
-§8    L 898–957   3.6 KB  The floating seam, and where the first floating component lands
-§8.1  L 900–925   1.3 KB  The seam, restated so the sequencing argument is legible
-§8.2  L 926–957   2.2 KB  The first floating component: **Popover, at step 5b — immediately after Dialog, before volume**
-§9    L 958–1029  7.7 KB  The build order
-§9.1  L 964–996   3.5 KB  The probe phase — unchanged, plus one insertion
-§9.2  L 997–1018  3.4 KB  The batches
-§9.3  L1019–1029  0.6 KB  Ordering constraints that are not preferences
-§10   L1030–1065  2.7 KB  `RootProvider`, `PropsProvider`, `Context`, and `./hooks`
-§11   L1066–1098  2.5 KB  What the matrix adds to the dependency graph
-§12   L1099–1131  4.8 KB  Assumptions — closed, opened, left open
-§12.1 L1101–1108  1.7 KB  `brief-plan` §8 assumptions P6 owns
-§12.2 L1109–1119  2.3 KB  Assumptions P6 introduces
-§12.3 L1120–1131  0.7 KB  Assumptions P6 depends on and does not touch
-§13   L1132–1157  6.3 KB  What P6 changes — re-plan P7–P9 against this
-§14   L1158–1193  3.8 KB  What P6 could not act on
+§1    L  54–270  11.5 KB  The three enumerations, measured
+§1.1  L  59–82    1.3 KB  Chakra — 115 component directories, not 118 entries
+§1.2  L  83–129   2.3 KB  Zag — 51 machines, 49 anatomy exports, 406 parts
+§1.3  L 130–258   7.2 KB  The preset — 18 recipes + 56 slot recipes, and three things the count hides
+§1.4  L 259–270   0.6 KB  `brief-plan` §8 assumption 2 is closed
+§2    L 271–408   7.9 KB  The 56-vs-51 reconciliation
+§2.1  L 273–300   1.3 KB  Both of `plan.md` §10's sentences cannot be exactly true, and one of them is not
+§2.2  L 301–319   1.2 KB  The seven slot recipes that reach a machine under a different name
+§2.3  L 320–342   1.1 KB  The fifteen slot recipes with no machine
+§2.4  L 343–377   2.4 KB  The seventeen machines with no slot recipe — and the thirteen with no Chakra component
+§2.5  L 378–408   1.8 KB  Four components whose recipe key resolves to nothing — in Chakra too
+§3    L 409–484   5.1 KB  The matrix — columns, and the one that needs re-pointing
+§3.1  L 427–484   4.0 KB  What the CIJ column means, and what it must not become
+§4    L 485–646  14.6 KB  The matrix
+§4.1  L 487–536   6.4 KB  Machine components — 45 rows
+§4.2  L 537–556   1.5 KB  Multi-part components with no machine — 15 rows
+§4.3  L 557–582   2.1 KB  Atomic-recipe components — 21 rows
+§4.4  L 583–615   1.8 KB  Styled primitives and layout — 25 rows
+§4.5  L 616–646   2.8 KB  Utilities, providers and re-exports — 9 rows, 10 folders
+§5    L 647–790   8.9 KB  Exclusions, one reason each
+§5.1  L 654–700   3.1 KB  `portal` — not an exclusion, but cut to the two things Solid's `Portal` gets wrong
+§5.2  L 701–714   1.0 KB  `client-only` — **not an exclusion** either
+§5.3  L 715–726   0.7 KB  `for` — **excluded**
+§5.4  L 727–735   0.5 KB  `show` — **excluded**
+§5.5  L 736–747   0.7 KB  `environment` — **not excluded; relocated**
+§5.6  L 748–759   0.7 KB  `presence` — **not excluded**
+§5.7  L 760–770   0.6 KB  Charts — **excluded**, and the reason is a dependency, not a style
+§5.8  L 771–790   1.2 KB  Seven of the fourteen `./hooks` — **excluded individually**
+§6    L 791–857   3.2 KB  The presence-gated set — two families, not one
+§6.1  L 796–815   0.9 KB  Family Z — a `@zag-js/presence` instance
+§6.2  L 816–836   1.2 KB  Family M — machine-owned visibility, no presence instance
+§6.3  L 837–857   0.9 KB  The `aria-controls` override, by component
+§7    L 858–913   3.8 KB  The fifth part shape — the repeated part
+§7.1  L 864–889   2.0 KB  The component that settles it: **Accordion**
+§7.2  L 890–913   1.5 KB  What Accordion must prove
+§8    L 914–973   3.6 KB  The floating seam, and where the first floating component lands
+§8.1  L 916–941   1.3 KB  The seam, restated so the sequencing argument is legible
+§8.2  L 942–973   2.2 KB  The first floating component: **Popover, at step 5b — immediately after Dialog, before volume**
+§9    L 974–1045  7.7 KB  The build order
+§9.1  L 980–1012  3.5 KB  The probe phase — unchanged, plus one insertion
+§9.2  L1013–1034  3.4 KB  The batches
+§9.3  L1035–1045  0.6 KB  Ordering constraints that are not preferences
+§10   L1046–1081  2.7 KB  `RootProvider`, `PropsProvider`, `Context`, and `./hooks`
+§11   L1082–1114  2.5 KB  What the matrix adds to the dependency graph
+§12   L1115–1147  4.8 KB  Assumptions — closed, opened, left open
+§12.1 L1117–1124  1.7 KB  `brief-plan` §8 assumptions P6 owns
+§12.2 L1125–1135  2.3 KB  Assumptions P6 introduces
+§12.3 L1136–1147  0.7 KB  Assumptions P6 depends on and does not touch
+§13   L1148–1173  6.3 KB  What P6 changes — re-plan P7–P9 against this
+§14   L1174–1209  3.8 KB  What P6 could not act on
 ```
 
 ## `testing.md`
@@ -601,33 +610,33 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §3.6 L 391–425   1.8 KB  Failure output
 §3.7 L 426–438   2.0 KB  What it does **not** catch — five things, each with the artefact that does
 §3.8 L 439–449   0.6 KB  Where it runs
-§4   L 450–518   3.5 KB  axe
-§4.1 L 452–469   0.7 KB  The runner
-§4.2 L 470–503   2.0 KB  The allowance register — shape
-§4.3 L 504–518   0.8 KB  What the register's contents are, and where they live
-§5   L 519–597   4.6 KB  The §0 checks — two checks, not one grep
-§5.1 L 530–542   0.7 KB  `check:no-cij-manifest`
-§5.2 L 543–557   0.8 KB  `check:no-runtime-sheet`
-§5.3 L 558–583   1.6 KB  What merging them would have wrongly failed — in both directions
-§5.4 L 584–597   0.7 KB  When they run (`zag-solid-adapter.md` §5.5)
-§6   L 598–707   6.6 KB  The lint rules
-§6.1 L 606–627   1.3 KB  Rule 1 — `style-prop-static-value` (route 3 used as route 1)
-§6.2 L 628–661   2.1 KB  Rule 2 — `require-style-source` (the style-prop collision)
-§6.3 L 662–665   0.1 KB  Rule 3 — `no-class-name-assertion`
-§6.4 L 666–683   1.1 KB  The census — `check:style-prop-collisions` (P5-D's gate, and `dir`'s tripwire)
-§6.5 L 684–707   1.5 KB  The answer to `docs-plan.md` §2 **D-2**
-§7   L 708–819   7.1 KB  Storybook — the local playground
-§7.1 L 715–720   0.3 KB  Scope, restated because it decides what is *not* built
-§7.2 L 721–758   2.3 KB  The warm-up and the pin — P7's configuration, once per preview
-§7.3 L 759–788   2.1 KB  There is no story gate, because a story is not the validation surface
-§7.4 L 789–819   2.0 KB  What only Storybook can see
-§8   L 820–868   9.4 KB  The distribution, styling-config and structural checks
-§9   L 869–906   3.8 KB  The attribution checks
-§10  L 907–941   2.5 KB  The bundle measurement — `check:bundle`
-§11  L 942–960   2.6 KB  The scheduled upstream checks
-§12  L 961–982   2.4 KB  The CI job map
-§13  L 983–999   1.0 KB  What this apparatus assumes
-§14  L1000–1005  0.3 KB  Where this document ends
+§4   L 450–530   4.5 KB  axe
+§4.1 L 452–481   1.7 KB  The runner
+§4.2 L 482–515   2.0 KB  The allowance register — shape
+§4.3 L 516–530   0.8 KB  What the register's contents are, and where they live
+§5   L 531–609   4.6 KB  The §0 checks — two checks, not one grep
+§5.1 L 542–554   0.7 KB  `check:no-cij-manifest`
+§5.2 L 555–569   0.8 KB  `check:no-runtime-sheet`
+§5.3 L 570–595   1.6 KB  What merging them would have wrongly failed — in both directions
+§5.4 L 596–609   0.7 KB  When they run (`zag-solid-adapter.md` §5.5)
+§6   L 610–719   6.6 KB  The lint rules
+§6.1 L 618–639   1.3 KB  Rule 1 — `style-prop-static-value` (route 3 used as route 1)
+§6.2 L 640–673   2.1 KB  Rule 2 — `require-style-source` (the style-prop collision)
+§6.3 L 674–677   0.1 KB  Rule 3 — `no-class-name-assertion`
+§6.4 L 678–695   1.1 KB  The census — `check:style-prop-collisions` (P5-D's gate, and `dir`'s tripwire)
+§6.5 L 696–719   1.5 KB  The answer to `docs-plan.md` §2 **D-2**
+§7   L 720–831   7.1 KB  Storybook — the local playground
+§7.1 L 727–732   0.3 KB  Scope, restated because it decides what is *not* built
+§7.2 L 733–770   2.3 KB  The warm-up and the pin — P7's configuration, once per preview
+§7.3 L 771–800   2.1 KB  There is no story gate, because a story is not the validation surface
+§7.4 L 801–831   2.0 KB  What only Storybook can see
+§8   L 832–880   9.4 KB  The distribution, styling-config and structural checks
+§9   L 881–918   3.8 KB  The attribution checks
+§10  L 919–953   2.5 KB  The bundle measurement — `check:bundle`
+§11  L 954–972   2.6 KB  The scheduled upstream checks
+§12  L 973–994   2.4 KB  The CI job map
+§13  L 995–1011  1.0 KB  What this apparatus assumes
+§14  L1012–1017  0.3 KB  Where this document ends
 ```
 
 ## `testing/8.01-doc-index.md`
@@ -679,23 +688,23 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §5.3 L 498–521   2.3 KB  The result — run at P4
 §5.4 L 522–540   1.1 KB  What a failure would mean
 §5.5 L 541–553   0.6 KB  When it runs
-§6   L 554–693  10.7 KB  The test plan — proving the adapter correct with no component involved
+§6   L 554–702  11.5 KB  The test plan — proving the adapter correct with no component involved
 §6.1 L 559–585   2.4 KB  The four upstream test files, by name
 §6.2 L 586–616   3.0 KB  The seven fork test files — and the overlap nobody should double-count
 §6.3 L 617–649   2.5 KB  `solid-contract` characterization tests
 §6.4 L 650–667   1.2 KB  What is deliberately **not** tested at this milestone
-§6.5 L 668–693   1.3 KB  The gate
-§7   L 694–806   6.0 KB  The attribution checklist — lands in the same commit as the code
-§7.1 L 709–746   1.6 KB  The seven headers
-§7.2 L 747–777   1.9 KB  The `NOTICE.md` rows — and the number that matters
-§7.3 L 778–806   1.7 KB  The checklist, in commit order
-§8   L 807–927   7.1 KB  The two upstream filings
-§8.1 L 813–869   3.5 KB  A1 — boolean `aria-*` in `@zag-js/solid`
-§8.2 L 870–927   3.3 KB  `ariaHidden` → `suppressOthers` in `@zag-js/aria-hidden`
-§9   L 928–980   5.4 KB  Assumptions this milestone rests on, and their gates
-§9.1 L 930–944   1.9 KB  `brief-plan` §8 assumptions
-§9.2 L 945–969   2.2 KB  What `prior-art.md` §10.5 gets re-measured here, and what does not
-§9.3 L 970–980   1.3 KB  New assumptions P4 introduces
-§10  L 981–1008  5.1 KB  What P4 changes — re-plan P5 before P5 is written
-§11  L1009–1022  1.8 KB  What P4 could not act on
+§6.5 L 668–702   2.2 KB  The gate
+§7   L 703–815   6.0 KB  The attribution checklist — lands in the same commit as the code
+§7.1 L 718–755   1.6 KB  The seven headers
+§7.2 L 756–786   1.9 KB  The `NOTICE.md` rows — and the number that matters
+§7.3 L 787–815   1.7 KB  The checklist, in commit order
+§8   L 816–936   7.1 KB  The two upstream filings
+§8.1 L 822–878   3.5 KB  A1 — boolean `aria-*` in `@zag-js/solid`
+§8.2 L 879–936   3.3 KB  `ariaHidden` → `suppressOthers` in `@zag-js/aria-hidden`
+§9   L 937–989   5.4 KB  Assumptions this milestone rests on, and their gates
+§9.1 L 939–953   1.9 KB  `brief-plan` §8 assumptions
+§9.2 L 954–978   2.2 KB  What `prior-art.md` §10.5 gets re-measured here, and what does not
+§9.3 L 979–989   1.3 KB  New assumptions P4 introduces
+§10  L 990–1017  5.1 KB  What P4 changes — re-plan P5 before P5 is written
+§11  L1018–1031  1.8 KB  What P4 could not act on
 ```
