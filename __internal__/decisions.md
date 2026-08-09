@@ -129,7 +129,7 @@ other seven rows.
 
 ## 3. The ledger
 
-**One file per entry, under [`decisions/`](decisions/).** 164 decisions, D-01 … D-164, in fifteen
+**One file per entry, under [`decisions/`](decisions/).** 166 decisions, D-01 … D-166, in fifteen
 files grouped by the phase that settled them. Reversals are marked **⟲** and collected in §4.
 
 **The anchors did not move when the bodies did.** `` `decisions.md` §3.13 `` still names the S3
@@ -158,7 +158,7 @@ is cited. **A D-number is found by grepping `__internal__/decisions/`**, not thi
 | **3.12** | [S2 — `@chakra-ui-solid/zag-solid`, milestone one](decisions/3.12-s2-zag-solid.md) | D-102 … D-110 | Step 2 closed: the fork at 87 tests, four deltas on two axes, and A1 re-diagnosed as a Solid 2.0 bug rather than a 1.x one |
 | **3.13** | [S3 — the styling seam](decisions/3.13-s3-styling-seam.md) | D-111 … D-127 | Step 3 closed, every entry a measurement: 17 aliases not 95, `_dark` as `.dark &`, and an unresolvable token that emits its own name and fails silently |
 | **3.14** | [S3b — the visual surfaces](decisions/3.14-s3b-visual-surfaces.md) | D-128 … D-161 | Step 3b closed: Storybook demoted to a local playground, the docs site reworked against the open reference, and Chakra's docs prose found to be plain MIT |
-| **3.15** | [The context budget — the documents as a working surface](decisions/3.15-context-budget.md) | D-162 … D-164 | Not a build-order step: the anchor index, this shard, and five pointer-only skills |
+| **3.15** | [The context budget — the documents as a working surface](decisions/3.15-context-budget.md) | D-162 … D-166 | Not a build-order step: the anchor index, this shard, five pointer-only skills, and the 25 KB ceiling that guards all three |
 
 ---
 

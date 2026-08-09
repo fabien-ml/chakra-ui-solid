@@ -42,9 +42,9 @@ failure mean for the change in front of me*. The only deliberate seam is the two
 
 ## 1. Per file
 
-Applies to every file under `packages/*/src/` — and, for the three rules whose subject is the change
-rather than the code (1.10, 1.11, 1.12), to every commit. Enforced by the `verify` and `constraint`
-jobs, which run on every push.
+Applies to every file under `packages/*/src/` — and, for the four rules whose subject is the change
+rather than the code (1.10, 1.11, 1.12, 1.13), to every commit. Enforced by the `verify` and
+`constraint` jobs, which run on every push.
 
 | # | Rule | Enforced by |
 |---|---|---|
@@ -60,6 +60,7 @@ jobs, which run on every push.
 | 1.10 | Commit message carries the rationale only — no `Co-Authored-By`, no *"Generated with"* trailer | `check:commit-trailers` |
 | 1.11 | **A change to any `.md` under `__internal__` regenerates `INDEX.md` in the same commit** — a `decisions/` ledger entry included. A stale anchor points a reader at a line range that is no longer the section they cited, and they read the neighbour without noticing (`testing.md` §8) | `check:doc-index` |
 | 1.12 | **A commit that renumbers a section, moves a script, or edits a skill leaves every pointer in `.agents/skills/` resolving** — and every line of a skill is still a pointer, never a rule (`testing.md` §8.2) | `check:skill-pointers` |
+| 1.13 | **No `##` section and no sharded file under `__internal__` passes 25 KB, and `CLAUDE.md` does not pass 16 KB.** A unit that reaches its ceiling is **sharded, never granted a larger number** — a ceiling raised to fit what exists is a deleted one. An exception is a row in `context-budget.config.ts`, and the row fails the check the day it stops being needed (`testing.md` §8.3) | `check:context-budget` |
 
 ---
 
@@ -239,9 +240,10 @@ gets fixed and one that gets closed (`roadmap.md` §1.3c).
 
 ## 7. Conventions, unenforced — labelled, not hidden
 
-**Eight** rules that survive review and nothing else. Each says what is trusted, and what mechanical
+**Nine** rules that survive review and nothing else. Each says what is trusted, and what mechanical
 proxy covers the part of it that could be covered. 7.6 was added at the S1 review and is the only one
-that is a *gate* rather than a coding rule; 7.7 came with the ledger shard and 7.8 with the skills.
+that is a *gate* rather than a coding rule; 7.7 came with the ledger shard, 7.8 with the skills, and
+7.9 with the budget check.
 
 | # | Convention | Why no script | What *is* enforced |
 |---|---|---|---|
@@ -251,32 +253,40 @@ that is a *gate* rather than a coding rule; 7.7 came with the ledger shard and 7
 | 7.4 | **Comments explain *why*, and read for a reader with no repo knowledge** (`CLAUDE.md`) | Unenforceable by construction | Biome catches nothing here. This is the one rule that is purely a review contract |
 | 7.5 | **Read the machine's prop list; do not invent one** (`component-blueprint.md` §2.4) | Partially enforced: where a machine exports `Props`, the component's interface extending it is a type error away from wrong. Chakra-only props are outside that | `tsc`, for the machine half |
 | 7.6 | **The author looks at the running docs site before a phase closes**, from step 3b onward — the phase gate is not only a green suite (**D-98**, **D-99**). The docs site, specifically: it is the surface where the components are used the way a consumer uses them (**D-133**). Storybook is available for the same look and is nobody's obligation | *Is this what I wanted?* has one competent judge and no predicate. Every other rule in this document is a machine verification; none of them can answer it, and the approved order produced no rendered output at all until 115 components existed | `check:docs-examples` proves the example **mounts** and does not crash or render empty; `check:docs-inventory` proves the page **exists**. Neither can say the thing looks right — that is the part being trusted, and it is why the phase prompt names what to open |
-| 7.7 | **A `decisions/` entry's file name matches the `### 3.N` heading inside it** — `§3.13` is `3.13-…md`, zero-padded (**D-163**). It is how a citation resolves to a file without opening §3's table | It could be scripted, but naming the script is how §7b's census grows: a twenty-sixth unwritten name, for a rule that one `ls` of the directory disproves | `check:doc-index` renders the heading and the path in the same row, so a mismatch is visible in `INDEX.md` rather than only in the directory |
+| 7.7 | **A sharded file's name matches the `###` heading inside it** — `§3.13` is `decisions/3.13-…md` and `§8.2` is `testing/8.02-…md`, zero-padded (**D-163**, extended by **D-165**). It is how a citation resolves to a file without opening the parent's table | It could be scripted, but naming the script is how §7b's census grows: a twenty-sixth unwritten name, for a rule that one `ls` of the directory disproves | `check:doc-index` renders the heading and the path in the same row, so a mismatch is visible in `INDEX.md` rather than only in the directory |
 | 7.8 | **A skill's pointer line names where to read and not what will be there** — the residue `check:skill-pointers` cannot reach, because a rule restated *tersely* fits beside a citation (**D-164**). *"Tests assert computed styles, never class names"* is seven words | It is the same shape as 7.1: distinguishing a pointer from a summary is a reading. No predicate separates *"§2 — computed-style assertions"* from the rule those three words are | The proxy is real and it is structural, not semantic: **every non-blank, non-heading line carries a citation, at most 14 words sit outside it, and a skill is at most 40 lines** (`testing.md` §8.2). A paragraph of rule text has nowhere to go; a clause of it does |
+| 7.9 | **The governance-read bill is re-measured from the session transcripts rather than assumed** — `pnpm check:context-budget --sessions` prints the median bytes of governance documents a task read before its first edit, **with its n** (**D-165**). Target ≤ 60 KB | The input is machine-local: `~/.claude/projects/*.jsonl` is not in the repo and no CI runner has it. Naming a script CI never runs as though it were enforcement is the failure §7b exists to stop | Two things, and neither is this half. The **static** ceilings are rule 1.13, enforced on every push. And the aid is a **flag on that same script**, so nothing here adds a `check:*` name — the count in §7b does not move for it |
 
 ---
 
 ## 7b. Named, not yet written — the enforcement census
 
 **Re-taken at S4, 2026-08-09, mechanically.** Every `check:*` named anywhere in `CLAUDE.md` or in
-any `.md` under `__internal__` — which since the ledger was sharded means the fifteen
-`decisions/` entries as well — diffed against `scripts/check-*.mjs`:
+any `.md` under `__internal__` — which since the two shards means the fifteen `decisions/` entries
+and the three `testing/` definitions as well — diffed against `scripts/check-*.mjs`:
 
 ```
-named across the documents   46
-written and runnable         21
+named across the documents   47
+written and runnable         22
 named but not written        25
 written but never named       0
 ```
 
-**What moved since the anchor index:** `check:skill-pointers` — named here and in `testing.md`
-§8.2, written, and live in the `verify` job in the same commit. The unwritten twenty-five are
-unchanged; none of their subjects arrived. The two figures that moved are the same one name.
+**What moved with the budget check:** `check:context-budget` — named here and in `testing.md` §8.3,
+written, and live in the `verify` job in the same commit. The unwritten twenty-five are unchanged;
+none of their subjects arrived. The two figures that moved are the same one name, exactly as they
+were when `check:skill-pointers` landed at 46/21/25/0.
 
-**What did *not* move, and is worth saying twice.** Neither the shard nor the skills changed the
-count of unwritten scripts. The ledger's text did not change when it changed file, and a skill
-carries no rule, so neither could name an artefact the corpus did not already name — which is what
-a pointer bundle carrying no rule text means in the only place it is countable.
+**Its transcript half is deliberately not a row here.** It is a flag on the same script, not a
+second `check:*`, so there is nothing for the census to count — and that is why it is a flag: a
+`check:context-sessions` that CI could never run would have been a twenty-sixth unwritten-in-effect
+name for a script that exists, which is this section's complaint inverted.
+
+**What did *not* move, across all three steps.** Neither shard nor the skills changed the count of
+unwritten scripts. The ledger's text did not change when it changed file, `testing.md` §8's
+definitions did not change when they did, and a skill carries no rule — so none of them could name
+an artefact the corpus did not already name. That is what *carrying no rule text* means in the only
+place it is countable.
 
 **Why this section exists.** §7 lists rules that *cannot* be scripted. This is the different
 category the documents kept blurring into it: rules stated as **enforced**, with an artefact named

@@ -45,6 +45,16 @@ describe("check:doc-index", () => {
       expect(parent.bytes).toBe(lines("## 1. One", "xxxx", "### 1.1 Child", "yyyy").length);
     });
 
+    it("reports UTF-8 bytes, not string length — the corpus is full of `—`, `§` and `≈`", () => {
+      const source = lines("## 1. One — two", "§3 ≈ 4");
+      const [section] = parseSections(source);
+
+      expect(section.bytes).toBe(Buffer.byteLength(source));
+      // The gap is what would let `INDEX.md` and `check:context-budget` report one section at two
+      // sizes, and it reaches 2% on a ledger entry — 550 bytes against a 25 KB ceiling.
+      expect(section.bytes).toBeGreaterThan(source.length);
+    });
+
     it("accepts every anchor shape the corpus uses", () => {
       const sections = parseSections(
         lines(

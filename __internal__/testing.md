@@ -844,135 +844,25 @@ failure line below is what the failure *means*, not what it prints.
 | `check:commit-trailers` | No commit message contains `Co-Authored-By`, `Co-authored-by` or *"Generated with"* | `CLAUDE.md`'s git convention, as a commit-msg hook plus a CI pass over the branch's commits |
 | `check:doc-index` | `__internal__/INDEX.md` is byte-identical to a fresh `pnpm docs:index` | The index disagrees with the documents, so a citation resolves to the wrong line range — §8.1 |
 | `check:skill-pointers` | Every pointer in every repo-authored skill under `.agents/skills/` resolves, and every line of one is a pointer | A skill is a reading order over the corpus and nothing else. A dead pointer sends a reader to a section that is not the one named; a rule restated in a skill is a second copy, and the copy is the one that goes stale — §8.2 |
+| `check:context-budget` | No `##` section and no sharded file exceeds **25 KB**, `CLAUDE.md` does not exceed **16 KB**, and every allow-list row is still needed | The corpus grew 179 KB in one day of implementation commits. A unit past the ceiling is one nobody consults precisely — it gets grepped and guessed at instead, which is the 40 KB read the index was built to make inexcusable — §8.3 |
 
-### 8.1 `check:doc-index` — the anchor index
+**The per-check definitions are files, under [`testing/`](testing/).** One per check, named for its
+anchor — `§8.2` is `testing/8.02-skill-pointers.md`, zero-padded so the directory sorts in order.
+The table above is the routing surface and stays here; a definition is opened one at a time.
 
-**What the index is for.** The corpus is cited by section — `` `plan.md` §3.5 ``, `` `decisions.md`
-§3.13 ``. Resolving one without an index means grepping for the heading, reading the line number off
-the match, and guessing how far to read. Guessing wide is what turns a 3 KB consultation into a
-40 KB one. `INDEX.md` is the lookup: for every `##`, `###` and `####` in the corpus, its anchor as a
-citation writes it, its line range, and its size.
+| § | The check, and the file it lives in | What that file owns |
+|---|---|---|
+| **8.1** | [`check:doc-index` — the anchor index](testing/8.01-doc-index.md) | Why the index is generated, what it reads, and the four things it cannot say |
+| **8.2** | [`check:skill-pointers` — the repo-authored skills](testing/8.02-skill-pointers.md) | The citation grammar, the two shape rules, and why it is not merged into §8.1 |
+| **8.3** | [`check:context-budget` — the growth guard](testing/8.03-context-budget.md) | The three ceilings and where 25 KB comes from, the allow-list register, and the transcript half that is not a gate |
 
-**Input.** Every `.md` under `__internal__` at any depth except `INDEX.md` itself, read in path
-order — `readIndexableDocuments`. Both the generator and the check call it, because a check with
-its own copy of the file list keeps passing after a twelfth document is added and reports it as
-indexed by omission. It **recurses** for that same reason one level down: `decisions.md` §3's
-entries are one file each under `decisions/`, and a sixteenth has to arrive without anyone
-remembering to edit the script.
-
-**What gets indexed is decided by heading count, never by path.** `renderIndex` drops any file with
-no numbered heading, and that is the whole selection rule. It is what keeps the ten design notes
-under `zag-solid/`, `internal-test-utils/` and `upstream/` out of the index — nothing cites them by
-anchor, because they have none — without a skip-list of directories, which would be the
-list-in-the-script defect again and would need editing the day one of those notes grew a `## 1.`.
-The two numbers are therefore reported separately, and the gap between them is expected: **36 files
-read, 26 indexed.**
-
-**Algorithm.** Scan each document line by line, tracking fenced-code state; outside a fence, match
-`^(#{2,4})\s+(<number>)\.?\s+(<title>)`. A section ends at the next heading of the same or shallower
-level, so a `§3` row spans its `§3.5` children and reports the cost of reading the whole of §3.
-Render one block per document, plus a summary table whose *Block starts* column is computed in a
-second pass over the rendered blocks. Then regenerate and compare to the file on disk.
-
-**Failure output.** The first **three** differing lines, each with the on-disk and expected text,
-then a count of the rest. Deliberately not a full diff: inserting one heading shifts every line
-after it, so a line-by-line report is a few real differences followed by unbounded offset cascade.
-The summary table sits at the top of the index, so a changed document appears there *by name* —
-with its new line and section counts — before any of its rows do. The fix is always `pnpm
-docs:index`; `git diff __internal__/INDEX.md` is the diff.
-
-**Blind spots, four, and none of them is silent unstyling:**
-
-- **It checks currency, not correctness.** A heading numbered `§4.2` that follows `§4.7` indexes
-  exactly as written. The index reports the corpus's numbering, including its mistakes.
-- **It does not verify that a citation resolves.** `` `plan.md` §99 `` is not caught here. The
-  index makes a dead citation *findable* — the anchor is simply absent from the block — but
-  nothing fails. No check has that subject today; naming one here would put a twenty-sixth
-  unwritten script into `definition-of-done.md` §7b's census for no gain.
-- **An unnumbered heading is skipped rather than reported.** `legal.md` has one — `#### Why the
-  route is closed`. Nothing cites it, because there is nothing to cite it by. If unnumbered
-  headings ever become citable, this becomes a gap rather than a choice.
-- **A `decisions/` entry's file name is not checked against the heading inside it.** `3.13-…md`
-  could hold `### 3.9` and the index would carry it, cheerfully, under the wrong file. The naming
-  is a convention with no script (`definition-of-done.md` §7), and it is load-bearing precisely
-  because the file name is how a reader resolves `§3.13` without opening the table.
-
-**Why it copies heading titles and nothing else.** A heading names a rule; the body states it. The
-index is navigation, not a digest — a generated summary of the arguments would be a second copy of
-every rule, which is the thing `CLAUDE.md`'s three-surface split exists to prevent
-(`decisions.md` §0). The generator can only ever emit heading text, so the boundary holds by
-construction rather than by review.
-
-### 8.2 `check:skill-pointers` — the repo-authored skills
-
-**What a skill is here.** Five files under `.agents/skills/` — `port-a-component`, `attribution`,
-`add-a-check`, `docs-page`, `close-a-step` — each naming, for one shape of task, which sections of
-which documents to read and in what order. They exist because §8.1's index cuts the cost of *one*
-lookup and nothing else: a task that needs four documents still pays four grep-then-read cycles to
-discover which four. A skill is that discovery, written down once.
-
-**They carry anchors and never line ranges, and that is the load-bearing design choice.** A range
-in a hand-written file is invalidated by any edit above it in the document it points at — which is
-exactly why `INDEX.md` is generated and rule 1.11 exists. Five hand-written files carrying ~40
-ranges each have no generator, so every document commit would stale them silently and the repair
-would be by hand, five files at a time. An anchor is stable under any edit that does not renumber
-the section. The range is looked up in `INDEX.md` at read time; a skill's first body line says so.
-
-**Input.** Every directory under `.agents/skills/` that `skills-lock.json` does **not** claim. The
-lock file is the list of vendored skills, so it is the list this check reads — naming the five
-repo-authored ones in the script would keep passing after a sixth arrived and report it as checked
-by omission, which is `readIndexableDocuments`'s defect one surface over. A missing lock file is a
-failure rather than an empty skip, and so is finding zero repo-authored skills.
-
-**The citation grammar, exactly.** A backticked span is a **path** if it ends in a known extension
-(`.md`, `.mjs`, `.ts`, `.json`, `.yml`, …) and a **script** if it matches `pnpm <name>` or `<name>`
-with a colon in it; anything else — `@chakra-ui/panda-preset`, `anatomy`, `data-*` — is prose
-decoration and is not resolved. A `§` anchor is governed by **the nearest backticked `*.md` before
-it on the same line**, which is how the corpus already writes one: `` `legal.md` §2.2 — the
-header; §2.3 why it is load-bearing `` names the document once and carries two anchors. An anchor
-with no document before it is reported rather than guessed at.
-
-**Algorithm.** Four resolutions and two shape rules.
-
-1. **Anchors** resolve against the documents themselves, through `parseSections` — the same parser
-   `INDEX.md` is generated with, so the two cannot disagree about what an anchor is, and *is the
-   index current* stays owned by §8.1 alone. Anchors in `<name>/**` fold into `<name>.md`, so
-   `` `decisions.md` §3.15 `` resolves to the heading inside `decisions/3.15-…md` by a general
-   rule with no path named in the script.
-2. **Paths** resolve against the repo root, then against `__internal__/` — the convention
-   `CLAUDE.md` fixes, where `` `plan.md` `` means `__internal__/plan.md`.
-3. **Scripts** resolve against `package.json#scripts`.
-4. **Frontmatter**: `name` matches the directory the skill loads from, and `description` is
-   non-empty. A skill with neither is a file nothing ever triggers.
-5. **Every non-blank, non-heading, non-frontmatter line carries at least one citation.** This is
-   the shape rule that does the work: a sentence of rule text cites nothing, so there is no line in
-   a skill for one to be written on. Headings are exempt for §8.1's reason — a heading names, a
-   body states.
-6. **A pointer line carries at most 14 words outside its citations, and a skill is at most 40
-   lines.** Measured at this gate: the widest genuine line across the five carries **11** words, so
-   the ceiling is three words of headroom above what a real ordering clause needs.
-
-**Failure output.** Grouped by fault kind, each group headed by what that kind *means* rather than
-what it matched, then one `file:line — detail` per fault. Grouped rather than in file order because
-the kinds have different fixes: a dead pointer is repaired by re-reading `INDEX.md`, a
-`not-a-pointer` by deleting a sentence.
-
-**Blind spots, three:**
-
-- **It bounds the shape a restatement needs, and cannot recognise one.** *"Tests assert computed
-  styles, never class names"* is seven words and would pass beside a citation. The check makes a
-  paragraph impossible and a terse copy merely possible; the residue is registered as
-  `definition-of-done.md` §7.8 rather than claimed here.
-- **A resolving pointer can still be the wrong one.** `` `legal.md` §2.4 `` resolves whether or not
-  §2.4 is the section the task needs. Nothing mechanical distinguishes a correct reading order from
-  a plausible one.
-- **It does not check the reverse direction.** A document section that *should* be in a bundle and
-  is not produces no failure, and there is no artefact that could say which sections those are.
-
-**Why it is not merged into `check:doc-index`.** The two have different inputs and different
-failure meanings: one says *the index is stale, regenerate it*, the other *this pointer is wrong,
-re-read it*. Merged, a renumbered heading would report both at once as a single fault with one
-remedy, and the remedy for the index — `pnpm docs:index` — repairs nothing in a skill.
+**Why this section is sharded and §1–§7 are not.** §8 is a container of independently-citable units
+that grows by one every time a check is written, and `definition-of-done.md` §7b names **25** still
+to come — most of them owing a definition here. It reached 16.7 KB carrying **two** definitions, and
+§8.3 is 10.2 KB: unsharded, this section would be **~27.5 KB — over the ceiling on the very commit
+that introduces it.** The other sections are single arguments that do not grow with the build.
+This is `decisions.md` §3's situation one document over, and it takes §3's answer — the machinery
+D-163 built is general, and this is its second use.
 
 ---
 
@@ -1076,7 +966,7 @@ run is a green tick for work no machine performs.
 
 | Job | Runs | Contains |
 |---|---|---|
-| `verify` | every push | Biome; `tsc --noEmit`; `check:style-contract` (rules 1–3); `check:test-projects`; `check:resolution-sync`; `check:commit-trailers`; `check:doc-index`; `check:skill-pointers` |
+| `verify` | every push | Biome; `tsc --noEmit`; `check:style-contract` (rules 1–3); `check:test-projects`; `check:resolution-sync`; `check:commit-trailers`; `check:doc-index`; `check:skill-pointers`; `check:context-budget` (the static half only — §8.3.2 has no CI input) |
 | `constraint` | every push | `check:no-cij-manifest`; `check:no-runtime-sheet` |
 | `test` | every push, matrix ×3 | `test:unit`, `test:ssr`, `test:browser` — the browser leg installs Chromium with `playwright install --with-deps --only-shell`, and carries `check:floating-zindex` from step 5b. Every leg fails on a `mount()` diagnostic |
 | `styling` | every push, after `codegen` + `cssgen` | `check:css-coverage`; `check:coverage-allowlist`; `check:anatomy-parts`; `check:hash-config`; `check:preflight-hidden`; `check:data-attr-vocab`; `check:style-prop-collisions`; `check:no-hand-written-data-attrs` |

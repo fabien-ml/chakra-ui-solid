@@ -10,7 +10,7 @@ description: Where a new check gets defined, registered and run in chakra-ui-sol
 ## 1. Define it once — `testing.md` owns the slot
 
 - `testing.md` §0 — the division of labour with `definition-of-done.md`, before writing either.
-- `testing.md` §8 — distribution, styling-config and structural; §8.1 a definition worked through.
+- `testing.md` §8 — the routing table; §8.3 a definition worked through, one file per check.
 - `testing.md` §3 — generated-CSS coverage; §4 axe; §5 the no-runtime-sheet pair; §6 lint rules.
 - `testing.md` §9 — attribution; §10 the bundle; §11 the scheduled upstream checks.
 

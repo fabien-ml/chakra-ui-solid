@@ -27,6 +27,7 @@
     "check:commit-trailers": "node scripts/check-commit-trailers.mjs",
     "check:doc-index": "node scripts/check-doc-index.mjs",
     "check:skill-pointers": "node scripts/check-skill-pointers.mjs",
+    "check:context-budget": "node scripts/check-context-budget.mjs",
     "docs:index": "node scripts/build-doc-index.mjs",
     "check:no-cij-manifest": "node scripts/check-no-cij-manifest.mjs",
     "check:no-runtime-sheet": "node scripts/check-no-runtime-sheet.mjs",

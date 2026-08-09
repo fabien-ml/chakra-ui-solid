@@ -45,6 +45,11 @@ jobs:
       # breaks are silent: a dead pointer still reads as authoritative, and a rule restated in a
       # skill is a second copy — the one that goes stale.
       - run: pnpm check:skill-pointers
+      # The growth guard on all three: no `##` section or sharded file over 25 KB, `CLAUDE.md`
+      # under 16 KB. The static half only — the transcript half reads machine-local session logs
+      # that no runner has, and it is a labelled convention rather than a step here
+      # (`definition-of-done.md` §7.9).
+      - run: pnpm check:context-budget
       # Rule 1 (`style-prop-static-value`) needs the generated `isCssProperty` to know which props
       # are style props, so codegen has to have run.
       - run: pnpm codegen

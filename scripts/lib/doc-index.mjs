@@ -58,6 +58,16 @@ export function readIndexableDocuments(internalDirectory) {
 const FENCE = /^\s*(?:```|~~~)/;
 
 /**
+ * Sizes are **UTF-8 bytes**, which is what `wc -c` reports and what a tool result actually costs.
+ *
+ * It matters because the corpus is full of `—`, `§`, `≈` and `×`: a JavaScript string counts each
+ * as one, UTF-8 spends two or three. Over a ledger entry that is a 2% gap, which is 550 bytes
+ * against `check:context-budget`'s 25 KB ceiling — enough to disagree with the index a reader
+ * planned the edit from. One measure, stated once, used by both (`testing.md` §8.3).
+ */
+export const sizeInBytes = (text) => Buffer.byteLength(text, "utf8");
+
+/**
  * Heading-looking lines inside a fenced code block are not headings — `roadmap.md` has fourteen
  * shell comments that start with `#`. None is `##` today, so a parser that ignored fences would
  * pass; it would start emitting phantom sections the first time someone pastes a markdown sample
@@ -92,7 +102,7 @@ export function parseSections(source) {
       .slice(position + 1)
       .find((candidate) => candidate.level <= heading.level);
     const endLine = nextPeerOrShallower ? nextPeerOrShallower.startLine - 1 : lines.length;
-    const bytes = lines.slice(heading.startLine - 1, endLine).join("\n").length;
+    const bytes = sizeInBytes(lines.slice(heading.startLine - 1, endLine).join("\n"));
     return { ...heading, endLine, bytes };
   });
 }
@@ -157,8 +167,11 @@ it. The bodies stay in one place, which is the point of having an index at all.
 **Read this file in slices.** The summary below says which file a citation lives in and where its
 block starts *in this file*. A block is a few KB — read that one, not the whole index.
 
-**A ledger entry is a file.** \`decisions.md\` §3's entries live one per file under \`decisions/\`,
-so \`§3.13\` is indexed under \`decisions/3.13-…\` rather than under \`decisions.md\`.
+**Sizes are UTF-8 bytes**, the same measure \`check:context-budget\` enforces its ceilings in.
+
+**A sharded entry is a file, and its anchor did not move.** \`decisions.md\` §3's entries live one
+per file under \`decisions/\` and \`testing.md\` §8's check definitions under \`testing/\`, so
+\`§3.13\` and \`§8.2\` are indexed under those paths rather than under the parent document.
 `;
 
 function formatSummary(documents, blockStartLines) {
@@ -202,7 +215,7 @@ export function renderIndex(documents) {
     name,
     sections: parseSections(source),
     lineCount: source.split("\n").length,
-    bytes: source.length,
+    bytes: sizeInBytes(source),
   }));
 
   const withSections = parsed.filter((document) => document.sections.length > 0);
