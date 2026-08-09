@@ -123,15 +123,11 @@ jobs:
           echo "style-prop-collisions, no-hand-written-data-attrs: none exist yet — they are"
           echo "written at steps 4 and 5."
 
-  # A story is a deliverable, not a checkbox — this job is what opens them.
-  stories:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      # NOT YET WRITTEN — the first story belongs to the first component (step 5); the Storybook
-      # runner against Solid 2.0 is assumption P7-B and is proved there.
-      - name: test:storybook (step 5)
-        run: echo "test:storybook does not exist yet — the first story lands at step 5."
+  # There is no `stories` job, deliberately, and it is deleted rather than stubbed. Storybook is a
+  # **local playground** — `pnpm storybook` and nothing else (D-133). Every job in this file either
+  # runs its real checks or fails with the step that introduces them; a `stories` job with nothing
+  # to run would be the third thing, a green tick for work no machine performs. What Storybook
+  # would have caught is now `definition-of-done.md` §7.7: a labelled, unenforced convention.
 
   docs:
     runs-on: ubuntu-latest

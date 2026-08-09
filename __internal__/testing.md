@@ -700,13 +700,18 @@ Runs per batch, because the vocabulary it intersects grows with the machines we 
 
 ---
 
-## 7. Storybook — the compile-mode canary
+## 7. Storybook — the local playground
+
+**This section defines no artefact.** It is the one thing in this document with no script, no CI job
+and no failure output, and it says so at the top rather than at the bottom: **nothing automated
+opens a story** (**D-133**). What it still owns is the configuration in §7.2, which is not optional
+and whose absence is silent.
 
 ### 7.1 Scope, restated because it decides what is *not* built
 
-**A dev harness and a compile-mode canary. Not user-facing docs** (`brief-plan` §2.10) — the docs site
-is a separate deliverable on TanStack Start (`docs-plan.md`). No MDX authoring, no published build,
-no visual-regression suite.
+**A local playground.** `pnpm storybook`, look at a component, close it. Not user-facing docs — the
+docs site is a separate deliverable on TanStack Start (`docs-plan.md`). No MDX authoring, no
+published build, no visual-regression suite, no addons, and **no CI job**.
 
 ### 7.2 The warm-up and the pin — P7's configuration, once per preview
 
@@ -733,26 +738,42 @@ is once-per-window and every later call early-returns (`component-blueprint.md` 
 Zag machine pulls focus-visible tracking, this reaches the whole library rather than one component,
 which is why it is configuration rather than a workaround.
 
-The warm-up needs no separate regression test: deleting it crashes every story, and §7.3 is what
-notices.
+The warm-up is **measured, not predicted** (**D-130**). The same read, in the two places, on the same
+Chromium driven by the same Playwright:
 
-### 7.3 The mechanical form of *"a story is a deliverable — open it"*
+| | `HTMLElement.prototype.focus` is | reading it off the prototype |
+|---|---|---|
+| Storybook 10.5.7 | an **accessor** | **throws `TypeError: Illegal invocation`** |
+| the `browser` Vitest project | a **data property** | returns a function |
 
-`prior-art.md` §8.1's fourth rule has a specific origin — ZagListbox's stories were written,
+**Deleting the warm-up has no failing test to announce it.** It crashes every story that uses a
+machine, and the symptom — a blank canvas plus `[REACTIVITY_HALTED]` in the browser console — is
+visible only to whoever runs `pnpm storybook` next. It reaches nothing else: the docs app has no
+such loader, so §7.3's real gate would stay green through it.
+
+### 7.3 There is no story gate, because a story is not the validation surface
+
+`prior-art.md` §8.1's fourth rule has a specific origin: ZagListbox's stories were written,
 typechecked, linted and committed, every one of them crashed, and nobody knew because nobody opened
-them — and `definition-of-done.md` §0 is where it is a rule. Here it is a script:
+them. **The rule stands; its subject moves.** What proves a component works is **a real app using
+it** — `apps/docs`, which installs the published packages, resolves them through `exports` → `dist`
+under the `"solid"` condition, and runs its own Panda build (`docs-site.md` §1.1). A story is a
+convenience for the author; a docs example is the consumer path.
 
-`test:storybook` **builds Storybook and drives every story in a real browser** (the Storybook test
-runner, Playwright-backed), failing on any of:
+So the ZagListbox failure is caught by **`check:docs-examples`** (`docs-site.md` §4.1), which is a
+real gate and a stricter one: every example typechecks, imports only real subpaths, **mounts in the
+`browser` project** with no console error and a non-empty root, and runs axe. Nothing about Storybook
+is asserted anywhere, and no story is required to exist (**D-133**).
 
-- a console `error`, including `[REACTIVITY_HALTED]`;
-- an uncaught exception during story render;
-- an empty render — the story's root has no child element.
+**A story may therefore be broken on `main`, and that is accepted rather than overlooked.** It costs
+the author a debugging session the next time they open the playground, and it costs nothing else,
+because no shipped artefact and no other check reads a story.
 
-**It has to be Storybook itself, not `composeStories` under Vitest.** The crash in §7.2 exists only
-under Storybook's own loaders; importing the stories into a Vitest project reproduces neither the
-`focus` patch nor the `hydratable: false` compile, so a Vitest-hosted "story test" would be green on
-exactly the failures the canary exists to catch.
+**Ruled out, and why, so it is not re-derived.** `composeStories` under Vitest would not have been a
+substitute even if a gate were wanted: it reproduces neither the `focus` accessor above nor the
+`hydratable: false` compile below, so it is green on precisely the two failures Storybook is the only
+witness to. §13's shape — driving the built Storybook — is what a gate would have to be. Neither is
+built.
 
 ### 7.4 What only Storybook can see
 
@@ -766,7 +787,22 @@ Storybook compiles with `hydratable: false`, and that is the whole point:
 
 No Vitest project here compiles that way, so **no test in any of the three projects can see it.** It
 reaches `select`, `combobox` and `listbox` — every component with a hidden native `<select>` — which
-is **B5**, and that is where the canary earns its place (`roadmap.md` §9.2).
+is **B5** (`roadmap.md` §9.2).
+
+**Two corrections from S3b, and neither deletes the hazard.** First, the crash **did not reproduce**
+at `babel-preset-solid@2.0.0-beta.32`: four shapes were compiled at `hydratable: false` and none
+produced a null-dereferencing walk, and a rendered probe story opened cleanly. The non-hydratable
+output omits the markers entirely, so there is nothing for a restrictive parser to reparent — which
+is the mechanism this section names. Second, `vite-plugin-solid@3.0.0-next.23` defaults to the
+**native (oxc)** backend, so the compile a consumer's Storybook performs is not the Babel one the
+claim was written against. The paragraph above is left standing because four shapes at one version
+is not a refutation of a hazard whose named victims do not exist yet — but it is a **prediction with
+no current evidence**, and B5 is where it acquires some (**D-131**).
+
+**And B5 can no longer discharge it through Storybook.** With no story gate, B5's proof has to be a
+`select` that works in `apps/docs` — a docs example that mounts, which `check:docs-examples` runs —
+plus whatever the compile turns out to do by then. If the hazard is real and only the non-hydratable
+compile shows it, the docs app will not see it either, and B5 owns saying so.
 
 ---
 
@@ -892,7 +928,9 @@ as the PR's job summary. **What fires them and who is expected to read that summ
 
 ## 12. The CI job map
 
-**Eight** jobs. Grouped so that a red build names a category before anyone opens a log.
+**Seven** jobs. Grouped so that a red build names a category before anyone opens a log. It was eight
+until S3b deleted `stories` (**D-133**) — deleted rather than stubbed, because a job with nothing to
+run is a green tick for work no machine performs.
 
 | Job | Runs | Contains |
 |---|---|---|
@@ -900,7 +938,6 @@ as the PR's job summary. **What fires them and who is expected to read that summ
 | `constraint` | every push | `check:no-cij-manifest`; `check:no-runtime-sheet` |
 | `test` | every push, matrix ×3 | `test:unit`, `test:ssr`, `test:browser` — the browser leg installs Chromium with `playwright install --with-deps --only-shell`, and carries `check:floating-zindex` from step 5b. Every leg fails on a `mount()` diagnostic |
 | `styling` | every push, after `codegen` + `cssgen` | `check:css-coverage`; `check:coverage-allowlist`; `check:anatomy-parts`; `check:hash-config`; `check:preflight-hidden`; `check:data-attr-vocab`; `check:style-prop-collisions`; `check:no-hand-written-data-attrs` |
-| `stories` | every push | `test:storybook` (§7.3) |
 | `docs` | every push, after `codegen` + `cssgen` | The docs build; `check:docs-inventory`; `check:extraction-fixture`; `check:docs-consumer-config`; `check:css-coverage` against the docs app's own sheet. A deploy step on PRs and on the release branch. **Added at P8** (`docs-site.md` §6.1, §8 row 2) — the docs app is a standing instance of the step-4 consumer gate, so its build failing is a distribution failure, not a documentation one |
 | `dist` | main + release PRs | build; `check:exports`; `check:externals`; `check:buildinfo-fresh`; `check:peer-panda`; `check:license-headers` (over `dist/`); `check:notice-rows`; `check:package-files`; `check:bundle` |
 | `publish` | release workflow | everything in `dist`, plus `check:readme-disclaimer`, with npm provenance |
@@ -920,11 +957,11 @@ because this is where the mechanism lives.
 - **P7-A** — Panda's generated recipe function exposes its **variant map**, so §3.2 can enumerate the
   cross product without a hard-coded name list. Fallback: read the variant keys off the imported
   preset object, the same read `plan.md` §1.3 already does. One line either way.
-- **P7-B** — The Storybook test runner can drive a Solid 2.0 Storybook build and observe console
-  errors per story. The mechanism it must reproduce is the loader-installed `focus` accessor (§7.2),
-  which is a property of Storybook's runtime rather than of the runner — but nobody has run the two
-  together here. Fallback if not: a Playwright script over the built static Storybook's `iframe.html`
-  per story id, which is the same three assertions with more code.
+- **P7-B** — **Retired at S3b, not closed** (**D-133**). It asked whether a runner could drive a
+  Solid 2.0 Storybook build and observe per-story console errors. It can — both halves were measured
+  before the question was withdrawn (D-130) — but **nothing depends on the answer any more**: there
+  is no story gate, so the assumption has no consequence to carry. Recorded rather than deleted,
+  because the measurement is what makes §7.2's warm-up a fact rather than a prediction.
 
 ---
 

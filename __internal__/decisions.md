@@ -1897,6 +1897,176 @@ D-116's citations of `style-props.test.ts` still resolve**, now under
 
 ---
 
+### 3.14 S3b — the visual surfaces
+
+**Step 3b was split in two at the review**, and the split is the first entry here. Everything below
+belongs to the Storybook half; the docs app's own findings will continue this section from D-133.
+
+**D-128 · Step 3b ships as two commits — Storybook now, the docs app next — and `definition-of-done.md`
+§3.1's step-3b row is one gate spread over both**
+— **Decision.** The Storybook half — `.storybook/`, Box's stories, `test:storybook`, the `stories`
+CI job — is a phase commit on its own. The docs app, its four Vite knobs, its own
+`panda.config.ts`, the route map, Box's component page, `check:docs-consumer-config`,
+`check:docs-inventory`, and the two open questions the step carries (where `check:css-coverage`
+against the docs sheet lands, and P8-C's two claims) move to the next session unchanged.
+— **Rejected.** *Hold the Storybook work uncommitted until the docs app lands* — the two builds
+share no file and no dependency, and `test:storybook` is a gate the repo does not have today. Held
+back, the `stories` CI job stays a stub for another session while the stories it would open already
+exist, which is exactly the state `definition-of-done.md` §0 is about. *Call the Storybook half a
+step of its own* — it is not; the step's proof is *"both run, both render `Box`, and they are
+different things"*, and that proof is not complete until the docs app renders one too.
+— **Effect.** `definition-of-done.md` §3.1 step 3b is **partially discharged**: Storybook runs, and
+after D-133 that is all it was ever going to contribute — the step's gate lines are **all** the docs
+app's. `check:docs-inventory`, `check:docs-consumer-config`, `check:docs-examples`,
+`check:no-runtime-sheet` over `apps/docs/src` and `check:css-coverage` against the docs app's sheet
+are untouched, and **P8-B and P8-C stay open at their §8.3b dates**. Rule 2.15's *"live from step
+3b"* for `check:docs-inventory` means the docs commit, not this one.
+— **Settled.** S3b review, 2026-08-09, by the reviewer's direction.
+— **Reasoning.** `definition-of-done.md` §3.1 step 3b, rule 2.15; `docs-site.md` §1.1.
+
+**D-129 · `test:storybook` is a Playwright script over the built Storybook, not
+`@storybook/test-runner` — and the runner was measured, not assumed** ⟲
+**— SUPERSEDED by D-133 later the same day: there is no `test:storybook` at all.** Kept because the
+measurement in it is the reason D-133 costs less than it looks like it should, and because a
+retraction is a finding rather than an edit (`CLAUDE.md` § Method).
+— **Decision.** `scripts/test-storybook.mjs` builds Storybook, serves `storybook-static` from a
+plain Node file server, and drives every story with the `playwright` the `browser` Vitest project
+already installs. Three assertions per story, unchanged from `testing.md` §7.3.
+— **Rejected.** *`@storybook/test-runner@0.24.4`, which `testing.md` §7.3 names.* It was installed
+and run against this Storybook, and it works: 8 of 8 stories passed its smoke test under Solid 2.0.
+It costs **735 lockfile entries**, a second test framework (jest 30) in a repo whose testing
+doctrine is three Vitest projects, two native `postinstall` approvals (`@swc/core`,
+`unrs-resolver`) added to `pnpm-workspace.yaml#allowBuilds`, and a `jest-haste-map` crawl that walks
+`__reference-impl__/` and reports module-name collisions between the two Zag checkouts — directories
+`CLAUDE.md` declares read-only and never a dependency. **And its default smoke test is one of the
+three assertions, not three:** per-story console errors and the empty-render check would be
+hand-written hooks on top of it either way, which is the same code this script contains, plus jest.
+— **Effect.** `testing.md` §13 calls this shape *"the same three assertions with more code"* and
+frames it as the fallback for a runner that cannot drive a Solid 2.0 build. **The runner can; we
+take the shape anyway, for cost.** Measured either way, so the §13 sentence needs its *reason*
+corrected rather than its conclusion: the fallback is the default because of what the runner drags
+in, not because of what it cannot do. **⟲** Reverses `testing.md` §7.3's parenthetical *"(the
+Storybook test runner, Playwright-backed)"*.
+— **Settled.** S3b, 2026-08-09, by installing the runner, running it, measuring the closure delta,
+and removing it.
+— **Reasoning.** `testing.md` §7.3, §13; `definition-of-done.md` §8.3 P7-B.
+
+**D-130 · Storybook's loaders make `HTMLElement.prototype.focus` an accessor, and no Vitest project
+here does — measured, and the reason the warm-up is configuration rather than superstition**
+**— P7-B's status is D-133's: retired unclosed.** The measurement below stands and is why §7.2's
+warm-up is a fact; the assumption it would have closed no longer has anything depending on it.
+— **Decision.** Record the measurement. A canary built at S3b opened every story in a real browser
+and observed per-story console errors — proved by a throwaway probe of three deliberate failures (a
+`console.error`, a throw during render, a `null` render), each of which it reported and named.
+— **Rejected.** *Take it on "the suite is green"* — a canary with nothing to catch and a canary that
+catches nothing look identical, which is the failure the canary existed for.
+— **Effect.** The same read, in the two places, measured rather than argued:
+
+| | `HTMLElement.prototype.focus` is | reading it off the prototype |
+|---|---|---|
+| Storybook 10.5.7 (built, Chromium) | an **accessor** | **throws `TypeError: Illegal invocation`** |
+| the `browser` Vitest project (same Chromium, same Playwright) | a **data property** | returns a function |
+
+That is `prior-art.md` §5.3's mechanism, observed here rather than carried, and it is what justifies
+the warm-up existing at 3b instead of at the first machine: the accessor is installed today, and the
+only reason nothing crashes is that nothing calls `trackFocusVisible` yet except the warm-up itself.
+It is also the concrete answer to *"what does Storybook see that no Vitest project can"* — with a
+second, structural half: `unit` compiles `hydratable: false` but has no DOM, `browser` has a DOM but
+compiles `hydratable: true`, and **Storybook is the only place in the repo that renders a
+`hydratable: false` compile into a document.**
+— **Settled.** S3b, 2026-08-09, by a probe story and a probe browser test, both deleted after
+measurement.
+— **Reasoning.** `testing.md` §7.2, §7.3, §7.4; `prior-art.md` §5.3; `component-blueprint.md` §1.3.
+
+**D-131 · `testing.md` §7.4's restrictive-content-model crash did not reproduce at
+`babel-preset-solid@2.0.0-beta.32` — a finding, and still B5's to settle**
+— **Decision.** Record the non-reproduction; change nothing. The claim keeps its place in
+`testing.md` §7.4 and `component-blueprint.md` §10.4, and B5 remains where it is decided.
+— **Rejected.** *Delete the claim* — four shapes at one compiler version is not a refutation of a
+hazard whose stated victims (`select`, `combobox`, `listbox`) do not exist yet, and deleting a
+hazard note is the one move that cannot be undone by evidence. *Assert it as still true* — it was
+measured false for every shape available today, and repeating a prediction after measuring against
+it is what `prior-art.md` §8.1 exists to stop.
+— **Effect.** Measured two ways. **Rendered:** a probe story with a hidden-`<select>` shape — a
+static `<option>` plus a dynamic sibling — built and opened cleanly in Storybook, whose compile is
+the `hydratable: false` one the claim is about. **Compiled:** `babel-preset-solid@2.0.0-beta.32` at
+`generate: "dom", hydratable: false` was run over four shapes (static→dynamic, dynamic→static,
+static→dynamic→static, and the `<table>` variant); none produced a walk that dereferences a `null`.
+The non-hydratable output omits the markers entirely and appends with `_$insert(parent, …, null)`,
+so there is no marker for a restrictive parser to reparent — which is the mechanism §7.4 names.
+**One thing the probe cannot settle:** `vite-plugin-solid@3.0.0-next.23`'s default backend is the
+native (oxc) compiler, not Babel, so the compile a consumer's Storybook performs is not the one the
+claim was written against at all. **The canary does not lose its justification** — D-130's accessor
+is a measured, present-tense reason for it — but §7.4's *"this is where the canary earns its place"*
+is a prediction with no evidence behind it today, and B5 is where it acquires some.
+— **Settled.** S3b, 2026-08-09, by a probe story and a direct `@babel/core` + `babel-preset-solid`
+transform, both deleted after measurement.
+— **Reasoning.** `testing.md` §7.4; `component-blueprint.md` §10.4; `roadmap.md` §9.2 B5.
+
+**D-132 · A Storybook control cannot drive a style prop, so stories are prebuilt variants — the
+playground constraint, arriving three steps early**
+— **Decision.** Box's stories declare no `argTypes` and wire no style prop to an arg. Every style
+prop in a story is a literal; the one varying value goes through a CSS custom property on inline
+`style`.
+— **Rejected.** *Expose `p`, `bg` and friends as controls, the way a Storybook normally would* —
+Panda reads style-prop values out of the **source text** at build time, so `<Box p={args.padding}>`
+computes a class whose rule was never generated: the control moves and nothing changes, with no
+error. `check:style-contract` rule 1 rejects it, which is the loud half of the same contract.
+— **Effect.** `docs-site.md` §4.4 reasons this out for the docs playground; it applies verbatim to
+Storybook and it applies **now**, to a surface built five steps earlier than the playground.
+Recorded because it is a standing constraint on every story file this repo will ever have — 113
+components' worth — rather than a property of Box's. The generalisation is the same one §4.4
+reaches: a control may offer a **finite, pre-generated set** (a recipe variant, an enumerated
+machine prop) or a **CSS custom property**, and nothing else.
+— **Settled.** S3b, 2026-08-09, by `check:style-contract` rule 1 over `box.stories.tsx`.
+— **Reasoning.** `docs-site.md` §4.4; `plan.md` §3.5, §0.2; `testing.md` §6.1.
+
+**D-133 · Storybook is a local playground and nothing more. There is no story gate, no `stories` CI
+job, and no rule that a story must exist — the validation surface is the docs app** ⟲⟲
+— **Decision.** `pnpm storybook` is the entire surface. `.storybook/` is two files — the framework
+wiring and the `preview.ts` that carries §7.2's warm-up and the dev stylesheet — with **no addons**.
+`test:storybook`, `scripts/test-storybook.mjs`, `scripts/lib/storybook-canary.mjs` and its unit test
+are deleted; the `stories` CI job is **deleted rather than stubbed**; the Turbo `test:storybook`
+ordering row is gone; `@storybook/addon-a11y` leaves the catalog and the devDependencies.
+— **Rejected.** *Keep the canary as a CI job* — the reviewer's position is that a story proves
+nothing a consumer cares about, and it is the right position: a story renders a component in a
+harness we control, with our aliases, our compile and our stylesheet. **A docs example renders it
+the way a consumer gets it** — installed by package name, resolved through `exports` → `dist` under
+the `"solid"` condition, styled by a Panda run the docs app performs itself (`docs-site.md` §1.1).
+Two surfaces asserting the easier one is not twice the confidence. *Keep rule 2.6 in
+`definition-of-done.md` §7 as a labelled unenforced convention* — §0 offers *deleted* or *labelled*,
+and labelling it would leave an obligation on the author that the reviewer has explicitly declined.
+It is **deleted**, and the sentence it came from moves rather than dies.
+— **Effect.** `prior-art.md` §8.1's fourth rule — *a story is a deliverable; open it* — **keeps its
+force and changes its subject.** ZagListbox's crash is caught by `check:docs-examples`
+(`docs-site.md` §4.1), which is stricter than the canary was: an example typechecks, imports only
+real subpaths, **mounts** with no console error and a non-empty root, **and runs axe**. Four
+consequences, each stated where it is paid rather than left to be discovered:
+
+1. **`definition-of-done.md` rule 2.6 is deleted**, and rule 2.15 (*a component is not done until
+   its docs page is done*) is what now carries the obligation. `testing.md` §12 is **seven** jobs.
+2. **A broken story can reach `main`** — one that throws, logs an error or renders nothing. Accepted:
+   nothing else reads a story, so the cost is one debugging session for whoever opens the playground
+   next.
+3. **Deleting the warm-up has no failing test.** It breaks every story that uses a machine and
+   reaches nothing else; the docs app has no such loader.
+4. **B5 loses its stated instrument.** `definition-of-done.md` §3.2's B5 row asserted a story
+   rendering in the Storybook build; combined with D-131 (the hazard did not reproduce, and the
+   default compiler backend is no longer Babel) B5 now owes a **verdict** — reproduced and fixed, or
+   retired with its evidence — rather than a passing job.
+
+**P7-B is retired unclosed** (D-130): measured, holds, and no longer has a dependant.
+— **Settled.** S3b review, 2026-08-09, by the reviewer, twice — first *"I don't need that
+test:storybook thing"*, then *"the final validation is the components working on the docs website, a
+real app usage, not Storybook"*, which is what moved rule 2.6 from *labelled* to *deleted*.
+— **⟲⟲** Reverses **D-84** (*a dev harness **and a required CI job*** → a dev harness), **D-129**
+(which chose between two runners; there is now no runner), and `definition-of-done.md` §10 row 7.
+The §10 table is left unedited — it is the record of what P7 carried, not a live queue.
+— **Reasoning.** `testing.md` §7, §12, §13; `definition-of-done.md` §0, §2 rule 2.6, §3.1 step 3b,
+§3.2 B5, §7.6, §8.3; `docs-site.md` §1.1, §4.1; `prior-art.md` §8.1.
+
+---
+
 ## 4. The reversals, in one place
 
 A decision that changed during the pass is more useful than one that did not, because it is where the
@@ -1941,6 +2111,8 @@ pass learned something. Five reversed once, four reversed twice.
 | **D-93** | *A shipping component owes a docs page* | an inventory check in the docs job, first able to fire at step 8 | **A component is not done until its page is done** — the page ships in the same phase as the component, from the first one |
 | **D-41** | Workstream B's shape | one step, sized at P6 to 45 components | **6a / 6b / 6c**, a gate each. Its *position* is unchanged; 6a alone is what blocks B3/B4/B8 |
 | **The docs site's date** | — | step 8, after all 115 components | **The app at 3b, pages with their components, step 8 is the guide tier and the deploy.** D-88 is not reversed — the docs app as a standing consumer instance becomes true eight batches earlier |
+| **D-84** *(a third time)* | Storybook's status | a dev harness **and a required CI job** (D-84), then a dev harness and a canary driven by a Playwright script (D-129) | **a local playground.** No gate, no CI job, no required story. The validation surface is `apps/docs` — a real app using the published packages (**D-133**) |
+| **D-129** | What drives the stories | `@storybook/test-runner`, named in `testing.md` §7.3 | **nothing drives them.** D-129 chose a Playwright script over the runner on cost; D-133 removed the choice by removing the gate, hours later. The measurement survives, the artefact does not |
 
 ---
 
@@ -1960,7 +2132,7 @@ column here, because it is a per-component rule (`definition-of-done.md` rule 2.
 | **1** ✅ | Repo bootstrap — workspace, catalog, Biome, tsconfig, Turbo incl. `codegen`, CI skeleton, three Vitest projects, `solid-contract` | `definition-of-done.md` §3.1 step 1 — the projects are distinguishable, 23 contract cases green incl. the three new `flush()` ones |
 | **2** | `@chakra-ui-solid/zag-solid` + the harness (D-48) | `zag-solid-adapter.md` §6.5's seven lines, verbatim; `definition-of-done.md` §3.1 step 2 |
 | **3** | The styling seam — Panda config, preset, `renderStyled`, style props, **plus the locale and environment contexts** | `definition-of-done.md` §3.1 step 3 — `Box`'s computed styles in all three projects, a consumer override changing them, and five checks live |
-| **3b** | **The two visual surfaces, both rendering `Box`** — Storybook (local playground and compile-mode canary, **never deployed**) and the **docs app shell** with its own consumer `panda.config.ts` (D-98) | `definition-of-done.md` §3.1 step 3b — both run; `test:storybook` and the `docs` CI job go live; **P7-B**, **P8-B** and **P8-C** close |
+| **3b** | **The two visual surfaces, both rendering `Box`** — Storybook (local playground and compile-mode canary, **never deployed**) and the **docs app shell** with its own consumer `panda.config.ts` (D-98). **Split in two at the S3b review** (**D-128**): Storybook landed first, the docs app follows | `definition-of-done.md` §3.1 step 3b — **as amended by D-133**: Storybook contributes no gate line, `test:storybook` does not exist, and the `docs` CI job carries the whole step. **P8-B** and **P8-C** close; **P7-B** is retired unclosed |
 | **4** | One real slot recipe, in a throwaway consumer whose own source never names the variant | `plan.md` §1's gate; `definition-of-done.md` §3.1 step 4 — coverage green **there**, and flipping `hash` exits `E_CONFIG_MISMATCH` |
 | **5** | **Dialog**, plus `Portal`, plus the render-strategy split so `present` can come from a machine as well as a presence | `definition-of-done.md` §3.1 step 5 — `component-blueprint.md` §11 compiles, axe clean closed / `aria-hidden-focus` open only, SSR→hydrate round-trip |
 | **5b** | **Popover** — the floating probe (D-75) | `definition-of-done.md` §3.1 step 5b — `check:floating-zindex`, a recorded number, and either a sentence or a rule |

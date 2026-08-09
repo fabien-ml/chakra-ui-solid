@@ -150,6 +150,15 @@ invisible to any other compile: the `focus`-accessor crash above, and the restri
 compile crash of §10.4, which only `hydratable: false` produces (`testing.md` §7.3, §7.4;
 `definition-of-done.md` rule 2.6, §10 row 7).
 
+> **Reversed at S3b (D-133), and the paragraph above is left standing as the record.** Storybook is a
+> **local playground**: no gate, no CI job, no `test:storybook`, and no rule that a story must exist.
+> The two failures it is the only witness to are real — the `focus`-accessor crash is now *measured*
+> here rather than predicted (**D-130**), and §10.4's is *unreproduced* at this toolchain
+> (**D-131**) — but nothing automated looks for either. **What proves a component works is a real app
+> using it**: `apps/docs` and `check:docs-examples` (`docs-site.md` §4.1). The warm-up in the
+> paragraph above is unaffected and stays exactly as written; it is what makes the playground usable
+> at all.
+
 ### 1.4 What a component actually pays
 
 | Row | hope-ui's cost | Ours |

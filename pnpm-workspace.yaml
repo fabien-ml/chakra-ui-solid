@@ -22,8 +22,8 @@ catalog:
   "@solidjs/signals": 2.0.0-beta.32
   "@solidjs/web": 2.0.0-beta.32
   # The JSX compiler, pinned for the same reason the runtime is. Two pipelines compile this
-  # repo's JSX (the Vitest projects, and Storybook from step 6) and they must agree with each
-  # other AND with the runtime above — a mismatch surfaces as a runtime error deep inside
+  # repo's JSX today (the Vitest projects and Storybook; the docs app is the third) and they must
+  # agree with each other AND with the runtime above — a mismatch surfaces deep inside
   # `@solidjs/web`, never as a config error. `solid-babel-options.ts` unifies the compiler's
   # *options*; these two entries unify its *version*.
   #
@@ -55,6 +55,25 @@ catalog:
   # Ark, rather than reimplementations (`plan.md` §7.2).
   "@zag-js/dom-query": 1.43.0
   "@zag-js/i18n-utils": 1.43.0
+  # Storybook's warm-up imports this directly (`.storybook/preview.ts`), and every machine package
+  # pulls it transitively. Two copies would mean two `setupGlobalFocusEvents` installations against
+  # two module-level "already set up" flags, so the warm-up would run on one and the machines on the
+  # other — and the warm-up exists precisely because the second installation throws.
+  "@zag-js/focus-visible": 1.43.0
+
+  # Storybook — the local playground (`testing.md` §7). Pinned exactly for the same reason the Solid
+  # trio is, and the reason is Storybook-specific: 10.5's `enhanceContext` loader replaces
+  # `HTMLElement.prototype.focus` with an accessor, `@zag-js/focus-visible` reads that property off
+  # the prototype, and the getter throws `Illegal invocation` — which halts Solid's reactive system
+  # and renders every story empty (`prior-art.md` §5.3, measured here at S3b). `.storybook/preview.ts`'s
+  # warm-up is written against that exact mechanism, so a floating range could change the mechanism
+  # under a workaround whose comment still describes the old one. **Nothing in CI opens a story**
+  # (D-133), so a Storybook that a bump broke would be discovered by running it.
+  #
+  # `storybook-solidjs-vite` is the SolidJS 2.0 renderer (its `/next` entry) and is on its own
+  # version line, one minor ahead of the core. The pairing is the one running in hope-ui today.
+  storybook: 10.5.7
+  storybook-solidjs-vite: 10.6.0
 
   # Panda, and the Chakra preset it reads. Pinned exactly and moved together for a reason the
   # other blocks do not have: `@pandacss/dev` is a **peerDependency** of three published packages
