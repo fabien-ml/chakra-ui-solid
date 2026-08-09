@@ -1,9 +1,44 @@
 # CLAUDE.md
 
-> **Stub.** P9 turns this into the operative index — the enforced rules and their pointers, led by
-> the no-runtime-CSS-in-JS constraint. These two sections are here early because they govern how the
-> remaining eight documents get written, not just the code. Carried from hope-ui's `CLAUDE.md`
-> (`develop`); same author, MIT, no sync obligation — see `__internal__/legal.md` §1.6.
+> **Stub.** P9 turns this into the operative index — the enforced rules and their pointers. The
+> sections here are early because they govern how the remaining documents get written, not just the
+> code. The git and reply conventions are carried from hope-ui's `CLAUDE.md` (`develop`); same author,
+> MIT, no sync obligation — see `__internal__/legal.md` §1.6.
+
+## The governing constraint: no CSS at runtime, no CSS in the package
+
+One rule at two boundaries. **Everything else in this repo is justified from it, and nothing may
+weaken it** — a change that needs it relaxed is a change to `__internal__/plan.md` §0 first, at a
+review gate.
+
+**Nothing writes a stylesheet at runtime.** No Emotion, styled-components, goober or stitches — not
+as a dependency, not anywhere in the dependency closure. And none of our own code calls
+`createElement("style")` or `insertRule`, touches `adoptedStyleSheets`, or maintains a sheet. Those
+are two different checks: a dependency is judged by *what it is* (a manifest check over the closure),
+our own source by *what it does* (a grep). — plan §0.
+
+**Allowed, and routinely needed:** the DOM `style` attribute (Zag's `normalizeProps` — the function
+turning a state machine's framework-agnostic prop bag into Solid props — emits `style` objects for
+floating positioning, slider thumbs, progress fills); inline CSS custom properties; Panda's `css` /
+`cva` / `sva` / `cx`, which only compute strings. — plan §0.3.
+
+**We publish no `.css` file, ever.** No package's `exports`, `files` or `style` field points at one.
+Panda in the consumer's build is a hard prerequisite, enforced by a non-optional `peerDependency` on
+`@pandacss/dev` rather than by a sentence in the README. — plan §4.4.
+
+**The hazard both create — read this before touching anything styling-related.** A Panda class whose
+CSS was never generated renders nothing and raises no error: no warning, no console message, no
+failing test. An unstyled component and a green suite look identical. Two standing consequences:
+
+- **A style value must be statically extractable, declared in `staticCss`** (the config key that
+  pre-generates rules for values no source file literally writes), **or routed through a CSS custom
+  property** — `style={{ "--w": w }}` with `w="var(--w)"`. There is no fourth option. — plan §3.5.
+- **Tests assert computed styles, never class names.** `classList.contains("p_4")` passes on a
+  completely unstyled element. — plan §0.2.
+
+This is why `chakra-ui-solid` is **not a 1:1 port**, and the phrasing is fixed: *"as close to Chakra
+v3 parity as is achievable without runtime CSS-in-JS."* The parity delta is plan §0.4 — cite a row,
+never re-argue it.
 
 ## Git conventions
 
