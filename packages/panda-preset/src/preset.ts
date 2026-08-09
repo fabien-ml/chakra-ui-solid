@@ -67,7 +67,7 @@ function staticCssForEvery(keys: string[]): Record<string, { staticCss: ["*"]; j
  * `_open`/`_hover` conditions, and nothing errors (`plan.md` §3.2).
  */
 export const chakraSolidPreset = definePreset({
-  name: "@chakra-ui-solid/preset",
+  name: "@chakra-ui-solid/panda-preset",
 
   presets: ["@pandacss/preset-base", chakraPreset],
 

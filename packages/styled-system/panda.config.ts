@@ -1,12 +1,12 @@
-import { chakraSolidPreset } from "@chakra-ui-solid/preset";
+import { chakraSolidPreset } from "@chakra-ui-solid/panda-preset";
 import { defineConfig } from "@pandacss/dev";
 
 /**
  * Panda's config for **our own** generated output — the `css()` / `cva()` / `sva()` runtime this
  * repo publishes, and the dev stylesheet the browser tests assert against.
  *
- * It is not the consumer's config and does not try to be: a consumer spreads
- * `chakraConfig()` from `@chakra-ui-solid/preset`, which carries the knobs that must match this
+ * It is not the consumer's config and does not try to be: a consumer spreads `chakraConfig()` from
+ * `@chakra-ui-solid/panda-preset`, which carries the knobs that must match this
  * one and leaves `include` and `outdir` to them. Two knobs differ deliberately, and both are
  * commented below.
  */

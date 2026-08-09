@@ -13,9 +13,10 @@ import { variantKeysFor } from "../recipe-registry";
  *
  * So each knob is asserted **twice**: once against what `chakraConfig()` returns, and once against
  * what `packages/styled-system/panda.config.ts` sets. The second half reads that file as *text*
- * rather than importing it, because it imports `@chakra-ui-solid/preset` through the package's
- * `exports` map — pulling it into this package's own program would be a cycle through our `dist/`
- * (D-120). A reformat of that file is a loud failure here; a changed value is the one this catches.
+ * rather than importing it, because it imports `@chakra-ui-solid/panda-preset` through the
+ * package's `exports` map — pulling it into this package's own program would be a cycle through
+ * our `dist/` (D-120). A reformat of that file is a loud failure here; a changed value is the one
+ * this catches.
  */
 
 /** Every knob that shapes a class name, and the value both sides must carry. */
@@ -63,7 +64,7 @@ describe("chakraConfig — the knobs that must match ours", () => {
   it("lists exactly one preset, so the same one-liner is correct on both sides", () => {
     const presets = chakraConfig().presets ?? [];
     expect(presets).toHaveLength(1);
-    expect((presets[0] as { name?: string }).name).toBe("@chakra-ui-solid/preset");
+    expect((presets[0] as { name?: string }).name).toBe("@chakra-ui-solid/panda-preset");
   });
 
   it("leaves `include` and `outdir` to the consumer", () => {

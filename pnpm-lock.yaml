@@ -346,9 +346,9 @@ importers:
       '@chakra-ui-solid/internal-test-utils':
         specifier: workspace:*
         version: link:../../packages/internal-test-utils
-      '@chakra-ui-solid/preset':
+      '@chakra-ui-solid/panda-preset':
         specifier: workspace:*
-        version: link:../../packages/preset
+        version: link:../../packages/panda-preset
       '@mdx-js/rollup':
         specifier: 3.1.1
         version: 3.1.1(rollup@4.62.4)
@@ -407,9 +407,9 @@ importers:
       '@chakra-ui-solid/internal-test-utils':
         specifier: workspace:*
         version: link:../internal-test-utils
-      '@chakra-ui-solid/preset':
+      '@chakra-ui-solid/panda-preset':
         specifier: workspace:*
-        version: link:../preset
+        version: link:../panda-preset
       '@pandacss/dev':
         specifier: 'catalog:'
         version: 1.12.0(typescript@6.0.3)
@@ -442,7 +442,7 @@ importers:
         specifier: 'catalog:'
         version: 2.0.0-beta.32
 
-  packages/preset:
+  packages/panda-preset:
     dependencies:
       '@chakra-ui/panda-preset':
         specifier: 'catalog:'
@@ -460,9 +460,9 @@ importers:
 
   packages/styled-system:
     devDependencies:
-      '@chakra-ui-solid/preset':
+      '@chakra-ui-solid/panda-preset':
         specifier: workspace:*
-        version: link:../preset
+        version: link:../panda-preset
       '@pandacss/dev':
         specifier: 'catalog:'
         version: 1.12.0(typescript@6.0.3)

@@ -112,7 +112,7 @@ eight are closed.
 | Q | Question | Settled at | Answer | Lives in |
 |---|---|---|---|---|
 | **Q1** | Brand and npm scope | **P1 gate, 2026-08-08** | `chakra-ui-solid`, under the owned `@chakra-ui-solid` scope. Mark-derived, deliberately, with `@solid-chakra` held as a pre-paid exit | `legal.md` §3.3.3 · **D-01** |
-| **Q2** | How consumers get CSS for recipe variants their source never writes | **P3 gate, 2026-08-09** | Per-recipe `staticCss: ["*"]` through `theme.extend` in `@chakra-ui-solid/preset`, plus an atomic `staticCss.css` block and ten `colorPalette` values. Two-rung fallback ladder; confirmed or refuted at step 4 | `plan.md` §1 · **D-23** |
+| **Q2** | How consumers get CSS for recipe variants their source never writes | **P3 gate, 2026-08-09** | Per-recipe `staticCss: ["*"]` through `theme.extend` in `@chakra-ui-solid/panda-preset`, plus an atomic `staticCss.css` block and ten `colorPalette` values. Two-rung fallback ladder; confirmed or refuted at step 4 | `plan.md` §1 · **D-23** |
 | **Q3** | How loudly the parity delta is stated to end users | **P1 gate** (recorded), **P8** (placed) | Prominent — the fixed sentence in the README, `CLAUDE.md` and the docs home; the delta table with its **Cause** column on the migration page; the extraction guide as the loudest page on the site | `legal.md` §3.4; `plan.md` §0.4; `docs-plan.md` §1, §5 · **D-06** |
 | **Q4** | Style-props API: Chakra-shape or Panda-shape | **P3 gate** | Panda-shape, with Chakra names aliased only where all three conditions of the aliasing rule hold — at most 95 names, the list itself a step-3 deliverable | `plan.md` §2 · **D-26** |
 | **Q5** | Re-clone `zag` at `main` (1.43.0), keeping `v2` as a second worktree | **P1 gate** | Yes. Target **1.43.0**; `v2` kept as a secondary checkout, which is what let P4 prove the adapter byte-identical across the major | `legal.md` §0.1; `zag-solid-adapter.md` §2.3 · **D-05** |
@@ -403,10 +403,10 @@ as a regression.
 ### 3.3 P3 — architecture
 
 **D-23 · Q2 — the preset declares `staticCss` per recipe, through `theme.extend`**
-— **Decision.** `@chakra-ui-solid/preset` adds one `staticCss: ["*"]` key to each of the 74 recipes it
-inherits and re-emits none of them, plus an atomic `staticCss.css` block (the `display` row and ten
-`colorPalette` values). `jsx` tracking hints are added as an optimization and **nothing depends on
-them**.
+— **Decision.** `@chakra-ui-solid/panda-preset` adds one `staticCss: ["*"]` key to each of the 74
+recipes it inherits and re-emits none of them, plus an atomic `staticCss.css` block (the `display`
+row and ten `colorPalette` values). `jsx` tracking hints are added as an optimization and **nothing
+depends on them**.
 — **Rejected.** *Config-level `staticCss: { recipes: "*" }`* — a consumer's own top-level block
 competes with ours and the merge semantics of two competing blocks are undocumented and unverifiable
 here; a key inside a recipe body merges like any other recipe property. *Make every internal variant
@@ -476,7 +476,7 @@ this failure — the class it emits does exist.
 — **Reasoning.** `prior-art.md` §2.5; `plan.md` §2.3; `component-blueprint.md` §4.1, §4.1.1.
 
 **D-28 · `eject: true` stays, and `@pandacss/preset-base` is declared by the preset** ⟲
-— **Decision.** `@chakra-ui-solid/preset` self-declares `presets: ["@pandacss/preset-base",
+— **Decision.** `@chakra-ui-solid/panda-preset` self-declares `presets: ["@pandacss/preset-base",
 chakraPreset]`, so `presets: [chakraSolidPreset]` is sufficient in **both** our config and the
 consumer's.
 — **Rejected.** *Copy hope-ui's `panda.config.ts` verbatim* — `eject: true` was safe there only
@@ -558,7 +558,7 @@ ways at once: `splitProps` is gone, `solid-js/web` does not exist, and `mergePro
 earlier draft, which it records and retracts.
 — **Reasoning.** `prior-art.md` §2.3; `plan.md` §3.1, §4.2.
 
-**D-34 · `@chakra-ui-solid/preset` exports a preset *and* a config function**
+**D-34 · `@chakra-ui-solid/panda-preset` exports a preset *and* a config function**
 — **Decision.** One subpath, `.`, with two exports: `chakraSolidPreset` (default) and
 `chakraConfig(options?)` (named) — a function returning a `defineConfig`-shaped fragment carrying every
 knob that must match ours, with the preset already in `presets`.
@@ -1762,9 +1762,9 @@ styled-system`. `plan.md` §5.2's table stays correct as the *finished* graph.
 — **Rejected.** *Add a `paths` entry for each anyway, for symmetry* — neither has a `src` to point
 at. `styled-system` **is** Panda's output, and its `exports` already point at the generated
 directory that `codegen` rewrites in place, so there is no stale `dist` to guard against;
-`@chakra-ui-solid/preset` is read by Panda's own config bundler under Node, which does not consult
-tsconfig paths, so a `paths` entry would be a fiction that made the check pass while Panda read
-something else.
+`@chakra-ui-solid/panda-preset` is read by Panda's own config bundler under Node, which does not
+consult tsconfig paths, so a `paths` entry would be a fiction that made the check pass while Panda
+read something else.
 — **Effect.** The invariant `plan.md` §9 protects — *never resolve to a sibling's stale `dist`* —
 is met for `preset` by Turbo ordering instead: `codegen` declares `dependsOn: ["^build"]`, so the
 shape Panda reads is the shape a consumer gets. `check:resolution-sync` reports **five**
@@ -1773,7 +1773,8 @@ resolutions across two files: `zag-solid`, `system`, `components`, `internal-tes
 — **Settled.** S3 gate, by `check:resolution-sync`.
 — **Reasoning.** `plan.md` §9; `testing.md` §8.
 
-**D-121 · `@chakra-ui-solid/preset` ships plain `.js` under `import`, not `.jsx` under `"solid"`**
+**D-121 · `@chakra-ui-solid/panda-preset` ships plain `.js` under `import`, not `.jsx` under
+`"solid"`**
 — **Decision.** `createTsdownConfig` gains one option, `loadedBy: "solid" | "node"`, and the preset
 is the first `"node"` package.
 — **Rejected.** *Ship it under the repo-wide `"solid"`-only condition* — Panda's config loader
@@ -2104,9 +2105,10 @@ requirement 1's whole justification.
 
 **Deferred with the reason, not silently:** `forcedTheme`, arbitrary theme lists beyond
 light/dark/system, a CSP `nonce`, and a `themes` array. `disableTransitionOnChange` is 3c's and
-takes the **Panda route** — a `globalCss` rule in `@chakra-ui-solid/preset`, generated into the
-consumer's stylesheet at build time, with the runtime only setting an attribute on `<html>` — with
-one unverified thing to probe there: whether `!important` clears Panda's cascade layers as expected.
+takes the **Panda route** — a `globalCss` rule in `@chakra-ui-solid/panda-preset`, generated into
+the consumer's stylesheet at build time, with the runtime only setting an attribute on `<html>` —
+with one unverified thing to probe there: whether `!important` clears Panda's cascade layers as
+expected.
 — **Settled.** S3b, 2026-08-09, by the reviewer's direction, and confirmed by the browser
 measurement above. **⟲** Reverses **D-38**.
 — **Reasoning.** `plan.md` §7.1, §0.4; `roadmap.md` §4.5; `component-blueprint.md` §8;
@@ -2650,6 +2652,25 @@ whose props *are* CSS properties.
 
 ---
 
+**D-161 · The preset package is `@chakra-ui-solid/panda-preset`, named after Chakra's own**
+— **Decision.** `@chakra-ui-solid/preset` → `@chakra-ui-solid/panda-preset`, and `packages/preset`
+→ `packages/panda-preset`. Chakra's monorepo publishes `@chakra-ui/panda-preset` out of
+`packages/panda-preset`; the package that ports it is now named and filed the same way.
+— **Rejected.** *Keep `preset`* — it reads as *the* preset in a repo that composes two of them, and
+the line every consumer writes puts both in view at once: `chakraConfig()` comes from ours,
+`@chakra-ui/panda-preset` is the dependency underneath it (§3.3). A pair that differs only by scope
+makes the reader check the scope. *Rename the package but keep the directory* — no other package
+here needs that lookup, and `packages/panda-preset` is what Chakra calls the same directory.
+— **Effect.** Free, and only because nothing has shipped: version `0.0.0`, no changeset, no
+publish, so there is no deprecation and no alias to maintain. It moved 65 references across 32
+files, the workspace links, and the lockfile. `preset.name` inside the preset moved with it — that
+string is asserted by `config.test.ts`, which is what would have caught a half-done rename.
+— **Settled.** S3b part 3, 2026-08-09, by `build`, `typecheck`, the 19 live checks, and the unit,
+ssr and browser projects.
+— **Reasoning.** `plan.md` §3.3 owns what the package is; this entry owns only what it is called.
+
+---
+
 ## 4. The reversals, in one place
 
 A decision that changed during the pass is more useful than one that did not, because it is where the
@@ -2667,7 +2688,7 @@ pass learned something. Five reversed once, four reversed twice.
 | **D-01** | Brand | `legal.md` §3.3.2's analysis concludes **for `@solid-chakra`** | `@chakra-ui-solid`, against the analysis, on the author's preference and a precedent matching this construction exactly. §3.3.2 is **not rewritten to agree** |
 | **D-25** | The fallback ladder | three rungs | **two** — the prebuilt-stylesheet floor removed by D-30 |
 | **D-27** | `renderStyled` additions | three | **four** — `styleSource`, with a worked failure in the checkout |
-| **D-28** | Where the base-preset fix lives | in `panda.config.ts` | **in `@chakra-ui-solid/preset`**, so a consumer cannot omit it |
+| **D-28** | Where the base-preset fix lives | in `panda.config.ts` | **in `@chakra-ui-solid/panda-preset`**, so a consumer cannot omit it |
 | **D-30** | The prebuilt-stylesheet path | a documented secondary path | **removed** — zero published CSS |
 | **D-31** | `styled-system` | private + inlined (hope-ui's shipped model) | **published + external** |
 | **D-33** | `jsxFramework` | unset | **`"solid"`**, with `./jsx` never exported |

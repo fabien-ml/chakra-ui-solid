@@ -243,9 +243,9 @@ Two project-specific edges of that line:
 
 ### 1.5 `@chakra-ui/panda-preset`: depend, do not vendor
 
-The plan does not state this explicitly, and it should. Two readings of §2.1's *"`@chakra-ui-solid/preset`
-stays a separate public, config-only package"* are possible: our preset **composes** the official
-one as a dependency, or it **vendors** its contents.
+The plan does not state this explicitly, and it should. Two readings of §2.1's
+*"`@chakra-ui-solid/panda-preset` stays a separate public, config-only package"* are possible: our
+preset **composes** the official one as a dependency, or it **vendors** its contents.
 
 **Recommendation: depend.** Reasons, in order of weight:
 
@@ -455,7 +455,7 @@ on SolidJS, and it is not Chakra UI.
 
 - `@chakra-ui/*` and `@chakra/*` are the mark itself and are out unconditionally.
 - The scope is the brand, so that `@chakra-ui-solid/components`, `@chakra-ui-solid/styled-system`,
-  and `@chakra-ui-solid/preset` read as one product.
+  and `@chakra-ui-solid/panda-preset` read as one product.
 - **"Chakra UI" — the full mark — belongs in the `description` and `keywords`, never in a package
   `name`.** The scope carries "chakra" alone (§3.3.2); the full mark stays in prose, where it is a
   factual reference rather than an identifier.
@@ -906,7 +906,7 @@ search results are noisy.
    `chakra-ui-solid`, scope `@chakra-ui-solid/`. No repository rename needed; the working directory
    already matches.
 2. ✅ The package graph has its real names: `@chakra-ui-solid/components`,
-   `@chakra-ui-solid/styled-system`, `@chakra-ui-solid/preset`, `@chakra-ui-solid/zag-solid`,
+   `@chakra-ui-solid/styled-system`, `@chakra-ui-solid/panda-preset`, `@chakra-ui-solid/zag-solid`,
    `@chakra-ui-solid/primitives`, `@chakra-ui-solid/i18n`.
 3. ✅ P2 onward can be written against real import paths.
 4. ✅ **Decided, deliberately:** no GitHub organization, no custom domain, and the maintainer

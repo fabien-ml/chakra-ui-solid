@@ -1,5 +1,5 @@
 {
-  "name": "@chakra-ui-solid/preset",
+  "name": "@chakra-ui-solid/panda-preset",
   "version": "0.0.0",
   "description": "The Panda CSS preset for chakra-ui-solid — Chakra v3's design system plus the staticCss declarations that make internally-emitted recipe variants reach a consumer's stylesheet",
   "license": "MIT",

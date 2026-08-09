@@ -18,10 +18,10 @@ export interface TsdownOptions {
    *
    * - `"solid"` (default) — a Solid app. Ships JSX-preserved `.jsx` under the `"solid"` condition
    *   so the consumer's own compiler produces server and client output per environment.
-   * - `"node"` — a **build tool**, not an app. `@chakra-ui-solid/preset` is read by Panda's config
-   *   loader, which resolves under Node's `import` condition; a package offering only `"solid"` is
-   *   unresolvable there, and the JSX rationale does not apply because a Panda preset is a plain
-   *   object with no JSX in it.
+   * - `"node"` — a **build tool**, not an app. `@chakra-ui-solid/panda-preset` is read by Panda's
+   *   config loader, which resolves under Node's `import` condition; a package offering only
+   *   `"solid"` is unresolvable there, and the JSX rationale does not apply because a Panda preset
+   *   is a plain object with no JSX in it.
    */
   loadedBy?: "solid" | "node";
 }

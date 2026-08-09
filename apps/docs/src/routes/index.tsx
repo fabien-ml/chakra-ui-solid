@@ -126,7 +126,7 @@ function DocsHome() {
         <Section title="Install">
           <pre class={codePaneClass}>
             <code>
-              pnpm add @chakra-ui-solid/components @chakra-ui-solid/preset
+              pnpm add @chakra-ui-solid/components @chakra-ui-solid/panda-preset
               @chakra-ui-solid/styled-system{"\n"}
               pnpm add -D @pandacss/dev
             </code>

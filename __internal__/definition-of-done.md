@@ -217,7 +217,7 @@ them `plan.md` §0.2's silent unstyling shipped upstream on purpose, and a faith
 | `toggle` | `toggle` | Same | Same |
 | `download-trigger` | `downloadTrigger` | Same | Same |
 | `text` | `text` | Same. Styled by `textStyles` + style props instead | Same |
-| `container` | `container` | **The only one that is styled in Chakra and would be unstyled here** — the preset is exactly one recipe short of Chakra's runtime theme (`roadmap.md` §1.3a) | **The `container` recipe delta lands in `@chakra-ui-solid/preset` with the Container component at step 6.** That commit removes this entry, adds the registry entry, the `@license` header and both `NOTICE.md` rows — one change, not two. `check:coverage-allowlist` fails if the entry outlives the delta |
+| `container` | `container` | **The only one that is styled in Chakra and would be unstyled here** — the preset is exactly one recipe short of Chakra's runtime theme (`roadmap.md` §1.3a) | **The `container` recipe delta lands in `@chakra-ui-solid/panda-preset` with the Container component at step 6.** That commit removes this entry, adds the registry entry, the `@license` header and both `NOTICE.md` rows — one change, not two. `check:coverage-allowlist` fails if the entry outlives the delta |
 
 **Two preset deltas, two tiers, and only one of them is expression** (`roadmap.md` §13 row 7b):
 
@@ -226,7 +226,7 @@ them `plan.md` §0.2's silent unstyling shipped upstream on purpose, and a faith
   the preset registers as `swittch`. **Owes nothing**, and must not enter `attribution.config.ts`.
 - The `container` recipe **body**, ported from `@chakra-ui/react`'s `theme/recipes/container.ts` —
   expression-tier under `legal.md` §1.4, the first such file outside the `zag-solid` fork, and the
-  reason `@chakra-ui-solid/preset` gains its first `NOTICE.md`.
+  reason `@chakra-ui-solid/panda-preset` gains its first `NOTICE.md`.
 
 **And one upstream filing P7 owns**, now with a concrete defect rather than a spelling observation: a
 broken token reference in `@chakra-ui/panda-preset`, which is the difference between an issue that

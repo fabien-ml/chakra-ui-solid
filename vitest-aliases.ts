@@ -55,9 +55,9 @@ export function resolveServerEntry(packageName: string): string {
  * these are exact-anchored matches rather than wildcards — an unanchored `find` would also capture
  * `@chakra-ui-solid/zag-solid-something`, and the check rejects one.
  *
- * `@chakra-ui-solid/styled-system` and `@chakra-ui-solid/preset` are absent on purpose: neither has
- * a `src` to point at. The long form of both reasons is in `tsconfig.base.json`, beside the paths
- * this list has to agree with.
+ * `@chakra-ui-solid/styled-system` and `@chakra-ui-solid/panda-preset` are absent on purpose:
+ * neither has a `src` to point at. The long form of both reasons is in `tsconfig.base.json`,
+ * beside the paths this list has to agree with.
  */
 export const chakraSolidAlias: { find: RegExp; replacement: string }[] = [
   {

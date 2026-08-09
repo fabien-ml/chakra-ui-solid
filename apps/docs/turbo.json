@@ -30,7 +30,7 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/packages/components/dist/panda.buildinfo.json",
-        "$TURBO_ROOT$/packages/preset/dist/**"
+        "$TURBO_ROOT$/packages/panda-preset/dist/**"
       ],
       "outputs": ["styled-system/**"]
     },

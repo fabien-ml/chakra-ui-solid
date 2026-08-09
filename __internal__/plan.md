@@ -160,9 +160,9 @@ grep -c compoundVariants __reference-impl__/chakra-ui/packages/panda-preset/src/
 
 ### 1.2 Decision
 
-**`@chakra-ui-solid/preset` declares `staticCss` per recipe, through `theme.extend`, adding one key
-to each of the 74 recipes it inherits and re-emitting none of them.** `jsx` tracking hints are added
-in the same pass as an optimization, but **nothing depends on them**.
+**`@chakra-ui-solid/panda-preset` declares `staticCss` per recipe, through `theme.extend`, adding
+one key to each of the 74 recipes it inherits and re-emitting none of them.** `jsx` tracking hints
+are added in the same pass as an optimization, but **nothing depends on them**.
 
 Three facts make this the shape, all from Panda's own documentation:
 
@@ -194,7 +194,7 @@ declaration is the same merge path applied one level deeper.
 ### 1.3 What the preset declares, exactly
 
 ```ts
-// @chakra-ui-solid/preset
+// @chakra-ui-solid/panda-preset
 import chakraPreset from "@chakra-ui/panda-preset"
 import { definePreset } from "@pandacss/dev"
 
@@ -202,7 +202,7 @@ const allVariants = (keys: string[]) =>
   Object.fromEntries(keys.map((key) => [key, { staticCss: ["*"] }]))
 
 export default definePreset({
-  name: "@chakra-ui-solid/preset",
+  name: "@chakra-ui-solid/panda-preset",
 
   // Our preset owns its own base, so a consumer's `eject: true` cannot strip the utility engine
   // out from under Chakra's recipes. See §3.2.
@@ -268,7 +268,7 @@ ladder, in order, so a refutation costs a config line rather than a redesign:
 1. **Config-level `staticCss` in the preset** instead of per-recipe — if recipe-level `staticCss` does
    not survive `theme.extend`'s merge. Same package, same release, no consumer change.
 2. **Ship the declarations as a config fragment the consumer spreads** —
-   `import { chakraConfig } from "@chakra-ui-solid/preset"`. If preset-level `staticCss`
+   `import { chakraConfig } from "@chakra-ui-solid/panda-preset"`. If preset-level `staticCss`
    does not reach a consumer's codegen at all, this bypasses preset merging entirely and costs the
    consumer one documented line. §3.4 ships this fragment **anyway**, for a different reason, so this
    rung is already built.
@@ -332,8 +332,8 @@ So the choice is real, and it is: adopt Panda's vocabulary and alias the gaps, o
 
 ### 2.2 The aliasing rule
 
-A Chakra style-prop name is added to `@chakra-ui-solid/preset`'s `utilities.extend` **only if all
-three hold**:
+A Chakra style-prop name is added to `@chakra-ui-solid/panda-preset`'s `utilities.extend` **only if
+all three hold**:
 
 1. It is one of Chakra's 95 shorthands, and
 2. it is **absent** from the generated `isCssProperty` after `@pandacss/preset-base` + the Chakra
@@ -432,7 +432,7 @@ export default defineConfig({
 ### 3.2 `eject` vs. an explicit `presets` array — decided, and the fix relocated
 
 **Decision: `eject: true` stays, and `@pandacss/preset-base` is declared by
-`@chakra-ui-solid/preset`, not by any `panda.config.ts`.**
+`@chakra-ui-solid/panda-preset`, not by any `panda.config.ts`.**
 
 `prior-art.md` §2.2 established the defect: `eject: true` drops Panda's default presets, and
 `@chakra-ui/panda-preset` does not self-declare a base — it has no `presets` array and reaches for
@@ -445,20 +445,20 @@ every recipe in the preset would then reference conditions that do not exist.
 chakraPreset]`. **P3 keeps the fix and moves its location**, for one reason: that line fixes *our*
 config only. The consumer writes their own `panda.config.ts`, and if the base-preset dependency lives
 in a config file, every consumer has to know a fact about the internals of a preset they merely
-listed. Declaring it inside `@chakra-ui-solid/preset` makes `presets: [chakraSolidPreset]` sufficient
-on both sides of the boundary — and it reproduces exactly the chain hope-ui proved works, where the
-base theme self-declared `presets: ["@pandacss/preset-base"]` and the Chakra theme declared
-`presets: [basePreset]` (`prior-art.md` §2.2).
+listed. Declaring it inside `@chakra-ui-solid/panda-preset` makes `presets: [chakraSolidPreset]`
+sufficient on both sides of the boundary — and it reproduces exactly the chain hope-ui proved
+works, where the base theme self-declared `presets: ["@pandacss/preset-base"]` and the Chakra theme
+declared `presets: [basePreset]` (`prior-art.md` §2.2).
 
-`@pandacss/preset-base` therefore becomes a **dependency of `@chakra-ui-solid/preset`**, alongside
-`@chakra-ui/panda-preset`. Both are MIT and config-only; the preset package's runtime cost stays zero
-(`legal.md` §1.5).
+`@pandacss/preset-base` therefore becomes a **dependency of `@chakra-ui-solid/panda-preset`**,
+alongside `@chakra-ui/panda-preset`. Both are MIT and config-only; the preset package's runtime cost
+stays zero (`legal.md` §1.5).
 
 Rejected: **drop `eject`.** That readmits `@pandacss/preset-panda`'s default theme, which is the
 thing `eject` exists to remove. Rejected: **leave the fix in the config.** It works, and it fails
 open — a consumer who omits it gets an unstyled library with no error, which is §0.2 again.
 
-### 3.3 `@chakra-ui-solid/preset` — what it is and what it exports
+### 3.3 `@chakra-ui-solid/panda-preset` — what it is and what it exports
 
 A **public, config-only package with zero CSS**, depending on `@chakra-ui/panda-preset` and
 `@pandacss/preset-base`. It is the whole "look'n'feel for free" premise and the package `legal.md`
@@ -497,7 +497,7 @@ and it is exceptional because the preset is exactly one recipe short of Chakra's
 ```ts
 // the consumer's panda.config.ts
 import { defineConfig } from "@pandacss/dev"
-import { chakraConfig } from "@chakra-ui-solid/preset"
+import { chakraConfig } from "@chakra-ui-solid/panda-preset"
 
 export default defineConfig({
   ...chakraConfig(),
@@ -728,7 +728,7 @@ the package manager rather than by a sentence someone skims:
 | Deliverable | Shape | Owner |
 |---|---|---|
 | **The Panda-prerequisite line**, wording unchanged: *"Requires Panda CSS in your build. Not optional — this library publishes no CSS."* **In three places**, not one — the README's first line above the install snippet and before the feature list; the docs home (`docs-plan.md` §3); and above the install snippet on the install page (`docs-plan.md` §4) | Prose. Writing the README **file** is the implementation pass's step 8, not the document pass | **P8** (specced), step 8 (written) |
-| **`@pandacss/dev` as a `peerDependency`** on `@chakra-ui-solid/preset`, `styled-system` and `components` | `"@pandacss/dev": "^1.12.0"`, not a `dependency` — the consumer's Panda must be the one that runs. `peerDependenciesMeta.optional` is **not** set: the warning is the point | **P7** |
+| **`@pandacss/dev` as a `peerDependency`** on `@chakra-ui-solid/panda-preset`, `styled-system` and `components` | `"@pandacss/dev": "^1.12.0"`, not a `dependency` — the consumer's Panda must be the one that runs. `peerDependenciesMeta.optional` is **not** set: the warning is the point | **P7** |
 | **CI check: no published `package.json` lists a `.css` file** in `exports`, `files` or `style` | Runs beside the §4.2 `jsx/index` check, same pass | **P7** |
 
 Without the peer dependency this failure is §0.2 at project scale — `npm install`, run the app, every
@@ -744,7 +744,7 @@ generated-CSS coverage check assert against (§0.2, §9). That output is never p
 ### 5.1 The graph
 
 ```
-@chakra-ui-solid/preset            PUBLIC, config-only, zero CSS.
+@chakra-ui-solid/panda-preset      PUBLIC, config-only, zero CSS.
                                    presets: ["@pandacss/preset-base", "@chakra-ui/panda-preset"]
                                    + staticCss deltas + jsx hints + alias utilities.
                                    One subpath "." → default chakraSolidPreset,
@@ -828,8 +828,8 @@ The named extension points, each one a place a later phase plugs in rather than 
 | The slot-recipe context | Every part component (P5) |
 | The `render` prop | Consumers, for polymorphism |
 | A machine's `ids` prop | Consumers overriding a part's id — proven to work, and the retraction of the claim that it could not is `prior-art.md` §8.1 |
-| `@chakra-ui-solid/preset` → `chakraSolidPreset` | Consumers, for theming (§3.7) |
-| `@chakra-ui-solid/preset` → `chakraConfig(options?)` | Consumers, for Panda wiring (§3.4) and the responsive opt-in (§3.8) |
+| `@chakra-ui-solid/panda-preset` → `chakraSolidPreset` | Consumers, for theming (§3.7) |
+| `@chakra-ui-solid/panda-preset` → `chakraConfig(options?)` | Consumers, for Panda wiring (§3.4) and the responsive opt-in (§3.8) |
 
 ### 5.5 Subpath exports
 
@@ -838,8 +838,9 @@ Measured, `@chakra-ui/react`'s exports map is `.`, `./anatomy`, `./preset`, `./p
 resolving to `./dist/esm/components/*/index.js`.
 
 **Chakra's monolith exposes as subpaths what our package graph exposes as packages.** Four of those
-entries have no equivalent here: `./preset`, `./preset-base` and `./theme` are `@chakra-ui-solid/preset`,
-and `./styled-system` is `@chakra-ui-solid/styled-system`. What remains maps one-to-one:
+entries have no equivalent here: `./preset`, `./preset-base` and `./theme` are
+`@chakra-ui-solid/panda-preset`, and `./styled-system` is `@chakra-ui-solid/styled-system`. What
+remains maps one-to-one:
 
 | `@chakra-ui-solid/components` | Mirrors | Note |
 |---|---|---|
@@ -914,8 +915,8 @@ preset; hope-ui's transition-based `createPresence` was never the right shape he
 >
 > **Deferred with the reason, rather than silently:** `forcedTheme`, arbitrary theme lists beyond
 > light/dark/system, a CSP `nonce`, and a `themes` array. `disableTransitionOnChange` is 3c's and
-> takes the **Panda route** — a `globalCss` rule in `@chakra-ui-solid/preset`, generated into the
-> consumer's stylesheet at build time, with the runtime only setting an attribute on `<html>`.
+> takes the **Panda route** — a `globalCss` rule in `@chakra-ui-solid/panda-preset`, generated into
+> the consumer's stylesheet at build time, with the runtime only setting an attribute on `<html>`.
 
 Measured: `colorMode` and `ColorMode` appear **zero times** in
 `__reference-impl__/chakra-ui/packages/react/src/`. Chakra v3 ships color mode as a **CLI snippet**
@@ -1111,7 +1112,7 @@ Each is unverifiable from this machine for the same reason: **Panda is installed
 | # | Plan says | P3 decides | Touches |
 |---|---|---|---|
 | 1 | §2.1's exports list: `./css`, `./tokens`, `./types`, `./patterns`, `./recipes`, `./styles.css` | **Add `./is-valid-prop`**, and it resolves *inside* `jsx/`. **Drop `./styles.css`** — no CSS is published at all (§4.4). The never-export rule sharpens to **"no export resolves to `jsx/index`, and none resolves to a `.css` file"** (§4.2) | P7 (the CI check) |
-| 2 | §2.2 / §2.11: `panda.config.ts` copied with `eject: true` + `presets: [chakraPreset]`; `prior-art.md` §10.2 row 1 fixes it in the config | **The fix moves into `@chakra-ui-solid/preset`**, which self-declares `@pandacss/preset-base`. The config keeps `eject: true` and one preset entry, and so does the consumer's (§3.2) | P9 (`decisions.md`) |
+| 2 | §2.2 / §2.11: `panda.config.ts` copied with `eject: true` + `presets: [chakraPreset]`; `prior-art.md` §10.2 row 1 fixes it in the config | **The fix moves into `@chakra-ui-solid/panda-preset`**, which self-declares `@pandacss/preset-base`. The config keeps `eject: true` and one preset entry, and so does the consumer's (§3.2) | P9 (`decisions.md`) |
 | 3 | §2.1 / §9 Q2: *"`staticCss` shipped in the preset"* | **Per-recipe** via `theme.extend`, not a config-level block, plus an atomic `staticCss.css` block and 10 `colorPalette` values — with a **two-rung** fallback ladder (§1.5). *(This row read "three-rung" until P9. §4.4 removed the prebuilt-stylesheet floor and §1.5 was rewritten to two; `roadmap.md` §13 row 10 and `definition-of-done.md` §10 row 9 flagged the stale wording and carried it forward deliberately.)* | P5, P7 |
 | 4 | §9 Q2 assumes only *dynamic* variant arguments fail to extract | **No consumer-written recipe variant extracts at all** — the preset declares no `jsx` hints (measured). The problem is wider and the answer is the same (§1.1) | P5, P7 |
 | 5 | §2.5: `@<scope>/preset` is *"config-only"* | It also exports **`chakraConfig(options?)`**, a function returning a `defineConfig` fragment carrying the knobs that must match across the boundary. **One subpath `.`, no `./config`** — same consumer needs both exports. New (§3.3, §3.4) | P7, P8, P9 |

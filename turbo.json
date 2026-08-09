@@ -16,9 +16,9 @@
     // reads it — type-checking included, which otherwise fails with hundreds of unrelated errors
     // (`plan.md` §9).
     //
-    // `^build` reaches exactly one package in practice, `@chakra-ui-solid/preset`: Panda's config
-    // loader resolves it through its `exports` map rather than through `tsconfig.base.json#paths`,
-    // so the *published* shape is the shape codegen reads.
+    // `^build` reaches exactly one package in practice, `@chakra-ui-solid/panda-preset`: Panda's
+    // config loader resolves it through its `exports` map rather than through
+    // `tsconfig.base.json#paths`, so the *published* shape is the shape codegen reads.
     "codegen": {
       "dependsOn": ["^build"],
       "outputs": ["styled-system/**"]

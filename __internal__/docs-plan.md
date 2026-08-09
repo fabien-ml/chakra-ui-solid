@@ -365,7 +365,7 @@ here, before they have installed anything.
 **1 — Install.** Three of ours and one of theirs:
 
 ```
-@chakra-ui-solid/components  @chakra-ui-solid/preset  @chakra-ui-solid/styled-system
+@chakra-ui-solid/components  @chakra-ui-solid/panda-preset  @chakra-ui-solid/styled-system
 @pandacss/dev  (a dev dependency of yours — we declare it as a non-optional peer)
 ```
 
@@ -574,10 +574,11 @@ in the same row.
 
 ### 6.1 Section order
 
-**0 — What it is.** `@chakra-ui-solid/preset`, one subpath `.`, two exports: `chakraSolidPreset`
-(default, the Panda preset) and `chakraConfig(options?)` (named, a function returning a
-`defineConfig`-shaped fragment). **A function even with no arguments** — `chakraConfig()` — so the
-responsive opt-in is a change of argument rather than a change of call shape (`plan.md` §3.3).
+**0 — What it is.** `@chakra-ui-solid/panda-preset`, one subpath `.`, two exports:
+`chakraSolidPreset` (default, the Panda preset) and `chakraConfig(options?)` (named, a function
+returning a `defineConfig`-shaped fragment). **A function even with no arguments** —
+`chakraConfig()` — so the responsive opt-in is a change of argument rather than a change of call
+shape (`plan.md` §3.3).
 
 **1 — The minimal config**, §4.1's snippet again. Repeated deliberately: a reference page a reader
 has to leave to find the working example is a reference page that gets replaced by a StackOverflow

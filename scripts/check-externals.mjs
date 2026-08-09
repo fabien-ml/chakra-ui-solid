@@ -89,7 +89,7 @@ for (const { name, directory } of listPublishedPackages(repoRoot)) {
   const dist = join(directory, "dist");
   // Only what the build actually ships. Tests, stories, SSR entries and `__fixtures__` are all
   // excluded from the tsdown build too — a fixture consumer's `panda.config.ts` importing
-  // `@chakra-ui-solid/preset` is not a claim about the tarball.
+  // `@chakra-ui-solid/panda-preset` is not a claim about the tarball.
   const sourceFiles = filesUnder(
     join(directory, "src"),
     (entry) => /\.tsx?$/.test(entry) && !/\.(test|stories|ssr-entry)\./.test(entry),

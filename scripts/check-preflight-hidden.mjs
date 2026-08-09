@@ -35,8 +35,9 @@ if (!rule.test(css)) {
         : "") +
       "A part the machine marks `hidden` will stay painted wherever its recipe slot sets a " +
       "`display`: a closed dialog leaves a full-viewport backdrop over the page. Either Panda's " +
-      "`preflight: true` supplies this rule or `@chakra-ui-solid/preset` adds one `globalCss` " +
-      "line carrying Chakra's verbatim; this check does not care which, only that one of them did.",
+      "`preflight: true` supplies this rule or `@chakra-ui-solid/panda-preset` adds one " +
+      "`globalCss` line carrying Chakra's verbatim; this check does not care which, only that " +
+      "one of them did.",
   );
   process.exit(1);
 }

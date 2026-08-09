@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@chakra-ui-solid/internal-test-utils": "workspace:*",
-    "@chakra-ui-solid/preset": "workspace:*",
+    "@chakra-ui-solid/panda-preset": "workspace:*",
     "@pandacss/dev": "catalog:",
     "@solidjs/web": "catalog:",
     "solid-js": "catalog:",

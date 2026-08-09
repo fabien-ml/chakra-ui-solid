@@ -7,7 +7,7 @@
 // key `swittch` while its own Switch recipe references `cursor: "switch"`. `@chakra-ui/react`'s
 // runtime theme spells both `switch` and loses nothing, which makes this a **preset defect rather
 // than Chakra behavior** — so inheriting it would be a divergence from the thing we are porting.
-// `@chakra-ui-solid/preset` adds one token key, `cursor.switch`, and leaves the misspelled
+// `@chakra-ui-solid/panda-preset` adds one token key, `cursor.switch`, and leaves the misspelled
 // slot-recipe key alone (renaming that would fork the package we depend on).
 //
 // Two runs, one question each:
@@ -24,7 +24,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const presetDir = join(repoRoot, "packages/preset");
+const presetDir = join(repoRoot, "packages/panda-preset");
 const pandaBin = join(presetDir, "node_modules/.bin/panda");
 const builtPreset = join(presetDir, "dist/index.js");
 
@@ -47,8 +47,9 @@ function cssgenWith(presetsExpression) {
   try {
     writeFileSync(join(directory, "package.json"), '{ "name": "probe", "type": "module" }\n');
     // Module resolution walks up from the config file, so the probe borrows the preset package's
-    // own `node_modules` instead of installing anything. `@chakra-ui-solid/preset` is not in there
-    // — a package cannot depend on itself — so it is imported by the path Panda would read it at.
+    // own `node_modules` instead of installing anything. `@chakra-ui-solid/panda-preset` is not in
+    // there — a package cannot depend on itself — so it is imported by the path Panda would
+    // read it at.
     symlinkSync(join(presetDir, "node_modules"), join(directory, "node_modules"), "dir");
     writeFileSync(
       join(directory, "panda.config.ts"),

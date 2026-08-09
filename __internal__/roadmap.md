@@ -383,10 +383,10 @@ enumerated per component with a reason, exactly like the axe allowances
 (`component-blueprint.md` §9.3).
 
 `Container` is the only one that needs a decision rather than a note: **one `container` recipe delta
-in `@chakra-ui-solid/preset`**, ported from `@chakra-ui/react`'s `theme/recipes/container.ts`. That is
-a recipe **body** reproduced from Chakra, so unlike everything else in `plan.md` §1.3 it is
-expression-tier under `legal.md` §1.4 — it owes an `@license` header and root + package `NOTICE.md`
-rows. One file, recorded so P7 does not add it silently.
+in `@chakra-ui-solid/panda-preset`**, ported from `@chakra-ui/react`'s
+`theme/recipes/container.ts`. That is a recipe **body** reproduced from Chakra, so unlike everything
+else in `plan.md` §1.3 it is expression-tier under `legal.md` §1.4 — it owes an `@license`
+header and root + package `NOTICE.md` rows. One file, recorded so P7 does not add it silently.
 
 ---
 

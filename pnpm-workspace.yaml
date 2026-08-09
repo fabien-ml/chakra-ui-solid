@@ -82,7 +82,7 @@ catalog:
   # our runtime computes and their stylesheet does not carry, with no error anywhere
   # (`plan.md` §3.4).
   #
-  # `@pandacss/preset-base` is a direct dependency of `@chakra-ui-solid/preset` rather than
+  # `@pandacss/preset-base` is a direct dependency of `@chakra-ui-solid/panda-preset` rather than
   # something Panda supplies, because we set `eject: true`: that drops Panda's default presets,
   # and `@chakra-ui/panda-preset` declares no base of its own while reaching for
   # `utilities: { extend }` and `conditions: { extend }` (`plan.md` §3.2).

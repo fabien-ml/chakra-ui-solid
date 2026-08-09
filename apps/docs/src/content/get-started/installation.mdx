@@ -39,7 +39,7 @@ To set up chakra-ui-solid in your project, follow the steps below.
 Three of ours, and one of Panda's.
 
 ```bash
-pnpm add @chakra-ui-solid/components @chakra-ui-solid/preset @chakra-ui-solid/styled-system
+pnpm add @chakra-ui-solid/components @chakra-ui-solid/panda-preset @chakra-ui-solid/styled-system
 pnpm add -D @pandacss/dev
 ```
 
@@ -51,7 +51,7 @@ run the app, every component renders naked, and no tool anywhere says why.
   <Step title="Write panda.config.ts">
 
 ```ts
-import { chakraConfig } from "@chakra-ui-solid/preset";
+import { chakraConfig } from "@chakra-ui-solid/panda-preset";
 import { defineConfig } from "@pandacss/dev";
 
 export default defineConfig({

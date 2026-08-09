@@ -5,8 +5,8 @@
 //
 // This check is **both the verifier and the producer**. Chakra's shorthands live in an Emotion
 // runtime we do not port, and Panda's own utilities cover most but not all of them; the set this
-// check reports missing IS the list `@chakra-ui-solid/preset` must alias. It was specified to fail
-// before it passed, and its first green run was the deliverable.
+// check reports missing IS the list `@chakra-ui-solid/panda-preset` must alias. It was specified
+// to fail before it passed, and its first green run was the deliverable.
 //
 // Why it must keep running: `isCssProperty` is generated *from our config*, so a preset change, a
 // Panda bump or a Chakra bump can silently drop a name. A dropped shorthand does not error — it
@@ -64,9 +64,9 @@ if (missing.length > 0) {
     `check:alias-coverage — ${missing.length} of Chakra's ${shorthands.length} shorthands are ` +
       "absent from the generated `isCssProperty`. Each one is a style prop a consumer can write " +
       "that will silently become a DOM attribute instead.\n\n" +
-      "This list IS the alias table `packages/preset/src/alias-utilities.ts` must carry — add each " +
-      "name to the Panda utility that already owns its property, keeping that utility's existing " +
-      "shorthands, then re-run `pnpm codegen`:\n\n" +
+      "This list IS the alias table `packages/panda-preset/src/alias-utilities.ts` must " +
+      "carry — add each name to the Panda utility that already owns its property, keeping that " +
+      "utility's existing shorthands, then re-run `pnpm codegen`:\n\n" +
       `${missing.map((name) => `  - ${name}`).join("\n")}\n`,
   );
   process.exit(1);

@@ -40,7 +40,7 @@ they specify. The stack targets `solid-js@2.0.0-beta.x`, and nothing upstream is
 2.0 yet, so every Solid-2.0-shaped adaptation here is ours.
 
 Packages will publish under the `@chakra-ui-solid` scope: `@chakra-ui-solid/components`,
-`@chakra-ui-solid/styled-system`, `@chakra-ui-solid/preset`, and the rest.
+`@chakra-ui-solid/styled-system`, `@chakra-ui-solid/panda-preset`, and the rest.
 
 ## Credit where it is due
 

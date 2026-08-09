@@ -12,7 +12,7 @@
  * nothing. The named non-entry is `theme.extend.tokens.cursor.switch` — a one-word token value is
  * not expression, and a check that demanded a header for it would be wrong (`roadmap.md` §1.3c).
  *
- * The `container` recipe delta in `@chakra-ui-solid/preset` is the eighth entry and the first
+ * The `container` recipe delta in `@chakra-ui-solid/panda-preset` is the eighth entry and the first
  * outside the fork. It arrives with the **Container component at step 6a**, not with the preset —
  * the preset package itself ships at step 3 with an empty derived-file table, because it vendors
  * nothing (`definition-of-done.md` §6; `decisions.md` D-122).

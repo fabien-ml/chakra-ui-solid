@@ -859,9 +859,9 @@ Its contents today are **eight entries**, and the eighth is new since P6:
 - The seven `zag-solid` fork files — `machine`, `bindable`, `merge-props`, `normalize-props`, `refs`,
   `track`, `index` — each naming `chakra-ui/zag` → `packages/frameworks/solid/src/<file>.ts`
   (`zag-solid-adapter.md` §7.1).
-- **The `container` recipe delta in `@chakra-ui-solid/preset`** — a recipe **body**, and therefore
-  **the first expression-tier file outside the fork**. It brings the preset package its first
-  `NOTICE.md`. Its tier, its provenance and the allow-list entry it retires are
+- **The `container` recipe delta in `@chakra-ui-solid/panda-preset`** — a recipe **body**, and
+  therefore **the first expression-tier file outside the fork**. It brings the preset package its
+  first `NOTICE.md`. Its tier, its provenance and the allow-list entry it retires are
   `definition-of-done.md` §6.
 
 **What the registry must not gain:** the `theme.extend.tokens.cursor.switch` key. A one-word token

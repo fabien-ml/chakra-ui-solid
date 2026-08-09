@@ -16,7 +16,7 @@ import { listPublishedPackages } from "./lib/published-packages.mjs";
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const REQUIRED = [
-  "@chakra-ui-solid/preset",
+  "@chakra-ui-solid/panda-preset",
   "@chakra-ui-solid/styled-system",
   "@chakra-ui-solid/components",
 ];

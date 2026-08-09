@@ -46,7 +46,7 @@
     // - `@chakra-ui-solid/styled-system` IS Panda's output. Its `exports` map points at the
     //   generated `styled-system/` directory, which `codegen` rewrites in place, so package
     //   resolution is always current and there is no stale `dist` to guard against.
-    // - `@chakra-ui-solid/preset` is loaded by Panda's own config bundler under Node, not by
+    // - `@chakra-ui-solid/panda-preset` is loaded by Panda's own config bundler under Node, not by
     //   TypeScript or Vite, and it resolves through its `exports` map to `dist/`. That is
     //   deliberate rather than an oversight: Turbo orders `codegen` behind `^build` precisely so
     //   the shape Panda reads is the shape a consumer would get.
