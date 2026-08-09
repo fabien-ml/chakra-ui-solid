@@ -1,0 +1,71 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "tsconfig.base.json",
+    "tsdown.config.base.ts",
+    "solid-babel-options.ts",
+    "vitest.config.ts",
+    "vitest-aliases.ts",
+    "vitest-projects.ts",
+    "pnpm-workspace.yaml"
+  ],
+  "tasks": {
+    // `@chakra-ui-solid/styled-system` is *generated* by Panda, so it must exist before anything
+    // reads it — type-checking included, which otherwise fails with hundreds of unrelated errors
+    // (`plan.md` §9). No package declares `codegen` yet: the ordering is defined now so that the
+    // package which eventually does drops into a pipeline that already routes around it, rather
+    // than into one someone has to remember to rewire.
+    //
+    // `^build` for `preset` only: Panda reads the preset, which resolves from source in dev
+    // through `tsconfig.base.json#paths`, but the *published* shape must be buildable.
+    "codegen": {
+      "dependsOn": ["^build"],
+      "outputs": ["styled-system/**"]
+    },
+    // The dev stylesheet the browser tests and `check:css-coverage` assert against (step 3+).
+    "cssgen": {
+      "dependsOn": ["codegen"],
+      "outputs": ["styled-system/styles.css"]
+    },
+    "build": {
+      "dependsOn": ["codegen", "^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!src/**/*.test.ts",
+        "!src/**/*.test.tsx",
+        "!src/**/*.ssr.test.ts",
+        "!src/**/*.ssr.test.tsx",
+        "!src/**/*.browser.test.ts",
+        "!src/**/*.browser.test.tsx",
+        "!src/**/*.stories.ts",
+        "!src/**/*.stories.tsx",
+        "!src/**/*.md",
+        "!src/**/__fixtures__/**"
+      ],
+      "outputs": ["dist/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["codegen"],
+      "outputs": []
+    },
+    // The three Vitest projects run from ONE root config, so today these are ordering
+    // declarations rather than live tasks — nothing resolves them until a package owns a
+    // `test:*` script. Until then the CI `test` job runs `pnpm codegen` ahead of the suite,
+    // which is the same ordering by a different route.
+    "test:unit": {
+      "dependsOn": ["codegen"],
+      "outputs": []
+    },
+    "test:ssr": {
+      "dependsOn": ["codegen"],
+      "outputs": []
+    },
+    "test:browser": {
+      "dependsOn": ["codegen"],
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    }
+  }
+}

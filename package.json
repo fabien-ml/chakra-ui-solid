@@ -1,0 +1,52 @@
+{
+  "name": "chakra-ui-solid",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Chakra UI v3's component API for SolidJS 2.0 — Zag.js behavior, Panda CSS styling, no runtime CSS-in-JS",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@11.10.0",
+  "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
+    "postinstall": "turbo run codegen",
+    "build": "turbo run build",
+    "codegen": "turbo run codegen",
+    "cssgen": "turbo run cssgen",
+    "typecheck": "turbo run typecheck",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "test:unit": "vitest run --project=unit",
+    "test:ssr": "vitest run --project=ssr",
+    "test:browser": "vitest run --project=browser",
+    "check:test-projects": "node scripts/check-test-projects.mjs",
+    "check:resolution-sync": "node scripts/check-resolution-sync.mjs",
+    "check:commit-trailers": "node scripts/check-commit-trailers.mjs",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter='./packages/*' && changeset publish"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.10.0",
+      "onFail": "download"
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.7",
+    "@changesets/cli": "2.31.1",
+    "@playwright/test": "1.62.1",
+    "@solidjs/web": "catalog:",
+    "@vitest/browser": "4.1.10",
+    "@vitest/browser-playwright": "4.1.10",
+    "babel-preset-solid": "catalog:",
+    "playwright": "1.62.1",
+    "solid-js": "catalog:",
+    "tsdown": "^0.22.14",
+    "turbo": "2.10.9",
+    "typescript": "6.0.3",
+    "vite": "8.2.1",
+    "vite-plugin-solid": "catalog:",
+    "vitest": "4.1.10"
+  }
+}

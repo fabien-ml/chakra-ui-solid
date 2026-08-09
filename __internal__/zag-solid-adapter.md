@@ -668,7 +668,7 @@ Milestone one is done when **all** of these are true, as one CI job:
 ```
 ✅  86 fork cases green across the three Vitest projects (unit / ssr / browser)
 ✅  51 upstream cases green in a one-time parallel run (§6.2), with D2's assertion updated
-✅  18 solid-contract cases green, including the three new flush() cases (§6.3)
+✅  23 solid-contract cases green, including the three new flush() cases (§6.3)
 ✅  mount() SILENT — zero [STRICT_READ_UNTRACKED], zero [REACTIVE_WRITE_IN_OWNED_SCOPE]
 ✅  §5's audit script green against the INSTALLED closure (manifest check = the §0 rule)
 ✅  7 @license headers present; root + package NOTICE.md rows present (§7)

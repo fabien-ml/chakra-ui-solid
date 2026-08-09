@@ -1,0 +1,52 @@
+name: Release
+
+# The eighth job of `__internal__/testing.md` §12. It lives here rather than in `ci.yml` because
+# that is when it runs: everything `dist` does, plus `check:readme-disclaimer`, with npm
+# provenance.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.10.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+
+      # DoD rule 4.12: ESM-only, changesets, and **no changeset while at `0.0.0`**. A changeset
+      # written against a `0.0.0` package does not describe a release anybody can install, and
+      # `changeset version` would turn it into a `0.0.1` publish of an unfinished library. The
+      # policy ends the day the first package takes a real version — at which point this step's
+      # condition stops matching and it stops firing.
+      - name: No changeset while a package is at 0.0.0
+        run: |
+          pending=$(find .changeset -name '*.md' ! -name 'README.md' | wc -l | tr -d ' ')
+          zeroed=$(cat packages/*/package.json 2>/dev/null | grep -c '"version": "0.0.0"' || true)
+          if [ "$pending" -gt 0 ] && [ "$zeroed" -gt 0 ]; then
+            echo "::error::$pending pending changeset(s) while $zeroed package(s) are at 0.0.0."
+            echo "See .changeset/README.md — nothing is published yet, so nothing should be bumped."
+            exit 1
+          fi
+          echo "$pending pending changeset(s), $zeroed package(s) at 0.0.0 — policy satisfied."
+
+      # NOT YET WRITTEN — nothing is publishable before step 2, and `check:readme-disclaimer` is a
+      # publish-time gate on a per-package README that does not exist yet (`legal.md` §6 item 7).
+      - name: publish (step 2 onward)
+        run: |
+          echo "No package is publishable yet. This job gains the dist checks,"
+          echo "check:readme-disclaimer, the license-table re-stamp, and 'changeset publish'"
+          echo "when the first package ships."

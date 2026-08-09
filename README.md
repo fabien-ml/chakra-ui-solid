@@ -34,10 +34,10 @@ progress fills work.
 
 ## Status
 
-**Pre-release. Nothing is published, and there is no code yet** — this repository currently holds
-the architecture documents that the implementation will be built from. The stack targets
-`solid-js@2.0.0-beta.x`, and nothing upstream is built for SolidJS 2.0 yet, so every
-Solid-2.0-shaped adaptation here is ours.
+**Pre-release. Nothing is published, and no component exists yet** — this repository holds the
+architecture documents the implementation is being built from, plus the workspace and test harness
+they specify. The stack targets `solid-js@2.0.0-beta.x`, and nothing upstream is built for SolidJS
+2.0 yet, so every Solid-2.0-shaped adaptation here is ours.
 
 Packages will publish under the `@chakra-ui-solid` scope: `@chakra-ui-solid/components`,
 `@chakra-ui-solid/styled-system`, `@chakra-ui-solid/preset`, and the rest.

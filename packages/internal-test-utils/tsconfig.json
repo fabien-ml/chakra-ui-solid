@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    // Off for the published artifact everywhere else in the repo; kept off here too so the
+    // package's tsconfig reads the same as its siblings'.
+    "declarationMap": false
+  },
+  "include": ["src"]
+}

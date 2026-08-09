@@ -1,0 +1,38 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+
+catalog:
+  # The solid trio moves in lockstep — a single Solid version across the repo. A version skew
+  # breaks context and hydration *silently*, so the whole repo moves together.
+  #
+  # It is worth checking after every install that only one copy landed:
+  #   ls node_modules/.pnpm | grep -E '^(solid-js|@solidjs\+web)@'
+  # Two lines there is the skew above, and nothing fails loudly when it happens.
+  #
+  # `@solidjs/signals` is not referenced by any package.json — it arrives transitively via
+  # `solid-js`. The entry is here to document the lockstep, and costs nothing.
+  solid-js: 2.0.0-beta.32
+  "@solidjs/signals": 2.0.0-beta.32
+  "@solidjs/web": 2.0.0-beta.32
+  # The JSX compiler, pinned for the same reason the runtime is. Two pipelines compile this
+  # repo's JSX (the Vitest projects, and Storybook from step 6) and they must agree with each
+  # other AND with the runtime above — a mismatch surfaces as a runtime error deep inside
+  # `@solidjs/web`, never as a config error. `solid-babel-options.ts` unifies the compiler's
+  # *options*; these two entries unify its *version*.
+  #
+  # This was a live bug in hope-ui, not a hypothetical: the root pinned
+  # `vite-plugin-solid@3.0.0-next.5` exactly while the docs app used `^3.0.0-next.11`, and
+  # next.5 depends on `babel-preset-solid` by open range — so every test and story compiled
+  # with `babel-preset-solid@2.0.0-beta.16` against a beta.19 runtime. `babel-preset-solid`
+  # also needs the `overrides` entry below, because a catalog only binds specifiers that say
+  # `catalog:` and vite-plugin-solid asks for it by range.
+  vite-plugin-solid: 3.0.0-next.23
+  babel-preset-solid: 2.0.0-beta.32
+
+# `vite-plugin-solid` depends on `babel-preset-solid` by RANGE, and a range resolves to whatever
+# is newest on the registry that day — which is how the compiler drifted a version behind the
+# runtime without anyone changing a file. The catalog entry above only governs the root
+# devDependency; this is what collapses the nested range onto it.
+overrides:
+  babel-preset-solid: "catalog:"

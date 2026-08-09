@@ -1,0 +1,130 @@
+name: CI
+
+# The eight jobs of `__internal__/testing.md` §12, grouped so that a red build names a category
+# before anyone opens a log. Seven are here; the eighth, `publish`, is the release workflow's
+# (`release.yml`), because that is when it runs.
+#
+# **Every job exists from step 1, even where its contents do not.** A job added later is a job
+# that was silently absent in between — and this repo's characteristic failure shape is the check
+# that was never running. Each job below either runs its real checks or fails with the step that
+# introduces them, and none of them is a no-op that reports success for work that never happened.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Biome, tsc, the style contract, the two resolution checks, commit hygiene.
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # `check:commit-trailers` reads commit messages, so a shallow clone would check nothing
+          # and pass.
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.10.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm check:test-projects
+      - run: pnpm check:resolution-sync
+      - run: pnpm check:commit-trailers
+      # NOT YET WRITTEN — `check:style-contract` (rules 1–3) arrives with the styling seam at
+      # step 3, which is the first step that has a style prop to contract.
+      - name: check:style-contract (step 3)
+        run: echo "check:style-contract does not exist yet — it is written at step 3."
+
+  # The §0 rule, at its two boundaries: what a dependency IS (a manifest check over the whole
+  # closure) and what our own code DOES (a grep over our source). Two checks, never merged.
+  constraint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.10.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # NOT YET WRITTEN — both arrive at step 2, which is the first step to install `@zag-js/*`
+      # and therefore the first closure worth auditing (`zag-solid-adapter.md` §5.5).
+      - name: check:no-cij-manifest (step 2)
+        run: echo "check:no-cij-manifest does not exist yet — it is written at step 2."
+      - name: check:no-runtime-sheet (step 2)
+        run: echo "check:no-runtime-sheet does not exist yet — it is written at step 2."
+
+  # The three Vitest projects, one leg each. The split is by which build of Solid the project
+  # resolves, so they must not share a leg. Every leg fails on a `mount()` diagnostic once the
+  # harness lands at step 2.
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [unit, ssr, browser]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.10.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      # The Turbo `test:*` tasks declare `dependsOn: codegen`; the suite runs from one root config,
+      # so the ordering is applied here until a package owns a `test:*` script (`plan.md` §9).
+      - run: pnpm codegen
+      - name: Install Chromium
+        if: matrix.project == 'browser'
+        run: pnpm exec playwright install --with-deps --only-shell
+      - run: pnpm test:${{ matrix.project }}
+
+  # Runs after codegen + cssgen, because every check in it reads a generated artifact.
+  styling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # NOT YET WRITTEN — nothing generates CSS before step 3, and the coverage check needs a real
+      # slot recipe in a real consumer (step 4).
+      - name: styling checks (steps 3–4)
+        run: |
+          echo "css-coverage, coverage-allowlist, anatomy-parts, hash-config, preflight-hidden,"
+          echo "data-attr-vocab, style-prop-collisions, no-hand-written-data-attrs:"
+          echo "none exist yet — they are written at steps 3 and 4."
+
+  # A story is a deliverable, not a checkbox — this job is what opens them.
+  stories:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # NOT YET WRITTEN — the first story belongs to the first component (step 5); the Storybook
+      # runner against Solid 2.0 is assumption P7-B and is proved there.
+      - name: test:storybook (step 5)
+        run: echo "test:storybook does not exist yet — the first story lands at step 5."
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # NOT YET WRITTEN — the docs app is step 8. Its build failing is a distribution failure
+      # rather than a documentation one: it is a standing instance of the step-4 consumer gate.
+      - name: docs build + inventory (step 8)
+        run: echo "the docs app does not exist yet — it is built at step 8."
+
+  dist:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
+    steps:
+      - uses: actions/checkout@v5
+      # NOT YET WRITTEN — nothing is published, and no package builds before step 2.
+      - name: build + distribution and attribution checks (step 2 onward)
+        run: |
+          echo "exports, externals, buildinfo-fresh, peer-panda, license-headers, notice-rows,"
+          echo "package-files, bundle: none exist yet. The attribution three arrive at step 2"
+          echo "with the zag-solid fork, which is this repo's first third-party derivative."

@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "preserve",
+    "jsxImportSource": "@solidjs/web",
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+
+    // In-repo, `@chakra-ui-solid/*` always resolves to source — never to a sibling's `dist/`.
+    // `package.json#exports` points at `dist/` for consumers, which would otherwise make the
+    // editor and `tsc --noEmit` read a stale build: add an export to one package and its
+    // dependants cannot see it until someone rebuilds. `vitest-aliases.ts` aliases to source for
+    // exactly this reason, and `check:resolution-sync` asserts the two agree — with the docs
+    // app's Vite alias as the third member, from step 8.
+    //
+    // Relative paths in an inherited config resolve against the config that declares them, so
+    // these are repo-root-relative and every package inherits them unchanged.
+    //
+    // Empty at step 1: no package exports anything yet. `@chakra-ui-solid/zag-solid` is the
+    // first entry, at step 2.
+    "paths": {}
+  }
+}

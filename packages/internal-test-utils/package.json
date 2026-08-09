@@ -1,0 +1,18 @@
+{
+  "name": "@chakra-ui-solid/internal-test-utils",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The repo's private test infrastructure: the Solid characterization contract today, plus mount() and the axe helper from step 2",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@solidjs/web": "catalog:",
+    "solid-js": "catalog:"
+  },
+  "devDependencies": {
+    "@solidjs/web": "catalog:",
+    "solid-js": "catalog:"
+  }
+}

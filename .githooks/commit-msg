@@ -1,0 +1,10 @@
+#!/bin/sh
+# Rejects a commit message carrying a Co-Authored-By or "Generated with" trailer before it is
+# written, so `check:commit-trailers` in CI is a backstop rather than the first thing that notices.
+# Commit messages carry the change rationale only — CLAUDE.md's git convention, DoD rule 1.10.
+
+if grep -qiE '^[[:space:]]*co-authored-by[[:space:]]*:' "$1" || grep -qi 'generated with' "$1"; then
+  echo "commit-msg: this message carries a banned trailer (Co-Authored-By / \"Generated with\")." >&2
+  echo "            Commit messages carry the change rationale only." >&2
+  exit 1
+fi
