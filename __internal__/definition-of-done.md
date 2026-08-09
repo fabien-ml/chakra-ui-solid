@@ -58,7 +58,7 @@ which run on every push.
 | 1.8 | **A test file's name resolves to exactly one Vitest project.** A mis-suffixed test is a test that never runs and nothing says so | `check:test-projects` |
 | 1.9 | `mount()` is silent in every test the file adds — no `[STRICT_READ_UNTRACKED]`, no `[REACTIVE_WRITE_IN_OWNED_SCOPE]`. **A diagnostic is a defect, not a missing wrapper** (`component-blueprint.md` §2.1, §2.2) | `mount()` itself, in all three projects (`testing.md` §1.4) |
 | 1.10 | Commit message carries the rationale only — no `Co-Authored-By`, no *"Generated with"* trailer | `check:commit-trailers` |
-| 1.11 | **A change to any `__internal__` document regenerates `INDEX.md` in the same commit.** A stale anchor points a reader at a line range that is no longer the section they cited, and they read the neighbour without noticing (`testing.md` §8) | `check:doc-index` |
+| 1.11 | **A change to any `.md` under `__internal__` regenerates `INDEX.md` in the same commit** — a `decisions/` ledger entry included. A stale anchor points a reader at a line range that is no longer the section they cited, and they read the neighbour without noticing (`testing.md` §8) | `check:doc-index` |
 
 ---
 
@@ -238,9 +238,9 @@ gets fixed and one that gets closed (`roadmap.md` §1.3c).
 
 ## 7. Conventions, unenforced — labelled, not hidden
 
-**Six** rules that survive review and nothing else. Each says what is trusted, and what mechanical
+**Seven** rules that survive review and nothing else. Each says what is trusted, and what mechanical
 proxy covers the part of it that could be covered. 7.6 was added at the S1 review and is the only one
-that is a *gate* rather than a coding rule.
+that is a *gate* rather than a coding rule; 7.7 came with the ledger shard.
 
 | # | Convention | Why no script | What *is* enforced |
 |---|---|---|---|
@@ -250,13 +250,15 @@ that is a *gate* rather than a coding rule.
 | 7.4 | **Comments explain *why*, and read for a reader with no repo knowledge** (`CLAUDE.md`) | Unenforceable by construction | Biome catches nothing here. This is the one rule that is purely a review contract |
 | 7.5 | **Read the machine's prop list; do not invent one** (`component-blueprint.md` §2.4) | Partially enforced: where a machine exports `Props`, the component's interface extending it is a type error away from wrong. Chakra-only props are outside that | `tsc`, for the machine half |
 | 7.6 | **The author looks at the running docs site before a phase closes**, from step 3b onward — the phase gate is not only a green suite (**D-98**, **D-99**). The docs site, specifically: it is the surface where the components are used the way a consumer uses them (**D-133**). Storybook is available for the same look and is nobody's obligation | *Is this what I wanted?* has one competent judge and no predicate. Every other rule in this document is a machine verification; none of them can answer it, and the approved order produced no rendered output at all until 115 components existed | `check:docs-examples` proves the example **mounts** and does not crash or render empty; `check:docs-inventory` proves the page **exists**. Neither can say the thing looks right — that is the part being trusted, and it is why the phase prompt names what to open |
+| 7.7 | **A `decisions/` entry's file name matches the `### 3.N` heading inside it** — `§3.13` is `3.13-…md`, zero-padded (**D-163**). It is how a citation resolves to a file without opening §3's table | It could be scripted, but naming the script is how §7b's census grows: a twenty-sixth unwritten name, for a rule that one `ls` of the directory disproves | `check:doc-index` renders the heading and the path in the same row, so a mismatch is visible in `INDEX.md` rather than only in the directory |
 
 ---
 
 ## 7b. Named, not yet written — the enforcement census
 
-**Re-taken at S4, 2026-08-09, mechanically.** Every `check:*` named anywhere in `CLAUDE.md` or the
-eleven `__internal__` documents, diffed against `scripts/check-*.mjs`:
+**Re-taken at S4, 2026-08-09, mechanically.** Every `check:*` named anywhere in `CLAUDE.md` or in
+any `.md` under `__internal__` — which since the ledger was sharded means the fifteen
+`decisions/` entries as well — diffed against `scripts/check-*.mjs`:
 
 ```
 named across the documents   45
@@ -267,7 +269,8 @@ written but never named       0
 
 **What moved since S3b:** `check:doc-index` — named here and in `testing.md` §8, written, and live
 in the `verify` job in the same commit. The unwritten twenty-five are unchanged; none of their
-subjects arrived.
+subjects arrived. **The shard moved no figure**: the ledger's text did not change when it changed
+file, so the same 45 names are found in the same places.
 
 **Why this section exists.** §7 lists rules that *cannot* be scripted. This is the different
 category the documents kept blurring into it: rules stated as **enforced**, with an artefact named

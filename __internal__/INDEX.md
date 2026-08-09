@@ -16,26 +16,44 @@ reading the whole section. The child rows report the cost of reading only that p
 **Titles are the only text copied out of the documents.** A heading names a rule; the body states
 it. The bodies stay in one place, which is the point of having an index at all.
 
-**Read this file in slices.** The summary below says which document a citation lives in and where
-its block starts *in this file*. One block averages 3 KB — read that, not the whole index.
+**Read this file in slices.** The summary below says which file a citation lives in and where its
+block starts *in this file*. A block is a few KB — read that one, not the whole index.
+
+**A ledger entry is a file.** `decisions.md` §3's entries live one per file under `decisions/`,
+so `§3.13` is indexed under `decisions/3.13-…` rather than under `decisions.md`.
 
 ---
 
-## The 11 documents
+## The 26 indexed files
 
 | Document | Size | Lines | Sections | Largest section | Block starts |
 |---|---|---|---|---|---|
-| [`component-blueprint.md`](#component-blueprintmd) | 89.6 KB | 1642 | 79 | §11 at 20.7 KB | L40 |
-| [`decisions.md`](#decisionsmd) | 222.4 KB | 2959 | 28 | §3 at 187.4 KB | L124 |
-| [`definition-of-done.md`](#definition-of-donemd) | 53.2 KB | 492 | 21 | §8 at 11.6 KB | L157 |
-| [`docs-plan.md`](#docs-planmd) | 57.3 KB | 883 | 46 | §1 at 13.7 KB | L183 |
-| [`docs-site.md`](#docs-sitemd) | 74.6 KB | 824 | 37 | §2 at 18.9 KB | L234 |
-| [`legal.md`](#legalmd) | 64.9 KB | 980 | 36 | §3 at 21.9 KB | L276 |
-| [`plan.md`](#planmd) | 76.6 KB | 1155 | 51 | §3 at 14.6 KB | L317 |
-| [`prior-art.md`](#prior-artmd) | 75.0 KB | 1140 | 45 | §2 at 11.1 KB | L373 |
-| [`roadmap.md`](#roadmapmd) | 88.0 KB | 1193 | 50 | §4 at 14.3 KB | L423 |
-| [`testing.md`](#testingmd) | 69.5 KB | 1029 | 52 | §3 at 11.3 KB | L478 |
-| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 74.5 KB | 1022 | 45 | §6 at 10.6 KB | L535 |
+| [`component-blueprint.md`](#component-blueprintmd) | 89.6 KB | 1642 | 79 | §11 at 20.7 KB | L58 |
+| [`decisions.md`](#decisionsmd) | 39.5 KB | 400 | 13 | §7 at 10.5 KB | L142 |
+| [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.6 KB | 125 | 1 | §3.1 at 8.6 KB | L160 |
+| [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.3 KB | 143 | 1 | §3.2 at 9.3 KB | L166 |
+| [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.1 KB | 294 | 1 | §3.3 at 20.1 KB | L172 |
+| [`decisions/3.04-p4-adapter-milestone-one.md`](#decisions304-p4-adapter-milestone-onemd) | 10.1 KB | 142 | 1 | §3.4 at 10.1 KB | L178 |
+| [`decisions/3.05-p5-blueprint.md`](#decisions305-p5-blueprintmd) | 6.4 KB | 103 | 1 | §3.5 at 6.4 KB | L184 |
+| [`decisions/3.06-p6-parity-matrix.md`](#decisions306-p6-parity-matrixmd) | 8.4 KB | 130 | 1 | §3.6 at 8.4 KB | L190 |
+| [`decisions/3.07-p7-quality-bar.md`](#decisions307-p7-quality-barmd) | 5.6 KB | 85 | 1 | §3.7 at 5.6 KB | L196 |
+| [`decisions/3.08-p8-docs-site.md`](#decisions308-p8-docs-sitemd) | 4.5 KB | 73 | 1 | §3.8 at 4.5 KB | L202 |
+| [`decisions/3.09-p9-ledger-and-index.md`](#decisions309-p9-ledger-and-indexmd) | 1.1 KB | 17 | 1 | §3.9 at 1.1 KB | L208 |
+| [`decisions/3.10-s1-repo-bootstrap.md`](#decisions310-s1-repo-bootstrapmd) | 4.7 KB | 66 | 1 | §3.10 at 4.7 KB | L214 |
+| [`decisions/3.11-s1-review.md`](#decisions311-s1-reviewmd) | 6.6 KB | 86 | 1 | §3.11 at 6.6 KB | L220 |
+| [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.5 KB | 192 | 1 | §3.12 at 15.5 KB | L226 |
+| [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 22.8 KB | 309 | 1 | §3.13 at 22.8 KB | L232 |
+| [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 59.7 KB | 771 | 1 | §3.14 at 59.7 KB | L238 |
+| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 7.3 KB | 92 | 1 | §3.15 at 7.3 KB | L244 |
+| [`definition-of-done.md`](#definition-of-donemd) | 54.0 KB | 495 | 21 | §8 at 11.6 KB | L250 |
+| [`docs-plan.md`](#docs-planmd) | 57.3 KB | 883 | 46 | §1 at 13.7 KB | L276 |
+| [`docs-site.md`](#docs-sitemd) | 74.6 KB | 825 | 37 | §2 at 19.0 KB | L327 |
+| [`legal.md`](#legalmd) | 64.9 KB | 980 | 36 | §3 at 21.9 KB | L369 |
+| [`plan.md`](#planmd) | 76.6 KB | 1155 | 51 | §3 at 14.6 KB | L410 |
+| [`prior-art.md`](#prior-artmd) | 75.0 KB | 1140 | 45 | §2 at 11.1 KB | L466 |
+| [`roadmap.md`](#roadmapmd) | 88.0 KB | 1193 | 50 | §4 at 14.3 KB | L516 |
+| [`testing.md`](#testingmd) | 70.7 KB | 1043 | 52 | §3 at 11.3 KB | L571 |
+| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 74.5 KB | 1022 | 45 | §6 at 10.6 KB | L628 |
 
 ## `component-blueprint.md`
 
@@ -124,41 +142,116 @@ its block starts *in this file*. One block averages 3 KB — read that, not the 
 ## `decisions.md`
 
 ```
-§0    L  34–91     4.2 KB  The division of labour — this file, `CLAUDE.md`, and the eleven `__internal__` documents
-§0.1  L  67–73     0.3 KB  Citing the two plans
-§0.2  L  74–91     1.0 KB  Changing a decision after this pass
-§1    L  92–106    0.7 KB  The entry shape, fixed once
-§2    L 107–129    3.1 KB  Q1–Q8 — the gate that settled each, and where the answer lives
-§3    L 130–2724 187.4 KB  The ledger
-§3.1  L 135–259    8.6 KB  P1 — identity, law, and the reference policy
-§3.2  L 260–402    9.3 KB  P2 — the evidence base, and the rule that reset the a11y scope
-§3.3  L 403–696   20.1 KB  P3 — architecture
-§3.4  L 697–838   10.1 KB  P4 — the adapter, milestone one
-§3.5  L 839–941    6.4 KB  P5 — the blueprint
-§3.6  L 942–1071   8.4 KB  P6 — the parity matrix
-§3.7  L1072–1156   5.6 KB  P7 — the quality bar
-§3.8  L1157–1229   4.5 KB  P8 — the docs site
-§3.9  L1230–1246   1.1 KB  P9 — the ledger and the index
-§3.10 L1247–1312   4.7 KB  S1 — repo bootstrap
-§3.11 L1313–1398   6.6 KB  S1 review — the author has no way to see the work, and the order is what caused it
-§3.12 L1399–1590  15.4 KB  S2 — `@chakra-ui-solid/zag-solid`, milestone one
-§3.13 L1591–1900  22.8 KB  S3 — the styling seam
-§3.14 L1901–2673  59.7 KB  S3b — the visual surfaces
-§3.15 L2674–2724   3.9 KB  The context budget — the documents as a working surface
-§4    L2725–2773   5.8 KB  The reversals, in one place
-§5    L2774–2809   4.5 KB  The final build order — one list, each step's gate cited
-§6    L2810–2878   4.2 KB  What the document pass did **not** settle
-§7    L2879–2959  10.5 KB  The reconciliation log — what P9 changed, and where
-§7.1  L2885–2923   7.4 KB  Carried forward by name
-§7.2  L2924–2945   1.4 KB  The citation convention, and the sites it was applied to
-§7.3  L2946–2959   1.5 KB  Two rows found at P9 that were on nobody's list
+§0   L 34–91   4.2 KB  The division of labour — this file, `CLAUDE.md`, and the eleven `__internal__` documents
+§0.1 L 67–73   0.3 KB  Citing the two plans
+§0.2 L 74–91   1.0 KB  Changing a decision after this pass
+§1   L 92–106  0.7 KB  The entry shape, fixed once
+§2   L107–129  3.1 KB  Q1–Q8 — the gate that settled each, and where the answer lives
+§3   L130–164  4.4 KB  The ledger
+§4   L165–213  5.8 KB  The reversals, in one place
+§5   L214–250  4.5 KB  The final build order — one list, each step's gate cited
+§6   L251–319  4.2 KB  What the document pass did **not** settle
+§7   L320–400 10.5 KB  The reconciliation log — what P9 changed, and where
+§7.1 L326–364  7.4 KB  Carried forward by name
+§7.2 L365–386  1.4 KB  The citation convention, and the sites it was applied to
+§7.3 L387–400  1.5 KB  Two rows found at P9 that were on nobody's list
+```
+
+## `decisions/3.01-p1-identity-law-reference-policy.md`
+
+```
+§3.1 L  1–125 8.6 KB  P1 — identity, law, and the reference policy
+```
+
+## `decisions/3.02-p2-evidence-base.md`
+
+```
+§3.2 L  1–143 9.3 KB  P2 — the evidence base, and the rule that reset the a11y scope
+```
+
+## `decisions/3.03-p3-architecture.md`
+
+```
+§3.3 L  1–294 20.1 KB  P3 — architecture
+```
+
+## `decisions/3.04-p4-adapter-milestone-one.md`
+
+```
+§3.4 L  1–142 10.1 KB  P4 — the adapter, milestone one
+```
+
+## `decisions/3.05-p5-blueprint.md`
+
+```
+§3.5 L  1–103 6.4 KB  P5 — the blueprint
+```
+
+## `decisions/3.06-p6-parity-matrix.md`
+
+```
+§3.6 L  1–130 8.4 KB  P6 — the parity matrix
+```
+
+## `decisions/3.07-p7-quality-bar.md`
+
+```
+§3.7 L 1–85 5.6 KB  P7 — the quality bar
+```
+
+## `decisions/3.08-p8-docs-site.md`
+
+```
+§3.8 L 1–73 4.5 KB  P8 — the docs site
+```
+
+## `decisions/3.09-p9-ledger-and-index.md`
+
+```
+§3.9 L 1–17 1.1 KB  P9 — the ledger and the index
+```
+
+## `decisions/3.10-s1-repo-bootstrap.md`
+
+```
+§3.10 L 1–66 4.7 KB  S1 — repo bootstrap
+```
+
+## `decisions/3.11-s1-review.md`
+
+```
+§3.11 L 1–86 6.6 KB  S1 review — the author has no way to see the work, and the order is what caused it
+```
+
+## `decisions/3.12-s2-zag-solid.md`
+
+```
+§3.12 L  1–192 15.5 KB  S2 — `@chakra-ui-solid/zag-solid`, milestone one
+```
+
+## `decisions/3.13-s3-styling-seam.md`
+
+```
+§3.13 L  1–309 22.8 KB  S3 — the styling seam
+```
+
+## `decisions/3.14-s3b-visual-surfaces.md`
+
+```
+§3.14 L  1–771 59.7 KB  S3b — the visual surfaces
+```
+
+## `decisions/3.15-context-budget.md`
+
+```
+§3.15 L 1–92 7.3 KB  The context budget — the documents as a working surface
 ```
 
 ## `definition-of-done.md`
 
 ```
 §0    L 21–42   1.2 KB  The gate rule
-§1    L 43–64   2.4 KB  Per file
+§1    L 43–64   2.5 KB  Per file
 §2    L 65–101  5.4 KB  Per component
 §3    L102–149 10.2 KB  Per batch
 §3.0  L108–119  0.5 KB  The gate every batch shares
@@ -167,17 +260,17 @@ its block starts *in this file*. One block averages 3 KB — read that, not the 
 §4    L150–169  1.7 KB  Per release
 §5    L170–206  3.1 KB  The axe allowance register — as it stands today
 §6    L207–238  2.2 KB  The coverage allow-list — as it stands today
-§7    L239–255  2.9 KB  Conventions, unenforced — labelled, not hidden
-§7b   L256–311  3.7 KB  Named, not yet written — the enforcement census
-§8    L312–416 11.6 KB  The assumption register
-§8.1  L331–346  2.2 KB  `brief-plan` §8's originals
-§8.2  L347–366  2.7 KB  P3, P4 and P5
-§8.3  L367–379  2.1 KB  P6 and P7
-§8.3b L380–402  2.7 KB  P8
-§8.4  L403–416  0.7 KB  The three whose gate is a measurement plus a judgement
-§9    L417–437  1.3 KB  The scheduled checks — what fires them, who reads them
-§10   L438–460  3.4 KB  What P7 changes — re-plan P8 and P9 against this
-§11   L461–492  3.1 KB  What P7 could not act on
+§7    L239–256  3.4 KB  Conventions, unenforced — labelled, not hidden
+§7b   L257–314  4.0 KB  Named, not yet written — the enforcement census
+§8    L315–419 11.6 KB  The assumption register
+§8.1  L334–349  2.2 KB  `brief-plan` §8's originals
+§8.2  L350–369  2.7 KB  P3, P4 and P5
+§8.3  L370–382  2.1 KB  P6 and P7
+§8.3b L383–405  2.7 KB  P8
+§8.4  L406–419  0.7 KB  The three whose gate is a measurement plus a judgement
+§9    L420–440  1.3 KB  The scheduled checks — what fires them, who reads them
+§10   L441–463  3.4 KB  What P7 changes — re-plan P8 and P9 against this
+§11   L464–495  3.1 KB  What P7 could not act on
 ```
 
 ## `docs-plan.md`
@@ -243,34 +336,34 @@ its block starts *in this file*. One block averages 3 KB — read that, not the 
 §1.5 L144–157  0.7 KB  Prerender: static output, not SPA mode
 §1.6 L158–174  1.2 KB  Cloudflare Pages — the setup, in order
 §1.7 L175–207  2.2 KB  Plan B — Vite SPA + `@solidjs/router`, and what makes it an exit rather than a rewrite
-§2   L208–381 18.9 KB  The information architecture
-§2.1 L210–300  8.6 KB  The route map
-§2.2 L301–338  7.5 KB  What chakra-ui.com has and we do not — one reason each
-§2.3 L339–354  1.2 KB  What we have and chakra-ui.com does not
-§2.4 L355–381  1.6 KB  The count trap
-§3   L382–460  6.8 KB  The copyright boundary — every place upstream expression would be reproduced
-§3.1 L406–412  0.4 KB  The rule, cited
-§3.2 L413–431  3.2 KB  The flag list
-§3.3 L432–444  0.6 KB  The mechanical proxy, because rows 2 and 3 are a reading
-§3.4 L445–460  0.9 KB  Trademark — the chrome
-§4   L461–605 11.0 KB  The machinery every page shares
-§4.1 L463–481  1.2 KB  The examples pipeline — an example is a deliverable
-§4.2 L482–508  1.9 KB  The props table — generated from types, and what a missing one looks like
-§4.3 L509–526  1.2 KB  Generated pages — tokens and style props
-§4.4 L527–552  2.8 KB  The playground, constrained by `plan.md` §0
-§4.5 L553–567  1.5 KB  Free-form editing — deferred, with the options recorded
-§4.6 L568–605  2.4 KB  `llms.txt` — deferred to before first public release, with its cost stated
-§5   L606–636  3.7 KB  What the docs must never say
-§6   L637–701  7.8 KB  The docs build gate — a docs page is a deliverable
-§6.1 L639–677  5.2 KB  What CI asserts
-§6.2 L678–693  2.3 KB  What it cannot assert
-§6.3 L694–701  0.3 KB  Where the job sits
-§7   L702–751  3.8 KB  Assumptions
-§7.1 L704–734  1.7 KB  `brief-plan` §8 assumption 6 — the runnable gate
-§7.2 L735–751  2.1 KB  Assumptions P8 opens
-§8   L752–770  3.3 KB  What P8 changes — re-plan P9 against this
-§9   L771–801  2.9 KB  What P8 could not act on
-§10  L802–824  2.0 KB  The P9 flags carried forward, untouched
+§2   L208–382 19.0 KB  The information architecture
+§2.1 L210–301  8.7 KB  The route map
+§2.2 L302–339  7.5 KB  What chakra-ui.com has and we do not — one reason each
+§2.3 L340–355  1.2 KB  What we have and chakra-ui.com does not
+§2.4 L356–382  1.6 KB  The count trap
+§3   L383–461  6.8 KB  The copyright boundary — every place upstream expression would be reproduced
+§3.1 L407–413  0.4 KB  The rule, cited
+§3.2 L414–432  3.2 KB  The flag list
+§3.3 L433–445  0.6 KB  The mechanical proxy, because rows 2 and 3 are a reading
+§3.4 L446–461  0.9 KB  Trademark — the chrome
+§4   L462–606 11.0 KB  The machinery every page shares
+§4.1 L464–482  1.2 KB  The examples pipeline — an example is a deliverable
+§4.2 L483–509  1.9 KB  The props table — generated from types, and what a missing one looks like
+§4.3 L510–527  1.2 KB  Generated pages — tokens and style props
+§4.4 L528–553  2.8 KB  The playground, constrained by `plan.md` §0
+§4.5 L554–568  1.5 KB  Free-form editing — deferred, with the options recorded
+§4.6 L569–606  2.4 KB  `llms.txt` — deferred to before first public release, with its cost stated
+§5   L607–637  3.7 KB  What the docs must never say
+§6   L638–702  7.8 KB  The docs build gate — a docs page is a deliverable
+§6.1 L640–678  5.2 KB  What CI asserts
+§6.2 L679–694  2.3 KB  What it cannot assert
+§6.3 L695–702  0.3 KB  Where the job sits
+§7   L703–752  3.8 KB  Assumptions
+§7.1 L705–735  1.7 KB  `brief-plan` §8 assumption 6 — the runnable gate
+§7.2 L736–752  2.1 KB  Assumptions P8 opens
+§8   L753–771  3.3 KB  What P8 changes — re-plan P9 against this
+§9   L772–802  2.9 KB  What P8 could not act on
+§10  L803–825  2.0 KB  The P9 flags carried forward, untouched
 ```
 
 ## `legal.md`
@@ -522,14 +615,14 @@ its block starts *in this file*. One block averages 3 KB — read that, not the 
 §7.2 L 721–758   2.3 KB  The warm-up and the pin — P7's configuration, once per preview
 §7.3 L 759–788   2.1 KB  There is no story gate, because a story is not the validation surface
 §7.4 L 789–819   2.0 KB  What only Storybook can see
-§8   L 820–892  10.0 KB  The distribution, styling-config and structural checks
-§8.1 L 847–892   3.0 KB  `check:doc-index` — the anchor index
-§9   L 893–930   3.8 KB  The attribution checks
-§10  L 931–965   2.5 KB  The bundle measurement — `check:bundle`
-§11  L 966–984   2.5 KB  The scheduled upstream checks
-§12  L 985–1006  2.3 KB  The CI job map
-§13  L1007–1023  1.0 KB  What this apparatus assumes
-§14  L1024–1029  0.3 KB  Where this document ends
+§8   L 820–906  11.2 KB  The distribution, styling-config and structural checks
+§8.1 L 847–906   4.2 KB  `check:doc-index` — the anchor index
+§9   L 907–944   3.8 KB  The attribution checks
+§10  L 945–979   2.5 KB  The bundle measurement — `check:bundle`
+§11  L 980–998   2.5 KB  The scheduled upstream checks
+§12  L 999–1020  2.3 KB  The CI job map
+§13  L1021–1037  1.0 KB  What this apparatus assumes
+§14  L1038–1043  0.3 KB  Where this document ends
 ```
 
 ## `zag-solid-adapter.md`

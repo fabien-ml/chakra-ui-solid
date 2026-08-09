@@ -5,10 +5,10 @@ import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  countSections,
   INDEX_FILENAME,
   readIndexableDocuments,
   renderIndex,
+  summariseCorpus,
 } from "./lib/doc-index.mjs";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -19,7 +19,9 @@ const index = renderIndex(documents);
 
 writeFileSync(join(internalDirectory, INDEX_FILENAME), index);
 
+const { read, indexed, sections } = summariseCorpus(documents);
+
 console.log(
-  `docs:index — ${documents.length} documents, ${countSections(documents)} sections, ` +
+  `docs:index — ${read} files read, ${indexed} indexed, ${sections} sections, ` +
     `${(index.length / 1024).toFixed(1)} KB written to __internal__/${INDEX_FILENAME}.`,
 );

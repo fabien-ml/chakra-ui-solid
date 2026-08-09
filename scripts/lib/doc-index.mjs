@@ -21,17 +21,36 @@ const NUMBERED_HEADING = /^(#{2,4})\s+(\d+[a-z]?(?:\.\d+[a-z]?){0,2})\.?\s+(.*?)
 export const INDEX_FILENAME = "INDEX.md";
 
 /**
- * The indexed set: every top-level `.md` in `__internal__`, minus the index itself.
+ * The indexed set: every `.md` anywhere under `__internal__`, minus the index itself, keyed by its
+ * path relative to that directory.
  *
  * Both the generator and the check call this rather than each listing the documents, because a
  * check carrying its own copy of the file list goes on passing after a twelfth document is added
- * — it would verify eleven documents and report the twelfth as indexed by omission.
+ * — it would verify eleven documents and report the twelfth as indexed by omission. It **recurses**
+ * for the same reason: the ledger's entries are one file each under `decisions/`, and a sixteenth
+ * has to arrive without anyone remembering to edit this script.
+ *
+ * What to index is then left entirely to `renderIndex`, which drops a file with no numbered
+ * heading. That is what keeps the design notes under `zag-solid/` and `internal-test-utils/` out —
+ * nothing cites them by anchor because they have none — without a list of directories to skip
+ * here, which would be the same defect one level down.
  */
 export function readIndexableDocuments(internalDirectory) {
-  return readdirSync(internalDirectory, { withFileTypes: true })
-    .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
-    .filter((entry) => entry.name !== INDEX_FILENAME)
-    .map((entry) => entry.name)
+  const paths = [];
+
+  const collect = (directory, prefix) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const relativePath = prefix === "" ? entry.name : `${prefix}/${entry.name}`;
+      if (entry.isDirectory()) {
+        collect(join(directory, entry.name), relativePath);
+      } else if (entry.name.endsWith(".md") && relativePath !== INDEX_FILENAME) {
+        paths.push(relativePath);
+      }
+    }
+  };
+  collect(internalDirectory, "");
+
+  return paths
     .sort()
     .map((name) => ({ name, source: readFileSync(join(internalDirectory, name), "utf8") }));
 }
@@ -79,11 +98,22 @@ export function parseSections(source) {
 }
 
 /**
+ * `{ read, indexed, sections }` — what the two scripts print when they finish.
+ *
  * Counted from the documents, never by matching `^§` over the rendered index — the header's
  * worked example is a `§` row too, so counting the output overstates the input by one.
+ *
+ * `indexed` is lower than `read` because `renderIndex` drops a file with no numbered heading:
+ * ten design notes under `zag-solid/` and `internal-test-utils/` are read and not indexed, and a
+ * message quoting only `read` would report them as being in the index.
  */
-export function countSections(documents) {
-  return documents.reduce((total, { source }) => total + parseSections(source).length, 0);
+export function summariseCorpus(documents) {
+  const perDocument = documents.map(({ source }) => parseSections(source).length);
+  return {
+    read: documents.length,
+    indexed: perDocument.filter((count) => count > 0).length,
+    sections: perDocument.reduce((total, count) => total + count, 0),
+  };
 }
 
 const kilobytes = (bytes) => `${(bytes / 1024).toFixed(1)}`;
@@ -124,8 +154,11 @@ reading the whole section. The child rows report the cost of reading only that p
 **Titles are the only text copied out of the documents.** A heading names a rule; the body states
 it. The bodies stay in one place, which is the point of having an index at all.
 
-**Read this file in slices.** The summary below says which document a citation lives in and where
-its block starts *in this file*. One block averages 3 KB — read that, not the whole index.
+**Read this file in slices.** The summary below says which file a citation lives in and where its
+block starts *in this file*. A block is a few KB — read that one, not the whole index.
+
+**A ledger entry is a file.** \`decisions.md\` §3's entries live one per file under \`decisions/\`,
+so \`§3.13\` is indexed under \`decisions/3.13-…\` rather than under \`decisions.md\`.
 `;
 
 function formatSummary(documents, blockStartLines) {
@@ -143,7 +176,7 @@ function formatSummary(documents, blockStartLines) {
     );
   });
   return [
-    `## The ${documents.length} documents`,
+    `## The ${documents.length} indexed files`,
     "",
     "| Document | Size | Lines | Sections | Largest section | Block starts |",
     "|---|---|---|---|---|---|",
@@ -154,7 +187,7 @@ function formatSummary(documents, blockStartLines) {
 
 /** GitHub's heading-slug rule, narrowed to what our document names actually contain. */
 function anchorSlug(name) {
-  return name.toLowerCase().replace(/\./g, "");
+  return name.toLowerCase().replace(/[./]/g, "");
 }
 
 /**

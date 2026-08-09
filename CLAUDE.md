@@ -185,7 +185,8 @@ without a gate is a finding rather than a formatting problem.
 
 ## The documents — one line each, by the question it answers
 
-Eleven documents in `__internal__/`, plus this file.
+Eleven documents in `__internal__/`, plus this file — and the ledger's entries, which are files
+rather than a twelfth document.
 
 | Document | The question it answers |
 |---|---|
@@ -199,12 +200,14 @@ Eleven documents in `__internal__/`, plus this file.
 | `__internal__/docs-site.md` | **What docs exist, on what stack, and how do we know it works?** The app, the route map, the machinery pages share, the copyright and trademark boundaries, the build gate |
 | `__internal__/docs-plan.md` | **What does each page say, in what order, and which settled decision does it render?** The page specs, the tier specs, and the component template |
 | `__internal__/legal.md` | **What do we owe, to whom, and what may we say about Chakra?** License compatibility, the attribution mechanism, trademark, the brand decision and its exit ladder, upstream tracking |
-| `__internal__/decisions.md` | **What was decided, what was rejected, and when?** The entries with their rejected alternatives, Q1–Q8 and their gates, the reversals, the build order, what the document pass left open, and the reconciliation log |
+| `__internal__/decisions.md` | **What was decided, what was rejected, and when?** Q1–Q8 and their gates, the reversals, the build order, what the document pass left open, and the reconciliation log — plus §3, the table pointing at the entries |
+| `__internal__/decisions/` | **The ledger entries themselves**, one file per `§3.N`, named for their anchor: `§3.13` is `decisions/3.13-…`. Open one, not the ledger — `decisions.md` §3 |
 
 **Resolve a citation through `__internal__/INDEX.md`** — generated, one row per `§` with its line
 range and its size, so `` `plan.md` §3.5 `` reads as 76 lines rather than a whole document. Its
-summary table says which block to read; read that block, not the index. Regenerate with
-`pnpm docs:index` in the same commit as any document change — `check:doc-index`.
+summary table says which file to read and where that file's block starts; read that block, not the
+index. Regenerate with `pnpm docs:index` in the same commit as any change to a `.md` under
+`__internal__`, a ledger entry included — `check:doc-index`.
 
 **Reference checkouts** live in `__reference-impl__/` — read-only, gitignored, never committed, and
 never a dependency.

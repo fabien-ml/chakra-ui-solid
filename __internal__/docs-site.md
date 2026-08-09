@@ -210,7 +210,8 @@ documented" into "Plan B is reachable".
 ### 2.1 The route map
 
 > **Amended at S3b, 2026-08-09**, when the app was built and the list met a reader for the first
-> time. Six changes, each with a `decisions.md` §3.14 entry: the `guides/` tier is deleted and its
+> time. Six changes, each with a `decisions.md`
+> [§3.14](decisions/3.14-s3b-visual-surfaces.md) entry: the `guides/` tier is deleted and its
 > one page moves under Styling (**D-136**); `frameworks/storybook` is gone and its measured hazard
 > relocated (**D-137**); the whole AI tier and the five generated `/llms*.txt` routes are
 > **deferred to before first public release**, with their cost stated at §4.6 (**D-138**);

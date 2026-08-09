@@ -846,16 +846,26 @@ failure line below is what the failure *means*, not what it prints.
 
 ### 8.1 `check:doc-index` — the anchor index
 
-**What the index is for.** The eleven documents are cited by section — `` `plan.md` §3.5 ``.
-Resolving one without an index means grepping for the heading, reading the line number off the
-match, and guessing how far to read. Guessing wide is what turns a 3 KB consultation into a 40 KB
-one. `INDEX.md` is the lookup: for every `##`, `###` and `####` in the corpus, its anchor as a
+**What the index is for.** The corpus is cited by section — `` `plan.md` §3.5 ``, `` `decisions.md`
+§3.13 ``. Resolving one without an index means grepping for the heading, reading the line number off
+the match, and guessing how far to read. Guessing wide is what turns a 3 KB consultation into a
+40 KB one. `INDEX.md` is the lookup: for every `##`, `###` and `####` in the corpus, its anchor as a
 citation writes it, its line range, and its size.
 
-**Input.** Every top-level `.md` in `__internal__` except `INDEX.md` itself, read in filename
+**Input.** Every `.md` under `__internal__` at any depth except `INDEX.md` itself, read in path
 order — `readIndexableDocuments`. Both the generator and the check call it, because a check with
 its own copy of the file list keeps passing after a twelfth document is added and reports it as
-indexed by omission.
+indexed by omission. It **recurses** for that same reason one level down: `decisions.md` §3's
+entries are one file each under `decisions/`, and a sixteenth has to arrive without anyone
+remembering to edit the script.
+
+**What gets indexed is decided by heading count, never by path.** `renderIndex` drops any file with
+no numbered heading, and that is the whole selection rule. It is what keeps the ten design notes
+under `zag-solid/`, `internal-test-utils/` and `upstream/` out of the index — nothing cites them by
+anchor, because they have none — without a skip-list of directories, which would be the
+list-in-the-script defect again and would need editing the day one of those notes grew a `## 1.`.
+The two numbers are therefore reported separately, and the gap between them is expected: **36 files
+read, 26 indexed.**
 
 **Algorithm.** Scan each document line by line, tracking fenced-code state; outside a fence, match
 `^(#{2,4})\s+(<number>)\.?\s+(<title>)`. A section ends at the next heading of the same or shallower
@@ -870,7 +880,7 @@ The summary table sits at the top of the index, so a changed document appears th
 with its new line and section counts — before any of its rows do. The fix is always `pnpm
 docs:index`; `git diff __internal__/INDEX.md` is the diff.
 
-**Blind spots, three, and none of them is silent unstyling:**
+**Blind spots, four, and none of them is silent unstyling:**
 
 - **It checks currency, not correctness.** A heading numbered `§4.2` that follows `§4.7` indexes
   exactly as written. The index reports the corpus's numbering, including its mistakes.
@@ -881,6 +891,10 @@ docs:index`; `git diff __internal__/INDEX.md` is the diff.
 - **An unnumbered heading is skipped rather than reported.** `legal.md` has one — `#### Why the
   route is closed`. Nothing cites it, because there is nothing to cite it by. If unnumbered
   headings ever become citable, this becomes a gap rather than a choice.
+- **A `decisions/` entry's file name is not checked against the heading inside it.** `3.13-…md`
+  could hold `### 3.9` and the index would carry it, cheerfully, under the wrong file. The naming
+  is a convention with no script (`definition-of-done.md` §7), and it is load-bearing precisely
+  because the file name is how a reader resolves `§3.13` without opening the table.
 
 **Why it copies heading titles and nothing else.** A heading names a rule; the body states it. The
 index is navigation, not a digest — a generated summary of the arguments would be a second copy of

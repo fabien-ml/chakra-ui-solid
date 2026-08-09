@@ -1,10 +1,14 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  countSections,
   findIndexDrift,
   formatIndexDrift,
   parseSections,
+  readIndexableDocuments,
   renderIndex,
+  summariseCorpus,
 } from "../doc-index.mjs";
 
 const lines = (...rows) => rows.join("\n");
@@ -88,7 +92,7 @@ describe("check:doc-index", () => {
     it("emits one block per document and one row per section", () => {
       expect(rendered).toContain("## `alpha.md`");
       expect(rendered).toContain("## `beta.md`");
-      expect(countSections(documents)).toBe(3);
+      expect(summariseCorpus(documents).sections).toBe(3);
     });
 
     it("copies heading titles and no other text out of the documents", () => {
@@ -116,14 +120,56 @@ describe("check:doc-index", () => {
     });
   });
 
-  describe("countSections", () => {
+  describe("summariseCorpus", () => {
     it("counts the documents, not the rendered index", () => {
       // The rendered header carries a worked example that is itself a `§` row, so a count taken
       // by matching `^§` over the output reports one section more than exists.
       const documents = [{ name: "alpha.md", source: lines("## 1. One", "### 1.1 Two") }];
 
-      expect(countSections(documents)).toBe(2);
+      expect(summariseCorpus(documents).sections).toBe(2);
       expect(renderIndex(documents).match(/^§/gm)).toHaveLength(3);
+    });
+
+    it("separates what was read from what reached the index", () => {
+      // The message the scripts print. Reporting only what was read would claim the design notes
+      // under `zag-solid/` — no numbered heading, so no block — are in the index.
+      const documents = [
+        { name: "alpha.md", source: lines("## 1. One") },
+        { name: "zag-solid/refs.md", source: lines("# `createRefs`", "prose") },
+      ];
+
+      expect(summariseCorpus(documents)).toEqual({ read: 2, indexed: 1, sections: 1 });
+    });
+  });
+
+  describe("readIndexableDocuments", () => {
+    const corpus = () => {
+      const root = mkdtempSync(join(tmpdir(), "doc-index-"));
+      writeFileSync(join(root, "INDEX.md"), "the generated index");
+      writeFileSync(join(root, "decisions.md"), "## 3. The ledger");
+      writeFileSync(join(root, "notes.txt"), "not markdown");
+      mkdirSync(join(root, "decisions"));
+      writeFileSync(join(root, "decisions", "3.01-first.md"), "### 3.1 First");
+      writeFileSync(join(root, "decisions", "3.02-second.md"), "### 3.2 Second");
+      return root;
+    };
+
+    it("reads a ledger entry out of its subdirectory, keyed by its path", () => {
+      // It recurses rather than naming `decisions/`, so a sixteenth entry needs no script edit.
+      expect(readIndexableDocuments(corpus()).map((document) => document.name)).toEqual([
+        "decisions.md",
+        "decisions/3.01-first.md",
+        "decisions/3.02-second.md",
+      ]);
+    });
+
+    it("sorts an entry after the document whose section it holds", () => {
+      // `.` sorts before `/`, so a path sort already groups the entries under their parent. The
+      // index's summary table is read top to bottom, and a `§3.13` row above `decisions.md` would
+      // read as a separate document rather than as part of one.
+      const names = readIndexableDocuments(corpus()).map((document) => document.name);
+
+      expect(names.indexOf("decisions.md")).toBeLessThan(names.indexOf("decisions/3.01-first.md"));
     });
   });
 

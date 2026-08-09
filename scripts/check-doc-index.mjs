@@ -5,12 +5,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  countSections,
   findIndexDrift,
   formatIndexDrift,
   INDEX_FILENAME,
   readIndexableDocuments,
   renderIndex,
+  summariseCorpus,
 } from "./lib/doc-index.mjs";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -37,7 +37,9 @@ if (drift.total > 0) {
   process.exit(1);
 }
 
+const { read, indexed, sections } = summariseCorpus(documents);
+
 console.log(
-  `check:doc-index — ${documents.length} documents, ${countSections(documents)} sections, ` +
+  `check:doc-index — ${read} files read, ${indexed} indexed, ${sections} sections, ` +
     `index is current.`,
 );
