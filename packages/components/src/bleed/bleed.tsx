@@ -10,18 +10,19 @@ import {
 import type { JSX } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 
-/** A spacing token name, or any CSS length. */
-type BleedValue = string | number;
-
 export interface BleedOptions {
-  /** Negative margin on both inline edges. */
-  inline?: BleedValue;
-  /** Negative margin on both block edges. */
-  block?: BleedValue;
-  inlineStart?: BleedValue;
-  inlineEnd?: BleedValue;
-  blockStart?: BleedValue;
-  blockEnd?: BleedValue;
+  /** How far to break out on both inline edges — a spacing token like `"10"`, or a CSS length. */
+  inline?: string | number;
+  /** How far to break out on both block edges — a spacing token like `"10"`, or a CSS length. */
+  block?: string | number;
+  /** How far to break out on the inline-start edge (left in a left-to-right document). */
+  inlineStart?: string | number;
+  /** How far to break out on the inline-end edge (right in a left-to-right document). */
+  inlineEnd?: string | number;
+  /** How far to break out on the block-start edge (the top). */
+  blockStart?: string | number;
+  /** How far to break out on the block-end edge (the bottom). */
+  blockEnd?: string | number;
 }
 
 export interface BleedProps
@@ -51,7 +52,7 @@ const OPTIONS = ["inline", "block", "inlineStart", "inlineEnd", "blockStart", "b
  * instead answers the same question against the build's own output rather than a heuristic — and a
  * `var(--…)` a consumer hands in falls through the same miss branch.
  */
-function resolveSpacing(value: BleedValue | undefined): string | undefined {
+function resolveSpacing(value: string | number | undefined): string | undefined {
   if (value === undefined) {
     return undefined;
   }

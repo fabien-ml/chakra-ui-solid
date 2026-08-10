@@ -73,17 +73,54 @@ function jsDocOf(node, sourceFile) {
     .trim();
 }
 
+/**
+ * `@default` split out of the prose, because the table gives it a column of its own.
+ *
+ * The tag is written the way the source spells the value — `@default "column"`, `@default 4 / 3` —
+ * and the quotes are dropped here so the renderer decides how a default is *shown*. Left in the
+ * description it reads as a sentence fragment at the end of every defaulted prop, which is what it
+ * did until this column existed.
+ */
+function splitDefault(description) {
+  const match = /@default\s+(.+?)\s*$/.exec(description);
+  if (match === null) {
+    return { description, defaultValue: null };
+  }
+  const value = match[1].replace(/^["'](.*)["']$/, "$1");
+  return { description: description.slice(0, match.index).trim(), defaultValue: value };
+}
+
 /** `as?: ValidComponent` → `{ name: "as", required: false, type: "ValidComponent", … }`. */
 function memberRow(member, sourceFile) {
   if (!ts.isPropertySignature(member) || !ts.isIdentifier(member.name)) {
     return null;
   }
+  const { description, defaultValue } = splitDefault(jsDocOf(member, sourceFile));
   return {
     name: member.name.text,
     required: member.questionToken === undefined,
     type: member.type === undefined ? "unknown" : member.type.getText(sourceFile).trim(),
-    description: jsDocOf(member, sourceFile),
+    defaultValue,
+    description,
   };
+}
+
+/**
+ * `type StackDirection = ConditionalValue<"row" | "column" | …>` — collected so a prop typed by the
+ * alias can print what the alias *is*.
+ *
+ * A name a reader cannot look up is not a type to them. `direction?: StackDirection` in the Type
+ * column says nothing that `direction` did not already say, and the four values it accepts — the
+ * only thing they need — are one hop away in a file they are not reading.
+ */
+function typeAliasesIn(sourceFile) {
+  const aliases = new Map();
+  for (const statement of sourceFile.statements) {
+    if (ts.isTypeAliasDeclaration(statement)) {
+      aliases.set(statement.name.text, statement.type.getText(sourceFile).trim());
+    }
+  }
+  return aliases;
 }
 
 function interfacesIn(sourceFile) {
@@ -109,6 +146,47 @@ function interfacesIn(sourceFile) {
   }
   return found;
 }
+
+/**
+ * The three props **every** component here takes, which no component declares.
+ *
+ * They come from `ChakraStylingProps`, which every `*Props` interface inherits through
+ * `HTMLChakraProps`, so a table without them is missing three props a reader can genuinely pass —
+ * and for a component that adds none of its own (`Container` before its variants, `Circle`,
+ * `Float`) the table would otherwise be empty. chakra-ui.com does the same thing with its own
+ * `as` and `asChild` rows; `render` is ours, because a Solid element cannot be cloned.
+ *
+ * Appended rather than expanded from the type, because the rest of what `HTMLChakraProps` carries
+ * is the whole style-prop surface and every DOM attribute — several hundred names that would bury
+ * these three.
+ */
+const UNIVERSAL_PROPS = [
+  {
+    name: "as",
+    required: false,
+    type: "ValidComponent",
+    defaultValue: null,
+    description: "The element or component to render instead of the default one.",
+  },
+  {
+    name: "render",
+    required: false,
+    type: "(props) => JSX.Element",
+    defaultValue: null,
+    description:
+      "Render an element of your own, given the computed props. A function, never an element — " +
+      "Solid has no `cloneElement`, so an element could only be rendered with its props dropped.",
+  },
+  {
+    name: "unstyled",
+    required: false,
+    type: "boolean",
+    defaultValue: null,
+    description:
+      "Drop the component's own styles. Style props and the `css` prop still apply — the opt-out " +
+      "is of the theme, not of styling.",
+  },
+];
 
 /**
  * Chakra splits a component's own props across two interfaces — `FlexOptions` holds them and
@@ -137,7 +215,8 @@ function foldLocalOptions(interfaces) {
         extends: entry.extends.filter((base) => !byName.has(base)),
         props: rows.sort((a, b) => a.name.localeCompare(b.name)),
       };
-    });
+    })
+    .map((entry) => ({ ...entry, props: [...entry.props, ...UNIVERSAL_PROPS] }));
 }
 
 const componentDirs = readdirSync(componentsSrc, { withFileTypes: true })
@@ -158,16 +237,45 @@ for (const component of componentDirs) {
     skipLibCheck: true,
   });
 
+  const aliases = new Map();
+  for (const file of files) {
+    const sourceFile = program.getSourceFile(file);
+    if (sourceFile !== undefined) {
+      for (const [name, text] of typeAliasesIn(sourceFile)) {
+        aliases.set(name, text);
+      }
+    }
+  }
+
   const interfaces = foldLocalOptions(
     files.flatMap((file) => {
       const sourceFile = program.getSourceFile(file);
       return sourceFile === undefined ? [] : interfacesIn(sourceFile);
     }),
-  );
+  ).map((entry) => ({
+    ...entry,
+    props: entry.props.map((row) => ({ ...row, type: aliases.get(row.type) ?? row.type })),
+  }));
 
-  if (interfaces.length > 0) {
-    tables[component] = interfaces;
-  }
+  // A component that is one bare `chakra()` call declares no `*Props` interface at all — Center and
+  // AbsoluteCenter are both a factory call and a variant. They still take the three universal props,
+  // so they get an entry rather than none: a page asking for a table it will never have renders the
+  // generator's loud "run `pnpm codegen`" fallback, which is a false alarm.
+  tables[component] =
+    interfaces.length > 0
+      ? interfaces
+      : [
+          {
+            name: `${component
+              .split("-")
+              .map((word) => word[0].toUpperCase() + word.slice(1))
+              .join("")}Props`,
+            description: "",
+            // Empty rather than guessed: nothing here declares what such a component extends.
+            extends: [],
+            props: [...UNIVERSAL_PROPS],
+          },
+        ];
 }
 
 const banner = `// GENERATED by scripts/generate-props-tables.mjs — do not edit.
@@ -181,6 +289,8 @@ export interface PropRow {
   name: string;
   required: boolean;
   type: string;
+  /** The \`@default\` tag's value, quotes stripped — \`null\` when the prop has no default. */
+  defaultValue: string | null;
   description: string;
 }
 

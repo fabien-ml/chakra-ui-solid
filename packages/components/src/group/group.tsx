@@ -1,5 +1,5 @@
 import { cx } from "@chakra-ui-solid/styled-system/css";
-import type { JsxStyleProps } from "@chakra-ui-solid/styled-system/types";
+import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import { chakra, type HTMLChakraProps } from "@chakra-ui-solid/system";
 import { type ComponentProps, isServer } from "@solidjs/web";
 import { type Component, children, createRenderEffect, merge, omit } from "solid-js";
@@ -66,11 +66,11 @@ type GroupVariantProps = Omit<ComponentProps<typeof StyledGroup>, keyof HTMLChak
 
 export interface GroupProps extends HTMLChakraProps<"div">, GroupVariantProps {
   /** Shorthand for `alignItems`. @default "center" */
-  align?: JsxStyleProps["alignItems"];
+  align?: SystemStyleObject["alignItems"];
   /** Shorthand for `justifyContent`. @default "flex-start" */
-  justify?: JsxStyleProps["justifyContent"];
+  justify?: SystemStyleObject["justifyContent"];
   /** Shorthand for `flexWrap`. */
-  wrap?: JsxStyleProps["flexWrap"];
+  wrap?: SystemStyleObject["flexWrap"];
   /** Children this predicate accepts are left undecorated and do not count towards the positions. */
   skip?: (child: Element) => boolean;
 }

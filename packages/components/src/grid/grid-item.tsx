@@ -11,18 +11,21 @@ import {
 import type { JSX } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 
-/** A track placement: a line number, or `auto` for "wherever the auto-placement algorithm puts it". */
-type Placement = number | "auto";
-
 export interface GridItemProps extends HTMLChakraProps<"div"> {
   /** A named area from the parent Grid's `templateAreas`, or a four-line shorthand. */
   area?: PlainCssValue<CssProperties["gridArea"]>;
-  colSpan?: Placement;
-  colStart?: Placement;
-  colEnd?: Placement;
-  rowSpan?: Placement;
-  rowStart?: Placement;
-  rowEnd?: Placement;
+  /** How many columns this item spans. `auto` leaves the width to the auto-placement algorithm. */
+  colSpan?: number | "auto";
+  /** The column line this item starts on, counting from 1. Beats the start line `colSpan` implies. */
+  colStart?: number | "auto";
+  /** The column line this item ends on, counting from 1. Beats the end line `colSpan` implies. */
+  colEnd?: number | "auto";
+  /** How many rows this item spans. `auto` leaves the height to the auto-placement algorithm. */
+  rowSpan?: number | "auto";
+  /** The row line this item starts on, counting from 1. Beats the start line `rowSpan` implies. */
+  rowStart?: number | "auto";
+  /** The row line this item ends on, counting from 1. Beats the end line `rowSpan` implies. */
+  rowEnd?: number | "auto";
 }
 
 /**
@@ -52,7 +55,7 @@ const rowStyle = css.raw({
 const OPTIONS = ["area", "colSpan", "colStart", "colEnd", "rowSpan", "rowStart", "rowEnd"] as const;
 
 /** `span 2` on both lines is the two-line spelling of Chakra's `span 2/span 2`. */
-function spanned(span: Placement | undefined): string | undefined {
+function spanned(span: number | "auto" | undefined): string | undefined {
   if (span === undefined || span === "auto") {
     return span;
   }

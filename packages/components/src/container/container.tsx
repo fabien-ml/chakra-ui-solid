@@ -1,10 +1,21 @@
-import type { ContainerVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import { container } from "@chakra-ui-solid/styled-system/recipes";
+import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import { createRecipeClass, type HTMLChakraProps, renderStyled } from "@chakra-ui-solid/system";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, omit } from "solid-js";
 
-export interface ContainerProps extends HTMLChakraProps<"div">, ContainerVariantProps {}
+/**
+ * The two variants spelled out rather than inherited from the generated `ContainerVariantProps`,
+ * so each carries a description a reader can use and a type they can read — a generated type has
+ * neither. A variant renamed in the recipe is still caught: `createRecipeClass` below is typed
+ * against the generated one, so the call, not the interface, is what stops drifting silently.
+ */
+export interface ContainerProps extends HTMLChakraProps<"div"> {
+  /** Center the content and stack it in a column, rather than leaving the layout to the children. */
+  centerContent?: ConditionalValue<boolean>;
+  /** Stretch to fill the width of the parent, dropping the `8xl` maximum. */
+  fluid?: ConditionalValue<boolean>;
+}
 
 /** The DOM props Container forwards to the rendered element, as Box names its own. */
 type ContainerElementProps = ComponentProps<"div">;

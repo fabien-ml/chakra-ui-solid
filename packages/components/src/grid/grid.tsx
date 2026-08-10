@@ -9,13 +9,21 @@ import type { JSX } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 
 export interface GridOptions {
+  /** The column track list — `"repeat(3, 1fr)"`, `"200px 1fr"`. Not responsive; see the note below. */
   templateColumns?: PlainCssValue<CssProperties["gridTemplateColumns"]>;
+  /** The row track list — `"repeat(2, 1fr)"`, `"auto 1fr auto"`. */
   templateRows?: PlainCssValue<CssProperties["gridTemplateRows"]>;
+  /** Named areas a child can be placed into by name, as `"'header header' 'sidebar main'"`. */
   templateAreas?: PlainCssValue<CssProperties["gridTemplateAreas"]>;
+  /** Which way children with no explicit placement flow — `"row"`, `"column"`, `"dense"`. */
   autoFlow?: PlainCssValue<CssProperties["gridAutoFlow"]>;
+  /** The size of rows the grid creates on its own, beyond `templateRows`. */
   autoRows?: PlainCssValue<CssProperties["gridAutoRows"]>;
+  /** The size of columns the grid creates on its own, beyond `templateColumns`. */
   autoColumns?: PlainCssValue<CssProperties["gridAutoColumns"]>;
+  /** This grid's own column placement in a parent grid — the `grid-column` shorthand. */
   column?: PlainCssValue<CssProperties["gridColumn"]>;
+  /** This grid's own row placement in a parent grid — the `grid-row` shorthand. */
   row?: PlainCssValue<CssProperties["gridRow"]>;
   /** Lay the children out inline, as `inline-grid` rather than `grid`. */
   inline?: boolean;
