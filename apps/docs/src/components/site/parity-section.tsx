@@ -20,12 +20,18 @@ import { PARITY_SENTENCE } from "~/config";
 const included = [
   "Chakra v3's component API, part for part",
   "Its design system, through the official Panda preset",
+  "Its theming config — tokens, semantic tokens, recipes — in panda.config.ts",
   "Zag.js behavior and the ARIA that comes with it",
   "Style props, recipes, variants and colour mode",
 ];
 
+/**
+ * **No `createSystem` row here, deliberately.** It read as *no theming*, which is the one thing a
+ * v3 reader arrives worried about and the one thing that is not true — the config is theirs, one
+ * file over, and the included column now says so. What that row was actually warning about is the
+ * line below it, which survives: values a build cannot know.
+ */
 const excluded = [
-  "Runtime theming — no createSystem, no Theme component",
   "Style values computed while the app runs",
   "asChild — polymorphism is a render prop, and it takes a function",
 ];

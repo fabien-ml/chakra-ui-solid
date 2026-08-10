@@ -1,0 +1,123 @@
+---
+title: chakraConfig
+description: The config fragment that keeps your stylesheet and our compiled runtime naming the same classes
+links:
+  source: packages/panda-preset/src/config.ts
+---
+
+`chakraConfig()` is the one part of theming here that is not Panda's API. It returns a plain
+`defineConfig`-shaped object for you to spread into your own config:
+
+```ts title="panda.config.ts"
+import { chakraConfig } from "@chakra-ui-solid/panda-preset";
+import { defineConfig } from "@pandacss/dev";
+
+export default defineConfig({
+  ...chakraConfig(),
+  include: ["./node_modules/@chakra-ui-solid/components/dist/**/*.jsx", "./src/**/*.{ts,tsx}"],
+  outdir: "styled-system-app",
+});
+```
+
+It exists because of one failure mode that has no other guard. Panda's usual model generates the
+runtime and the stylesheet together from a single config; here the runtime was compiled into
+`@chakra-ui-solid/styled-system` before you installed it, and only the stylesheet is yours. Several
+config keys decide names on both sides of that split. Set differently on your side alone, they
+produce a sheet whose rules our class names never match: every component renders unstyled, and
+nothing anywhere raises an error. A fragment makes that unconstructable, where a documented
+sentence only makes it unlikely.
+
+## What it returns
+
+Seven keys, and none of them are yours to choose:
+
+| Key | Value | Why |
+| --- | --- | --- |
+| `eject` | `true` | Drops `@pandacss/preset-panda`, whose palette disagrees with Chakra's about `colors.gray.*`. You keep every utility — the preset declares `@pandacss/preset-base` itself |
+| `presets` | `[chakraSolidPreset]` | Chakra's tokens and all 75 recipes |
+| `jsxFramework` | `"solid"` | Extracts style props from any capitalized JSX component, which is why `<Box p="4">` in your source produces a rule at all |
+| `jsxFactory` | `"chakra"` | A different knob, and the one with the silent failure: `chakra.button` is lowercase, so without it Panda's `isUpperCase` fallback declines the tag and every `<chakra.button bg="…">` you write emits nothing |
+| `hash` | `false` | Our runtime computes `p_4`; a hashed sheet has no such rule |
+| `preflight` | `true` | Chakra's reset |
+| `importMap` | our packages | Tells your extractor the styled-system API lives in our published package rather than in a directory you generated |
+
+`include` and `outdir` are deliberately absent — those are yours, and the `dist` glob in `include`
+is not optional: it is the channel through which values *our* components name, and your source never
+writes, reach your extractor.
+
+## Spreading
+
+Spreading is shallow, so any key you re-declare replaces ours outright rather than merging with it.
+Name the call when you need to add to one:
+
+```ts title="panda.config.ts"
+const chakra = chakraConfig();
+
+export default defineConfig({
+  ...chakra,
+  presets: [...(chakra.presets ?? []), myPreset],
+  theme: { extend: { tokens: { colors: { brand: { value: "#5b8" } } } } },
+});
+```
+
+| Key | What a bare re-declare costs |
+| --- | --- |
+| `presets` | Every Chakra token and recipe |
+| `importMap` | The `chakra` factory unregisters; every factory element emits nothing |
+| `staticCss` | The responsive variants `responsive` wrote, below |
+| `theme` | About half of Chakra's tokens — use `theme.extend`, which merges |
+| `include`, `outdir` | Nothing. These are meant to be yours |
+
+> **Not `mergeConfigs`.** It is not exported from `@pandacss/dev`, so a consumer who installed only
+> the peer dependency cannot reach it, and it returns `any` — discarding the `Config` types this
+> function exists to supply.
+
+## responsive
+
+Recipe variants are pre-generated at one condition by default. Pass `responsive` to also generate
+them at every breakpoint, which is what `<Button size={{ base: "sm", md: "lg" }}>` needs:
+
+```ts title="panda.config.ts"
+chakraConfig({ responsive: { button: ["size"] } });
+```
+
+Three grains, so nobody pays for conditions they do not use:
+
+| Grain | Meaning |
+| --- | --- |
+| `{ button: ["size"] }` | One variant key on one recipe |
+| `["button", "heading"]` | Every variant key on those recipes |
+| `true` | Every variant key on all 75 |
+
+Each expands to the `staticCss` block Panda already understands, so the opt-in asks nothing new of
+Panda:
+
+```ts
+chakraConfig({ responsive: { button: ["size"] } }).staticCss;
+// => { recipes: { button: [{ size: ["*"], responsive: true }] } }
+```
+
+Off by default because the stylesheet already carries 488 recipe-variant values, and turning
+responsive on for all of them multiplies that by six — `base` plus five breakpoints.
+
+## Why a function
+
+It takes no required arguments and could have been a constant. It is a function so that opting into
+`responsive` is a change of argument rather than a change of call shape.
+
+## The recipe registry
+
+Three more exports, read off the preset rather than typed out, so a Chakra release that adds a
+recipe is covered by the version bump alone:
+
+```ts
+import { recipeKeys, slotRecipeKeys, variantKeysFor } from "@chakra-ui-solid/panda-preset";
+
+recipeKeys.length; // => 19 — button, input, heading, …
+slotRecipeKeys.length; // => 56
+variantKeysFor().find((entry) => entry.recipe === "button");
+// => { recipe: "button", keys: ["size", "variant"] }
+```
+
+`variantKeysFor()` is what expands the two coarser `responsive` grains: `["button"]` means every
+variant key on Button, and nothing else knows which those are.

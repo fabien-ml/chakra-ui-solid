@@ -1,0 +1,255 @@
+---
+title: Overview
+description: A guide for configuring the chakra-ui-solid theming system
+links:
+  source: packages/panda-preset/src/config.ts
+  chakra: https://chakra-ui.com/docs/theming/overview
+---
+
+## Architecture
+
+The React version's theming system is built around the API of
+[Panda CSS](https://panda-css.com/). This one is built on Panda CSS. The config object is therefore
+close to the same object — it lives in `panda.config.ts`, and a build compiles it instead of an
+engine serializing it while your app runs.
+
+> **Almost nothing on this page is ours.** `defineConfig`, `theme.extend`, tokens, semantic tokens,
+> recipes, conditions — all of it is Panda's own API, and [Panda's docs](https://panda-css.com/docs)
+> are the reference for any key not covered here. This library contributes two things to it: the
+> preset carrying Chakra's design system, and [`chakraConfig()`](/docs/theming/chakra-config), which
+> sets the handful of keys that have to agree with our published runtime.
+
+Three steps here as well, and the last two are where they part:
+
+- Define the styling system configuration using Panda's `defineConfig` function
+- Generate the stylesheet with `panda codegen`
+- Import the stylesheet you generated
+
+```ts title="panda.config.ts"
+import { chakraConfig } from "@chakra-ui-solid/panda-preset";
+import { defineConfig } from "@pandacss/dev";
+
+const chakra = chakraConfig();
+
+export default defineConfig({
+  ...chakra,
+  theme: {
+    extend: {
+      tokens: {
+        colors: { brand: { 500: { value: "tomato" } } },
+      },
+    },
+  },
+  include: ["./node_modules/@chakra-ui-solid/components/dist/**/*.jsx", "./src/**/*.{ts,tsx}"],
+  outdir: "styled-system-app",
+});
+```
+
+Nothing wraps your app. There is no `createSystem`, because there is no engine to hand a system to,
+and no `ChakraProvider`, because by the time the app runs your theme is a stylesheet. Three
+differences with the React version's `theme.ts`, and they are the whole of it: `defineConfig` is
+Panda's rather than Chakra's, customizations go under `theme.extend` rather than merging with a
+`defaultConfig`, and a build step replaces the provider.
+
+> `chakraConfig()` already puts the preset in `presets` — do not import it again here. And
+> **spreading is shallow**: naming the call and spreading it back in is what keeps a re-declared key
+> from replacing ours outright. [Installation](/docs/get-started/installation) covers the setup this
+> page assumes.
+
+## Config
+
+The system is configured using the `defineConfig` function. This function accepts a configuration
+object that allows you to customize the styling system's behavior.
+
+After a config is defined, `panda codegen` reads it and writes the stylesheet.
+
+### cssVarRoot
+
+`cssVarRoot` is the root element where the token CSS variables will be applied. Note the name: the
+React version spells it `cssVarsRoot`.
+
+```ts title="panda.config.ts"
+export default defineConfig({
+  ...chakra,
+  cssVarRoot: ":where(:root, :host)",
+});
+```
+
+### prefix
+
+Not available. Both halves of Panda's `prefix` change names our published runtime has already
+committed to, and the failure is silent — see [Keys that must match ours](#keys-that-must-match-ours).
+
+### globalCss
+
+`globalCss` is used to apply global styles to the system.
+
+```ts title="panda.config.ts"
+export default defineConfig({
+  ...chakra,
+  globalCss: {
+    "html, body": { margin: 0, padding: 0 },
+  },
+});
+```
+
+### preflight
+
+`preflight` is used to apply css reset styles to the system. `chakraConfig()` turns it on; pass
+`false` to drop it, or a scope to confine it to one element.
+
+```ts title="panda.config.ts"
+export default defineConfig({
+  ...chakra,
+  preflight: { scope: ".chakra-reset" },
+});
+```
+
+### theme
+
+Use the `theme` config property to define the system theme. Under `extend`, it accepts the same
+properties the React version's does:
+
+- `breakpoints`: for defining breakpoints
+- `keyframes`: for defining css keyframes animations
+- `tokens`: for defining tokens
+- `semanticTokens`: for defining semantic tokens
+- `textStyles`: for defining typography styles
+- `layerStyles`: for defining layer styles
+- `recipes`: for defining component recipes
+- `slotRecipes`: for defining component slot recipes
+
+```ts title="panda.config.ts"
+export default defineConfig({
+  ...chakra,
+  theme: {
+    extend: {
+      breakpoints: { sm: "320px", md: "768px", lg: "960px", xl: "1200px" },
+      tokens: {
+        colors: { red: { value: "#EE0F0F" } },
+      },
+      semanticTokens: {
+        colors: { danger: { value: "{colors.red}" } },
+      },
+      keyframes: {
+        spin: {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+      },
+    },
+  },
+});
+```
+
+Recipes are keyed by the names the preset already registers — `button`, `input`, `heading` and the
+rest — so overriding one is adding to that key rather than declaring a new recipe:
+
+```ts title="panda.config.ts"
+theme: {
+  extend: {
+    recipes: {
+      button: { variants: { size: { xl: { px: "8", h: "14" } } } },
+    },
+  },
+}
+```
+
+> **A bare `theme` drops about half of Chakra's tokens.** `extend` merges; the key itself replaces.
+
+### conditions
+
+Use the `conditions` config property to define custom selectors and media query conditions for use
+in the system.
+
+```ts title="panda.config.ts"
+export default defineConfig({
+  ...chakra,
+  conditions: { cqSm: "@container(min-width: 320px)", child: "& > *" },
+});
+```
+
+The condition is real in your own `css()` calls, and it does **not** reach the style props on our
+components:
+
+```tsx
+// ✅ your generated runtime knows the condition
+<div class={css({ mt: "40px", _cqSm: { mt: "0px" } })} />
+
+// ❌ our published runtime does not, and emits a class your sheet has no rule for
+<Box mt="40px" _cqSm={{ mt: "0px" }} />
+```
+
+The second line is the boundary this whole package sits on: `css()` for a component of ours ships
+compiled inside `@chakra-ui-solid/styled-system`, built against our config, and a condition added
+after the fact is not in it. Nothing errors — the prop is simply inert.
+
+### strictTokens
+
+`strictTokens` enforces the usage of only design tokens, raising a TS error on a raw value. Setting
+it applies to the runtime **your** Panda run generates. It does not tighten the style props on our
+components: those types come from our published package, which was generated without it.
+
+## TypeScript
+
+There is no separate typegen step. Types for our style props and tokens ship compiled in
+`@chakra-ui-solid/styled-system`, and `panda codegen` regenerates yours from your own config:
+
+```bash
+pnpm panda codegen
+```
+
+## Keys that must match ours
+
+Panda's usual model is that you generate the runtime and the stylesheet together, from one config.
+Here you generate only the stylesheet: the `css()` that computes a component's class names was
+compiled into `@chakra-ui-solid/styled-system` before you installed it. Every key below decides a
+name on both sides of that boundary, so a change made on yours alone produces a stylesheet whose
+rules our class names never match — an unstyled component, with nothing raised anywhere.
+
+| Key | Why |
+| --- | --- |
+| `hash` | Hashed rules; our runtime still emits `p_4` |
+| `prefix` | `className` renames the rules; `cssVar` renames the variables, and the `var(--sizes-*)` strings inside `SimpleGrid` and `Bleed` are already compiled |
+| `separator` | `p_4` becomes `p=4` in the sheet only |
+| `presets` | A re-declare drops every Chakra token and recipe |
+| `importMap` | Unregisters the `chakra` factory, and every `<chakra.button>` emits nothing |
+| `staticCss` | Drops the responsive recipe variants `chakraConfig({ responsive })` wrote |
+
+`chakraConfig()` sets the first three and leaves them out of your reach unless you re-declare them.
+The last three are the shallow-spread hazard: name the call and spread the value back in.
+
+## The system object
+
+The React version's `createSystem` returns a `system` with helpers hanging off it. Each one that
+survives compilation is imported here from the package we publish:
+
+| The React version | Here |
+| --- | --- |
+| `system.token("colors.red.500")` | `token("colors.red.500")` from `@chakra-ui-solid/styled-system/tokens` |
+| `system.token.var("colors.red.500")` | `token.var("colors.red.500")` |
+| `system.css({ ... })` | `css({ ... })` from `@chakra-ui-solid/styled-system/css` |
+| `system.cva({ ... })` | `cva({ ... })` |
+| `system.sva({ ... })` | `sva({ ... })` |
+| `system.isValidProperty(prop)` | `isCssProperty(prop)` from `@chakra-ui-solid/styled-system/is-valid-prop` |
+| `system.splitCssProps(props)` | `splitCssProps(props)` from the same module |
+| `system.breakpoints.up("sm")` | No counterpart |
+| `system.tokens.flatMap` | No counterpart |
+
+```tsx
+import { css } from "@chakra-ui-solid/styled-system/css";
+import { token } from "@chakra-ui-solid/styled-system/tokens";
+
+token("colors.red.500");
+// => "#ef4444"
+
+token.var("colors.red.500");
+// => "var(--colors-red-500)"
+
+css({ color: "red.500", bg: "blue.200" });
+// => "c_red.500 bg_blue.200"
+```
+
+One difference worth reading twice: `system.css` returns a style object for a CSS-in-JS library to
+insert, and `css` here returns a **class name string** naming rules your stylesheet already
+contains. `cva` and `sva` likewise return functions that return class names.
