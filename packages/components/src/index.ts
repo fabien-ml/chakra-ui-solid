@@ -13,6 +13,17 @@ export type {
   HTMLChakraProps,
 } from "@chakra-ui-solid/system";
 export { chakra } from "@chakra-ui-solid/system";
+export * from "./absolute-center";
 export * from "./box";
+export * from "./center";
+export * from "./circle";
+export * from "./em";
 export * from "./environment";
 export * from "./locale";
+export * from "./quote";
+export * from "./spacer";
+export * from "./span";
+export * from "./square";
+export * from "./sticky";
+export * from "./strong";
+export * from "./visually-hidden";

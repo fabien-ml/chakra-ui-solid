@@ -4,8 +4,8 @@
 export { expectNoA11yViolations } from "./axe";
 export type { HydratedComponent } from "./hydrate-fixture";
 export { hydrateFixture } from "./hydrate-fixture";
-export type { MountedComponent } from "./mount";
-export { mount } from "./mount";
+export type { MountedComponent, MountedElement } from "./mount";
+export { mount, mountElement } from "./mount";
 
 // `./stylesheet` is **deliberately not re-exported here.** It reads the generated stylesheet off
 // disk with `node:fs`, and this barrel is imported by the `browser` project — where a `node:fs`

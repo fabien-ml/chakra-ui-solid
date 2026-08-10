@@ -21,6 +21,23 @@ import { HTML_PROP_RENAMES } from "./html-props";
 export type CssProp = SystemStyleObject | SystemStyleObject[];
 
 /**
+ * A component's own style object placed **first** in the `css` prop, with the consumer's spread
+ * after it so theirs still wins.
+ *
+ * This is the seam a layout component's shorthand mapping uses — `flex.raw({ direction })`,
+ * `square.raw({ size })` — and it is deliberately `css` rather than
+ * {@link RenderStyledOptions.baseStyles}: Chakra puts those mappings in `css` too, which is what
+ * makes `direction` beat a `flexDirection` style prop passed alongside it. `baseStyles` sits under
+ * the style props and would answer the other way.
+ */
+export function composeCss(own: SystemStyleObject, consumer: CssProp | undefined): CssProp {
+  if (consumer === undefined) {
+    return own;
+  }
+  return Array.isArray(consumer) ? [own, ...consumer] : [own, consumer];
+}
+
+/**
  * Options for {@link renderStyled} — a superset of what `renderElement` needs, plus the
  * `recipeClass` seam. `Props` is the element's fixed prop shape (e.g.
  * `JSX.HTMLAttributes<HTMLElement>`), not a type that morphs by `as` — see the note in

@@ -19,10 +19,20 @@ import { defineConfig } from "@pandacss/dev";
 export default defineConfig({
   ...chakraConfig(),
 
-  // Their source, not ours. Panda's `jsxStyleProps: "all"` extracts style props from any
-  // capitalized JSX component with no factory and no registration, which is why `<Box p="4">` in a
-  // consumer's file produces a rule at all.
-  include: ["./src/**/*.tsx"],
+  include: [
+    // Their source. Panda's `jsxStyleProps: "all"` extracts style props from any capitalized JSX
+    // component with no factory and no registration, which is why `<Box p="4">` in a consumer's
+    // file produces a rule at all — and it is the only channel for a value a *component's* logic
+    // never spells, such as `<Flex direction="row">`, which reaches their sheet through Panda's
+    // own `flex` pattern claiming the JSX name.
+    "./src/**/*.tsx",
+    // **The library channel**, and it is a second channel rather than a convenience: a style
+    // config handed to `chakra()` inside a component is not in a consumer's source at all. The
+    // install docs spell this glob `./node_modules/@chakra-ui-solid/components/dist/**/*.jsx`, and
+    // it is the same text either way — `tsdown` builds with `transform.jsx: "preserve"`, so what
+    // we publish IS this source. Pointing at `src` keeps the fixture free of a build step.
+    "../../../../*/*.tsx",
+  ],
   outdir: "styled-system-app",
 
   // Override path 3 — `theme.extend` deep-merges into the preset's own theme, which is the

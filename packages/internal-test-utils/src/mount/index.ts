@@ -1,2 +1,2 @@
-export type { MountedComponent } from "./mount";
-export { mount } from "./mount";
+export type { MountedComponent, MountedElement } from "./mount";
+export { mount, mountElement } from "./mount";

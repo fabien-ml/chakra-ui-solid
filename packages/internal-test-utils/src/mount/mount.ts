@@ -9,6 +9,11 @@ export interface MountedComponent {
   dispose: () => void;
 }
 
+export interface MountedElement extends MountedComponent {
+  /** The single element the tree rendered — what a styled primitive's computed-style assertion reads. */
+  element: HTMLElement;
+}
+
 /**
  * The two SolidJS dev diagnostics this codebase has hit for real, and that a *passing* test would
  * otherwise print by the hundred without failing:
@@ -153,4 +158,21 @@ export function mount(ui: () => JSX.Element): MountedComponent {
       assertNoDiagnostics();
     },
   };
+}
+
+/**
+ * {@link mount} for a component that renders exactly one element, with that element resolved.
+ *
+ * Every styled primitive's test wants the same three lines — mount, reach for
+ * `container.firstElementChild`, narrow it to an `HTMLElement` — and a test that skipped the
+ * narrowing would read `getComputedStyle(null)` and fail somewhere unhelpful.
+ */
+export function mountElement(ui: () => JSX.Element): MountedElement {
+  const mounted = mount(ui);
+  const element = mounted.container.firstElementChild;
+  if (!(element instanceof HTMLElement)) {
+    mounted.dispose();
+    throw new Error("expected the tree to render exactly one HTML element");
+  }
+  return { ...mounted, element };
 }

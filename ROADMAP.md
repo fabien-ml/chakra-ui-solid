@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 111 components. 1 done.
+v0.1.0 is the whole port: 111 components. 12 done.
 
 ## Done, per component
 
@@ -121,13 +121,13 @@ per-component notes (duplicate slots, part-count mismatches) are at
 
 ## Styled primitives and layout (25)
 
-- [ ] absolute-center
+- [x] absolute-center
 - [ ] aspect-ratio — ●
 - [ ] bleed — ○
 - [x] box
-- [ ] center
-- [ ] circle — ○
-- [ ] em
+- [x] center
+- [x] circle — ○
+- [x] em
 - [ ] flex — ○
 - [ ] float — ●
 - [ ] grid — ●
@@ -136,15 +136,15 @@ per-component notes (duplicate slots, part-count mismatches) are at
 - [ ] input-element
 - [ ] input-group — ●
 - [ ] loader
-- [ ] quote
+- [x] quote
 - [ ] simple-grid — ●
-- [ ] spacer
-- [ ] span
-- [ ] square — ○
+- [x] spacer
+- [x] span
+- [x] square — ○
 - [ ] stack
-- [ ] sticky
-- [ ] strong
-- [ ] visually-hidden
+- [x] sticky
+- [x] strong
+- [x] visually-hidden
 - [ ] wrap
 
 ## Utilities, providers and re-exports (9)

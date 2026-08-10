@@ -1,4 +1,18 @@
-import { Box, chakra } from "@chakra-ui-solid/components";
+import {
+  AbsoluteCenter,
+  Box,
+  Center,
+  Circle,
+  chakra,
+  Em,
+  Quote,
+  Spacer,
+  Span,
+  Square,
+  Sticky,
+  Strong,
+  VisuallyHidden,
+} from "@chakra-ui-solid/components";
 
 /**
  * A consumer's source file, and the only thing their Panda run scans.
@@ -39,6 +53,30 @@ const FactoryCircle = chakra(
   { defaultProps: { r: 20 } },
 );
 
+/**
+ * The layout tier as a consumer writes it.
+ *
+ * Half of these names — `Center`, `Square`, `Circle`, `Spacer`, `VisuallyHidden` — are also the
+ * JSX names of Panda's own *patterns*, so a consumer's extractor runs the pattern's mapping over
+ * these lines whether or not they imported anything from `styled-system/patterns`. That is why the
+ * components reuse `pattern.raw()` rather than re-implementing the mapping: it is the only way the
+ * class our runtime computes and the rule their build emits can be guaranteed to be the same one.
+ */
+const LayoutTier = () => (
+  <Span fontSize="sm">
+    <AbsoluteCenter axis="horizontal" />
+    <Center inline p="2" />
+    <Circle size="12" />
+    <Em letterSpacing="wide" />
+    <Quote color="fg.muted" />
+    <Spacer />
+    <Square size="12" />
+    <Sticky top="2" />
+    <Strong textTransform="uppercase" />
+    <VisuallyHidden />
+  </Span>
+);
+
 export const App = () => (
   <Box p="4" bg="red.500" gapX="4">
     {/* Form 1 — the JSX namespace, and the form `isUpperCase` cannot rescue. */}
@@ -49,5 +87,6 @@ export const App = () => (
       <title>a circle</title>
       <FactoryCircle cx={20} cy={20} />
     </svg>
+    <LayoutTier />
   </Box>
 );

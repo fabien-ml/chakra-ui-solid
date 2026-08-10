@@ -23,7 +23,7 @@ export { renderElement } from "./render/render";
 export type { DisplacedHtmlProp, HtmlProps, PatchHtmlProps } from "./render-styled/html-props";
 export { HTML_PROP_RENAMES } from "./render-styled/html-props";
 export type { CssProp, RenderStyledOptions } from "./render-styled/render-styled";
-export { renderStyled } from "./render-styled/render-styled";
+export { composeCss, renderStyled } from "./render-styled/render-styled";
 export type { WithDefaults } from "./utils/defaults";
 export { withDefaults } from "./utils/defaults";
 export type { EventHandlerEvent } from "./utils/events";

@@ -9,9 +9,20 @@
   "chakraUiSolid": {
     "entries": {
       ".": "src/index.ts",
+      "absolute-center": "src/absolute-center/index.ts",
       "box": "src/box/index.ts",
+      "center": "src/center/index.ts",
+      "circle": "src/circle/index.ts",
+      "em": "src/em/index.ts",
       "environment": "src/environment/index.ts",
-      "locale": "src/locale/index.ts"
+      "locale": "src/locale/index.ts",
+      "quote": "src/quote/index.ts",
+      "spacer": "src/spacer/index.ts",
+      "span": "src/span/index.ts",
+      "square": "src/square/index.ts",
+      "sticky": "src/sticky/index.ts",
+      "strong": "src/strong/index.ts",
+      "visually-hidden": "src/visually-hidden/index.ts"
     }
   },
   "exports": {
