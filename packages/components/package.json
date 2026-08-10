@@ -1,11 +1,15 @@
 {
   "name": "@chakra-ui-solid/components",
   "version": "0.0.0",
-  "description": "Chakra UI v3's component API for SolidJS 2.0 — Zag.js behavior, Panda CSS styling, no runtime CSS-in-JS",
+  "description": "Chakra UI v3's component API for SolidJS 2.0 \u2014 Zag.js behavior, Panda CSS styling, no runtime CSS-in-JS",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "files": ["dist", "LICENSE", "NOTICE.md"],
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE.md"
+  ],
   "chakraUiSolid": {
     "entries": {
       ".": "src/index.ts",
@@ -15,6 +19,9 @@
       "circle": "src/circle/index.ts",
       "em": "src/em/index.ts",
       "environment": "src/environment/index.ts",
+      "flex": "src/flex/index.ts",
+      "grid": "src/grid/index.ts",
+      "group": "src/group/index.ts",
       "locale": "src/locale/index.ts",
       "quote": "src/quote/index.ts",
       "spacer": "src/spacer/index.ts",
@@ -22,7 +29,8 @@
       "square": "src/square/index.ts",
       "sticky": "src/sticky/index.ts",
       "strong": "src/strong/index.ts",
-      "visually-hidden": "src/visually-hidden/index.ts"
+      "visually-hidden": "src/visually-hidden/index.ts",
+      "wrap": "src/wrap/index.ts"
     }
   },
   "exports": {

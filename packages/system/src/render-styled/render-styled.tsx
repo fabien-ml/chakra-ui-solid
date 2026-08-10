@@ -37,6 +37,46 @@ export function composeCss(own: SystemStyleObject, consumer: CssProp | undefined
   return Array.isArray(consumer) ? [own, ...consumer] : [own, consumer];
 }
 
+/** Whatever an element accepts as inline `style` — Solid takes an object, a declaration string, or neither. */
+type StyleProp = JSX.HTMLAttributes<HTMLElement>["style"];
+
+/**
+ * A CSS value narrowed to what an inline custom property can carry.
+ *
+ * It drops three things Panda's own property types allow and a `style` attribute cannot express: a
+ * responsive object, csstype's array fallback form, and the boxed `String`/`Number` that Panda's
+ * length parameter introduces. A component prop typed this way makes
+ * `templateColumns={{ base: "1fr", md: "1fr 1fr" }}` a **type error** rather than a prop that
+ * type-checks and silently does nothing, which is the failure mode this whole route trades against.
+ */
+export type PlainCssValue<Value> = Extract<Value, string | number>;
+
+/**
+ * A component's own inline **CSS custom properties**, with the consumer's `style` layered over
+ * them.
+ *
+ * This is the route for a value Panda cannot see: `style={{ "--col-span": n }}` against a static
+ * rule that reads `var(--col-span)`. The rule is extractable because it is a literal in the
+ * component's own style config; the value is arbitrary because an inline style is not CSS the
+ * build has to generate.
+ *
+ * The string branch is not defensive coding — `style` genuinely accepts a declaration string, and
+ * an object spread over one would drop it silently, which on this route means dropping the
+ * component's entire layout.
+ */
+export function composeStyle(own: JSX.CSSProperties, consumer: StyleProp): StyleProp {
+  if (consumer === undefined || consumer === false) {
+    return own;
+  }
+  if (typeof consumer !== "string") {
+    return { ...own, ...consumer };
+  }
+  const declarations = Object.entries(own)
+    .filter(([, value]) => value !== undefined)
+    .map(([property, value]) => `${property}:${value}`);
+  return [...declarations, consumer].join(";");
+}
+
 /**
  * Options for {@link renderStyled} — a superset of what `renderElement` needs, plus the
  * `recipeClass` seam. `Props` is the element's fixed prop shape (e.g.

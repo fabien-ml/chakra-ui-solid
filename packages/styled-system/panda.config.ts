@@ -41,8 +41,15 @@ export default defineConfig({
   // they add to their own `include`. Keeping the two apart is what stops a green local suite from
   // hiding a broken consumer (`plan.md` §4.1).
   include: ["../{system,components}/src/**/*.{ts,tsx}"],
-  // Set explicitly so an inherited default cannot quietly drop a directory.
-  exclude: [],
+  // Set explicitly so an inherited default cannot quietly drop a directory. The one entry is the
+  // **node-side** tests, and it is not a workaround: nothing in that project renders, so the dev
+  // sheet owes them nothing, while what they do write is a hazard. A `.ts` test computes an
+  // expected class by *calling* the runtime, and Panda re-extracts a `flex.raw({ direction: "row" })`
+  // written that way as **both** the pattern's mapping and the raw props — emitting a real
+  // `direction: row` rule beside the `flex-direction: row` one. A shorthand name is not a CSS
+  // property, so that second rule is a declaration no browser parses, which is what
+  // `check:declaration-support` exists to reject. JSX does not do this; only the `raw` call does.
+  exclude: ["../{system,components}/src/**/*.test.ts"],
   outdir: "styled-system",
   // The same `importMap` a consumer gets from `chakraConfig()`, and it has to be written out here
   // rather than left to the default. The default is `<outdir>/…`, which our `css()` imports match

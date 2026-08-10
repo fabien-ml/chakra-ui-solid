@@ -80,11 +80,12 @@ describe("the preset's own chain and atomic staticCss", () => {
   });
 
   it("pre-generates the atomic values a component's own logic picks", () => {
-    // The atomic half of the same problem: `display: inline-flex` toggled by a `Flex` prop, and a
-    // `colorPalette` a component defaults or a wrapper forwards. Neither appears in a consumer's
-    // source, so neither is extracted.
+    // The atomic half of the same problem: `display: inline-flex` toggled by a `Flex` prop, a
+    // `colorPalette` a component defaults or a wrapper forwards, and the layout shorthands whose
+    // matching Panda pattern does not carry them — `Wrap`'s `direction`, `Stack`'s `wrap`, all of
+    // `Group`'s. None appears in a consumer's source, so none is extracted.
     expect(chakraSolidPreset.staticCss?.css).toEqual([
-      { properties: { display: ["flex", "inline-flex"] } },
+      { properties: { display: ["flex", "inline-flex", "grid", "inline-grid"] } },
       {
         properties: {
           colorPalette: [
@@ -98,6 +99,27 @@ describe("the preset's own chain and atomic staticCss", () => {
             "purple",
             "pink",
             "cyan",
+          ],
+        },
+      },
+      { properties: { flexDirection: ["row", "column", "row-reverse", "column-reverse"] } },
+      { properties: { flexWrap: ["wrap", "nowrap", "wrap-reverse"] } },
+      {
+        properties: {
+          alignItems: ["flex-start", "flex-end", "center", "baseline", "stretch", "start", "end"],
+        },
+      },
+      {
+        properties: {
+          justifyContent: [
+            "flex-start",
+            "flex-end",
+            "center",
+            "space-between",
+            "space-around",
+            "space-evenly",
+            "start",
+            "end",
           ],
         },
       },

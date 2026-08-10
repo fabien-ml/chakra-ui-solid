@@ -5,6 +5,10 @@ import {
   Circle,
   chakra,
   Em,
+  Flex,
+  Grid,
+  GridItem,
+  Group,
   Quote,
   Spacer,
   Span,
@@ -12,6 +16,8 @@ import {
   Sticky,
   Strong,
   VisuallyHidden,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui-solid/components";
 
 /**
@@ -74,6 +80,15 @@ const LayoutTier = () => (
     <Sticky top="2" />
     <Strong textTransform="uppercase" />
     <VisuallyHidden />
+
+    <Flex direction="row-reverse" align="center" grow="1" />
+    <Grid templateColumns="repeat(3, 1fr)" gap="6">
+      <GridItem colSpan={2} />
+    </Grid>
+    <Group attached grow align="stretch" />
+    <Wrap justify="space-around" gap="3">
+      <WrapItem />
+    </Wrap>
   </Span>
 );
 

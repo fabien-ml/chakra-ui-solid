@@ -7,6 +7,35 @@ import { componentNameFor, recipeKeys, slotRecipeKeys } from "./recipe-registry"
  * The ten `colorPalette` values, read from `@chakra-ui/panda-preset`'s `semantic-tokens/colors.ts`.
  * `bg`, `fg` and `border` live in the same file but are semantic *groups*, not palettes.
  */
+/**
+ * The layout tier's keyword shorthands, whose values arrive as a **prop** and are therefore not in
+ * anyone's source as a style value.
+ *
+ * Most of them do not need this row, and knowing which is the whole point. Panda's own patterns
+ * claim the JSX names `Flex`, `Stack`, `Wrap` and `Grid`, so `<Flex direction="row">` in a
+ * consumer's file is mapped to `flexDirection` by *their* extractor — that is why those components
+ * reuse `pattern.raw()` rather than re-implementing the mapping. What is left over is every
+ * shorthand the matching pattern does **not** carry: `Wrap`'s `direction`, `Stack`'s `wrap`, and
+ * all three of `Group`'s, since no pattern claims that name at all. Those reach the element as a
+ * class with no rule, and the prop silently does nothing.
+ *
+ * Enumerated rather than `["*"]`: `*` expands a property's *token* values, and none of these four
+ * has a token scale — it produces nothing at all, silently.
+ */
+const flexDirections = ["row", "column", "row-reverse", "column-reverse"];
+const flexWraps = ["wrap", "nowrap", "wrap-reverse"];
+const alignments = ["flex-start", "flex-end", "center", "baseline", "stretch", "start", "end"];
+const justifications = [
+  "flex-start",
+  "flex-end",
+  "center",
+  "space-between",
+  "space-around",
+  "space-evenly",
+  "start",
+  "end",
+];
+
 const colorPalettes = [
   "gray",
   "red",
@@ -96,13 +125,21 @@ export const chakraSolidPreset = definePreset({
 
   // The atomic half of the same problem: values a component's own logic picks, which no consumer
   // source ever contains. `display` is the shape hope-ui shipped in production for exactly this
-  // reason — a `Flex` with an `inline` prop toggles `display: inline-flex` at runtime — and
-  // `colorPalette` is ours: a component that defaults it, or a wrapper that forwards it, emits
-  // `.color-palette_blue` and without this row that class has no rule (`plan.md` §1.3).
+  // reason — a `Flex` with an `inline` prop toggles `display: inline-flex` at runtime, and `Grid`
+  // does the same to `inline-grid` — and `colorPalette` is ours: a component that defaults it, or
+  // a wrapper that forwards it, emits `.color-palette_blue` and without this row that class has no
+  // rule (`plan.md` §1.3).
+  //
+  // One property per entry, which is not a style choice: several properties in a single entry
+  // emits nothing.
   staticCss: {
     css: [
-      { properties: { display: ["flex", "inline-flex"] } },
+      { properties: { display: ["flex", "inline-flex", "grid", "inline-grid"] } },
       { properties: { colorPalette: colorPalettes } },
+      { properties: { flexDirection: flexDirections } },
+      { properties: { flexWrap: flexWraps } },
+      { properties: { alignItems: alignments } },
+      { properties: { justifyContent: justifications } },
     ],
   },
 });

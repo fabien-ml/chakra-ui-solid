@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { declarationsForClassList } from "@chakra-ui-solid/internal-test-utils/stylesheet";
 import { css } from "@chakra-ui-solid/styled-system/css";
-import { circle, spacer, square } from "@chakra-ui-solid/styled-system/patterns";
+import { circle, flex, spacer, square, wrap } from "@chakra-ui-solid/styled-system/patterns";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -106,6 +106,69 @@ describe("the layout tier reaches a consumer's extractor", () => {
     expect(consumerDeclarations(css({ fontWeight: "semibold" }))).toEqual({
       "font-weight": "var(--font-weights-semibold)",
     });
+  });
+
+  it("emits every Flex shorthand, mapped by the pattern the component calls", () => {
+    // The case the whole "reuse the pattern" rule exists for. `direction="row-reverse"` is a
+    // *prop*: nothing in this library spells `flexDirection: "row-reverse"`, so the rule can only
+    // come from the consumer's own line — through Panda's `flex` pattern, which claims this JSX
+    // name. `flex.raw` here is the call `flex.tsx` makes.
+    expect(
+      consumerDeclarations(css(flex.raw({ direction: "row-reverse", align: "center", grow: "1" }))),
+    ).toEqual({
+      display: "flex",
+      "flex-direction": "row-reverse",
+      "align-items": "center",
+      "flex-grow": "1",
+    });
+  });
+
+  it("emits Grid's static rules, which is all its build has to emit", () => {
+    // The opposite case, and the reason Grid takes the custom-property route: Panda's `grid`
+    // pattern claims the name `Grid` and knows `columns`/`minChildWidth`/`gap`, so the consumer's
+    // `templateColumns="repeat(3, 1fr)"` falls through to `...rest`, is not a CSS property, and
+    // produces **no rule at all**. What their build must emit is the `var()` rule instead — and
+    // that comes from the library channel, where it is a literal.
+    expect(
+      consumerDeclarations(css({ gridTemplateColumns: "var(--grid-template-columns)" })),
+    ).toEqual({ "grid-template-columns": "var(--grid-template-columns)" });
+    expect(consumerDeclarations(css({ gridColumnStart: "var(--grid-item-column-start)" }))).toEqual(
+      {
+        "grid-column-start": "var(--grid-item-column-start)",
+      },
+    );
+  });
+
+  it("emits Wrap's default gap and the shorthands its pattern carries", () => {
+    // Panda's `wrap` pattern defaults `gap` to `8px` and Chakra's Wrap to `0.5rem`, so the default
+    // is passed in rather than inherited — and it is a literal in the component's own style config,
+    // which is what puts it in their sheet.
+    expect(consumerDeclarations(css({ gap: "0.5rem" }))).toEqual({ gap: "0.5rem" });
+    expect(
+      consumerDeclarations(css(wrap.raw({ justify: "space-around", gap: "3" }))),
+    ).toMatchObject({
+      "justify-content": "space-around",
+      "flex-wrap": "wrap",
+      gap: "var(--spacing-3)",
+    });
+  });
+
+  it("emits the shorthand keywords no pattern claims", () => {
+    // `Wrap`'s `direction` and all of `Group`'s, which no pattern maps — these come from the
+    // preset's `staticCss` and from nowhere else. `column-reverse` is written in no source file on
+    // either side, which is exactly the point.
+    expect(consumerDeclarations(css({ flexDirection: "column-reverse" }))).toEqual({
+      "flex-direction": "column-reverse",
+    });
+    expect(consumerDeclarations(css({ alignItems: "stretch" }))).toEqual({
+      "align-items": "stretch",
+    });
+  });
+
+  it("emits Group's recipe, variants and compound variants", () => {
+    expect(
+      consumerDeclarations(css({ gap: "var(--group-gap, 0.5rem)", isolation: "isolate" })),
+    ).toEqual({ gap: "var(--group-gap, 0.5rem)", isolation: "isolate" });
   });
 
   it("finds nothing for a class no source on either side wrote", () => {
