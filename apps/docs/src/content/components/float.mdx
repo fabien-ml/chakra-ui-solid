@@ -1,0 +1,70 @@
+---
+title: Float
+description: Used to anchor an element to the edge of a container.
+links:
+  source: packages/components/src/float
+  chakra: https://chakra-ui.com/docs/components/float
+---
+
+<Example name="float-basic" />
+
+## Usage
+
+Float requires a parent element with `position: relative` style applied.
+
+```tsx
+import { Box, Float } from "@chakra-ui-solid/components";
+```
+
+```tsx
+<Box position="relative">
+  <Float>
+    <div />
+  </Float>
+</Box>
+```
+
+## Examples
+
+### Placement
+
+Use the `placement` prop to position the element along the edges of the container.
+
+<Example name="float-with-placements" />
+
+### Offset X
+
+Use the `offsetX` prop to offset the element along the x-axis.
+
+<Example name="float-with-offset-x" />
+
+### Offset Y
+
+Use the `offsetY` prop to offset the element along the y-axis.
+
+<Example name="float-with-offset-y" />
+
+### Offset
+
+Use the `offset` prop to offset the element along both axes.
+
+<Example name="float-with-offset" />
+
+### Avatar
+
+Here's an example of composing a `Float` component with an avatar.
+
+<Example name="float-with-avatar" />
+
+Chakra's version composes `Avatar` and `Badge`; neither has shipped here yet, so this is `Circle`
+and a `Box` standing in for them. What the example is about — a `Float` anchored to the corner of a
+positioned parent — is unchanged.
+
+## Props
+
+<PropsTable component="float" />
+
+`placement`, `offset`, `offsetX` and `offsetY` are inherited rather than declared: they are
+Panda's own `float` pattern's properties, reused whole because that pattern computes exactly what
+Chakra's Float computes — the same nine placements, the same `offsetX ?? offset` fallback, the
+same defaults.

@@ -91,7 +91,6 @@ function interfacesIn(sourceFile) {
   for (const statement of sourceFile.statements) {
     if (
       !ts.isInterfaceDeclaration(statement) ||
-      !statement.name.text.endsWith("Props") ||
       !statement.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword)
     ) {
       continue;
@@ -109,6 +108,36 @@ function interfacesIn(sourceFile) {
     });
   }
   return found;
+}
+
+/**
+ * Chakra splits a component's own props across two interfaces — `FlexOptions` holds them and
+ * `FlexProps` is that plus the element's — so a table built from `*Props` alone comes out **empty**
+ * for half this tier: a page with a heading, column titles and no rows.
+ *
+ * So every exported interface is read, and the ones a `*Props` extends *from the same component*
+ * are folded into it: their rows become its rows, and their names leave its `extends` list, which
+ * otherwise sends a reader after a name no page documents. What stays in that list is the
+ * genuinely inherited surface — `HTMLChakraProps`, `JsxStyleProps` — which is named rather than
+ * expanded.
+ */
+function foldLocalOptions(interfaces) {
+  const byName = new Map(interfaces.map((entry) => [entry.name, entry]));
+
+  return interfaces
+    .filter((entry) => entry.name.endsWith("Props"))
+    .map((entry) => {
+      const local = entry.extends.filter((base) => byName.has(base));
+      if (local.length === 0) {
+        return entry;
+      }
+      const rows = [...entry.props, ...local.flatMap((base) => byName.get(base).props)];
+      return {
+        ...entry,
+        extends: entry.extends.filter((base) => !byName.has(base)),
+        props: rows.sort((a, b) => a.name.localeCompare(b.name)),
+      };
+    });
 }
 
 const componentDirs = readdirSync(componentsSrc, { withFileTypes: true })
@@ -129,10 +158,12 @@ for (const component of componentDirs) {
     skipLibCheck: true,
   });
 
-  const interfaces = files.flatMap((file) => {
-    const sourceFile = program.getSourceFile(file);
-    return sourceFile === undefined ? [] : interfacesIn(sourceFile);
-  });
+  const interfaces = foldLocalOptions(
+    files.flatMap((file) => {
+      const sourceFile = program.getSourceFile(file);
+      return sourceFile === undefined ? [] : interfacesIn(sourceFile);
+    }),
+  );
 
   if (interfaces.length > 0) {
     tables[component] = interfaces;

@@ -74,6 +74,18 @@ export const declarationAllowances: DeclarationAllowance[] = [
     expiresWhen: "the preset's `scroll-area` recipe drops it — re-derived on each preset bump",
   },
   {
+    property: "-webkit-backdrop-filter",
+    value: "blur(2px)",
+    selectors: ["bkdp_blur"],
+    reason:
+      "Panda's `backdropFilter` utility emits the WebKit alias and the standard property as a pair, " +
+      "and the standard half — `backdrop-filter: blur(2px)`, on the same rule — is accepted, so " +
+      "nothing is lost here. The prefixed half is for the Safari versions that shipped only the " +
+      "alias, which is the same shape as the two `-moz-` rows above rather than a value of ours " +
+      "that fails to resolve",
+    expiresWhen: "Panda stops pairing the alias, or the docs example that uses it goes",
+  },
+  {
     property: "transition-duration",
     value: "normal",
     selectors: [".editable__input", ".tags-input__control", ".tree-view__branchIndicator"],

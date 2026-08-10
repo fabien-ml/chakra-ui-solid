@@ -1,0 +1,58 @@
+---
+title: SimpleGrid
+description:
+  SimpleGrid provides a friendly interface to create responsive grid layouts with ease.
+links:
+  source: packages/components/src/simple-grid
+  chakra: https://chakra-ui.com/docs/components/simple-grid
+---
+
+<Example name="simple-grid-basic" />
+
+## Usage
+
+The `SimpleGrid` component allows you to create responsive grid layouts with ease.
+
+```tsx
+import { SimpleGrid } from "@chakra-ui-solid/components";
+```
+
+```tsx
+<SimpleGrid>
+  <Box />
+  <Box />
+</SimpleGrid>
+```
+
+## Examples
+
+### Columns
+
+Specify the number of columns for the grid layout using the `columns` prop.
+
+<Example name="simple-grid-with-columns" />
+
+### Auto-responsive
+
+Make the grid responsive and adjust automatically without passing columns, by using the
+`minChildWidth` prop. This uses css grid auto-fit and minmax() internally.
+
+<Example name="simple-grid-with-autofit" />
+
+### Column Span
+
+Specify the size of the column by using the `colSpan` prop.
+
+<Example name="simple-grid-with-col-span" />
+
+`columns` and `colSpan` take a plain value here, where Chakra's take a responsive one:
+`columns={[2, null, 3]}` and `colSpan={{ base: 1, md: 3 }}` are type errors. Both compute a track
+list, which is an arbitrary string and therefore rides an inline CSS custom property — and an inline
+style has no breakpoints. The `gap` props are ordinary style props and stay conditional, which is
+why the example above still varies its gap by breakpoint.
+
+### Row and Column Gap
+
+Pass the `rowGap` and `columnGap` props to change the row and column spacing between the grid items.
+
+<Example name="simple-grid-with-row-and-col-gap" />

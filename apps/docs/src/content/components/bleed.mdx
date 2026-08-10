@@ -1,0 +1,40 @@
+---
+title: Bleed
+description: Used to break an element from the boundaries of its container
+links:
+  source: packages/components/src/bleed
+  chakra: https://chakra-ui.com/docs/components/bleed
+---
+
+<Example name="bleed-basic" />
+
+## Usage
+
+```tsx
+import { Bleed } from "@chakra-ui-solid/components";
+```
+
+```tsx
+<Bleed>
+  <div />
+</Bleed>
+```
+
+## Examples
+
+### Vertical
+
+Use the `block` prop to make the element bleed vertically.
+
+<Example name="bleed-vertical" />
+
+### Specific Direction
+
+Use the `inlineStart`, `inlineEnd`, `blockStart`, and `blockEnd` props to make the element bleed in
+a specific direction.
+
+<Example name="bleed-with-direction" />
+
+## Props
+
+<PropsTable component="bleed" />

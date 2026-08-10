@@ -1,0 +1,70 @@
+---
+title: Center
+description: Used to center its child within itself.
+links:
+  source: packages/components/src/center
+  chakra: https://chakra-ui.com/docs/components/center
+---
+
+<Example name="center-basic" />
+
+## Usage
+
+```tsx
+import { Center, Circle, Square } from "@chakra-ui-solid/components";
+```
+
+```tsx
+<Center bg="tomato" h="100px" color="white">
+  This is the Center
+</Center>
+```
+
+## Examples
+
+### Icon
+
+Center can be used to create frames around icons or numbers.
+
+<Example name="center-with-icons" />
+
+### Center with Inline
+
+Use the `inline` prop to make `Center` behave like an inline element (`display: inline-flex`)
+instead of a block-level element (`display: flex`). This makes `Center` only take up as much width
+as its content needs, allowing it to fit inside links, buttons, or other inline contexts without
+breaking the layout.
+
+<Example name="center-with-inline" />
+
+### Square
+
+`Square` centers its child within a fixed-size container of equal width and height. It accepts a
+`size` prop that sets both width and height to the same value.
+
+<Example name="center-with-square" />
+
+### Circle
+
+`Circle` extends `Square` by adding `borderRadius="9999px"` to create a perfect circle. Like
+`Square`, it accepts a `size` prop that sets both width and height to the same value.
+
+<Example name="center-with-circle" />
+
+## Props
+
+### Center
+
+`Center` is a single factory call with one variant, `inline`, and no props of its own beyond it, so
+there is no generated table here. It takes the whole style-prop surface, plus `as` and `render`.
+
+### Square
+
+<PropsTable component="square" />
+
+### Circle
+
+`Circle` extends `Square` and accepts all the same props. The only difference is that `Circle`
+applies `borderRadius="9999px"`.
+
+<PropsTable component="circle" />

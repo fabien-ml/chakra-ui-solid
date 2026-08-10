@@ -1,0 +1,51 @@
+---
+title: Container
+description:
+  Used to constrain a content's width to the current breakpoint, while keeping it fluid.
+links:
+  source: packages/components/src/container
+  chakra: https://chakra-ui.com/docs/components/container
+---
+
+<Example name="container-basic" />
+
+## Usage
+
+The default `maxWidth` is `8xl` which maps to `90rem (1440px)`.
+
+```tsx
+import { Container } from "@chakra-ui-solid/components";
+```
+
+```tsx
+<Container>
+  <div />
+</Container>
+```
+
+## Examples
+
+### Sizes
+
+Use the `maxWidth` prop to change the size of the container.
+
+<Example name="container-with-sizes" />
+
+### Fluid
+
+Use the `fluid` prop to make the container stretch to fill the width of its parent.
+
+<Example name="container-with-fluid" />
+
+## Props
+
+<PropsTable component="container" />
+
+The table is empty because `centerContent` and `fluid` are the recipe's **variants** rather than
+props an interface here declares.
+
+`Container` is the only component in this tier styled by a **recipe** rather than by a style config
+on the factory, and the recipe is the one body this port reproduces rather than depends on:
+`@chakra-ui/panda-preset` ships no `container` key, so `@chakra-ui-solid/panda-preset` carries it.
+The practical consequence is the one the recipe layer buys — a style prop passed alongside beats the
+recipe, so `<Container px="10">` overrides the responsive padding rather than racing it.

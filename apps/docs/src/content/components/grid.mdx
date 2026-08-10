@@ -1,0 +1,51 @@
+---
+title: Grid
+description: Used to manage grid layouts
+links:
+  source: packages/components/src/grid
+  chakra: https://chakra-ui.com/docs/components/grid
+---
+
+<Example name="grid-basic" />
+
+## Usage
+
+```tsx
+import { Grid, GridItem } from "@chakra-ui-solid/components";
+```
+
+```tsx
+<Grid>
+  <GridItem />
+  <GridItem />
+</Grid>
+```
+
+## Examples
+
+### Col Span
+
+Pass `colSpan` prop to `GridItem` to span across columns.
+
+<Example name="grid-with-col-span" />
+
+### Spanning Columns
+
+In some layouts, you may need certain grid items to span specific amount of columns or rows instead
+of an even distribution
+
+<Example name="grid-spanning-columns" />
+
+## Props
+
+<PropsTable component="grid" interface="GridProps" />
+
+Every one of those props takes a **plain** CSS value rather than a responsive object. A track list
+is an arbitrary string, so its value cannot be a class anyone's build generates — it rides an inline
+CSS custom property that a static rule reads back, and an inline style has no breakpoints. Writing
+`templateColumns={{ base: "1fr", md: "1fr 1fr" }}` is a type error here rather than a prop that
+silently does nothing; reach for the `gridTemplateColumns` style prop, which is conditional.
+
+### GridItem
+
+<PropsTable component="grid" interface="GridItemProps" />

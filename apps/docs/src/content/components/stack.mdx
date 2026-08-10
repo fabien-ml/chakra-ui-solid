@@ -1,0 +1,70 @@
+---
+title: Stack
+description: Used to layout its children in a vertical or horizontal stack.
+links:
+  source: packages/components/src/stack
+  chakra: https://chakra-ui.com/docs/components/stack
+---
+
+<Example name="stack-basic" />
+
+## Usage
+
+By default, Stack applies `flex-direction: column` and `gap: 8px` to its children.
+
+```tsx
+import { HStack, Stack, VStack } from "@chakra-ui-solid/components";
+```
+
+```tsx
+<Stack>
+  <div />
+  <div />
+</Stack>
+```
+
+## Examples
+
+### Horizontal
+
+Use the `direction` prop to change the direction of the stack.
+
+<Example name="stack-horizontal" />
+
+### HStack
+
+Alternatively, you can use the `HStack` to create a horizontal stack and align its children
+horizontally.
+
+<Example name="stack-with-hstack" />
+
+### VStack
+
+Use the `VStack` to create a vertical stack and align its children vertically.
+
+<Example name="stack-with-vstack" />
+
+### Separator
+
+Use the `separator` prop to add a separator between the stack items.
+
+<Example name="stack-with-separator" />
+
+`separator` takes a **component**, where the React version takes an element and clones it between
+each pair of children. Solid has no `cloneElement`: a JSX element is one already-constructed DOM
+node, and inserting one node in several places *moves* it — you would get a single separator, at the
+last gap, with nothing to say so. Passing the component (or a function returning it,
+`separator={() => <StackSeparator borderColor="red.500" />}`) is what lets the Stack build a fresh
+one per gap, and it makes the element spelling a type error rather than a quiet mislayout.
+
+`StackSeparator` reads the stack's direction from context — that is how it knows to draw across a
+column stack and down a row one — and it carries no margins of its own. Chakra unsets the flex `gap`
+when a separator is present and spaces the items with the separator's own margins; here the gap
+stays on and does that work, because a margin whose value is the `gap` prop is a value no stylesheet
+has a rule for. The geometry is the same either way: a gap, the line, a gap.
+
+### Responsive Direction
+
+Use the `direction` prop to change the direction of the stack responsively.
+
+<Example name="stack-with-responsive-direction" />

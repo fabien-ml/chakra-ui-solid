@@ -1,0 +1,76 @@
+---
+title: Flex
+description: Used to manage flex layouts
+links:
+  source: packages/components/src/flex
+  chakra: https://chakra-ui.com/docs/components/flex
+---
+
+<Example name="flex-basic" />
+
+## Usage
+
+```tsx
+import { Flex, Spacer } from "@chakra-ui-solid/components";
+```
+
+```tsx
+<Flex>
+  <div />
+  <div />
+</Flex>
+```
+
+## Examples
+
+### Direction
+
+Use the `direction` or `flexDirection` prop to change the direction of the flex
+
+<Example name="flex-with-direction" />
+
+### Align
+
+Use the `align` or `alignItems` prop to align the children along the cross axis.
+
+<Example name="flex-with-align" />
+
+### Justify
+
+Use the `justify` or `justifyContent` prop to align the children along the main axis.
+
+<Example name="flex-with-justify" />
+
+### Order
+
+Use the `order` prop to change the order of the children.
+
+<Example name="flex-with-order" />
+
+### Auto Margin
+
+Apply margin to a flex item to push it away from its siblings.
+
+<Example name="flex-with-auto-margin" />
+
+### Spacer
+
+Use the `Spacer` component to create flexible space between flex items. It will expand to fill all
+available space, pushing items to opposite ends.
+
+<Example name="flex-with-spacer" />
+
+### Wrap
+
+Use the `wrap` or `flexWrap` prop to wrap the children when they overflow the parent.
+
+<Example name="flex-with-wrap" />
+
+## Props
+
+<PropsTable component="flex" />
+
+The five shorthands above are Panda's own `flex` pattern, reused rather than reimplemented. That is
+what makes `<Flex direction="row">` in your source and the class this library computes the same
+class: Panda's pattern claims the JSX name `Flex`, so your build maps the prop through the same
+code the component calls.

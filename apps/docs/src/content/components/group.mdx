@@ -1,0 +1,74 @@
+---
+title: Group
+description: Used to group and attach elements together
+links:
+  source: packages/components/src/group
+  chakra: https://chakra-ui.com/docs/components/group
+---
+
+<Example name="group-basic" />
+
+## Usage
+
+```tsx
+import { Group } from "@chakra-ui-solid/components";
+```
+
+```tsx
+<Group>
+  <div />
+  <div />
+</Group>
+```
+
+## Examples
+
+### Button
+
+Here's an example of using the `Group` component to group buttons together.
+
+<Example name="group-with-button" />
+
+Chakra's version of this example and the two below use its `Button` and `Badge`; neither has shipped
+here yet, so each is a `Box` carrying the border and padding that make the grouping visible.
+
+### Attached
+
+Use the `attached` prop to attach the children together.
+
+<Example name="group-with-attached" />
+
+**Note:** When composing custom components and attaching them to a `Group`, ensure you forward
+props.
+
+```tsx
+export const Demo = () => {
+  return (
+    <Group attached>
+      <FocusButton />
+      <IconButton variant="outline">Two</IconButton>
+    </Group>
+  );
+};
+
+function FocusButton(props: ButtonProps) {
+  return <IconButton variant="outline" {...props} />;
+}
+```
+
+### Grow
+
+Use the `grow` prop to make the children grow to fill the available space.
+
+<Example name="group-with-grow" />
+
+## Props
+
+<PropsTable component="group" />
+
+`Group` positions its children by writing `data-first`, `data-last`, `data-between` and a
+`--group-index` onto the resolved child nodes, where the React version re-creates each child with
+those props. Solid has no `cloneElement` — a child is an already-constructed DOM node by the time a
+parent sees it — so the decoration is written rather than cloned in, and Chakra's own selectors are
+untouched. One consequence: the attributes are applied on the client, so a server-rendered `attached`
+group shows square corners for its first frame.

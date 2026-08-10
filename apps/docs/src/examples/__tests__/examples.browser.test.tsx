@@ -27,6 +27,22 @@ import "../../../styled-system/styles.css";
  */
 const exampleModules = import.meta.glob<{ default: Component }>("../*.tsx", { eager: true });
 
+/**
+ * The axe rules that are *undecidable* in a particular example rather than passing in it — named
+ * per example, with the reason, which is what `expectNoA11yViolations` asks for instead of
+ * silencing a category. A violation is never allowed here; only an `incomplete`.
+ *
+ * - `color-contrast` on the overlay example: its subject is content deliberately covered by a
+ *   translucent layer, so axe reports `bgOverlap` and cannot compute a ratio at all.
+ * - `frame-tested` on the two embeds: axe cannot enter a cross-origin frame, and what is inside
+ *   YouTube's and Google's iframes is not ours to fix.
+ */
+const ALLOWED_INCOMPLETE: Record<string, readonly string[]> = {
+  "absolute-center-with-overlay": ["color-contrast"],
+  "aspect-ratio-with-video": ["frame-tested"],
+  "aspect-ratio-with-map": ["frame-tested"],
+};
+
 const examples = Object.entries(exampleModules)
   .map(([key, module]) => ({ name: key.replace("../", "").replace(/\.tsx$/, ""), module }))
   .sort((a, b) => a.name.localeCompare(b.name));
@@ -60,7 +76,9 @@ describe("docs examples", () => {
       try {
         expect(mounted.container.innerHTML.trim()).not.toBe("");
         expect(consoleError).not.toHaveBeenCalled();
-        await expectNoA11yViolations(mounted.container);
+        await expectNoA11yViolations(mounted.container, {
+          allowIncomplete: ALLOWED_INCOMPLETE[name],
+        });
       } finally {
         mounted.dispose();
       }

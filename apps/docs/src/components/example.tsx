@@ -54,8 +54,13 @@ export function Example(props: { name: string }) {
       >
         {(loaded) => (
           <Box
+            // A column that **stretches**, not a centred row: an example is ported from Chakra's
+            // own docs, where the preview is a block container, so `<Stack><Box h="20" /></Stack>`
+            // is written with no width of its own. Centred, every one of those collapses to zero
+            // width and the preview renders an empty box.
             display="flex"
-            alignItems="center"
+            flexDirection="column"
+            alignItems="stretch"
             justifyContent="center"
             borderWidth="1px"
             borderColor="border"
