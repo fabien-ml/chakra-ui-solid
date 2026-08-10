@@ -19,21 +19,19 @@ in the dependency closure, and none of our own code calls `createElement("style"
 touches `adoptedStyleSheets`, or maintains a sheet. We publish no `.css` file, ever; Panda in the
 consumer's build is the hard prerequisite, enforced by a non-optional `peerDependency` on
 `@pandacss/dev`. `check:no-runtime-css` enforces all three, and a change needing it relaxed does not
-happen. **Allowed, and routinely needed:** the DOM `style` attribute (Zag's `normalizeProps` — the
-function turning a state machine's framework-agnostic prop bag into Solid props — emits `style`
-objects for floating positioning, slider thumbs, progress fills); inline CSS custom properties; and
-Panda's `css` / `cva` / `sva` / `cx`, which only compute strings.
+happen. **Allowed, and routinely needed:** the DOM `style` attribute (Zag's `normalizeProps` emits
+`style` objects for floating positioning, slider thumbs, progress fills); inline CSS custom
+properties; and Panda's `css` / `cva` / `sva` / `cx`, which only compute strings.
 
 ## The hazard: silent unstyling
 
 A Panda class whose CSS was never generated renders nothing and raises no error — an unstyled
 component and a green suite look identical. So:
 
-- **A style value must be statically extractable, declared in `staticCss`** (the config key that
-  pre-generates rules for values no source file literally writes), **or routed through a CSS custom
-  property** — `style={{ "--w": w }}` with `w="var(--w)"`. There is no fourth option. Static is not
-  resolving: `mt="4x"` emits `margin-top: 4x`, which no browser parses — `check:declaration-support`
-  puts every emitted declaration to a real Chromium.
+- **A style value must be statically extractable, declared in `staticCss`, or routed through a CSS
+  custom property** — `style={{ "--w": w }}` with `w="var(--w)"`. There is no fourth option. Static
+  is not resolving: `mt="4x"` emits `margin-top: 4x`, which no browser parses —
+  `check:declaration-support` puts every emitted declaration to a real Chromium.
 - **Tests assert computed styles, never class names.** `classList.contains("p_4")` passes on a
   completely unstyled element.
 
@@ -41,7 +39,9 @@ component and a green suite look identical. So:
 
 No accessibility behavior beyond what Zag ships. Nothing invented that Chakra UI v3 does not have.
 SolidJS idioms excepted — those are what the port *is*. Adding a fix Chakra lacks is a divergence;
-so is removing behavior Chakra has.
+so is removing behavior Chakra has. **And nothing ships before what it depends on** — not its
+source, and not its docs page: a page that stands a Box in for an unported Button is not the 1:1
+port it claims, and it buys a second pass over work that was already finished.
 
 Reading a reference for reasoning, public API shape, or an ARIA pattern owes nothing. Reproducing
 its expression makes the file a derivative: *could someone diff my file against theirs and see the
