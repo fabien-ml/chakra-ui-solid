@@ -12,6 +12,7 @@ import { tanstackStart } from "@tanstack/solid-start/plugin/vite";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkSmartypants from "remark-smartypants";
 import { defineConfig } from "vite";
@@ -128,9 +129,14 @@ export default defineConfig(({ command }) => ({
         //
         // A page's `title` lives here rather than in an `# H1`, because the header component
         // renders it (`docs-plan.md` §8.1) — an `# H1` in the body would print it twice.
+        //
+        // `remarkGfm` is the table, the strikethrough and the task list — the markdown a reader
+        // writing a page assumes they have. Without it a pipe table is not a table at all: it is
+        // parsed as a paragraph and printed with its pipes showing. chakra-ui.com runs it too.
         remarkPlugins: [
           remarkFrontmatter,
           remarkMdxFrontmatter,
+          remarkGfm,
           [remarkSmartypants, { dashes: false }],
         ],
         // Highlighting is **Shiki at build time**, baked into the compiled module. A client-side

@@ -7,6 +7,7 @@ import { Example } from "~/components/example";
 import { Card, CardGroup } from "~/components/mdx/card";
 import { Step, Steps } from "~/components/mdx/steps";
 import { PropsTable } from "~/components/props-table";
+import { mdxTableClass } from "~/components/prose";
 
 /**
  * MDX funnels every intrinsic element through `_components.<tag>` and **calls it as a component**.
@@ -71,6 +72,16 @@ hostComponents.a = (props) => (
     textDecorationThickness="2px"
     textDecorationColor="border.emphasized"
     {...(props as BoxProps)}
+  />
+);
+
+// A table written in markdown. Styled here for the anchor's reason: as `& table` in `proseClass`
+// the same rules also matched the props table, which renders its own table inside a bordered box.
+hostComponents.table = (props) => (
+  <Dynamic
+    component="table"
+    {...props}
+    class={cx(mdxTableClass, props.class as string | undefined)}
   />
 );
 

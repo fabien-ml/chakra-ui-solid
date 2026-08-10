@@ -103,24 +103,7 @@ export const proseClass = css({
     "& p": { color: "fg.muted" },
   },
 
-  "& table": { width: "full", my: "2em", fontSize: "sm", borderCollapse: "collapse" },
-  "& th": {
-    textAlign: "start",
-    fontWeight: "semibold",
-    color: "fg",
-    borderBottomWidth: "1px",
-    borderColor: "border",
-    px: "3",
-    py: "2",
-  },
-  "& td": {
-    borderBottomWidth: "1px",
-    borderColor: "border.subtle",
-    px: "3",
-    py: "2",
-    color: "fg.muted",
-    verticalAlign: "top",
-  },
+  // No `& table`, `& th` or `& td` — see `mdxTableClass`.
 
   "& hr": { borderColor: "border", my: "10" },
 
@@ -141,4 +124,39 @@ export const proseClass = css({
     color: "fg.muted",
   },
   "& [data-rehype-pretty-code-title] + pre": { borderTopRadius: "0" },
+});
+
+/**
+ * A `remark-gfm` table's typography, worn by the `<table>` itself rather than reached from
+ * `proseClass` — chakra-ui.com does the same, in `components/mdx/table.tsx`.
+ *
+ * As `& table` in `proseClass` these rules also hit the props table, which puts its own table
+ * inside a bordered box: the 2em margin landed *inside* the border as a band of empty space above
+ * and below the rows, and `& th`/`& td` outranked the cells' own padding, because a descendant
+ * selector beats the single-class rule Panda emits for a style prop. Same hazard the anchor has,
+ * same fix — style the element the provider renders, not every element beneath the article.
+ */
+export const mdxTableClass = css({
+  width: "full",
+  my: "2em",
+  fontSize: "sm",
+  borderCollapse: "collapse",
+
+  "& th": {
+    textAlign: "start",
+    fontWeight: "semibold",
+    color: "fg",
+    borderBottomWidth: "1px",
+    borderColor: "border",
+    px: "3",
+    py: "2",
+  },
+  "& td": {
+    borderBottomWidth: "1px",
+    borderColor: "border.subtle",
+    px: "3",
+    py: "2",
+    color: "fg.muted",
+    verticalAlign: "top",
+  },
 });
