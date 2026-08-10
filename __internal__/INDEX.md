@@ -32,7 +32,7 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 | Document | Size | Lines | Sections | Largest section | Block starts |
 |---|---|---|---|---|---|
 | [`component-blueprint.md`](#component-blueprintmd) | 92.1 KB | 1663 | 79 | §11 at 20.9 KB | L65 |
-| [`decisions.md`](#decisionsmd) | 50.8 KB | 502 | 14 | §6 at 11.6 KB | L149 |
+| [`decisions.md`](#decisionsmd) | 51.4 KB | 503 | 14 | §6 at 11.6 KB | L149 |
 | [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.9 KB | 125 | 1 | §3.1 at 8.9 KB | L168 |
 | [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.6 KB | 143 | 1 | §3.2 at 9.6 KB | L174 |
 | [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.5 KB | 294 | 1 | §3.3 at 20.5 KB | L180 |
@@ -49,11 +49,11 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 | [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 60.8 KB | 771 | 1 | §3.14 at 60.8 KB | L246 |
 | [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 18.8 KB | 228 | 1 | §3.15 at 18.8 KB | L252 |
 | [`decisions/3.16-s4-reconciliation.md`](#decisions316-s4-reconciliationmd) | 10.0 KB | 129 | 1 | §3.16 at 10.0 KB | L258 |
-| [`decisions/3.17-s5-landing-page-reconciliation.md`](#decisions317-s5-landing-page-reconciliationmd) | 10.6 KB | 132 | 1 | §3.17 at 10.6 KB | L264 |
+| [`decisions/3.17-s5-landing-page-reconciliation.md`](#decisions317-s5-landing-page-reconciliationmd) | 13.7 KB | 167 | 1 | §3.17 at 13.7 KB | L264 |
 | [`definition-of-done.md`](#definition-of-donemd) | 63.4 KB | 545 | 22 | §8 at 14.8 KB | L270 |
-| [`docs-plan.md`](#docs-planmd) | 60.5 KB | 916 | 46 | §1 at 13.9 KB | L297 |
+| [`docs-plan.md`](#docs-planmd) | 61.2 KB | 924 | 46 | §1 at 13.9 KB | L297 |
 | [`docs-site.md`](#docs-sitemd) | 80.4 KB | 888 | 37 | §2 at 19.2 KB | L348 |
-| [`plan.md`](#planmd) | 79.0 KB | 1167 | 51 | §3 at 14.8 KB | L390 |
+| [`plan.md`](#planmd) | 80.0 KB | 1190 | 51 | §3 at 15.7 KB | L390 |
 | [`prior-art.md`](#prior-artmd) | 75.8 KB | 1141 | 45 | §2 at 11.1 KB | L446 |
 | [`roadmap.md`](#roadmapmd) | 90.2 KB | 1209 | 50 | §4 at 14.6 KB | L496 |
 | [`testing.md`](#testingmd) | 71.9 KB | 1032 | 51 | §3 at 11.4 KB | L551 |
@@ -154,15 +154,15 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §0.2 L 74–91   1.0 KB  Changing a decision after this pass
 §1   L 92–106  0.7 KB  The entry shape, fixed once
 §2   L107–129  3.1 KB  Q1–Q8 — the gate that settled each, and where the answer lives
-§3   L130–173  5.8 KB  The ledger
-§4   L174–231  7.4 KB  The reversals, in one place
-§5   L232–272  5.1 KB  The final build order — one list, each step's gate cited
-§6   L273–421 11.6 KB  What the document pass did **not** settle
-§6.1 L341–421  7.2 KB  The S4 marking pass — what was measured, and what was only ever predicted
-§7   L422–502 10.7 KB  The reconciliation log — what P9 changed, and where
-§7.1 L428–466  7.5 KB  Carried forward by name
-§7.2 L467–488  1.4 KB  The citation convention, and the sites it was applied to
-§7.3 L489–502  1.5 KB  Two rows found at P9 that were on nobody's list
+§3   L130–173  5.9 KB  The ledger
+§4   L174–232  7.9 KB  The reversals, in one place
+§5   L233–273  5.1 KB  The final build order — one list, each step's gate cited
+§6   L274–422 11.6 KB  What the document pass did **not** settle
+§6.1 L342–422  7.2 KB  The S4 marking pass — what was measured, and what was only ever predicted
+§7   L423–503 10.7 KB  The reconciliation log — what P9 changed, and where
+§7.1 L429–467  7.5 KB  Carried forward by name
+§7.2 L468–489  1.4 KB  The citation convention, and the sites it was applied to
+§7.3 L490–503  1.5 KB  Two rows found at P9 that were on nobody's list
 ```
 
 ## `decisions/3.01-p1-identity-law-reference-policy.md`
@@ -264,7 +264,7 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 ## `decisions/3.17-s5-landing-page-reconciliation.md`
 
 ```
-§3.17 L  1–132 10.6 KB  S5 — the landing page, and the documents that still described the old one
+§3.17 L  1–167 13.7 KB  S5 — the landing page, and the documents that still described the old one
 ```
 
 ## `definition-of-done.md`
@@ -309,40 +309,40 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §3.1  L297–320  1.6 KB  The frame — copied, minus the claims
 §3.2  L321–378  3.8 KB  Section order
 §3.3  L379–385  0.2 KB  What this page renders
-§4    L386–507  7.2 KB  `/docs/get-started/*` — install, frameworks, environments
-§4.1  L392–439  2.6 KB  `installation` — section order
-§4.2  L440–476  2.6 KB  `frameworks/*` — one page each, one fact each
-§4.3  L477–484  0.5 KB  `environments/{shadow-dom,iframe}`
-§4.4  L485–498  0.9 KB  `ai/llms` — deferred to before first public release
-§4.5  L499–507  0.4 KB  What this tier renders
-§5    L508–592  6.2 KB  `/docs/get-started/migration` — coming from Chakra UI (React)
-§5.1  L513–526  0.9 KB  The frame: two causes, and the page must not merge them
-§5.2  L527–566  3.6 KB  Section order
-§5.3  L567–572  0.3 KB  What this page must not do
-§5.4  L573–592  1.1 KB  Where the parity sentence appears verbatim, and where it does not
-§6    L593–658  4.2 KB  `/docs/theming/chakra-config` — the config function
-§6.1  L608–650  3.1 KB  Section order
-§6.2  L651–658  0.3 KB  What this page renders
-§7    L659–765  7.6 KB  `/docs/styling/*` and `/docs/theming/*`
-§7.1  L673–693  2.1 KB  The styling tier
-§7.2  L694–721  2.0 KB  `dark-mode` and `semantic-tokens` — the contract, and the snippet
-§7.3  L722–733  0.7 KB  `recipes` and `slot-recipes`
-§7.4  L734–757  1.7 KB  `customization/*` — the four override paths
-§7.5  L758–765  0.3 KB  What these tiers must not say
-§8    L766–916  8.9 KB  The component page — one template, applied 111 times
-§8.1  L784–797  0.8 KB  Frontmatter
-§8.2  L798–803  0.3 KB  Live preview + code fusion
-§8.3  L804–809  0.3 KB  `## Usage`
-§8.4  L810–816  0.3 KB  `## Examples`
-§8.5  L817–823  0.4 KB  `## Parts`
-§8.6  L824–830  0.3 KB  `## Props`
-§8.7  L831–847  0.9 KB  `### ids` — on every component page with a machine
-§8.8  L848–866  1.3 KB  `### render`
-§8.9  L867–877  0.6 KB  `### Context`, `### RootProvider`, `### PropsProvider`
-§8.10 L878–895  1.3 KB  `### Dynamic values` — only on the eight implementations `roadmap.md` §3.1 marks
-§8.11 L896–902  0.4 KB  `### Presence` — only on presence-gated components
-§8.12 L903–908  0.3 KB  `### Accessibility` — optional, and drawn from the machine
-§8.13 L909–916  0.4 KB  What the template must not contain
+§4    L386–512  7.6 KB  `/docs/get-started/*` — install, frameworks, environments
+§4.1  L392–444  2.9 KB  `installation` — section order
+§4.2  L445–481  2.6 KB  `frameworks/*` — one page each, one fact each
+§4.3  L482–489  0.5 KB  `environments/{shadow-dom,iframe}`
+§4.4  L490–503  0.9 KB  `ai/llms` — deferred to before first public release
+§4.5  L504–512  0.4 KB  What this tier renders
+§5    L513–597  6.2 KB  `/docs/get-started/migration` — coming from Chakra UI (React)
+§5.1  L518–531  0.9 KB  The frame: two causes, and the page must not merge them
+§5.2  L532–571  3.6 KB  Section order
+§5.3  L572–577  0.3 KB  What this page must not do
+§5.4  L578–597  1.1 KB  Where the parity sentence appears verbatim, and where it does not
+§6    L598–666  4.5 KB  `/docs/theming/chakra-config` — the config function
+§6.1  L613–658  3.4 KB  Section order
+§6.2  L659–666  0.3 KB  What this page renders
+§7    L667–773  7.6 KB  `/docs/styling/*` and `/docs/theming/*`
+§7.1  L681–701  2.1 KB  The styling tier
+§7.2  L702–729  2.0 KB  `dark-mode` and `semantic-tokens` — the contract, and the snippet
+§7.3  L730–741  0.7 KB  `recipes` and `slot-recipes`
+§7.4  L742–765  1.7 KB  `customization/*` — the four override paths
+§7.5  L766–773  0.3 KB  What these tiers must not say
+§8    L774–924  8.9 KB  The component page — one template, applied 111 times
+§8.1  L792–805  0.8 KB  Frontmatter
+§8.2  L806–811  0.3 KB  Live preview + code fusion
+§8.3  L812–817  0.3 KB  `## Usage`
+§8.4  L818–824  0.3 KB  `## Examples`
+§8.5  L825–831  0.4 KB  `## Parts`
+§8.6  L832–838  0.3 KB  `## Props`
+§8.7  L839–855  0.9 KB  `### ids` — on every component page with a machine
+§8.8  L856–874  1.3 KB  `### render`
+§8.9  L875–885  0.6 KB  `### Context`, `### RootProvider`, `### PropsProvider`
+§8.10 L886–903  1.3 KB  `### Dynamic values` — only on the eight implementations `roadmap.md` §3.1 marks
+§8.11 L904–910  0.4 KB  `### Presence` — only on presence-gated components
+§8.12 L911–916  0.3 KB  `### Accessibility` — optional, and drawn from the machine
+§8.13 L917–924  0.4 KB  What the template must not contain
 ```
 
 ## `docs-site.md`
@@ -408,39 +408,39 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §2.2  L 333–357   1.2 KB  The aliasing rule
 §2.3  L 358–385   2.3 KB  Three additions `renderStyled` needs
 §2.4  L 386–402   0.9 KB  Rejected
-§3    L 403–645  14.8 KB  The styling layer
+§3    L 403–668  15.7 KB  The styling layer
 §3.1  L 405–431   2.4 KB  `panda.config.ts`, knob by knob
 §3.2  L 432–460   2.0 KB  `eject` vs. an explicit `presets` array — decided, and the fix relocated
 §3.3  L 461–494   2.6 KB  `@chakra-ui-solid/panda-preset` — what it is and what it exports
-§3.4  L 495–533   1.9 KB  The consumer's config, and the two knobs that silently unstyle everything
-§3.5  L 534–552   1.1 KB  The dynamic-value contract
-§3.6  L 553–575   1.1 KB  How a component reaches a recipe
-§3.7  L 576–596   1.4 KB  Override paths, and the one open preflight item
-§3.8  L 597–645   2.1 KB  The responsive-variant opt-in
-§4    L 646–741   6.0 KB  Distribution
-§4.1  L 648–670   1.4 KB  Option B — ship the build info
-§4.2  L 671–697   1.4 KB  The exports map
-§4.3  L 698–706   0.5 KB  External, not inlined
-§4.4  L 707–741   2.7 KB  We ship zero CSS — Panda is a prerequisite, not a preference
-§5    L 742–872   8.9 KB  The package graph
-§5.1  L 744–770   1.3 KB  The graph
-§5.2  L 771–810   3.2 KB  Dependency direction — strictly downward
-§5.3  L 811–832   2.3 KB  What `@chakra-ui-solid/system` owns
-§5.4  L 833–845   0.7 KB  Seams
-§5.5  L 846–872   1.4 KB  Subpath exports
-§6    L 873–902   2.4 KB  Presence — a package-graph decision, not a component detail
-§7    L 903–991   5.6 KB  Color mode, direction, locale, environment
-§7.1  L 905–958   4.0 KB  Color mode: we ship a primitive, and no provider
-§7.2  L 959–981   1.0 KB  Direction, locale and environment: two contexts, no catalog
-§7.3  L 982–991   0.5 KB  RTL and logical properties
-§8    L 992–1022  2.1 KB  Build mechanics
-§9    L1023–1048  1.4 KB  Dev-time resolution and codegen ordering
-§10   L1049–1090  2.6 KB  Workstream B — the non-machine surface
-§11   L1091–1121  3.0 KB  Assumptions this architecture rests on
-§11.1 L1093–1105  1.5 KB  `brief-plan` §8 assumptions P3 depends on
-§11.2 L1106–1121  1.4 KB  New assumptions P3 introduces
-§12   L1122–1142  4.1 KB  What P3 changes in the plan — re-plan P4 and P5 against this
-§13   L1143–1167  1.9 KB  What P3 could not settle
+§3.4  L 495–555   2.7 KB  The consumer's config, and the two knobs that silently unstyle everything
+§3.5  L 556–574   1.1 KB  The dynamic-value contract
+§3.6  L 575–597   1.1 KB  How a component reaches a recipe
+§3.7  L 598–618   1.4 KB  Override paths, and the one open preflight item
+§3.8  L 619–668   2.3 KB  The responsive-variant opt-in
+§4    L 669–764   6.0 KB  Distribution
+§4.1  L 671–693   1.4 KB  Option B — ship the build info
+§4.2  L 694–720   1.4 KB  The exports map
+§4.3  L 721–729   0.5 KB  External, not inlined
+§4.4  L 730–764   2.7 KB  We ship zero CSS — Panda is a prerequisite, not a preference
+§5    L 765–895   8.9 KB  The package graph
+§5.1  L 767–793   1.3 KB  The graph
+§5.2  L 794–833   3.2 KB  Dependency direction — strictly downward
+§5.3  L 834–855   2.3 KB  What `@chakra-ui-solid/system` owns
+§5.4  L 856–868   0.7 KB  Seams
+§5.5  L 869–895   1.4 KB  Subpath exports
+§6    L 896–925   2.4 KB  Presence — a package-graph decision, not a component detail
+§7    L 926–1014  5.6 KB  Color mode, direction, locale, environment
+§7.1  L 928–981   4.0 KB  Color mode: we ship a primitive, and no provider
+§7.2  L 982–1004  1.0 KB  Direction, locale and environment: two contexts, no catalog
+§7.3  L1005–1014  0.5 KB  RTL and logical properties
+§8    L1015–1045  2.1 KB  Build mechanics
+§9    L1046–1071  1.4 KB  Dev-time resolution and codegen ordering
+§10   L1072–1113  2.6 KB  Workstream B — the non-machine surface
+§11   L1114–1144  3.0 KB  Assumptions this architecture rests on
+§11.1 L1116–1128  1.5 KB  `brief-plan` §8 assumptions P3 depends on
+§11.2 L1129–1144  1.4 KB  New assumptions P3 introduces
+§12   L1145–1165  4.1 KB  What P3 changes in the plan — re-plan P4 and P5 against this
+§13   L1166–1190  1.9 KB  What P3 could not settle
 ```
 
 ## `prior-art.md`

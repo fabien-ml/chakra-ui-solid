@@ -513,9 +513,31 @@ The preset is not imported here — `chakraConfig()` already puts it in `presets
 their own preset on top reaches for it explicitly (§3.7 path 4).
 
 **Spreading is shallow, so any key the consumer re-declares replaces ours wholesale.** That is fine
-for `include` and `outdir` — they are meant to be theirs — and a hazard for `presets`, `staticCss` and
-`theme`, where they usually mean *"and also mine"*. The documented form for those is Panda's own
-`mergeConfigs([chakraConfig(), { … }])` rather than a spread.
+for `include` and `outdir` — they are meant to be theirs. What it costs on the other three is
+**measured, not reasoned** (**D-177**), and only two of them are hazards:
+
+| Re-declared | What survives our spread |
+|---|---|
+| `presets` | **nothing** — every Chakra token and every recipe |
+| `staticCss` | **nothing**, and only reachable with `responsive` passed (§3.8) |
+| `theme: { extend: … }` | everything. `extend` merges, which is what it is for |
+| `theme: { … }` without `extend` | **about half the tokens** |
+
+The form is a named call and a spread of what it returned — no second import, no second install:
+
+```ts
+const chakra = chakraConfig()
+
+export default defineConfig({
+  ...chakra,
+  presets: [...(chakra.presets ?? []), myPreset],
+  theme: { extend: { tokens: { colors: { brand: { value: "#5b8" } } } } },
+})
+```
+
+**Not `mergeConfigs`.** `@pandacss/dev` does not export it — it lives in `@pandacss/config`, which
+§4.4's peer dependency does not put in a consumer's `node_modules` — and it returns `any`, discarding
+the `Config` type this fragment exists to supply.
 
 In Panda's external-package model the consumer **does not regenerate the runtime** — `css()` comes
 from our published `@chakra-ui-solid/styled-system`, and their Panda run produces the *stylesheet*.
@@ -631,8 +653,9 @@ staticCss: { recipes: { button: [{ size: ["*"], responsive: true }] } }
 of §1.2's choice and for the opposite reason. §1.2 avoided a top-level block because *our preset's*
 declarations would compete with a consumer's own; here the block **is** the consumer's, written into
 their config by a function they called. A consumer who also hand-writes `staticCss` hits the shallow
-spread named in §3.4 — `mergeConfigs` is the documented answer, and this is the case that most needs
-it in the docs.
+spread named in §3.4, and **this block is the only thing that spread can destroy**: with `responsive`
+omitted there is no `staticCss` to lose, so the hazard exists exactly where this opt-in is used. The
+form is `staticCss: { ...chakra.staticCss, … }`, not `mergeConfigs` (§3.4, **D-177**).
 
 **Types cannot follow the flag.** `size={{ base: "sm", md: "lg" }}` type-checks whether or not the
 rules were generated, because the prop types come from our recipes while the CSS comes from their

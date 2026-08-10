@@ -45,9 +45,18 @@ export interface ChakraConfigOptions {
  * ```
  *
  * **Spreading is shallow**, so any key the consumer re-declares replaces ours outright. That is
- * intended for `include` and `outdir`, and a hazard for `presets`, `staticCss` and `theme`, where
- * "and also mine" is what they usually mean — Panda's own `mergeConfigs([chakraConfig(), { … }])`
- * is the documented form for those.
+ * intended for `include` and `outdir`, and measured per key everywhere else (`plan.md` §3.4):
+ *
+ * - `presets` — a re-declare drops **every** Chakra token and recipe. Name the call and spread ours
+ *   back in: `presets: [...(chakra.presets ?? []), myPreset]`.
+ * - `staticCss` — the same wipe, and only reachable when the consumer passed `responsive`, because
+ *   that is the one case where this function writes a top-level `staticCss` block of its own.
+ * - `theme` — safe under `theme.extend`, which merges. A bare `theme` drops about half of Chakra's
+ *   tokens.
+ *
+ * **Not `mergeConfigs`.** It is not exported from `@pandacss/dev`, so a consumer who installed only
+ * the peer dependency cannot reach it, and it returns `any` — which discards the `Config` types
+ * this function exists to supply.
  *
  * It is a function even with no arguments so that the responsive opt-in below is a change of
  * argument rather than a change of call shape.

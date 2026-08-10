@@ -65,9 +65,25 @@ export default defineConfig({
 ```
 
 Two things about that, and no more. The preset is not imported here — `chakraConfig()` already
-puts it in `presets`. And **spreading is shallow**, so re-declaring `presets`, `staticCss` or
-`theme` replaces ours wholesale rather than adding to it; for those, Panda's own
-`mergeConfigs([chakraConfig(), { … }])` is the form that means *and also mine*.
+puts it in `presets`. And **spreading is shallow**, so any key you re-declare replaces ours
+outright rather than adding to it. Name the call, and add to what it returns:
+
+```ts
+const chakra = chakraConfig();
+
+export default defineConfig({
+  ...chakra,
+  // Without ours spread back in, every Chakra token and recipe disappears.
+  presets: [...(chakra.presets ?? []), myPreset],
+  // `theme` is the safe one, as long as your keys go under `extend`.
+  theme: { extend: { tokens: { colors: { brand: { value: "#5b8" } } } } },
+  // `include` and `outdir` as above — keep the buildinfo path.
+});
+```
+
+`staticCss` behaves like `presets` — spread `chakra.staticCss` back in — but only bites if you
+passed `responsive` to `chakraConfig()`, which is when the function writes a `staticCss` block of
+its own.
 
   </Step>
   <Step title="Generate, then import the stylesheet you generated">

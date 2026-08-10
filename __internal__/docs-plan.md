@@ -407,11 +407,16 @@ The peer is stated as a mechanism, not a footnote: **the install warning is the 
 naked, and no tool anywhere says why.
 
 **2 — `panda.config.ts`.** `plan.md` §3.4's snippet, verbatim, including `importMap`, the buildinfo
-path in `include`, the consumer's own source glob, and `outdir`. Two sentences beside it and no more:
+path in `include`, the consumer's own source glob, and `outdir`. Two things beside it and no more:
 the preset is not imported here because `chakraConfig()` already puts it in `presets`; and
-**spreading is shallow**, so a consumer who re-declares `presets`, `staticCss` or `theme` replaces
-ours wholesale — `mergeConfigs([chakraConfig(), { … }])` is the documented form for those. The full
-reference is §6; this page shows the shape that works.
+**spreading is shallow**, so any key a consumer re-declares replaces ours wholesale.
+
+The second gets a **second snippet rather than a sentence**, because the correct form is a shape and
+not a rule to remember (**D-177**): name the call, spread `chakra.presets` back in, keep `theme`
+under `extend`. **Not `mergeConfigs`** — `@pandacss/dev` does not export it, so a reader who followed
+step 1 does not have it. `staticCss` is one line here and belongs to §6, because it only bites with
+`responsive` passed and `responsive` is §6's. The full reference is §6; this page shows the shape
+that works.
 
 **3 — Generate, and import the stylesheet you generated.** `panda codegen`, then the consumer imports
 **their own** `styled-system/styles.css`. This is the sentence that stops *"we publish no CSS"* from
@@ -633,9 +638,12 @@ that it does **not** solve dynamic values and is not an escape hatch for extract
 (`/docs/styling/static-extraction` §1.2's *rejected* note).
 
 **4 — Spreading is shallow.** The one gotcha with real consequences: any key you re-declare replaces
-ours wholesale. Fine for `include` and `outdir`; a hazard for `presets`, `staticCss` and `theme`,
-where "and also mine" is what people mean. `mergeConfigs([chakraConfig(), { … }])` is the documented
-form (`plan.md` §3.4).
+ours wholesale. Fine for `include` and `outdir`. For the other three, `plan.md` §3.4's measured table
+verbatim (**D-177**) — `presets` loses every Chakra token and recipe, `staticCss` the same but only
+with `responsive` passed, and `theme` loses nothing under `extend` and about half the tokens without
+it. The form is a named call plus a spread of what it returned, and **not `mergeConfigs`**, which
+`@pandacss/dev` does not export and which returns `any`. **The `staticCss` half is this page's in
+full**, since §5 below is what makes it reachable at all; §4.1 states only that it exists.
 
 **5 — `responsive`.** The option's shape, in full: the three grains with their rule counts, the
 shorthand's expansion into the `staticCss` form Panda already understands, and why it is emitted as a
