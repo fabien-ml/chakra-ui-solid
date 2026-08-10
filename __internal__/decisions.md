@@ -129,7 +129,7 @@ other seven rows.
 
 ## 3. The ledger
 
-**One file per entry, under [`decisions/`](decisions/).** 180 decisions, D-01 … D-180, in eighteen
+**One file per entry, under [`decisions/`](decisions/).** 183 decisions, D-01 … D-183, in nineteen
 files grouped by the phase that settled them. Reversals are marked **⟲** and collected in §4.
 
 **The anchors did not move when the bodies did.** `` `decisions.md` §3.13 `` still names the S3
@@ -169,6 +169,7 @@ is cited. **A D-number is found by grepping `__internal__/decisions/`**, not thi
 | **3.16** | [S4 — the reconciliation pass, measured against predicted](decisions/3.16-s4-reconciliation.md) | D-167 … D-172 | Not a build-order step: the eleven documents marked M/I/P/S against what was actually built. Fifteen stale claims, seven of them survivors of one sweep — the register is §6.1 |
 | **3.17** | [S5 — the landing page, and the documents that still described the old one](decisions/3.17-s5-landing-page-reconciliation.md) | D-173 … D-177 | Not a build-order step: the docs home shipped chakra-ui.com's structure and Chakra's bolt, and four places still said neither was allowed. One was a missing check — the registry could not express `apps/`. D-177 is the third shape of the same failure: a claim restated in six places and measured in none |
 | **3.18** | [The declaration-support check — asking the engine instead of the source](decisions/3.18-declaration-support.md) | D-178 … D-180 | Not a build-order step: *statically extractable* and *resolves to something* are two questions, and only the first was checked. The oracle is `CSS.supports` in a real engine; ten declarations failed it on the first run, two of them ours. D-180 is the census procedure, wrong at three consecutive `HEAD`s |
+| **3.19** | [The docs site's own chrome, onto `Box`](decisions/3.19-docs-chrome-on-box.md) | D-181 … D-183 | Not a build-order step: the first consumer's own chrome wrote `css()` beside a raw `<div>` in twelve files, so the site was evidence about the build and none about what the build is for. The three survivors share one criterion — the element is not ours to render — and `as` turns out not to carry an element's own attributes |
 
 ---
 

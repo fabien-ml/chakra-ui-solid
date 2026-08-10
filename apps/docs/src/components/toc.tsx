@@ -1,4 +1,5 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { Box } from "@chakra-ui-solid/components";
+import type { JSX } from "@solidjs/web";
 import { createSignal, For, onSettled, Show } from "solid-js";
 import type { TocEntry } from "~/lib/site-map";
 
@@ -53,55 +54,57 @@ export function Toc(props: { entries: TocEntry[] }) {
 
   return (
     <Show when={items().length > 0}>
-      <nav
+      <Box
+        as="nav"
         aria-label="On this page"
-        class={css({
-          display: "none",
-          xl: { display: "block" },
-          flexShrink: "0",
-          width: "16rem",
-          px: "2",
-          py: "8",
-          fontSize: "sm",
-          position: "sticky",
-          top: "var(--header-height)",
-          height: "var(--content-height)",
-          overflowY: "auto",
-          overscrollBehavior: "contain",
-        })}
+        display="none"
+        xl={{ display: "block" }}
+        flexShrink="0"
+        width="16rem"
+        px="2"
+        py="8"
+        fontSize="sm"
+        position="sticky"
+        top="var(--header-height)"
+        height="var(--content-height)"
+        overflowY="auto"
+        overscrollBehavior="contain"
       >
-        <p class={css({ fontWeight: "semibold", color: "fg" })}>On this page</p>
-        <ul
-          class={css({
-            listStyle: "none",
-            mt: "3",
-            display: "flex",
-            flexDirection: "column",
-            gap: "2",
-          })}
-        >
+        <Box as="p" fontWeight="semibold" color="fg">
+          On this page
+        </Box>
+        <Box as="ul" listStyle="none" mt="3" display="flex" flexDirection="column" gap="2">
           <For each={items()}>
             {(item) => (
               <li>
-                <a
-                  href={`#${item.id}`}
+                <Box
                   aria-current={activeId() === item.id ? "page" : undefined}
+                  // The indent is the heading's depth, which no source file writes as a literal —
+                  // so it goes through inline `style` rather than a style prop. A Panda class
+                  // assembled from a variable was never generated: it renders nothing and raises
+                  // nothing.
                   style={{ "margin-inline-start": `${item.depth}rem` }}
-                  class={css({
-                    display: "block",
-                    color: "fg.muted",
-                    textDecoration: "none",
-                    _hover: { color: "fg" },
-                    "&[aria-current=page]": { color: "fg", fontWeight: "medium" },
-                  })}
+                  display="block"
+                  color="fg.muted"
+                  textDecoration="none"
+                  _hover={{ color: "fg" }}
+                  _currentPage={{ color: "fg", fontWeight: "medium" }}
+                  render={(renderProps) => (
+                    <a
+                      {...(renderProps as JSX.AnchorHTMLAttributes<HTMLAnchorElement>)}
+                      href={`#${item.id}`}
+                    >
+                      {renderProps.children}
+                    </a>
+                  )}
                 >
                   {item.value}
-                </a>
+                </Box>
               </li>
             )}
           </For>
-        </ul>
-      </nav>
+        </Box>
+      </Box>
     </Show>
   );
 }

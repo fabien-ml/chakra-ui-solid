@@ -1,4 +1,4 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { Box } from "@chakra-ui-solid/components";
 import { For } from "solid-js";
 import { DocLink } from "~/components/doc-link";
 import { type NavPage, sidebarGroups } from "~/lib/site-map";
@@ -16,77 +16,74 @@ import { type NavPage, sidebarGroups } from "~/lib/site-map";
  */
 export function DocsSidebar(props: { section: string; currentSlug: string }) {
   return (
-    <aside
-      class={css({
-        display: "none",
-        md: { display: "block" },
-        flexShrink: "0",
-        width: "16rem",
-        pe: "5",
-        ms: "-3",
-        py: "8",
-        fontSize: "sm",
-        position: "sticky",
-        top: "var(--header-height)",
-        height: "var(--content-height)",
-        overflowY: "auto",
-        overscrollBehavior: "contain",
-      })}
+    <Box
+      as="aside"
+      display="none"
+      md={{ display: "block" }}
+      flexShrink="0"
+      width="16rem"
+      pe="5"
+      ms="-3"
+      py="8"
+      fontSize="sm"
+      position="sticky"
+      top="var(--header-height)"
+      height="var(--content-height)"
+      overflowY="auto"
+      overscrollBehavior="contain"
     >
-      <nav aria-label="Docs" class={css({ display: "flex", flexDirection: "column", gap: "6" })}>
+      <Box as="nav" aria-label="Docs" display="flex" flexDirection="column" gap="6">
         <For each={sidebarGroups(props.section)}>
           {(group) => (
-            <div class={css({ display: "flex", flexDirection: "column", gap: "2" })}>
+            <Box display="flex" flexDirection="column" gap="2">
               {/* A `div`, not a heading: the page's own `## …` are the document outline, and a
                   sidebar group title inserted above the `<h1>` would put the outline out of
                   order for a screen reader. chakra-ui.com's sidenav title is a `div` for the
                   same reason. */}
-              <div class={css({ ps: "4", fontWeight: "semibold", color: "fg" })}>{group.title}</div>
-              <ul
-                class={css({
-                  listStyle: "none",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "1px",
-                })}
-              >
+              <Box ps="4" fontWeight="semibold" color="fg">
+                {group.title}
+              </Box>
+              <Box as="ul" listStyle="none" display="flex" flexDirection="column" gap="1px">
                 <For each={group.pages}>
                   {(page) => <SidebarLink doc={page} currentSlug={props.currentSlug} />}
                 </For>
-              </ul>
-            </div>
+              </Box>
+            </Box>
           )}
         </For>
-      </nav>
-    </aside>
+      </Box>
+    </Box>
   );
 }
 
 function SidebarLink(props: { doc: NavPage; currentSlug: string }) {
   return (
     <li>
-      <DocLink
-        slug={props.doc.slug}
-        aria-current={props.doc.slug === props.currentSlug ? "page" : undefined}
-        class={css({
-          display: "flex",
-          alignItems: "center",
-          py: "1.5",
-          ps: "4",
-          pe: "3",
-          borderRadius: "sm",
-          color: "fg.muted",
-          textDecoration: "none",
-          _hover: { layerStyle: "fill.subtle" },
-          "&[aria-current=page]": {
-            layerStyle: "fill.subtle",
-            color: "colorPalette.fg",
-            fontWeight: "medium",
-          },
-        })}
+      <Box
+        display="flex"
+        alignItems="center"
+        py="1.5"
+        ps="4"
+        pe="3"
+        borderRadius="sm"
+        color="fg.muted"
+        textDecoration="none"
+        _hover={{ layerStyle: "fill.subtle" }}
+        // `_currentPage` is Panda's name for the `[aria-current=page]` selector this used to spell
+        // out — same rule, and the same one the section tabs in the header use.
+        _currentPage={{ layerStyle: "fill.subtle", color: "colorPalette.fg", fontWeight: "medium" }}
+        render={(renderProps) => (
+          <DocLink
+            slug={props.doc.slug}
+            aria-current={props.doc.slug === props.currentSlug ? "page" : undefined}
+            class={renderProps.class as string}
+          >
+            {renderProps.children}
+          </DocLink>
+        )}
       >
         {props.doc.navTitle}
-      </DocLink>
+      </Box>
     </li>
   );
 }

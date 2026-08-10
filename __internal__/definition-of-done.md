@@ -242,10 +242,10 @@ gets fixed and one that gets closed (`roadmap.md` §1.3c).
 
 ## 7. Conventions, unenforced — labelled, not hidden
 
-**Nine** rules that survive review and nothing else. Each says what is trusted, and what mechanical
+**Ten** rules that survive review and nothing else. Each says what is trusted, and what mechanical
 proxy covers the part of it that could be covered. 7.6 was added at the S1 review and is the only one
-that is a *gate* rather than a coding rule; 7.7 came with the ledger shard, 7.8 with the skills, and
-7.9 with the budget check.
+that is a *gate* rather than a coding rule; 7.7 came with the ledger shard, 7.8 with the skills, 7.9
+with the budget check, and 7.10 with the docs site's own chrome.
 
 | # | Convention | Why no script | What *is* enforced |
 |---|---|---|---|
@@ -258,6 +258,7 @@ that is a *gate* rather than a coding rule; 7.7 came with the ledger shard, 7.8 
 | 7.7 | **A sharded file's name matches the `###` heading inside it** — `§3.13` is `decisions/3.13-…md` and `§8.2` is `testing/8.02-…md`, zero-padded (**D-163**, extended by **D-165**). It is how a citation resolves to a file without opening the parent's table | It could be scripted, but naming the script is how §7b's census grows: a twenty-sixth unwritten name, for a rule that one `ls` of the directory disproves | `check:doc-index` renders the heading and the path in the same row, so a mismatch is visible in `INDEX.md` rather than only in the directory |
 | 7.8 | **A skill's pointer line names where to read and not what will be there** — the residue `check:skill-pointers` cannot reach, because a rule restated *tersely* fits beside a citation (**D-164**). *"Tests assert computed styles, never class names"* is seven words | It is the same shape as 7.1: distinguishing a pointer from a summary is a reading. No predicate separates *"§2 — computed-style assertions"* from the rule those three words are | The proxy is real and it is structural, not semantic: **every non-blank, non-heading line carries a citation, at most 14 words sit outside it, and a skill is at most 40 lines** (`testing.md` §8.2). A paragraph of rule text has nowhere to go; a clause of it does |
 | 7.9 | **The governance-read bill is re-measured from the session transcripts rather than assumed** — `pnpm check:context-budget --sessions` prints the median bytes of governance documents a task read before its first edit, **with its n** (**D-165**). Target ≤ 60 KB | The input is machine-local: `~/.claude/projects/*.jsonl` is not in the repo and no CI runner has it. Naming a script CI never runs as though it were enforcement is the failure §7b exists to stop | Two things, and neither is this half. The **static** ceilings are rule 1.13, enforced on every push. And the aid is a **flag on that same script**, so nothing here adds a `check:*` name — the count in §7b does not move for it |
+| 7.10 | **The docs site's own chrome is `Box` and style props.** `css()` beside a raw element survives only where **the element is not ours to render** — `<body>`, the elements an `.mdx` page produces, and the `<pre>` Shiki hands back (**D-181**). A descendant selector into markup we do not render is Box's `css` prop, not a reason to keep a class (**D-182**) | The grep is trivial and the judgement is not: the predicate is *does this file call `css()` on an element it renders itself*, and the three legitimate cases look exactly like a lazy fourth from the outside. Enumerating the three in a script would freeze a list where the point is the criterion | Nothing, and that is the label. The nearest mechanical thing is one directory-wide grep for the import, which today returns the three files that each carry the reason in a comment above the class. Rule 7.6 is what actually catches the consequence: an unconverted surface is visible on the running site |
 
 ---
 

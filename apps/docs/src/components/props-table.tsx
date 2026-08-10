@@ -1,4 +1,4 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { Box } from "@chakra-ui-solid/components";
 import { For, Show } from "solid-js";
 import { propsTables } from "~/generated/props-tables";
 
@@ -23,15 +23,15 @@ export function PropsTable(props: { component: string; interface?: string }) {
     <Show
       when={entries().length > 0}
       fallback={
-        <p class={css({ color: "fg.error", fontSize: "sm" })}>
+        <Box as="p" color="fg.error" fontSize="sm">
           No generated props table for “{props.component}”. Run <code>pnpm codegen</code>.
-        </p>
+        </Box>
       }
     >
       <For each={entries()}>
         {(entry) => (
-          <div class={css({ my: "4" })}>
-            <table class={css({ width: "full", fontSize: "sm", borderCollapse: "collapse" })}>
+          <Box my="4">
+            <Box as="table" width="full" fontSize="sm" borderCollapse="collapse">
               <thead>
                 <tr>
                   <Th>Prop</Th>
@@ -44,36 +44,44 @@ export function PropsTable(props: { component: string; interface?: string }) {
                   {(row) => (
                     <tr>
                       <Td>
-                        <code class={css({ fontFamily: "mono", color: "fg" })}>{row.name}</code>
+                        <Box as="code" fontFamily="mono" color="fg">
+                          {row.name}
+                        </Box>
                         <Show when={row.required}>
-                          <span class={css({ color: "fg.error", ml: "1" })}>*</span>
+                          <Box as="span" color="fg.error" ml="1">
+                            *
+                          </Box>
                         </Show>
                       </Td>
                       <Td>
-                        <code class={css({ fontFamily: "mono", fontSize: "xs" })}>{row.type}</code>
+                        <Box as="code" fontFamily="mono" fontSize="xs">
+                          {row.type}
+                        </Box>
                       </Td>
                       <Td>{row.description}</Td>
                     </tr>
                   )}
                 </For>
               </tbody>
-            </table>
+            </Box>
             <Show when={entry.extends.length > 0}>
-              <p class={css({ fontSize: "sm", color: "fg.muted", mt: "2" })}>
+              <Box as="p" fontSize="sm" color="fg.muted" mt="2">
                 Plus everything it inherits:{" "}
                 <For each={entry.extends}>
                   {(base, index) => (
                     <>
                       <Show when={index() > 0}>{", "}</Show>
-                      <code class={css({ fontFamily: "mono", fontSize: "xs" })}>{base}</code>
+                      <Box as="code" fontFamily="mono" fontSize="xs">
+                        {base}
+                      </Box>
                     </>
                   )}
                 </For>
                 . Those are the whole style-prop surface and the DOM attributes of the element it
                 renders — several hundred names, listed here as their sources rather than expanded.
-              </p>
+              </Box>
             </Show>
-          </div>
+          </Box>
         )}
       </For>
     </Show>
@@ -81,32 +89,30 @@ export function PropsTable(props: { component: string; interface?: string }) {
 }
 
 const Th = (props: { children: string }) => (
-  <th
-    class={css({
-      textAlign: "start",
-      fontWeight: "semibold",
-      color: "fg",
-      borderBottomWidth: "1px",
-      borderColor: "border",
-      px: "3",
-      py: "2",
-    })}
+  <Box
+    as="th"
+    textAlign="start"
+    fontWeight="semibold"
+    color="fg"
+    borderBottomWidth="1px"
+    borderColor="border"
+    px="3"
+    py="2"
   >
     {props.children}
-  </th>
+  </Box>
 );
 
 const Td = (props: { children: unknown }) => (
-  <td
-    class={css({
-      borderBottomWidth: "1px",
-      borderColor: "border.subtle",
-      px: "3",
-      py: "2",
-      color: "fg.muted",
-      verticalAlign: "top",
-    })}
+  <Box
+    as="td"
+    borderBottomWidth="1px"
+    borderColor="border.subtle"
+    px="3"
+    py="2"
+    color="fg.muted"
+    verticalAlign="top"
   >
     {props.children as never}
-  </td>
+  </Box>
 );

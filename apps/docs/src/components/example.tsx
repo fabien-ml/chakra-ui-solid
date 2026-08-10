@@ -1,4 +1,4 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { Box } from "@chakra-ui-solid/components";
 import { Dynamic } from "@solidjs/web";
 import type { Component } from "solid-js";
 import { Show } from "solid-js";
@@ -36,69 +36,72 @@ export const exampleNames = Object.keys(exampleModules)
 export const exampleComponent = (name: string): Component | undefined =>
   exampleModules[keyFor(name)]?.default;
 
-const previewClass = css({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderWidth: "1px",
-  borderColor: "border",
-  borderTopRadius: "l2",
-  bg: "bg.panel",
-  px: "6",
-  py: "10",
-});
-
-/**
- * Shiki hands back its own `<pre class="shiki">`, so the pane is styled through a descendant
- * selector rather than by putting a class on an element we do not render. Each token carries a
- * `--shiki-light` / `--shiki-dark` pair instead of a committed colour, which is what makes the
- * colour-mode switch a cascade choice — nothing is re-highlighted in the browser.
- */
-const sourceClass = css({
-  "& pre": {
-    overflowX: "auto",
-    borderWidth: "1px",
-    borderTopWidth: "0",
-    borderColor: "border",
-    borderBottomRadius: "l2",
-    bg: "bg.subtle",
-    p: "4",
-    fontSize: "sm",
-    // `tall`, not Chakra v2's `relaxed` — the v3 preset renamed the scale, and an unknown token is
-    // emitted as its own name (`line-height: relaxed`), which the browser drops with no error.
-    lineHeight: "tall",
-    color: "var(--shiki-light)",
-  },
-  "& span": { color: "var(--shiki-light)" },
-  _dark: {
-    "& pre": { color: "var(--shiki-dark)" },
-    "& span": { color: "var(--shiki-dark)" },
-  },
-});
-
 export function Example(props: { name: string }) {
   const module = () => exampleModules[keyFor(props.name)];
   const source = () => exampleSources[keyFor(props.name)];
 
   return (
-    <div class={css({ my: "6" })}>
+    <Box my="6">
       <Show
         when={module()}
         fallback={
           // Loud rather than empty. `check:docs-examples` fails the build on a missing example,
           // but whoever is running `pnpm dev` should see which name is wrong rather than a gap.
-          <p class={css({ color: "fg.error", fontSize: "sm" })}>
+          <Box as="p" color="fg.error" fontSize="sm">
             No example named “{props.name}” under <code>src/examples/</code>.
-          </p>
+          </Box>
         }
       >
         {(loaded) => (
-          <div class={previewClass}>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            borderWidth="1px"
+            borderColor="border"
+            borderTopRadius="l2"
+            bg="bg.panel"
+            px="6"
+            py="10"
+          >
             <Dynamic component={loaded().default} />
-          </div>
+          </Box>
         )}
       </Show>
-      <Show when={source()}>{(html) => <div class={sourceClass} innerHTML={html()} />}</Show>
-    </div>
+      <Show when={source()}>
+        {(html) => (
+          <Box
+            // Shiki hands back its own `<pre class="shiki">`, so those two elements are reached by
+            // descendant selectors — which is what the `css` escape hatch is for. Each token
+            // carries a `--shiki-light` / `--shiki-dark` pair instead of a committed colour, which
+            // is what makes the colour-mode switch a cascade choice: nothing is re-highlighted in
+            // the browser.
+            css={{
+              "& pre": {
+                overflowX: "auto",
+                borderWidth: "1px",
+                borderTopWidth: "0",
+                borderColor: "border",
+                borderBottomRadius: "l2",
+                bg: "bg.subtle",
+                p: "4",
+                fontSize: "sm",
+                // `tall`, not Chakra v2's `relaxed` — the v3 preset renamed the scale, and an
+                // unknown token is emitted as its own name (`line-height: relaxed`), which the
+                // browser drops with no error.
+                lineHeight: "tall",
+                color: "var(--shiki-light)",
+              },
+              "& span": { color: "var(--shiki-light)" },
+              _dark: {
+                "& pre": { color: "var(--shiki-dark)" },
+                "& span": { color: "var(--shiki-dark)" },
+              },
+            }}
+            innerHTML={html()}
+          />
+        )}
+      </Show>
+    </Box>
   );
 }

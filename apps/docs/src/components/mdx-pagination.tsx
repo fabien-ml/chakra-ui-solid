@@ -1,4 +1,4 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { Box } from "@chakra-ui-solid/components";
 import { Show } from "solid-js";
 import { DocLink } from "~/components/doc-link";
 import { type NavPage, siblingsOf } from "~/lib/site-map";
@@ -14,14 +14,14 @@ export function MdxPagination(props: { slug: string }) {
   const siblings = () => siblingsOf(props.slug);
 
   return (
-    <nav aria-label="Pagination" class={css({ display: "flex", gap: "8", mt: "20" })}>
-      <Show when={siblings().previous} fallback={<span class={css({ flex: "1" })} />}>
+    <Box as="nav" aria-label="Pagination" display="flex" gap="8" mt="20">
+      <Show when={siblings().previous} fallback={<Box as="span" flex="1" />}>
         {(page) => <PaginationItem doc={page()} label="Previous" />}
       </Show>
-      <Show when={siblings().next} fallback={<span class={css({ flex: "1" })} />}>
+      <Show when={siblings().next} fallback={<Box as="span" flex="1" />}>
         {(page) => <PaginationItem doc={page()} label="Next" />}
       </Show>
-    </nav>
+    </Box>
   );
 }
 
@@ -32,31 +32,38 @@ function PaginationItem(props: { doc: NavPage; label: "Previous" | "Next" }) {
   const isNext = () => props.label === "Next";
 
   return (
-    <DocLink
-      slug={props.doc.slug}
-      class={css({
-        flex: "1",
-        borderWidth: "1px",
-        borderColor: "border",
-        borderRadius: "l2",
-        p: "4",
-        fontSize: "sm",
-        textDecoration: "none",
-        _hover: { borderColor: "border.emphasized" },
-      })}
+    <Box
+      flex="1"
+      borderWidth="1px"
+      borderColor="border"
+      borderRadius="l2"
+      p="4"
+      fontSize="sm"
+      textDecoration="none"
+      _hover={{ borderColor: "border.emphasized" }}
+      render={(renderProps) => (
+        <DocLink slug={props.doc.slug} class={renderProps.class as string}>
+          {renderProps.children}
+        </DocLink>
+      )}
     >
-      <span
-        class={css({ display: "block", color: "fg.muted" })}
-        style={{ "text-align": isNext() ? "end" : "start" }}
-      >
+      {/* A ternary between two literals is two static values, so Panda extracts both branches and
+          generates both rules — the same shape `site/link-button` uses for its two looks. A value
+          assembled from a variable would be a class nobody generated: it renders nothing and
+          raises nothing. */}
+      <Box as="span" display="block" color="fg.muted" textAlign={isNext() ? "end" : "start"}>
         {props.label}
-      </span>
-      <span
-        class={css({ display: "block", mt: "1", fontWeight: "medium", color: "fg" })}
-        style={{ "text-align": isNext() ? "end" : "start" }}
+      </Box>
+      <Box
+        as="span"
+        display="block"
+        mt="1"
+        fontWeight="medium"
+        color="fg"
+        textAlign={isNext() ? "end" : "start"}
       >
         {isNext() ? `${props.doc.navTitle} →` : `← ${props.doc.navTitle}`}
-      </span>
-    </DocLink>
+      </Box>
+    </Box>
   );
 }

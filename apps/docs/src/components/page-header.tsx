@@ -1,4 +1,5 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { Box } from "@chakra-ui-solid/components";
+import type { JSX } from "@solidjs/web";
 import { For, Show } from "solid-js";
 import type { DocPage } from "~/lib/site-map";
 
@@ -36,25 +37,33 @@ function PageLink(props: { name: string; value: string }) {
     <Show
       when={/^https?:\/\//.test(props.value)}
       fallback={
-        <span class={css({ color: "fg.muted" })}>
-          {label()}: <code class={css({ fontFamily: "mono", fontSize: "xs" })}>{props.value}</code>
-        </span>
+        <Box as="span" color="fg.muted">
+          {label()}:{" "}
+          <Box as="code" fontFamily="mono" fontSize="xs">
+            {props.value}
+          </Box>
+        </Box>
       }
     >
-      <a
-        href={props.value}
-        target="_blank"
-        rel="noreferrer"
-        class={css({
-          fontWeight: "medium",
-          color: "fg.muted",
-          textDecoration: "underline",
-          textUnderlineOffset: "3px",
-          _hover: { color: "fg" },
-        })}
+      <Box
+        fontWeight="medium"
+        color="fg.muted"
+        textDecoration="underline"
+        textUnderlineOffset="3px"
+        _hover={{ color: "fg" }}
+        render={(renderProps) => (
+          <a
+            {...(renderProps as JSX.AnchorHTMLAttributes<HTMLAnchorElement>)}
+            href={props.value}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {renderProps.children}
+          </a>
+        )}
       >
         {label()} ↗
-      </a>
+      </Box>
     </Show>
   );
 }
@@ -66,25 +75,22 @@ export function PageHeader(props: { doc: DocPage }) {
     );
 
   return (
-    <div class={css({ display: "flex", flexDirection: "column", gap: "4", pb: "4" })}>
-      <h1
-        class={css({
-          fontSize: "3xl",
-          fontWeight: "semibold",
-          letterSpacing: "tight",
-          color: "fg",
-        })}
-      >
+    <Box display="flex" flexDirection="column" gap="4" pb="4">
+      <Box as="h1" fontSize="3xl" fontWeight="semibold" letterSpacing="tight" color="fg">
         {props.doc.title}
-      </h1>
+      </Box>
       <Show when={props.doc.description}>
-        {(description) => <p class={css({ color: "fg.muted" })}>{description()}</p>}
+        {(description) => (
+          <Box as="p" color="fg.muted">
+            {description()}
+          </Box>
+        )}
       </Show>
       <Show when={links().length > 0}>
-        <div class={css({ display: "flex", flexWrap: "wrap", gap: "6", fontSize: "sm" })}>
+        <Box display="flex" flexWrap="wrap" gap="6" fontSize="sm">
           <For each={links()}>{([name, value]) => <PageLink name={name} value={value} />}</For>
-        </div>
+        </Box>
       </Show>
-    </div>
+    </Box>
   );
 }

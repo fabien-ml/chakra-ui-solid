@@ -1,4 +1,4 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { Box } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
 import { For, children as resolveChildren } from "solid-js";
 
@@ -19,48 +19,46 @@ export function Steps(props: { children?: JSX.Element }) {
   const items = () => resolved.toArray();
 
   return (
-    <div class={css({ display: "flex", flexDirection: "column", mt: "8", mb: "6" })}>
+    <Box display="flex" flexDirection="column" mt="8" mb="6">
       <For each={items()}>
         {(step, index) => (
-          <div class={css({ display: "flex", gap: "4", alignItems: "stretch" })}>
-            <div class={css({ display: "flex", flexDirection: "column", alignItems: "center" })}>
-              <span
-                class={css({
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: "0",
-                  width: "7",
-                  height: "7",
-                  borderRadius: "l2",
-                  layerStyle: "fill.subtle",
-                  fontSize: "sm",
-                  fontWeight: "medium",
-                  color: "colorPalette.fg",
-                })}
+          <Box display="flex" gap="4" alignItems="stretch">
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <Box
+                as="span"
                 aria-hidden="true"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                flexShrink="0"
+                width="7"
+                height="7"
+                borderRadius="l2"
+                layerStyle="fill.subtle"
+                fontSize="sm"
+                fontWeight="medium"
+                color="colorPalette.fg"
               >
                 {index() + 1}
-              </span>
-              <span
-                class={css({ flex: "1", width: "1px", bg: "border", mt: "2" })}
-                aria-hidden="true"
-              />
-            </div>
-            <div class={css({ flex: "1", minW: "0", pb: "8" })}>{step}</div>
-          </div>
+              </Box>
+              <Box as="span" aria-hidden="true" flex="1" width="1px" bg="border" mt="2" />
+            </Box>
+            <Box flex="1" minW="0" pb="8">
+              {step}
+            </Box>
+          </Box>
         )}
       </For>
-    </div>
+    </Box>
   );
 }
 
 export function Step(props: { title: string; children?: JSX.Element }) {
   return (
     <div>
-      <h3 class={css({ fontSize: "md", fontWeight: "semibold", color: "fg", mt: "0.5", mb: "2" })}>
+      <Box as="h3" fontSize="md" fontWeight="semibold" color="fg" mt="0.5" mb="2">
         {props.title}
-      </h3>
+      </Box>
       {props.children}
     </div>
   );

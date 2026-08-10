@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { Box } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/solid-router";
 import { shellClass } from "~/components/layout";
@@ -65,7 +65,9 @@ function RootLayout(props: { children: JSX.Element }) {
         {/* Every bolt on the site fills from one of these three gradients (`~/components/site/icons`). */}
         <SiteGradientDefs />
         <SiteHeader />
-        <main class={css({ flex: "1" })}>{props.children}</main>
+        <Box as="main" flex="1">
+          {props.children}
+        </Box>
         <SiteFooter />
         <Scripts />
       </body>

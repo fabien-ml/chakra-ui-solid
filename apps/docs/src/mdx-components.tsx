@@ -1,4 +1,5 @@
-import { css, cx } from "@chakra-ui-solid/styled-system/css";
+import { Box, type BoxProps } from "@chakra-ui-solid/components";
+import { cx } from "@chakra-ui-solid/styled-system/css";
 import { Dynamic } from "@solidjs/web";
 import type { Component } from "solid-js";
 import { codePaneClass } from "~/components/code-pane";
@@ -56,17 +57,21 @@ for (const tag of HTML_TAGS) {
 // A link written in prose. Styled here rather than through a descendant selector in `proseClass`,
 // because that selector would also beat the chrome that renders its own anchors inside the same
 // element — the framework cards, the previous/next pager — and underline both.
-const anchorClass = css({
-  color: "fg",
-  fontWeight: "medium",
-  textDecoration: "underline",
-  textUnderlineOffset: "3px",
-  textDecorationThickness: "2px",
-  textDecorationColor: "border.emphasized",
-});
-
+//
+// `href` and the rest of MDX's bag ride in on the spread: Box's props are typed against
+// `JSX.HTMLAttributes<HTMLElement>` and never re-typed by `as`, so an element-specific attribute
+// type-checks only through a cast here or through the `render` prop.
 hostComponents.a = (props) => (
-  <Dynamic component="a" {...props} class={cx(anchorClass, props.class as string | undefined)} />
+  <Box
+    as="a"
+    color="fg"
+    fontWeight="medium"
+    textDecoration="underline"
+    textUnderlineOffset="3px"
+    textDecorationThickness="2px"
+    textDecorationColor="border.emphasized"
+    {...(props as BoxProps)}
+  />
 );
 
 // Shiki writes each token's colour as a `--shiki-light`/`--shiki-dark` pair rather than a
