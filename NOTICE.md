@@ -94,11 +94,12 @@ row per page, because the content tier is one derivative rather than 111
 **The brand assets are used, and they are used knowingly.** The docs site carries Chakra's bolt —
 `BlitzIcon`, `BlitzFillIcon` and the `LogoIcon` glyph — and their `favicon.ico`. All four are files
 in the same MIT-licensed repository, so the copy is permitted and the rows below are the condition.
-**Trademark is a separate right that no licence moves**, and the mitigations are unchanged and
-load-bearing: the site's logotype reads `chakra-ui-solid` and never `chakra`, none of Chakra's
-wordmark lettering is reproduced, no social card or combined mark exists, and the disclaimer in
-`legal.md` §3.4 appears above the fold on the docs home and in every page's footer
-([`__internal__/legal.md`](__internal__/legal.md) §3.6).
+**Trademark is a separate right that no licence moves**, and the mitigations are load-bearing: the
+site's logotype reads `chakra-ui-solid` and never `chakra`, none of Chakra's wordmark lettering is
+reproduced, no social card or combined mark exists, and the disclaimer appears verbatim above the
+fold on the docs home and in every page's footer
+([`__internal__/docs-site.md`](__internal__/docs-site.md) §3.4;
+[`__internal__/decisions.md`](__internal__/decisions.md) **D-173**).
 
 | File | Derived from |
 | ---- | ------------ |
@@ -116,7 +117,8 @@ three implies endorsement, sponsorship or affiliation.
 | ---- | ------ | ------------ |
 | `apps/docs/public/logos/vite.svg` | `vitejs/vite` — `docs/public/logo.svg` | The Vite project |
 | `apps/docs/public/logos/solid-start.svg` | `solidjs/solid-docs` — `public/solid-start.svg` | The SolidJS project |
-| `apps/docs/public/logos/tanstack-light.svg`, `tanstack-dark.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-stacked-{charcoal,white}.svg` | Tanner Linsley / TanStack |
+| `apps/docs/public/logos/tanstack-light.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-stacked-charcoal.svg` | Tanner Linsley / TanStack |
+| `apps/docs/public/logos/tanstack-dark.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-stacked-white.svg` | Tanner Linsley / TanStack |
 
 ## Ark UI
 

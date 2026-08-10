@@ -887,15 +887,30 @@ why they are scripts rather than a review habit (`legal.md` §2.3).
 expression-tier derivative: `{ file, upstreamProject, upstreamFile, license, package }`. Every check
 below reads it, so the registry is the single place a new derivative is declared.
 
-Its contents today are **eight entries**, and the eighth is new since P6:
+**`package` is `string | null`, and `null` is the docs app.** It names the owning directory under
+`packages/`, or says no package publishes this file. An entry with `package: null` owes the registry
+entry, the `@license` header and the root `NOTICE.md` row, and is skipped by the three obligations
+whose subject is an npm consumer — a package `NOTICE.md`, the `files` array, and the header surviving
+into `dist/`. `docs-site.md` §3.3 is the table and the argument; this row is the mechanism.
+
+Its contents today are **eight entries**, of which one is outside `packages/`:
 
 - The seven `zag-solid` fork files — `machine`, `bindable`, `merge-props`, `normalize-props`, `refs`,
   `track`, `index` — each naming `chakra-ui/zag` → `packages/frameworks/solid/src/<file>.ts`
   (`zag-solid-adapter.md` §7.1).
-- **The `container` recipe delta in `@chakra-ui-solid/panda-preset`** — a recipe **body**, and
-  therefore **the first expression-tier file outside the fork**. It brings the preset package its
-  first `NOTICE.md`. Its tier, its provenance and the allow-list entry it retires are
-  `definition-of-done.md` §6.
+- **`apps/docs/src/components/site/icons.tsx`**, `package: null` — Chakra's bolt in three forms,
+  from `apps/www/components/site/icons.tsx` and `apps/www/components/logo.tsx` (**D-173**).
+
+And **one entry not yet written**: the `container` recipe delta in `@chakra-ui-solid/panda-preset`, a
+recipe **body**, arriving with the Container component at step 6a. It brings the preset package its
+first `NOTICE.md`. Its tier, its provenance and the allow-list entry it retires are
+`definition-of-done.md` §6.
+
+**The second list — `noticeOnlyPaths`.** Six root-`NOTICE.md` rows owe a row and can carry no
+header: a directory (`apps/docs/src/content`), a binary (`favicon.ico`), and four framework logos
+that are another project's mark rather than our derivative. Each is declared with the reason it
+cannot be an entry. It exists so the orphan scan can read `apps/` rows at all — without it every one
+of them reports as a row with no entry (`docs-site.md` §3.3).
 
 **What the registry must not gain:** the `theme.extend.tokens.cursor.switch` key. A one-word token
 value is not expression (`roadmap.md` §1.3c), and a check that demanded a header for it would be
@@ -903,8 +918,8 @@ wrong.
 
 | Script | Asserts | A failure means |
 |---|---|---|
-| `check:license-headers` | (a) every registry entry's source file opens with an `@license` header of the right shape, naming the **upstream file**; (b) **the header is still present in `dist/`**; (c) `comments.legal` is pinned `true` in `tsdown.config.base.ts`, **with its comment** | (b) is the load-bearing one. Rolldown strips every unmarked block comment, so an untagged provenance paragraph vanishes from `dist/` and the published package becomes an unattributed derivative — of the project we are porting — silently, with a green build (`legal.md` §2.3). (c) is how (b) breaks: unpinning `comments.legal` is a one-word edit nobody reviews |
-| `check:notice-rows` | Every registry entry has a row in the root `NOTICE.md` **and** in its own package's; and **no row exists without an entry** | A stale row claims a derivation that is not there; a missing row is the obligation itself. The root file is the audit surface, the package file is the one that travels in the tarball and the only one a consumer who never visits the repo will see (`legal.md` §2.4) |
+| `check:license-headers` | (a) every registry entry's source file opens with an `@license` header of the right shape, naming the **upstream file**; (b) **the header is still present in `dist/`** — entries with `package: null` build no `dist/` and are skipped by (b) alone; (c) `comments.legal` is pinned `true` in `tsdown.config.base.ts`, **with its comment** | (b) is the load-bearing one. Rolldown strips every unmarked block comment, so an untagged provenance paragraph vanishes from `dist/` and the published package becomes an unattributed derivative — of the project we are porting — silently, with a green build (`legal.md` §2.3). (c) is how (b) breaks: unpinning `comments.legal` is a one-word edit nobody reviews |
+| `check:notice-rows` | Every registry entry has a row in the root `NOTICE.md` — **and** in its own package's, unless `package` is `null`; every `noticeOnlyPaths` path has a root row; and **no `packages/` or `apps/` row exists without an entry in one of the two lists** | A stale row claims a derivation that is not there; a missing row is the obligation itself. The root file is the audit surface, the package file is the one that travels in the tarball and the only one a consumer who never visits the repo will see (`legal.md` §2.4) |
 | `check:package-files` | Every published package's `files` contains `LICENSE` and `NOTICE.md`, and **every file named in an `@license` header's *"distributed with this package as …"* clause is actually in that array** | That clause is a promise to the consumer and it is the easiest one in the repo to break — the default `files` ships `dist` and nothing else (`legal.md` §2.5) |
 | `check:readme-disclaimer` | **Every published package's README** carries the disclaimer, not just the root's | `legal.md` §6 item 7, and the reason it is a check: a per-package README is written once per package and then never looked at again. It runs at **publish time** — a `prepublishOnly` gate plus a release-workflow job — so a new package cannot ship without it |
 | `check:fork-drift` | Upstream `@zag-js/solid`'s `packages/frameworks/solid/src/` file set and contents against the fork; and whether upstream's peer range admits `solid-js@2` | Not a failure — a **report**. The fork is meant to be retired: the day the peer range admits 2.x, it is a deletion candidate (`legal.md` §1.3, §5) |

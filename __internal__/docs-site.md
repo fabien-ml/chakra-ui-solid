@@ -388,11 +388,10 @@ list that means anything here.
 > copying their prose outright; the one condition is that the notice travels with it. **So the
 > content tier copies their pages and owes one `NOTICE.md` row**, not a rewrite.
 >
-> What stays exactly as written: **§3.4, the trademark control**, which no licence touches — no
-> logo, wordmark, favicon derivative, social card or combined mark, chrome saying
-> `chakra-ui-solid`, and the disclaimer on the home page and in every footer. And **rows 4–9**,
-> which were never about prose: generated tables stay generated, token tables stay rendered from
-> the installed preset, and no screenshot of chakra-ui.com appears anywhere.
+> What stays: **rows 4–9**, which were never about prose — generated tables stay generated, token
+> tables stay rendered from the installed preset, and no screenshot of chakra-ui.com appears
+> anywhere. §3.4 was named here as *unchanged*, and the block below is where that stopped being
+> true.
 >
 > **The row was written at S3b part 3**, when the content tier first carried their prose: one
 > directory-scoped entry in the root `NOTICE.md`, under the existing **Chakra UI** section —
@@ -403,6 +402,22 @@ list that means anything here.
 > is unaffected — its orphan scan reads `packages/…` rows only.
 >
 > `legal.md` §1.4's three tiers are **unchanged for code**, which is what they were written for.
+
+> **§3.4's *no logo, wordmark or favicon derivative* is RETIRED, and §3.3's proxy is SPENT, S4,
+> 2026-08-10** (**D-173**, **D-174**). The landing page carries Chakra's bolt in three forms and
+> their `favicon.ico`. Four files in the same MIT-licensed repository as their code, so the copy is
+> permitted and a `NOTICE.md` row is the condition — the same reading D-148 applied to their prose,
+> applied to their assets.
+>
+> **Trademark did not move, and the mitigations are what carry it**: the logotype reads
+> `chakra-ui-solid`, none of Chakra's wordmark **lettering** is reproduced, no social card and no
+> combined mark exists, and the disclaimer is verbatim above the fold on the home page and in every
+> footer. §3.4 below is rewritten to state that boundary rather than the flat ban it replaced.
+>
+> §3.3's proxy — *no `@license` header and no `NOTICE.md` row anywhere under `apps/docs/src/**`* —
+> was already retired for the content tier by D-148 and is now spent outright:
+> `apps/docs/src/components/site/icons.tsx` carries a header. §3.3 below is what replaced it, and it
+> is a check rather than a reading.
 
 ### 3.1 The rule, cited
 
@@ -428,34 +443,82 @@ instead, and which tier it lands in.
 | 8 | **Screenshots of chakra-ui.com** | None, anywhere — including in the README, social cards and this repo's `__internal__/` | Expression → **none reproduced** |
 | 9 | **The migration page quoting Chakra** | Short API signatures and prop names (API shape). Never their explanatory paragraphs. The one long quotation the site carries is `legal.md` §3.4's disclaimer, which is ours | API shape → **owes nothing** |
 | 10 | **`llms-full.txt`** | Generated from our MDX source, so it inherits whatever the pages carry — which means a single pasted upstream paragraph is republished in a second, machine-readable form. Flagged because it multiplies rows 1 and 2 rather than adding a new one | Derived → **inherits** |
-| 11 | **The docs site's own UI** — nav, search, sidebar, code-block chrome | Ours, styled with our own preset. Looking Chakra-ish is the product working correctly (`legal.md` §3.6); reproducing their layout *as an identity* is §3.4's question, not this section's | Trademark → §3.4 |
+| 11 | **The docs site's own UI** — nav, search, sidebar, code-block chrome | Ours, written against our own components and preset. Looking Chakra-ish is the product working correctly; reproducing their layout *as an identity* is §3.4's question, not this section's | Trademark → §3.4 |
+| 11a | **The site's icons and favicon** — the bolt in three forms, `favicon.ico` | **Theirs, copied**, under the same MIT grant as their code. Row 11 covers the UI we wrote; this row covers four files we did not. Registry entry, `@license` header and a root `NOTICE.md` row — §3.3 | Expression → **attributed** |
 
-### 3.3 The mechanical proxy, because rows 2 and 3 are a reading
+### 3.3 The docs app is in the registry, and what `package: null` drops
 
-Rows 2 and 3 are judgements, and `definition-of-done.md` §7.1 is explicit that a judgement gets no
-script. It gets the same proxy §7.2 gives Field, which is real:
+The proxy this section used to hold asserted the registry would gain **no** `apps/docs` entry. That
+was a sound proxy for a policy of writing every docs file fresh, and both the policy and the proxy
+are gone — D-148 retired it for prose, D-173 for the assets. What is left needs the opposite rule.
 
-> **No `@license` header and no `NOTICE.md` row anywhere under `apps/docs/src/**`.** If a docs file
-> ever needs one, the writing-it-fresh rule failed, and the failure is visible in a diff rather than
-> in someone's memory.
+**`attribution.config.ts` covers `apps/` as well as `packages/`.** An `AttributionEntry`'s
+`package` is `string | null`, and `null` says no package publishes this file. It narrows what the
+entry owes; it does not excuse it:
 
-`check:license-headers` and `check:notice-rows` already read `attribution.config.ts`
-(`testing.md` §9), so this costs nothing new: it is the assertion that the registry gains **no**
-`apps/docs` entry.
+| Obligation | `package: "zag-solid"` | `package: null` | Why |
+|---|---|---|---|
+| Registry entry | ✅ | ✅ | The single place a derivative is declared |
+| `@license` header naming the upstream file | ✅ | ✅ | A claim about the file, not about npm |
+| Row in the root `NOTICE.md` | ✅ | ✅ | The audit surface, whatever the channel |
+| Row in the package's `NOTICE.md` | ✅ | — | The notice that travels in the tarball. There is no tarball |
+| `LICENSE` + `NOTICE.md` in `files` | ✅ | — | Same reason |
+| The header still present in `dist/` | ✅ | — | Nothing builds a `dist/` for it |
+
+**The three dropped rows are all the same fact stated three ways: no npm consumer.** They are not a
+judgement that the docs app matters less. It is *published* — to Cloudflare Pages — which is why the
+first three rows are not dropped with them.
+
+**A second list, because a directory and a binary cannot carry a header.** Six root-`NOTICE.md`
+rows have no possible `@license` header: `apps/docs/src/content` (a directory, and deliberately one
+row rather than 111 — D-148), `apps/docs/public/favicon.ico` (a binary), and the four framework
+logos (another project's mark shown unmodified — nominative use, not our derivative at all). They
+are declared in `attribution.config.ts`'s **`noticeOnlyPaths`**, each with the reason it cannot be
+an entry.
+
+Without that list the orphan scan could not read `apps/` rows at all, because every one of them
+would report as a row with no entry. With it, **every row in the root table is declared in exactly
+one of the two lists**, and `check:notice-rows` asserts both directions over both. The tell that this
+was worth doing: widening the scan failed on its first run, on two header lines
+`apps/docs/src/components/site/icons.tsx` did not have.
+
+`check:license-headers` and `check:notice-rows` are the artefacts; `testing.md` §9 defines them.
 
 ### 3.4 Trademark — the chrome
 
-`legal.md` §3.6 settles this and it is not re-argued: page titles and nav say `chakra-ui-solid`;
-"Chakra UI" appears in body copy where it is genuinely the subject — the home page, the migration
-page — and never in the site chrome. **No Chakra logo, wordmark, favicon derivative, social card, or
-combined mark, anywhere.** The palette arriving through the preset as our default *theme* is the
-licensed code doing its job and is not brand use.
+Page titles and nav say `chakra-ui-solid`; "Chakra UI" appears in body copy where it is genuinely
+the subject — the home page, the migration page — and never in the site chrome. The palette
+arriving through the preset as our default *theme* is the licensed code doing its job and is not
+brand use.
 
-Two site-level obligations, from `legal.md` §3.3.3 item 1 and §3.4: the disclaimer is on the **docs
-home** and in the **footer of every page**, verbatim, and it names chakra-ui.com as a link — a reader
-who wanted the official project leaves in one click. `legal.md` §3.6's closing line applies here
-unchanged: the §3.2 flag list is a **copyright** control and this section is the **trademark** one,
-and neither substitutes for the other.
+**The bolt and the favicon are used. The wordmark is not.** That is the line, and it is not the one
+this section held before D-173. Four files come across under the same MIT grant as the rest of
+Chakra's source: `BlitzIcon`, `BlitzFillIcon` and the `LogoIcon` glyph, which are a registry entry
+with a header, and `favicon.ico`, which is a binary and so a `noticeOnlyPaths` row — §3.3 for both.
+**A licence to copy a file is not a licence to use a mark as an identity**, so the copyright question
+closing does not close this one, and four things do:
+
+| # | What holds | Where it is, in the shipped site |
+|---|---|---|
+| 1 | The logotype reads **`chakra-ui-solid`**, never `chakra` alone | `site-header.tsx`, beside `LogoIcon` |
+| 2 | **None of Chakra's wordmark lettering is reproduced** — the glyph travels, the set type does not | The header pairs their glyph with our name in our type |
+| 3 | **No social card and no combined mark exists** — no asset anywhere pairs their mark with ours as one lockup | `apps/docs/public/` holds the favicon and four framework logos, and nothing else |
+| 4 | The **disclaimer is verbatim** above the fold and in every footer, naming chakra-ui.com as a live link | `hero-section.tsx`; `site-footer.tsx`; the wording in `apps/docs/src/config.ts` |
+
+**Row 4 is the one carrying the weight, and it is why it is above the fold rather than beside it.**
+Under a mark-derived name, with the upstream's own glyph in the header, a reader's first question is
+whether this is the official project — and the disclaimer is the only thing on the page that answers
+it. The link is not a courtesy: it is what turns a disclaimer into a redirect, so a reader who wanted
+chakra-ui.com leaves in one click.
+
+**What would reopen this section**: reproducing their wordmark lettering, building a combined mark or
+a social card, or any use that reads as the site's identity rather than as a link to the project it
+ports. Each is a decision, not a slip — and each lands here before it lands in a commit.
+
+One line survives from before all of this and is the reason the section exists: the §3.2 flag list is
+a **copyright** control and this section is the **trademark** one, and **neither substitutes for the
+other.** D-173 is the case in point — it moved four files across the copyright line and moved nothing
+at all across this one.
 
 ---
 

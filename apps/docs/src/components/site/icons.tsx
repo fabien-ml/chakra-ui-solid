@@ -2,7 +2,12 @@
  * @license
  * Derived from chakra-ui/chakra-ui — `apps/www/components/site/icons.tsx` (`BlitzIcon`,
  * `BlitzFillIcon`) and `apps/www/components/logo.tsx` (`LogoIcon`).
- * Copyright (c) 2019 Chakra Systems Inc. Licensed under the MIT License.
+ * Copyright (c) 2019 Chakra Systems Inc.
+ *
+ * Licensed under the MIT License. A copy of the license is at the repository root as LICENSE,
+ * and is available at https://opensource.org/licenses/MIT
+ *
+ * This file has been modified from the original.
  *
  * Ported to Solid, with two changes that are not stylistic:
  *

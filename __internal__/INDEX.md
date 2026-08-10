@@ -27,39 +27,40 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 
 ---
 
-## The 29 indexed files
+## The 30 indexed files
 
 | Document | Size | Lines | Sections | Largest section | Block starts |
 |---|---|---|---|---|---|
-| [`component-blueprint.md`](#component-blueprintmd) | 92.1 KB | 1663 | 79 | §11 at 20.9 KB | L64 |
-| [`decisions.md`](#decisionsmd) | 48.3 KB | 485 | 14 | §6 at 11.6 KB | L148 |
-| [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.8 KB | 125 | 1 | §3.1 at 8.8 KB | L167 |
-| [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.6 KB | 143 | 1 | §3.2 at 9.6 KB | L173 |
-| [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.5 KB | 294 | 1 | §3.3 at 20.5 KB | L179 |
-| [`decisions/3.04-p4-adapter-milestone-one.md`](#decisions304-p4-adapter-milestone-onemd) | 10.4 KB | 142 | 1 | §3.4 at 10.4 KB | L185 |
-| [`decisions/3.05-p5-blueprint.md`](#decisions305-p5-blueprintmd) | 6.6 KB | 103 | 1 | §3.5 at 6.6 KB | L191 |
-| [`decisions/3.06-p6-parity-matrix.md`](#decisions306-p6-parity-matrixmd) | 8.7 KB | 130 | 1 | §3.6 at 8.7 KB | L197 |
-| [`decisions/3.07-p7-quality-bar.md`](#decisions307-p7-quality-barmd) | 5.7 KB | 85 | 1 | §3.7 at 5.7 KB | L203 |
-| [`decisions/3.08-p8-docs-site.md`](#decisions308-p8-docs-sitemd) | 4.7 KB | 73 | 1 | §3.8 at 4.7 KB | L209 |
-| [`decisions/3.09-p9-ledger-and-index.md`](#decisions309-p9-ledger-and-indexmd) | 1.1 KB | 17 | 1 | §3.9 at 1.1 KB | L215 |
-| [`decisions/3.10-s1-repo-bootstrap.md`](#decisions310-s1-repo-bootstrapmd) | 4.8 KB | 66 | 1 | §3.10 at 4.8 KB | L221 |
-| [`decisions/3.11-s1-review.md`](#decisions311-s1-reviewmd) | 6.7 KB | 86 | 1 | §3.11 at 6.7 KB | L227 |
-| [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.7 KB | 192 | 1 | §3.12 at 15.7 KB | L233 |
-| [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 23.3 KB | 309 | 1 | §3.13 at 23.3 KB | L239 |
-| [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 60.7 KB | 771 | 1 | §3.14 at 60.7 KB | L245 |
-| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 18.8 KB | 228 | 1 | §3.15 at 18.8 KB | L251 |
-| [`decisions/3.16-s4-reconciliation.md`](#decisions316-s4-reconciliationmd) | 10.0 KB | 129 | 1 | §3.16 at 10.0 KB | L257 |
-| [`definition-of-done.md`](#definition-of-donemd) | 63.1 KB | 545 | 22 | §8 at 14.8 KB | L263 |
-| [`docs-plan.md`](#docs-planmd) | 57.9 KB | 883 | 46 | §1 at 13.9 KB | L290 |
-| [`docs-site.md`](#docs-sitemd) | 75.5 KB | 825 | 37 | §2 at 19.2 KB | L341 |
-| [`plan.md`](#planmd) | 78.9 KB | 1167 | 51 | §3 at 14.7 KB | L383 |
-| [`prior-art.md`](#prior-artmd) | 75.7 KB | 1140 | 45 | §2 at 11.1 KB | L439 |
-| [`roadmap.md`](#roadmapmd) | 90.2 KB | 1209 | 50 | §4 at 14.6 KB | L489 |
-| [`testing.md`](#testingmd) | 70.5 KB | 1017 | 51 | §3 at 11.4 KB | L544 |
-| [`testing/8.01-doc-index.md`](#testing801-doc-indexmd) | 4.3 KB | 59 | 1 | §8.1 at 4.3 KB | L600 |
-| [`testing/8.02-skill-pointers.md`](#testing802-skill-pointersmd) | 5.1 KB | 71 | 1 | §8.2 at 5.1 KB | L606 |
-| [`testing/8.03-context-budget.md`](#testing803-context-budgetmd) | 10.2 KB | 150 | 3 | §8.3 at 10.2 KB | L612 |
-| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 76.2 KB | 1031 | 45 | §6 at 11.5 KB | L620 |
+| [`component-blueprint.md`](#component-blueprintmd) | 92.1 KB | 1663 | 79 | §11 at 20.9 KB | L65 |
+| [`decisions.md`](#decisionsmd) | 50.2 KB | 495 | 14 | §6 at 11.6 KB | L149 |
+| [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.8 KB | 125 | 1 | §3.1 at 8.8 KB | L168 |
+| [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.6 KB | 143 | 1 | §3.2 at 9.6 KB | L174 |
+| [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.5 KB | 294 | 1 | §3.3 at 20.5 KB | L180 |
+| [`decisions/3.04-p4-adapter-milestone-one.md`](#decisions304-p4-adapter-milestone-onemd) | 10.4 KB | 142 | 1 | §3.4 at 10.4 KB | L186 |
+| [`decisions/3.05-p5-blueprint.md`](#decisions305-p5-blueprintmd) | 6.6 KB | 103 | 1 | §3.5 at 6.6 KB | L192 |
+| [`decisions/3.06-p6-parity-matrix.md`](#decisions306-p6-parity-matrixmd) | 8.7 KB | 130 | 1 | §3.6 at 8.7 KB | L198 |
+| [`decisions/3.07-p7-quality-bar.md`](#decisions307-p7-quality-barmd) | 5.7 KB | 85 | 1 | §3.7 at 5.7 KB | L204 |
+| [`decisions/3.08-p8-docs-site.md`](#decisions308-p8-docs-sitemd) | 4.7 KB | 73 | 1 | §3.8 at 4.7 KB | L210 |
+| [`decisions/3.09-p9-ledger-and-index.md`](#decisions309-p9-ledger-and-indexmd) | 1.1 KB | 17 | 1 | §3.9 at 1.1 KB | L216 |
+| [`decisions/3.10-s1-repo-bootstrap.md`](#decisions310-s1-repo-bootstrapmd) | 4.8 KB | 66 | 1 | §3.10 at 4.8 KB | L222 |
+| [`decisions/3.11-s1-review.md`](#decisions311-s1-reviewmd) | 6.7 KB | 86 | 1 | §3.11 at 6.7 KB | L228 |
+| [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.7 KB | 192 | 1 | §3.12 at 15.7 KB | L234 |
+| [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 23.3 KB | 309 | 1 | §3.13 at 23.3 KB | L240 |
+| [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 60.7 KB | 771 | 1 | §3.14 at 60.7 KB | L246 |
+| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 18.8 KB | 228 | 1 | §3.15 at 18.8 KB | L252 |
+| [`decisions/3.16-s4-reconciliation.md`](#decisions316-s4-reconciliationmd) | 10.0 KB | 129 | 1 | §3.16 at 10.0 KB | L258 |
+| [`decisions/3.17-s5-landing-page-reconciliation.md`](#decisions317-s5-landing-page-reconciliationmd) | 7.6 KB | 96 | 1 | §3.17 at 7.6 KB | L264 |
+| [`definition-of-done.md`](#definition-of-donemd) | 63.3 KB | 545 | 22 | §8 at 14.8 KB | L270 |
+| [`docs-plan.md`](#docs-planmd) | 60.5 KB | 916 | 46 | §1 at 13.9 KB | L297 |
+| [`docs-site.md`](#docs-sitemd) | 80.3 KB | 888 | 37 | §2 at 19.2 KB | L348 |
+| [`plan.md`](#planmd) | 78.9 KB | 1167 | 51 | §3 at 14.7 KB | L390 |
+| [`prior-art.md`](#prior-artmd) | 75.7 KB | 1140 | 45 | §2 at 11.1 KB | L446 |
+| [`roadmap.md`](#roadmapmd) | 90.2 KB | 1209 | 50 | §4 at 14.6 KB | L496 |
+| [`testing.md`](#testingmd) | 71.8 KB | 1032 | 51 | §3 at 11.4 KB | L551 |
+| [`testing/8.01-doc-index.md`](#testing801-doc-indexmd) | 4.3 KB | 59 | 1 | §8.1 at 4.3 KB | L607 |
+| [`testing/8.02-skill-pointers.md`](#testing802-skill-pointersmd) | 5.1 KB | 71 | 1 | §8.2 at 5.1 KB | L613 |
+| [`testing/8.03-context-budget.md`](#testing803-context-budgetmd) | 10.2 KB | 150 | 3 | §8.3 at 10.2 KB | L619 |
+| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 76.2 KB | 1031 | 45 | §6 at 11.5 KB | L627 |
 
 ## `component-blueprint.md`
 
@@ -153,15 +154,15 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §0.2 L 74–91   1.0 KB  Changing a decision after this pass
 §1   L 92–106  0.7 KB  The entry shape, fixed once
 §2   L107–129  3.2 KB  Q1–Q8 — the gate that settled each, and where the answer lives
-§3   L130–165  4.9 KB  The ledger
-§4   L166–214  5.8 KB  The reversals, in one place
-§5   L215–255  5.1 KB  The final build order — one list, each step's gate cited
-§6   L256–404 11.6 KB  What the document pass did **not** settle
-§6.1 L324–404  7.2 KB  The S4 marking pass — what was measured, and what was only ever predicted
-§7   L405–485 10.7 KB  The reconciliation log — what P9 changed, and where
-§7.1 L411–449  7.5 KB  Carried forward by name
-§7.2 L450–471  1.4 KB  The citation convention, and the sites it was applied to
-§7.3 L472–485  1.5 KB  Two rows found at P9 that were on nobody's list
+§3   L130–166  5.2 KB  The ledger
+§4   L167–224  7.3 KB  The reversals, in one place
+§5   L225–265  5.1 KB  The final build order — one list, each step's gate cited
+§6   L266–414 11.6 KB  What the document pass did **not** settle
+§6.1 L334–414  7.2 KB  The S4 marking pass — what was measured, and what was only ever predicted
+§7   L415–495 10.7 KB  The reconciliation log — what P9 changed, and where
+§7.1 L421–459  7.5 KB  Carried forward by name
+§7.2 L460–481  1.4 KB  The citation convention, and the sites it was applied to
+§7.3 L482–495  1.5 KB  Two rows found at P9 that were on nobody's list
 ```
 
 ## `decisions/3.01-p1-identity-law-reference-policy.md`
@@ -260,11 +261,17 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §3.16 L  1–129 10.0 KB  S4 — the reconciliation pass, measured against predicted
 ```
 
+## `decisions/3.17-s5-landing-page-reconciliation.md`
+
+```
+§3.17 L 1–96 7.6 KB  S5 — the landing page, and the documents that still described the old one
+```
+
 ## `definition-of-done.md`
 
 ```
 §0    L 21–42   1.2 KB  The gate rule
-§1    L 43–66   3.2 KB  Per file
+§1    L 43–66   3.4 KB  Per file
 §2    L 67–103  6.3 KB  Per component
 §3    L104–151 10.7 KB  Per batch
 §3.0  L110–121  0.6 KB  The gate every batch shares
@@ -298,44 +305,44 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §1.4  L212–223  0.7 KB  The gate — the catalogue is a fixture, not prose
 §1.5  L224–274  3.7 KB  D-1 answered — a dedicated minimal build, and the page is *generated from* it
 §2    L275–286  1.1 KB  Open — both closed
-§3    L287–352  3.5 KB  `/` — the docs home
-§3.1  L291–303  0.8 KB  The frame, and the one page whose structure is not copied
-§3.2  L304–345  2.4 KB  Section order
-§3.3  L346–352  0.2 KB  What this page renders
-§4    L353–474  7.2 KB  `/docs/get-started/*` — install, frameworks, environments
-§4.1  L359–406  2.6 KB  `installation` — section order
-§4.2  L407–443  2.6 KB  `frameworks/*` — one page each, one fact each
-§4.3  L444–451  0.5 KB  `environments/{shadow-dom,iframe}`
-§4.4  L452–465  0.9 KB  `ai/llms` — deferred to before first public release
-§4.5  L466–474  0.4 KB  What this tier renders
-§5    L475–559  6.2 KB  `/docs/get-started/migration` — coming from Chakra UI (React)
-§5.1  L480–493  0.9 KB  The frame: two causes, and the page must not merge them
-§5.2  L494–533  3.6 KB  Section order
-§5.3  L534–539  0.3 KB  What this page must not do
-§5.4  L540–559  1.1 KB  Where the parity sentence appears verbatim, and where it does not
-§6    L560–625  4.2 KB  `/docs/theming/chakra-config` — the config function
-§6.1  L575–617  3.1 KB  Section order
-§6.2  L618–625  0.3 KB  What this page renders
-§7    L626–732  7.5 KB  `/docs/styling/*` and `/docs/theming/*`
-§7.1  L640–660  2.1 KB  The styling tier
-§7.2  L661–688  2.0 KB  `dark-mode` and `semantic-tokens` — the contract, and the snippet
-§7.3  L689–700  0.7 KB  `recipes` and `slot-recipes`
-§7.4  L701–724  1.7 KB  `customization/*` — the four override paths
-§7.5  L725–732  0.3 KB  What these tiers must not say
-§8    L733–883  8.9 KB  The component page — one template, applied 111 times
-§8.1  L751–764  0.8 KB  Frontmatter
-§8.2  L765–770  0.3 KB  Live preview + code fusion
-§8.3  L771–776  0.3 KB  `## Usage`
-§8.4  L777–783  0.3 KB  `## Examples`
-§8.5  L784–790  0.4 KB  `## Parts`
-§8.6  L791–797  0.3 KB  `## Props`
-§8.7  L798–814  0.9 KB  `### ids` — on every component page with a machine
-§8.8  L815–833  1.3 KB  `### render`
-§8.9  L834–844  0.6 KB  `### Context`, `### RootProvider`, `### PropsProvider`
-§8.10 L845–862  1.3 KB  `### Dynamic values` — only on the eight implementations `roadmap.md` §3.1 marks
-§8.11 L863–869  0.4 KB  `### Presence` — only on presence-gated components
-§8.12 L870–875  0.3 KB  `### Accessibility` — optional, and drawn from the machine
-§8.13 L876–883  0.4 KB  What the template must not contain
+§3    L287–385  6.1 KB  `/` — the docs home
+§3.1  L297–320  1.6 KB  The frame — copied, minus the claims
+§3.2  L321–378  3.8 KB  Section order
+§3.3  L379–385  0.2 KB  What this page renders
+§4    L386–507  7.2 KB  `/docs/get-started/*` — install, frameworks, environments
+§4.1  L392–439  2.6 KB  `installation` — section order
+§4.2  L440–476  2.6 KB  `frameworks/*` — one page each, one fact each
+§4.3  L477–484  0.5 KB  `environments/{shadow-dom,iframe}`
+§4.4  L485–498  0.9 KB  `ai/llms` — deferred to before first public release
+§4.5  L499–507  0.4 KB  What this tier renders
+§5    L508–592  6.2 KB  `/docs/get-started/migration` — coming from Chakra UI (React)
+§5.1  L513–526  0.9 KB  The frame: two causes, and the page must not merge them
+§5.2  L527–566  3.6 KB  Section order
+§5.3  L567–572  0.3 KB  What this page must not do
+§5.4  L573–592  1.1 KB  Where the parity sentence appears verbatim, and where it does not
+§6    L593–658  4.2 KB  `/docs/theming/chakra-config` — the config function
+§6.1  L608–650  3.1 KB  Section order
+§6.2  L651–658  0.3 KB  What this page renders
+§7    L659–765  7.5 KB  `/docs/styling/*` and `/docs/theming/*`
+§7.1  L673–693  2.1 KB  The styling tier
+§7.2  L694–721  2.0 KB  `dark-mode` and `semantic-tokens` — the contract, and the snippet
+§7.3  L722–733  0.7 KB  `recipes` and `slot-recipes`
+§7.4  L734–757  1.7 KB  `customization/*` — the four override paths
+§7.5  L758–765  0.3 KB  What these tiers must not say
+§8    L766–916  8.9 KB  The component page — one template, applied 111 times
+§8.1  L784–797  0.8 KB  Frontmatter
+§8.2  L798–803  0.3 KB  Live preview + code fusion
+§8.3  L804–809  0.3 KB  `## Usage`
+§8.4  L810–816  0.3 KB  `## Examples`
+§8.5  L817–823  0.4 KB  `## Parts`
+§8.6  L824–830  0.3 KB  `## Props`
+§8.7  L831–847  0.9 KB  `### ids` — on every component page with a machine
+§8.8  L848–866  1.3 KB  `### render`
+§8.9  L867–877  0.6 KB  `### Context`, `### RootProvider`, `### PropsProvider`
+§8.10 L878–895  1.3 KB  `### Dynamic values` — only on the eight implementations `roadmap.md` §3.1 marks
+§8.11 L896–902  0.4 KB  `### Presence` — only on presence-gated components
+§8.12 L903–908  0.3 KB  `### Accessibility` — optional, and drawn from the machine
+§8.13 L909–916  0.4 KB  What the template must not contain
 ```
 
 ## `docs-site.md`
@@ -355,29 +362,29 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §2.2 L302–339  7.5 KB  What chakra-ui.com has and we do not — one reason each
 §2.3 L340–355  1.2 KB  What we have and chakra-ui.com does not
 §2.4 L356–382  1.6 KB  The count trap
-§3   L383–461  6.9 KB  The copyright boundary — every place upstream expression would be reproduced
-§3.1 L407–413  0.4 KB  The rule, cited
-§3.2 L414–432  3.3 KB  The flag list
-§3.3 L433–445  0.6 KB  The mechanical proxy, because rows 2 and 3 are a reading
-§3.4 L446–461  0.9 KB  Trademark — the chrome
-§4   L462–606 11.1 KB  The machinery every page shares
-§4.1 L464–482  1.2 KB  The examples pipeline — an example is a deliverable
-§4.2 L483–509  1.9 KB  The props table — generated from types, and what a missing one looks like
-§4.3 L510–527  1.2 KB  Generated pages — tokens and style props
-§4.4 L528–553  2.8 KB  The playground, constrained by `plan.md` §0
-§4.5 L554–568  1.5 KB  Free-form editing — deferred, with the options recorded
-§4.6 L569–606  2.4 KB  `llms.txt` — deferred to before first public release, with its cost stated
-§5   L607–637  3.7 KB  What the docs must never say
-§6   L638–702  7.9 KB  The docs build gate — a docs page is a deliverable
-§6.1 L640–678  5.3 KB  What CI asserts
-§6.2 L679–694  2.3 KB  What it cannot assert
-§6.3 L695–702  0.3 KB  Where the job sits
-§7   L703–752  3.9 KB  Assumptions
-§7.1 L705–735  1.7 KB  `brief-plan` §8 assumption 6 — the runnable gate
-§7.2 L736–752  2.1 KB  Assumptions P8 opens
-§8   L753–771  3.4 KB  What P8 changes — re-plan P9 against this
-§9   L772–802  2.9 KB  What P8 could not act on
-§10  L803–825  2.1 KB  The P9 flags carried forward, untouched
+§3   L383–524 11.7 KB  The copyright boundary — every place upstream expression would be reproduced
+§3.1 L422–428  0.4 KB  The rule, cited
+§3.2 L429–448  3.6 KB  The flag list
+§3.3 L449–486  2.4 KB  The docs app is in the registry, and what `package: null` drops
+§3.4 L487–524  2.6 KB  Trademark — the chrome
+§4   L525–669 11.1 KB  The machinery every page shares
+§4.1 L527–545  1.2 KB  The examples pipeline — an example is a deliverable
+§4.2 L546–572  1.9 KB  The props table — generated from types, and what a missing one looks like
+§4.3 L573–590  1.2 KB  Generated pages — tokens and style props
+§4.4 L591–616  2.8 KB  The playground, constrained by `plan.md` §0
+§4.5 L617–631  1.5 KB  Free-form editing — deferred, with the options recorded
+§4.6 L632–669  2.4 KB  `llms.txt` — deferred to before first public release, with its cost stated
+§5   L670–700  3.7 KB  What the docs must never say
+§6   L701–765  7.9 KB  The docs build gate — a docs page is a deliverable
+§6.1 L703–741  5.3 KB  What CI asserts
+§6.2 L742–757  2.3 KB  What it cannot assert
+§6.3 L758–765  0.3 KB  Where the job sits
+§7   L766–815  3.9 KB  Assumptions
+§7.1 L768–798  1.7 KB  `brief-plan` §8 assumption 6 — the runnable gate
+§7.2 L799–815  2.1 KB  Assumptions P8 opens
+§8   L816–834  3.4 KB  What P8 changes — re-plan P9 against this
+§9   L835–865  2.9 KB  What P8 could not act on
+§10  L866–888  2.1 KB  The P9 flags carried forward, untouched
 ```
 
 ## `plan.md`
@@ -589,12 +596,12 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §7.3 L 771–800   2.1 KB  There is no story gate, because a story is not the validation surface
 §7.4 L 801–831   2.0 KB  What only Storybook can see
 §8   L 832–880   9.4 KB  The distribution, styling-config and structural checks
-§9   L 881–918   3.8 KB  The attribution checks
-§10  L 919–953   2.5 KB  The bundle measurement — `check:bundle`
-§11  L 954–972   2.6 KB  The scheduled upstream checks
-§12  L 973–994   2.4 KB  The CI job map
-§13  L 995–1011  1.0 KB  What this apparatus assumes
-§14  L1012–1017  0.3 KB  Where this document ends
+§9   L 881–933   5.1 KB  The attribution checks
+§10  L 934–968   2.5 KB  The bundle measurement — `check:bundle`
+§11  L 969–987   2.6 KB  The scheduled upstream checks
+§12  L 988–1009  2.4 KB  The CI job map
+§13  L1010–1026  1.0 KB  What this apparatus assumes
+§14  L1027–1032  0.3 KB  Where this document ends
 ```
 
 ## `testing/8.01-doc-index.md`

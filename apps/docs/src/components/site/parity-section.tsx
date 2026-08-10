@@ -5,7 +5,7 @@ import { Eyebrow, HighlightHeading, Subheading } from "~/components/site/typogra
 import { PARITY_SENTENCE } from "~/config";
 
 /**
- * The delta, a few items a side (`docs-plan.md` §3.2 section 3). **Not the full parity table** —
+ * The delta, a few items a side (`docs-plan.md` §3.2 section 2). **Not the full parity table** —
  * that lives on the migration page, and the whole of it on a landing page is read by nobody; three
  * items get read.
  *

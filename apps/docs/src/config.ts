@@ -13,7 +13,8 @@ export const SITE_DESCRIPTION =
 
 /**
  * `plan.md` §0's parity sentence, **verbatim**. Q3 is settled *prominent*, and the docs home is
- * the most prominent place it appears (`docs-plan.md` §3.2 section 0, §5.4).
+ * the most prominent place it appears — in the section that also shows what it costs, not the hero
+ * (`docs-plan.md` §3.2 section 2, §5.4).
  */
 export const PARITY_SENTENCE =
   "as close to Chakra v3 parity as is achievable without runtime CSS-in-JS";
@@ -37,7 +38,7 @@ export const DISCLAIMER = {
   before:
     "chakra-ui-solid is not affiliated with, sponsored by, or endorsed by Chakra Systems Inc. or " +
     "the Chakra UI maintainers. “Chakra UI” is their trademark, and it is used here only to " +
-    "describe what this library targets. If you are looking for the official Chakra UI, it is at ",
+    "describe what this library targets. If you are looking for the official React version, check out ",
   linkText: "chakra-ui.com",
   linkHref: "https://chakra-ui.com",
   after: ".",

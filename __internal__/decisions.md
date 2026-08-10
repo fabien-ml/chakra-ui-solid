@@ -129,7 +129,7 @@ other seven rows.
 
 ## 3. The ledger
 
-**One file per entry, under [`decisions/`](decisions/).** 172 decisions, D-01 … D-172, in sixteen
+**One file per entry, under [`decisions/`](decisions/).** 175 decisions, D-01 … D-175, in seventeen
 files grouped by the phase that settled them. Reversals are marked **⟲** and collected in §4.
 
 **The anchors did not move when the bodies did.** `` `decisions.md` §3.13 `` still names the S3
@@ -160,13 +160,20 @@ is cited. **A D-number is found by grepping `__internal__/decisions/`**, not thi
 | **3.14** | [S3b — the visual surfaces](decisions/3.14-s3b-visual-surfaces.md) | D-128 … D-161 | Step 3b closed: Storybook demoted to a local playground, the docs site reworked against the open reference, and Chakra's docs prose found to be plain MIT |
 | **3.15** | [The context budget — the documents as a working surface](decisions/3.15-context-budget.md) | D-162 … D-166 | Not a build-order step: the anchor index, this shard, five pointer-only skills, and the 25 KB ceiling that guards all three |
 | **3.16** | [S4 — the reconciliation pass, measured against predicted](decisions/3.16-s4-reconciliation.md) | D-167 … D-172 | Not a build-order step: the eleven documents marked M/I/P/S against what was actually built. Fifteen stale claims, seven of them survivors of one sweep — the register is §6.1 |
+| **3.17** | [S5 — the landing page, and the documents that still described the old one](decisions/3.17-s5-landing-page-reconciliation.md) | D-173 … D-175 | Not a build-order step: the docs home shipped chakra-ui.com's structure and Chakra's bolt, and four places still said neither was allowed. One was a missing check — the registry could not express `apps/` |
 
 ---
 
 ## 4. The reversals, in one place
 
 A decision that changed during the pass is more useful than one that did not, because it is where the
-pass learned something. Five reversed once, four reversed twice.
+pass learned something.
+
+**34 rows below, counted as rows rather than as decisions**, plus four in the table above. The two
+counts differ because a decision can be reversed more than once and gets a row each time — D-84 has
+three, D-90 two — and because four rows are keyed on a document section that no D-number owns. The
+figure in this sentence was `Five reversed once` for six phases; a count nobody re-runs is a count
+that stops being one.
 
 | # | Reversed **twice** | drop → | → copy | → final |
 |---|---|---|---|---|
@@ -209,6 +216,9 @@ pass learned something. Five reversed once, four reversed twice.
 | **The docs site's date** | — | step 8, after all 115 components | **The app at 3b, pages with their components, step 8 is the guide tier and the deploy.** D-88 is not reversed — the docs app as a standing consumer instance becomes true eight batches earlier |
 | **D-84** *(a third time)* | Storybook's status | a dev harness **and a required CI job** (D-84), then a dev harness and a canary driven by a Playwright script (D-129) | **a local playground.** No gate, no CI job, no required story. The validation surface is `apps/docs` — a real app using the published packages (**D-133**) |
 | **D-129** | What drives the stories | `@storybook/test-runner`, named in `testing.md` §7.3 | **nothing drives them.** D-129 chose a Playwright script over the runner on cost; D-133 removed the choice by removing the gate, hours later. The measurement survives, the artefact does not |
+| **D-90** *(the trademark half)* | Chakra's marks on the docs site | *no Chakra logo, wordmark, or visual identity anywhere in the chrome* (D-90), restated as a flat ban in `docs-site.md` §3.4 and carried forward unexamined through D-148 | **Their bolt and favicon are used**, attributed as the MIT files they are. The ban is replaced by four named mitigations, and **the wordmark lettering is the one that stayed banned** — D-173 |
+| **D-90** *(the proxy half)* | `docs-site.md` §3.3 | *no `@license` header and no `NOTICE.md` row anywhere under `apps/docs/src/**`* — a proxy for writing every docs file fresh | **Spent.** D-148 retired it for prose, D-173 for the assets. §3.3 now states the opposite rule — the registry **covers** `apps/`, and `package: null` is what an unpublished derivative owes — D-174 |
+| **`docs-plan.md` §3.1** | The docs home's structure | *the one page whose structure is not copied*, because *a marketing page's structure is its claims* | **Copied**, minus five sections that are claims about standing. The premise was false of the other four sections, and collapsing them produced a page opening on caveats — D-175 |
 
 ---
 

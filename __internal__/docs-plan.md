@@ -286,67 +286,100 @@ it, as do §1.2 and §1.4. New specs start at §3 for the same reason.
 
 ## 3. `/` — the docs home
 
-**Title:** `chakra-ui-solid`. **Frame:** not a marketing page.
+**Title:** `chakra-ui-solid`. **Frame:** chakra-ui.com's landing page, minus the sections that are
+claims about a project's standing.
 
-### 3.1 The frame, and the one page whose structure is not copied
+> **§3.1 and §3.2 are REWRITTEN against what shipped, S4, 2026-08-10** (**D-175**). Both are below
+> in their current form. What they said before: *this is the one page whose structure is not copied*,
+> and a seven-section order that no longer describes the page. The argument that produced it, and why
+> it did not survive contact with the built page, is D-175.
 
-Every other page in `docs-site.md` §2.1 mirrors chakra-ui.com's structure. This one does not, and the
-reason is specific rather than squeamish: **a marketing page's structure is its claims.** Copying the
-shape of a hero, a feature grid and a testimonial row means writing our version of each of their
-claims, and three of theirs are false here — runtime theming, a `css` prop that takes anything, and a
-zero-config install.
+### 3.1 The frame — copied, minus the claims
 
-What this page is instead: **the page that sets expectations**, because mis-set expectations are the
-main support cost of a project like this (`legal.md` §4.1). A reader should be able to decide in
+Every other page in `docs-site.md` §2.1 mirrors chakra-ui.com's structure, and so does this one.
+**Structure is not expression** (`docs-site.md` §3.1), which settles the licensing question and
+leaves the real one: *which of their sections can this project honestly fill?*
+
+**Five cannot, and they are all the same kind of thing.** *Used by*, the stats row, testimonials,
+sponsors and the Pro tier are claims about a project's standing, and this project has none yet. A
+landing page carrying them would be the first thing on the site that is not true — and it would be
+untrue in the one register a reader has no way to check.
+
+**Everything else copies, because the shape was never the problem.** A hero, a design-system
+section, a framework grid and a closing call to action make no claim by existing; what they claim is
+whatever gets written into them. The earlier reading — *a marketing page's structure is its claims* —
+collapsed those two, and the page it produced read as a warning label rather than a landing page
+(D-175).
+
+**What the freed space carries instead** is the material this page owes and theirs has no reason to:
+the prerequisites, the parity delta, and what has not been built. So the page still sets
+expectations — mis-set expectations are the main support cost of a project like this — and it does it
+**inside** their structure rather than in place of it. A reader should still be able to decide in
 thirty seconds whether this library is usable for them, and the two facts that decide it — Solid 2.0,
-and Panda in their build — are above the fold.
+and Panda in their build — are still above the fold.
 
 ### 3.2 Section order
 
-**0 — The name, the descriptor, and the parity sentence.** The descriptor is `legal.md` §4.1's
-docs-home form, leading positive: styles compiled at build time, none at runtime. Immediately under
-it, `plan.md` §0's sentence **verbatim**:
+Five sections, in chakra-ui.com's order. **A number here is a stable citation** — the shipped
+components cite these, so renumbering is a change to them too.
+
+**0 — The hero**, at their length and in their order: announcement pill, a heading with one phrase
+picked out, one subheading line, a call to action beside the install command. Then a full-bleed strip
+of live components — theirs demos five machine components, ours demos the one that has shipped, five
+ways, and says so in the captions.
+
+Two things sit inside the hero that theirs has no reason to carry:
+
+- **The requirements, as one spec line** under the install command — *SolidJS 2.0 · Panda CSS in
+  your build · ESM only* — not a checklist and not a section. Earlier drafts made them three cards,
+  and a page that opens with a wall of constraints reads as a warning label. **Panda is the one that
+  cannot be dropped to a link**: without it a reader installs, runs, and every component renders
+  naked with nothing anywhere saying why (`plan.md` §4.4). The install page states all three at
+  length and the button beside this line goes there.
+- **The disclaimer, verbatim, above the fold**, with chakra-ui.com as a live link. Required on the
+  docs home *and* in every page's footer, and required near the top rather than below it: under a
+  mark-derived name, beside the upstream's own glyph, it is doing that work alone
+  (`docs-site.md` §3.4 row 4). The link is not a courtesy — it is what turns a disclaimer into a
+  redirect.
+
+**1 — The design system.** Their section, ported: the pitch on the left, a tabbed code panel on the
+right, three items that are also the three tabs. **Their register, deliberately** — a reader this far
+down wants to know what they can build, not how the toolchain works. The mechanism has its own page
+(`/docs/styling/static-extraction`) and the prerequisite has already been stated in section 0.
+
+**2 — What you get, and what you do not.** Two short columns, not the delta table. Left: Chakra v3's
+component API, its design system through the official preset, Zag's behavior and ARIA, style props,
+recipes and variants. Right: no runtime theming, no runtime style values, no `asChild`. Each
+right-hand item links to §5, which carries the reasoning. **The whole table on the home page would be
+read by nobody**; three items and a link get read.
+
+`plan.md` §0's sentence lives here, **verbatim**:
 
 > as close to Chakra v3 parity as is achievable without runtime CSS-in-JS
 
-**Q3 is settled *prominent*, and this is the most prominent place it appears.** §5.4 is where the
-whole list of verbatim placements lives, so it is not repeated here.
+**Q3 is settled *prominent*, and prominent is not the same as first.** It sits in the one section
+that also shows what it costs, rather than in a hero where it is a caveat with nothing attached to
+it. §5.4 carries the whole list of verbatim placements, so it is not repeated here.
 
-**1 — The disclaimer, verbatim, above the fold.** `legal.md` §3.4's wording, unchanged, with
-chakra-ui.com as a live link. `legal.md` §3.3.3 item 1 requires it on the docs home *and* in the
-footer of every page, and requires it near the top rather than below the fold: under a mark-derived
-name the disclaimer is doing that work alone. The link is not a courtesy — it is what turns a
-disclaimer into a redirect.
+**3 — The framework grid**, ported to the three a Solid app actually uses — theirs are React's
+(`docs-site.md` §2.2). **Each cell is a link to that framework's guide**, where theirs is a logo with
+a `title` attribute: the same grid, doing something when you click it.
 
-**2 — Three prerequisites, as a checklist, before anything else.**
+**4 — Where to go next, and what is not here yet.** Where their page closes on a product tier, this
+one closes on the gaps: charts, with its one-line reason (a dependency ground — there is no Solid
+charting substrate to bind to, `roadmap.md` §5.7), and anything the batch order has not reached
+(`roadmap.md` §9.2). This is the positive form of *a page for an unbuilt component is a promise* —
+the absence is stated rather than left for a reader to discover through a 404. The forward links go
+with it: `/docs/styling/static-extraction` (the page to read *before* you write a wrapper component),
+the component index, theming.
 
-- SolidJS **2.0**. Not 1.x — the packages import `@solidjs/web`, and a 1.x install fails at load
-  (`legal.md` §4.1's *"say SolidJS 2.0"*).
-- **Panda CSS in your build.** `plan.md` §4.4's README first line, same wording, same position
-  relative to the install snippet: *"Requires Panda CSS in your build. Not optional — this library
-  publishes no CSS."*
-- ESM only.
-
-**3 — What you get, and what you do not.** Two short columns, not the delta table. Left: Chakra v3's
-component API, its design system through the official preset, Zag's behavior and ARIA, style props,
-recipes and variants. Right: no runtime theming, no runtime style values, no `asChild`. Each right-
-hand item links to §5, which carries the reasoning. **The whole table on the home page would be read
-by nobody**; three items and a link get read.
-
-**4 — Install**, four lines, linking §4 for the config.
-
-**5 — Where to go next**, three links and no more: `/docs/styling/static-extraction` (described as the page
-to read *before* you write a wrapper component), the component index, theming.
-
-**6 — What is not here yet.** Charts, with its one-line reason (a dependency ground — there is no
-Solid charting substrate to bind to, `roadmap.md` §5.7), and anything the batch order has not reached
-(`roadmap.md` §9.2). This is the positive form of *a page for an unbuilt component is a promise*:
-the absence is stated rather than left for a reader to discover through a 404.
+**Dropped, and named so the omission reads as a decision:** *used by*, the stats row, testimonials,
+sponsors, the Pro tier — §3.1.
 
 ### 3.3 What this page renders
 
-`plan.md` §0's parity sentence (Q3, prominent) · `legal.md` §3.4's disclaimer · `plan.md` §4.4's
-prerequisite · `roadmap.md` §5.7's exclusion.
+`plan.md` §0's parity sentence (Q3, prominent) · the disclaimer (`docs-site.md` §3.4) · `plan.md`
+§4.4's prerequisite · `roadmap.md` §5.7's exclusion.
 
 ---
 

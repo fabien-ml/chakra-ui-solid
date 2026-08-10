@@ -12,11 +12,12 @@ import { DISCLAIMER } from "~/config";
  * phrase picked out, one subheading line, a call to action beside the install command — then a
  * full-bleed strip of live components.
  *
- * **The only addition is the disclaimer**, which `docs-plan.md` §3.2 requires above the fold and
- * which a mark-derived name makes load-bearing. Everything else this page owes has a section of its
- * own below: the parity sentence leads `ParitySection`, and the Panda prerequisite is a card in
- * `PrerequisitesSection`. Stacking all of it here was the mistake — a hero that opens with a list
- * of caveats reads as a warning label, and the caveats are no less true two screens down.
+ * **Two things sit here that Chakra's hero has no reason to carry** (`docs-plan.md` §3.2 section 0):
+ * the disclaimer, which must be above the fold and which a mark-derived name makes load-bearing,
+ * and the requirements as one spec line. Everything else this page owes went to a section of its
+ * own below — the parity sentence leads `ParitySection`. Stacking all of it here was the mistake:
+ * a hero that opens with a list of caveats reads as a warning label, and the caveats are no less
+ * true two screens down.
  */
 export function HeroSection() {
   return (

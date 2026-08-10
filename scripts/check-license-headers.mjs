@@ -4,7 +4,8 @@
 // to `dist/`, and `comments.legal` is still pinned with its comment (`testing.md` §9, DoD 4.6).
 //
 // Pass `--dist` to include the built-output half. Without a build there is nothing to read, so the
-// `verify` job runs the source half on every push and the `dist` job runs both.
+// `verify` job runs the source half on every push and the `dist` job runs both. Entries with no
+// owning package have no `dist/` at all and are skipped there, never here.
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";

@@ -12,12 +12,15 @@ import { fileURLToPath } from "node:url";
 import { findNoticeRowProblems, findOrphanNoticeRows } from "./lib/attribution.mjs";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const { attributions } = await import(join(repoRoot, "attribution.config.ts"));
+const { attributions, noticeOnlyPaths } = await import(join(repoRoot, "attribution.config.ts"));
 
 const rootNotice = readFileSync(join(repoRoot, "NOTICE.md"), "utf8");
 
 const packageNotices = new Map();
-for (const packageName of new Set(attributions.map((entry) => entry.package))) {
+const owningPackages = new Set(
+  attributions.map((entry) => entry.package).filter((name) => name !== null),
+);
+for (const packageName of owningPackages) {
   const noticePath = join(repoRoot, "packages", packageName, "NOTICE.md");
   if (existsSync(noticePath)) {
     packageNotices.set(packageName, readFileSync(noticePath, "utf8"));
@@ -29,8 +32,17 @@ const missing = findNoticeRowProblems(attributions, rootNotice, packageNotices);
 // A row in the root's table is a backticked repo-relative path in the first column; a package
 // row is a `src/…` path. Both directions matter: a stale row claims a derivation that is not
 // there, which is how a deleted derivative leaves a false statement behind.
+//
+// The root scan reads `apps/` as well as `packages/`, which is only possible because every row
+// that cannot carry an `@license` header is declared in `noticeOnlyPaths` (`docs-site.md` §3.3).
 const orphans = [
-  ...findOrphanNoticeRows(attributions, rootNotice, "NOTICE.md", /^\| `(packages\/[^`]+)` \|/gm),
+  ...findOrphanNoticeRows(
+    attributions,
+    rootNotice,
+    "NOTICE.md",
+    /^\| `((?:packages|apps)\/[^`]+)` \|/gm,
+    noticeOnlyPaths,
+  ),
   ...[...packageNotices].flatMap(([packageName, contents]) =>
     findOrphanNoticeRows(
       attributions,
@@ -41,9 +53,16 @@ const orphans = [
   ),
 ];
 
+// The same assertion in the other direction for the second list: a declared notice-only path
+// whose row was deleted is the obligation going missing, and the orphan scan cannot see it.
+const missingNoticeOnly = noticeOnlyPaths
+  .filter(({ path }) => !rootNotice.includes(path))
+  .map(({ path }) => `  NOTICE.md\n      no row for \`${path}\`, declared in noticeOnlyPaths`);
+
 const failures = [
   ...missing.map(({ entry, file, reason }) => `  ${file}\n      ${reason} (from ${entry.file})`),
   ...orphans.map(({ file, reason }) => `  ${file}\n      ${reason}`),
+  ...missingNoticeOnly,
 ];
 
 if (failures.length > 0) {
@@ -56,5 +75,6 @@ if (failures.length > 0) {
 
 console.log(
   `check:notice-rows — ${attributions.length} derivative file(s), each with a row in NOTICE.md and ` +
-    `in ${packageNotices.size} package NOTICE.md file(s); no orphan rows.`,
+    `in ${packageNotices.size} package NOTICE.md file(s); ${noticeOnlyPaths.length} notice-only ` +
+    "path(s); no orphan rows.",
 );

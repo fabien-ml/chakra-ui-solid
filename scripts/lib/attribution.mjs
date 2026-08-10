@@ -40,9 +40,17 @@ export function checkLicenseHeader(entry, contents) {
   return problems;
 }
 
-/** The same header, read back out of the built `dist/` — rule (b), and the one that matters. */
+/**
+ * The same header, read back out of the built `dist/` — rule (b), and the one that matters.
+ *
+ * Entries with no owning package are skipped: there is no `dist/` to read, because nothing
+ * publishes them. What they owe instead is asserted in full by the source half above.
+ */
 export function findMissingDistHeaders(entries, readDistFiles) {
   return entries.flatMap((entry) => {
+    if (entry.package === null) {
+      return [];
+    }
     const distFiles = readDistFiles(entry);
     if (distFiles.length === 0) {
       return [{ entry, reason: "the package has no `dist/` — run the build before this check" }];
@@ -87,13 +95,22 @@ export function checkCommentsLegalPinned(tsdownBaseConfig) {
   return problems;
 }
 
-/** A `NOTICE.md` table row mentioning this path. Both files, both directions (`legal.md` §2.4). */
+/**
+ * A `NOTICE.md` table row mentioning this path. Both files, both directions (`legal.md` §2.4).
+ *
+ * The root row is owed by every entry. The package row is owed only by entries a package
+ * publishes: a `NOTICE.md` is the notice that travels in the tarball, and an entry with no package
+ * has no tarball to travel in (`attribution.config.ts`, `AttributionEntry.package`).
+ */
 export function findNoticeRowProblems(entries, rootNotice, packageNotices) {
   const problems = [];
 
   for (const entry of entries) {
     if (!rootNotice.includes(entry.file)) {
       problems.push({ entry, file: "NOTICE.md", reason: `no row for \`${entry.file}\`` });
+    }
+    if (entry.package === null) {
+      continue;
     }
     const packageNotice = packageNotices.get(entry.package);
     if (packageNotice === undefined) {
@@ -120,11 +137,25 @@ export function findNoticeRowProblems(entries, rootNotice, packageNotices) {
 /**
  * The other direction: a row claiming a derivation the registry does not declare. A stale row is
  * a claim we no longer make, and it is how a deleted derivative leaves a false statement behind.
+ *
+ * `noticeOnlyPaths` are declared too — a directory, a binary and a third-party mark all owe a row
+ * and can carry no header, so they are declared in the second list rather than left to pass
+ * because the scan does not reach them.
  */
-export function findOrphanNoticeRows(entries, noticeText, noticeName, pathPattern) {
-  const declared = new Set(
-    entries.flatMap((entry) => [entry.file, entry.file.replace(`packages/${entry.package}/`, "")]),
-  );
+export function findOrphanNoticeRows(
+  entries,
+  noticeText,
+  noticeName,
+  pathPattern,
+  noticeOnlyPaths = [],
+) {
+  const declared = new Set([
+    ...entries.flatMap((entry) => [
+      entry.file,
+      entry.file.replace(`packages/${entry.package}/`, ""),
+    ]),
+    ...noticeOnlyPaths.map(({ path }) => path),
+  ]);
   return [...noticeText.matchAll(pathPattern)]
     .map((match) => match[1])
     .filter((path) => !declared.has(path))
