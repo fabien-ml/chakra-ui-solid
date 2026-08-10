@@ -290,6 +290,46 @@ consumer's stylesheet, runtime only setting an attribute on `<html>`; unprobed t
   `disabled` prop is **not shipped** — omitting it makes passing it a type error, where a
   non-reactive prop that silently ignores changes would not. ~6 lines.
 
+## The repository mirrors `packages/react/src`, and two packages cannot
+
+**Settled, not yet executed.** The port covers styling and theming as well as components, and
+upstream holds all three as *siblings* — `packages/react/src/{components,styled-system,theme,hooks,
+utils}`. Ours put components at the src root of their own package, which spends the level those
+siblings need and makes no path diffable against upstream.
+
+```
+packages/core/src/{components/<name>,styled-system,theme,hooks,utils}   ← packages/react/src
+packages/{styled-system,panda-preset,zag-solid,internal-test-utils}
+```
+
+`packages/core`, published as **`@chakra-ui-solid/core`** — one import path, as `@chakra-ui/react`
+is. It absorbs today's `packages/system`, which *is* upstream's `styled-system/` in a package of
+its own. **Two cannot follow**, and both for a mechanical reason rather than taste:
+`@chakra-ui-solid/styled-system` is generated Panda output and has to be separately published or
+the library and the consumer app hold two `css()` instances; `@chakra-ui-solid/panda-preset` is
+read by Panda's config loader under Node's `import` condition and cannot sit in a
+`solid`-condition package.
+
+**The move is mechanical except for one thing, and that one thing fails silently.** Panda
+registers the `chakra` factory only from an import whose module is in `importMap.jsx`. Today our
+components import it from `@chakra-ui-solid/system`, which is listed. After the merge that import
+becomes relative, matches nothing in the map, and every `chakra()` call in our own source extracts
+**zero rules** — with a green build. The answer is a **self-referencing import**: components go on
+importing `chakra` from `@chakra-ui-solid/core`, which Node resolves through the package's own
+`exports`. Verify it against a real `cssgen` before trusting it.
+
+Nine other sites move together, and the first four are load-bearing: `chakraConfig()`'s
+`importMap.jsx` (consumer-facing — wrong, and every `<chakra.div>` in their app is unstyled),
+`packages/styled-system/panda.config.ts`'s `importMap` / `include` / `exclude`, `turbo.json`'s
+`cssgen.inputs` (its own comment: these globs must stay in step with that `include`), and
+`attribution.config.ts` + both `NOTICE.md` files for `factory.tsx`. Then `tsconfig.base.json#paths`,
+`vitest-aliases.ts`, `repo-shape.test.mjs` (`packages/core/src/components/*`, and the component
+name moves to `split("/")[4]`), the 22 `chakraUiSolid.entries`, and the docs app's imports.
+Published subpaths do not change: an entry *key* is the subpath, not the source path.
+
+**Do it before the docs pages**, whose frontmatter carries `links.source: packages/components/src/…`
+per page.
+
 ## Build order
 
 - **Popover comes immediately after Dialog and before B1**, to measure the popper seam on one
