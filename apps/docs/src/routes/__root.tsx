@@ -5,6 +5,7 @@ import type { JSX } from "@solidjs/web";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/solid-router";
 import { shellClass } from "~/components/layout";
 import { NotFound } from "~/components/not-found";
+import { SiteGradientDefs } from "~/components/site/icons";
 import { SiteFooter } from "~/components/site-footer";
 import { SiteHeader } from "~/components/site-header";
 import { SITE_DESCRIPTION, SITE_NAME } from "~/config";
@@ -23,7 +24,10 @@ export const Route = createRootRoute({
       { title: SITE_NAME },
       { name: "description", content: SITE_DESCRIPTION },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+    ],
   }),
   notFoundComponent: () => (
     <RootLayout>
@@ -58,6 +62,8 @@ function RootLayout(props: { children: JSX.Element }) {
         <script innerHTML={colorModePrePaintScript} />
       </head>
       <body class={shellClass}>
+        {/* Every bolt on the site fills from one of these three gradients (`~/components/site/icons`). */}
+        <SiteGradientDefs />
         <SiteHeader />
         <main class={css({ flex: "1" })}>{props.children}</main>
         <SiteFooter />

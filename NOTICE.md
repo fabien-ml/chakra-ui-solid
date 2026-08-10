@@ -91,14 +91,32 @@ row per page, because the content tier is one derivative rather than 111
 ([`__internal__/legal.md`](__internal__/legal.md) §2.6;
 [`__internal__/decisions.md`](__internal__/decisions.md) **D-148**).
 
-Copyright is not trademark, and no licence moves the mark: this repository carries no Chakra logo,
-wordmark, favicon derivative, social card or combined mark, its site chrome says `chakra-ui-solid`,
-and the disclaimer in `legal.md` §3.4 appears on the docs home and in every page's footer
+**The brand assets are used, and they are used knowingly.** The docs site carries Chakra's bolt —
+`BlitzIcon`, `BlitzFillIcon` and the `LogoIcon` glyph — and their `favicon.ico`. All four are files
+in the same MIT-licensed repository, so the copy is permitted and the rows below are the condition.
+**Trademark is a separate right that no licence moves**, and the mitigations are unchanged and
+load-bearing: the site's logotype reads `chakra-ui-solid` and never `chakra`, none of Chakra's
+wordmark lettering is reproduced, no social card or combined mark exists, and the disclaimer in
+`legal.md` §3.4 appears above the fold on the docs home and in every page's footer
 ([`__internal__/legal.md`](__internal__/legal.md) §3.6).
 
 | File | Derived from |
 | ---- | ------------ |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
+| `apps/docs/src/components/site/icons.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
+| `apps/docs/public/favicon.ico` | `chakra-ui/chakra-ui` — `apps/www/app/favicon.ico` |
+
+## Framework logos
+
+The docs site's framework grid shows each project's own logo, unmodified, to name the framework
+that cell links to. **Nominative use** — identifying a thing by its name and mark — and none of the
+three implies endorsement, sponsorship or affiliation.
+
+| File | Source | Mark held by |
+| ---- | ------ | ------------ |
+| `apps/docs/public/logos/vite.svg` | `vitejs/vite` — `docs/public/logo.svg` | The Vite project |
+| `apps/docs/public/logos/solid-start.svg` | `solidjs/solid-docs` — `public/solid-start.svg` | The SolidJS project |
+| `apps/docs/public/logos/tanstack-light.svg`, `tanstack-dark.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-stacked-{charcoal,white}.svg` | Tanner Linsley / TanStack |
 
 ## Ark UI
 

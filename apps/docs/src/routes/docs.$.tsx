@@ -1,9 +1,9 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { Box } from "@chakra-ui-solid/components";
 import { Dynamic } from "@solidjs/web";
 import { createFileRoute } from "@tanstack/solid-router";
 import { Show } from "solid-js";
+import { Container } from "~/components/container";
 import { DocsSidebar } from "~/components/docs-sidebar";
-import { containerClass } from "~/components/layout";
 import { MdxPagination } from "~/components/mdx-pagination";
 import { NotFound } from "~/components/not-found";
 import { PageHeader } from "~/components/page-header";
@@ -33,27 +33,26 @@ function DocsPage() {
   return (
     <Show when={page()} fallback={<NotFound />}>
       {(doc) => (
-        <div class={`${containerClass} ${css({ display: "flex" })}`}>
+        <Container display="flex">
           <DocsSidebar section={doc().section} currentSlug={doc().slug} />
-          <article
-            class={css({
-              flex: "1",
-              minW: "0",
-              width: "full",
-              px: { md: "12" },
-              pt: "10",
-              pb: "16",
-              minH: "var(--content-height)",
-            })}
+          <Box
+            as="article"
+            flex="1"
+            minW="0"
+            width="full"
+            px={{ md: "12" }}
+            pt="10"
+            pb="16"
+            minH="var(--content-height)"
           >
             <PageHeader doc={doc()} />
             <div class={proseClass}>
               <Dynamic component={doc().module.default} />
             </div>
             <MdxPagination slug={doc().slug} />
-          </article>
+          </Box>
           <Toc entries={doc().module.tableOfContents} />
-        </div>
+        </Container>
       )}
     </Show>
   );

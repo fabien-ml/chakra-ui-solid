@@ -1,5 +1,6 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
-import { containerClass } from "~/components/layout";
+import { Box } from "@chakra-ui-solid/components";
+import type { JSX } from "@solidjs/web";
+import { Container } from "~/components/container";
 import { DISCLAIMER } from "~/config";
 
 /**
@@ -12,23 +13,27 @@ import { DISCLAIMER } from "~/config";
  */
 export function SiteFooter() {
   return (
-    <footer
-      class={css({
-        borderTopWidth: "1px",
-        borderColor: "border",
-        bg: "bg.subtle",
-        mt: "16",
-      })}
-    >
-      <div class={`${containerClass} ${css({ py: "8" })}`}>
-        <p class={css({ fontSize: "sm", color: "fg.muted", maxW: "3xl" })}>
+    <Box as="footer" borderTopWidth="1px" borderColor="border" bg="bg.subtle" mt="16">
+      <Container py="8">
+        <Box as="p" fontSize="sm" color="fg.muted" maxW="3xl">
           {DISCLAIMER.before}
-          <a href={DISCLAIMER.linkHref} class={css({ color: "fg", textDecoration: "underline" })}>
+          <Box
+            color="fg"
+            textDecoration="underline"
+            render={(props) => (
+              <a
+                {...(props as JSX.AnchorHTMLAttributes<HTMLAnchorElement>)}
+                href={DISCLAIMER.linkHref}
+              >
+                {props.children}
+              </a>
+            )}
+          >
             {DISCLAIMER.linkText}
-          </a>
+          </Box>
           {DISCLAIMER.after}
-        </p>
-      </div>
-    </footer>
+        </Box>
+      </Container>
+    </Box>
   );
 }
