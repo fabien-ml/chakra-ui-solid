@@ -25,10 +25,12 @@ export type CssProp = SystemStyleObject | SystemStyleObject[];
  * after it so theirs still wins.
  *
  * This is the seam a layout component's shorthand mapping uses — `flex.raw({ direction })`,
- * `square.raw({ size })` — and it is deliberately `css` rather than
- * {@link RenderStyledOptions.baseStyles}: Chakra puts those mappings in `css` too, which is what
- * makes `direction` beat a `flexDirection` style prop passed alongside it. `baseStyles` sits under
- * the style props and would answer the other way.
+ * `square.raw({ size })` — and it is `css` rather than {@link RenderStyledOptions.baseStyles}
+ * because that is where Chakra's own layout components put theirs (`<chakra.div {...rest} css={{
+ * flexDirection: direction, ...props.css }} />`). Both seams sit under the style props, so
+ * `<Flex direction="column" flexDirection="row">` is `row` either way; what `css` buys is the
+ * consumer's own entries landing *after* the component's, which is the order this function exists
+ * to produce.
  */
 export function composeCss(own: SystemStyleObject, consumer: CssProp | undefined): CssProp {
   if (consumer === undefined) {
@@ -146,10 +148,18 @@ const ALWAYS_FORWARDED = new Set(["children", "ref"]);
  * (`as` / render-prop polymorphism + ref merging) plus style-prop extraction and class
  * composition.
  *
- * Class precedence, low → high: `recipeClass` → style props + the `css` prop → the consumer's
- * `class` (appended last, so it wins ties). Consumer inline `style` is forwarded untouched and
- * always beats a class, which is what makes the CSS-custom-property route work for genuinely
- * dynamic values.
+ * Class precedence, low → high: `recipeClass` → `baseStyles` → the `css` prop → style props → the
+ * consumer's `class` (appended last, so it wins ties). Consumer inline `style` is forwarded
+ * untouched and always beats a class, which is what makes the CSS-custom-property route work for
+ * genuinely dynamic values.
+ *
+ * **Style props over `css`, and that order is Chakra's** — `useResolvedProps` composes
+ * `css(cvaStyles, ...cssStyles, propStyles)` and its `mergeWith` lets the last argument win
+ * (`packages/react/src/styled-system/use-resolved-props.ts`, `.../css.ts`). This read the other way
+ * round until 2026-08-10 on the belief that a documented escape hatch outranks a prop; Chakra
+ * documents no such thing, and `css` is where a component parks *its own* shorthand mapping
+ * ({@link composeCss}), so the inverted order made `<Flex direction="column" flexDirection="row">`
+ * answer `column` where Chakra answers `row` (`DECISIONS.md`, *Style props outrank the `css` prop*).
  *
  * SSR-safe by construction: the `class` getter is pure render-time computation — no DOM access, no
  * effects, no generated ids — and `css()` emits stable unhashed names, so server and client agree.
@@ -180,8 +190,8 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
   // true, but the `css` escape hatch is a *nested* style object, not a per-prop value: Panda's
   // `css()` does not flatten a `css` KEY, so folding it in with the others emits garbage
   // (`color:css_red`). Exclude it here and pass its value as a sibling `css()` argument in the
-  // getter below, which is how Panda merges it (and lets it win ties — the documented escape-hatch
-  // precedence).
+  // getter below, which is how Panda merges it — ahead of the style props, so a style prop wins a
+  // tie against it.
   const styleKeys: string[] = [];
   const withheldKeys: string[] = [];
 
@@ -239,7 +249,7 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
 
       // Addition 1 — `css` accepts an array. `css()` is variadic and merges left to right, so the
       // array form is a spread rather than a manual merge — and it is the same variadic call that
-      // puts `baseStyles` underneath the style props.
+      // stacks `baseStyles`, then `css`, then the style props.
       const cssProp = props.css;
       const cssArguments = Array.isArray(cssProp) ? cssProp : [cssProp];
 
@@ -252,8 +262,8 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
         unstyled ? undefined : options.recipeClass?.(),
         css(
           unstyled ? undefined : options.baseStyles?.(),
-          styles as SystemStyleObject,
           ...cssArguments,
+          styles as SystemStyleObject,
         ),
         props.class as string | undefined,
       );

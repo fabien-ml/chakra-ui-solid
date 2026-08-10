@@ -143,6 +143,21 @@ cursor. It was audited and **ships unchanged**: dropping it would remove behavio
 So `check:no-runtime-css`'s source grep must **never** be pointed at dependencies. On a Zag minor,
 diff against these four sites rather than re-adjudicating them.
 
+## Style props outrank the `css` prop
+
+**Chakra's order, and ours since 2026-08-10: `css(recipe, cssProp, styleProps)`.** The escape hatch
+is a default a caller overrides per property, not a trump card — `use-resolved-props.ts` ends its
+merge with `propStyles` and `css.ts`'s `mergeWith` gives the last argument the property. Chakra's
+docs say nothing either way; only the code decides.
+
+Ours read the other way until then, on the belief that a documented escape hatch outranks a prop.
+It matters because `css` is also where a layout component parks **its own** shorthand mapping
+(`composeCss`), so the inverted order made `<Flex direction="column" flexDirection="row">` answer
+`column`. Chakra answers `row`, and reaches it twice by two routes — Flex puts the mapping in `css`
+and lets the style prop beat it; Stack writes `flexDirection={direction}` then spreads `{...rest}`
+after it. The consumer's own `css` entries still land after the component's, which is all
+`composeCss` exists to do.
+
 ## Panda's `/patterns` are fair game; only `/jsx` is banned
 
 The ban is on Panda's generated **`/jsx` factory**, which targets Solid 1.x. Its `/patterns`

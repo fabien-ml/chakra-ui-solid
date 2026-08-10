@@ -79,9 +79,19 @@ describe("Box — style props resolve to real declarations", () => {
 });
 
 describe("Box — precedence", () => {
-  it("lets the `css` prop beat a style prop", () => {
-    const element = render(() => <Box p="2" css={{ padding: "8" }} />);
+  it("lets a style prop beat the `css` prop", () => {
+    // Chakra's order, read off `useResolvedProps`: `css(cvaStyles, ...cssStyles, propStyles)`, and
+    // its `mergeWith` gives the last argument the property. So `css` is a default a caller can
+    // still override, not a trump card (`DECISIONS.md`, *Style props outrank the `css` prop*).
+    const element = render(() => <Box p="8" css={{ padding: "2" }} />);
     expect(getComputedStyle(element).padding).toBe("32px");
+  });
+
+  it("applies a `css` entry no style prop contests", () => {
+    // The reverse direction of the same merge: `css` loses a tie per property, not wholesale.
+    const element = render(() => <Box p="8" css={{ padding: "2", margin: "2" }} />);
+    expect(getComputedStyle(element).padding).toBe("32px");
+    expect(getComputedStyle(element).margin).toBe("8px");
   });
 
   it("merges the array form of `css` left to right", () => {

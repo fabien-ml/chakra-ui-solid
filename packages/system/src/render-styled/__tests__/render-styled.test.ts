@@ -87,10 +87,23 @@ describe("renderStyled — class precedence", () => {
     expect(className).toBe(className.trim());
   });
 
-  it("lets the `css` escape hatch beat a style prop", () => {
+  it("lets a style prop beat the `css` escape hatch, as Chakra does", () => {
+    // Chakra's `useResolvedProps` ends its merge with the style props —
+    // `css(cvaStyles, ...cssStyles, propStyles)` — so the escape hatch is a *default* a caller can
+    // still override per property, not a trump card (`DECISIONS.md`, *Style props outrank the `css` prop*).
     expect(
       computedClass({ as: "div", props: { m: "2", css: { margin: "6" } } as StyledProps }),
-    ).toBe(css({ margin: "6" }));
+    ).toBe(css({ margin: "2" }));
+  });
+
+  it("still applies a `css` entry no style prop contests", () => {
+    // The other half of the same order: losing a tie is per property, not per object.
+    expect(
+      computedClass({
+        as: "div",
+        props: { m: "2", css: { margin: "6", color: "red" } } as StyledProps,
+      }),
+    ).toBe(css({ margin: "6", color: "red" }, { margin: "2" }));
   });
 
   it("merges the array form of `css` left to right", () => {
@@ -127,7 +140,7 @@ describe("renderStyled — `unstyled`", () => {
     });
 
     expect(className).not.toContain("recipe-content");
-    expect(className).toBe(css({ p: "4" }, { margin: "6" }));
+    expect(className).toBe(css({ margin: "6" }, { p: "4" }));
   });
 
   it("keeps the recipe class for any value other than `true`", () => {
