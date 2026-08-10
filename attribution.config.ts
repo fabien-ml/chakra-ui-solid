@@ -105,6 +105,15 @@ const docsApp: AttributionEntry[] = [
     license: "MIT",
     package: null,
   },
+  {
+    // The hatched surface every layout example stands on. Its declarations are ordinary and its
+    // data-URI pattern is not — a copied SVG path is expression however few bytes it takes.
+    file: "apps/docs/src/components/decorative-box.tsx",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "apps/compositions/src/lib/decorative-box.tsx",
+    license: "MIT",
+    package: null,
+  },
 ];
 
 export const attributions: AttributionEntry[] = [...zagSolidFork, ...chakraReact, ...docsApp];

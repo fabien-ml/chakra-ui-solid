@@ -1,11 +1,12 @@
-import { Box, Wrap } from "@chakra-ui-solid/components";
+import { Wrap } from "@chakra-ui-solid/components";
 import { For } from "solid-js";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function WrapWithGap() {
   return (
     <Wrap gap="5">
       <For each={Array.from({ length: 10 }, (_, index) => index)}>
-        {() => <Box h="12" w="12" bg="bg.emphasized" />}
+        {() => <DecorativeBox h="12" w="12" />}
       </For>
     </Wrap>
   );

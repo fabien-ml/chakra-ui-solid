@@ -1,12 +1,13 @@
-import { Box, SimpleGrid } from "@chakra-ui-solid/components";
+import { SimpleGrid } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function SimpleGridWithRowAndColGap() {
   return (
     <SimpleGrid columns={2} columnGap="2" rowGap="4">
-      <Box height="20" bg="bg.emphasized" />
-      <Box height="20" bg="bg.emphasized" />
-      <Box height="20" bg="bg.emphasized" />
-      <Box height="20" bg="bg.emphasized" />
+      <DecorativeBox height="20" />
+      <DecorativeBox height="20" />
+      <DecorativeBox height="20" />
+      <DecorativeBox height="20" />
     </SimpleGrid>
   );
 }

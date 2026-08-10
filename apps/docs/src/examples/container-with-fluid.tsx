@@ -1,12 +1,13 @@
-import { Box, Container } from "@chakra-ui-solid/components";
+import { Container } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function ContainerWithFluid() {
   return (
     <Container fluid>
-      <Box px="2">
+      <DecorativeBox px="2">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam consectetur, tortor in
         lacinia eleifend, dui nisl tristique nunc.
-      </Box>
+      </DecorativeBox>
     </Container>
   );
 }

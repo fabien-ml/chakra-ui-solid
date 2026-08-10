@@ -1,11 +1,12 @@
-import { Box, Flex } from "@chakra-ui-solid/components";
+import { Flex } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function FlexWithAutoMargin() {
   return (
     <Flex gap="4" justify="space-between">
-      <Box height="10" width="40" bg="bg.emphasized" />
-      <Box height="10" width="40" bg="bg.emphasized" marginEnd="auto" />
-      <Box height="10" width="40" bg="bg.emphasized" />
+      <DecorativeBox height="10" width="40" />
+      <DecorativeBox height="10" width="40" marginEnd="auto" />
+      <DecorativeBox height="10" width="40" />
     </Flex>
   );
 }

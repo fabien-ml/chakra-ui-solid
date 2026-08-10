@@ -1,17 +1,18 @@
-import { Box, Flex } from "@chakra-ui-solid/components";
+import { Flex } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function FlexWithOrder() {
   return (
     <Flex gap="4">
-      <Box height="10" width="10" bg="bg.emphasized" order="1">
+      <DecorativeBox height="10" order="1">
         1
-      </Box>
-      <Box height="10" width="10" bg="bg.emphasized" order="3">
+      </DecorativeBox>
+      <DecorativeBox height="10" order="3">
         2
-      </Box>
-      <Box height="10" width="10" bg="bg.emphasized" order="2">
+      </DecorativeBox>
+      <DecorativeBox height="10" order="2">
         3
-      </Box>
+      </DecorativeBox>
     </Flex>
   );
 }

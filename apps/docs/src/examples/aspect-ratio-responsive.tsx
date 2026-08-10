@@ -1,9 +1,9 @@
-import { Box } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function AspectRatioResponsive() {
   return (
-    <Box maxWidth="300px" bg="bg.muted" aspectRatio={{ base: 1, md: 16 / 9 }}>
+    <DecorativeBox maxWidth="300px" aspectRatio={{ base: 1, md: 16 / 9 }}>
       Box
-    </Box>
+    </DecorativeBox>
   );
 }

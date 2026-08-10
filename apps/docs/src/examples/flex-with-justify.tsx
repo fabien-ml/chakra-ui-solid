@@ -1,38 +1,39 @@
-import { Box, Flex } from "@chakra-ui-solid/components";
+import { Flex } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function FlexWithJustify() {
   return (
     <Flex direction="column" gap="8">
       <Flex gap="4" justify="flex-start">
-        <Box height="10" width="120px" bg="bg.emphasized" />
-        <Box height="10" width="120px" bg="bg.emphasized">
+        <DecorativeBox height="10" width="120px" />
+        <DecorativeBox height="10" width="120px">
           flex-start
-        </Box>
-        <Box height="10" width="120px" bg="bg.emphasized" />
+        </DecorativeBox>
+        <DecorativeBox height="10" width="120px" />
       </Flex>
 
       <Flex gap="4" justify="center">
-        <Box height="10" width="120px" bg="bg.emphasized" />
-        <Box height="10" width="120px" bg="bg.emphasized">
+        <DecorativeBox height="10" width="120px" />
+        <DecorativeBox height="10" width="120px">
           center
-        </Box>
-        <Box height="10" width="120px" bg="bg.emphasized" />
+        </DecorativeBox>
+        <DecorativeBox height="10" width="120px" />
       </Flex>
 
       <Flex gap="4" justify="flex-end">
-        <Box height="10" width="120px" bg="bg.emphasized" />
-        <Box height="10" width="120px" bg="bg.emphasized">
+        <DecorativeBox height="10" width="120px" />
+        <DecorativeBox height="10" width="120px">
           flex-end
-        </Box>
-        <Box height="10" width="120px" bg="bg.emphasized" />
+        </DecorativeBox>
+        <DecorativeBox height="10" width="120px" />
       </Flex>
 
       <Flex gap="4" justify="space-between">
-        <Box height="10" width="120px" bg="bg.emphasized" />
-        <Box height="10" width="120px" bg="bg.emphasized">
+        <DecorativeBox height="10" width="120px" />
+        <DecorativeBox height="10" width="120px">
           space-between
-        </Box>
-        <Box height="10" width="120px" bg="bg.emphasized" />
+        </DecorativeBox>
+        <DecorativeBox height="10" width="120px" />
       </Flex>
     </Flex>
   );

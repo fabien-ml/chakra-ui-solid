@@ -1,12 +1,11 @@
 import { Bleed, Box, Stack } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function BleedBasic() {
   return (
     <Box padding="10" rounded="sm" borderWidth="1px">
       <Bleed inline="10">
-        <Box height="20" bg="bg.muted">
-          Bleed
-        </Box>
+        <DecorativeBox height="20">Bleed</DecorativeBox>
       </Bleed>
 
       <Stack mt="6">

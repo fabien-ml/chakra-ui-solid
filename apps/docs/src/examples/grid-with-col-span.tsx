@@ -1,16 +1,17 @@
-import { Box, Grid, GridItem } from "@chakra-ui-solid/components";
+import { Grid, GridItem } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function GridWithColSpan() {
   return (
     <Grid templateColumns="repeat(4, 1fr)" gap="6">
       <GridItem colSpan={2}>
-        <Box h="20" bg="bg.emphasized" />
+        <DecorativeBox h="20" />
       </GridItem>
       <GridItem colSpan={1}>
-        <Box h="20" bg="bg.emphasized" />
+        <DecorativeBox h="20" />
       </GridItem>
       <GridItem colSpan={1}>
-        <Box h="20" bg="bg.emphasized" />
+        <DecorativeBox h="20" />
       </GridItem>
     </Grid>
   );

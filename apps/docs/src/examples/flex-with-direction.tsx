@@ -1,11 +1,12 @@
-import { Box, Flex } from "@chakra-ui-solid/components";
+import { Flex } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function FlexWithDirection() {
   return (
     <Flex gap="4" direction="column">
-      <Box height="10" bg="bg.emphasized" />
-      <Box height="10" bg="bg.emphasized" />
-      <Box height="10" bg="bg.emphasized" />
+      <DecorativeBox height="10" />
+      <DecorativeBox height="10" />
+      <DecorativeBox height="10" />
     </Flex>
   );
 }

@@ -1,11 +1,12 @@
-import { Box, Stack } from "@chakra-ui-solid/components";
+import { Stack } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function StackWithResponsiveDirection() {
   return (
     <Stack direction={{ base: "column", md: "row" }} gap="10">
-      <Box boxSize="20" bg="bg.emphasized" />
-      <Box boxSize="20" bg="bg.emphasized" />
-      <Box boxSize="20" bg="bg.emphasized" />
+      <DecorativeBox boxSize="20" />
+      <DecorativeBox boxSize="20" />
+      <DecorativeBox boxSize="20" />
     </Stack>
   );
 }

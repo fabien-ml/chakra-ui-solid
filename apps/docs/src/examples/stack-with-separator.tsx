@@ -1,11 +1,12 @@
-import { Box, Stack, StackSeparator } from "@chakra-ui-solid/components";
+import { Stack, StackSeparator } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function StackWithSeparator() {
   return (
     <Stack separator={StackSeparator}>
-      <Box h="20" bg="bg.emphasized" />
-      <Box h="20" bg="bg.emphasized" />
-      <Box h="20" bg="bg.emphasized" />
+      <DecorativeBox h="20" />
+      <DecorativeBox h="20" />
+      <DecorativeBox h="20" />
     </Stack>
   );
 }

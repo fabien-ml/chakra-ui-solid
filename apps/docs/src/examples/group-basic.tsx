@@ -1,14 +1,15 @@
-import { Box, Group } from "@chakra-ui-solid/components";
+import { Group } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function GroupBasic() {
   return (
     <Group>
-      <Box h="20" w="40" bg="bg.emphasized">
+      <DecorativeBox h="20" w="40">
         1
-      </Box>
-      <Box h="20" w="40" bg="bg.emphasized">
+      </DecorativeBox>
+      <DecorativeBox h="20" w="40">
         2
-      </Box>
+      </DecorativeBox>
     </Group>
   );
 }

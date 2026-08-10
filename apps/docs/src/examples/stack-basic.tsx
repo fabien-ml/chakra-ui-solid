@@ -1,11 +1,12 @@
-import { Box, Stack } from "@chakra-ui-solid/components";
+import { Stack } from "@chakra-ui-solid/components";
+import { DecorativeBox } from "../components/decorative-box";
 
 export default function StackBasic() {
   return (
     <Stack>
-      <Box h="20" bg="bg.emphasized" />
-      <Box h="20" bg="bg.emphasized" />
-      <Box h="20" bg="bg.emphasized" />
+      <DecorativeBox h="20" />
+      <DecorativeBox h="20" />
+      <DecorativeBox h="20" />
     </Stack>
   );
 }

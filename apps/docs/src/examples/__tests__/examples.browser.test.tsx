@@ -36,11 +36,41 @@ const exampleModules = import.meta.glob<{ default: Component }>("../*.tsx", { ea
  *   translucent layer, so axe reports `bgOverlap` and cannot compute a ratio at all.
  * - `frame-tested` on the two embeds: axe cannot enter a cross-origin frame, and what is inside
  *   YouTube's and Google's iframes is not ours to fix.
+ * - `color-contrast` on every {@link LABELLED_DECORATIVE_BOXES} example — see below.
  */
+
+/**
+ * The examples whose `DecorativeBox` carries a label rather than standing empty.
+ *
+ * A `DecorativeBox` paints a hatched SVG behind its text, and axe will not sample a backdrop it
+ * cannot rasterize: `background-image` makes the check report `bgImage` and decline, whatever the
+ * image actually is. The ratio here is `fg` on `bg.emphasized` — the hatch is a 0.2-alpha wash over
+ * it — so the answer is decidable by a human and only by a human. The empty ones hold no text and
+ * so are not asked the question.
+ *
+ * Adding a decorated example with a label means adding it here; that is the intended cost of a
+ * per-example allowance over a silenced rule.
+ */
+const LABELLED_DECORATIVE_BOXES = [
+  "aspect-ratio-responsive",
+  "bleed-basic",
+  "bleed-vertical",
+  "bleed-with-direction",
+  "container-basic",
+  "container-with-fluid",
+  "container-with-sizes",
+  "flex-with-justify",
+  "flex-with-order",
+  "grid-spanning-columns",
+  "group-basic",
+  "simple-grid-with-col-span",
+];
+
 const ALLOWED_INCOMPLETE: Record<string, readonly string[]> = {
   "absolute-center-with-overlay": ["color-contrast"],
   "aspect-ratio-with-video": ["frame-tested"],
   "aspect-ratio-with-map": ["frame-tested"],
+  ...Object.fromEntries(LABELLED_DECORATIVE_BOXES.map((name) => [name, ["color-contrast"]])),
 };
 
 const examples = Object.entries(exampleModules)

@@ -117,6 +117,7 @@ fold on the docs home and in every page's footer.
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/site/icons.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
+| `apps/docs/src/components/decorative-box.tsx` | `chakra-ui/chakra-ui` — `apps/compositions/src/lib/decorative-box.tsx` |
 | `apps/docs/public/favicon.ico` | `chakra-ui/chakra-ui` — `apps/www/app/favicon.ico` |
 
 ## Framework logos
