@@ -61,8 +61,17 @@ flat, one component doing both jobs.
   the resolved nodes.** Solid cannot clone: by the time a parent sees a child it is a constructed
   DOM node. Settled on Group, whose `data-first`/`data-last`/`data-between` and `--group-index` are
   written that way, leaving Chakra's selectors untouched. **The cost is SSR** — server markup
-  carries none of it until the client takes over. This covers *decorating* a child; injecting
-  **styles** into one (Stack's separator) is the open question, and context is the likely answer.
+  carries none of it until the client takes over. That covers *decorating* a child.
+- **Injecting styles into a passed-in child is context, and the child must be a COMPONENT.** Settled
+  on Stack's separator, both halves measured. *Styles*: `StackSeparator` reads the direction off a
+  `StackDirectionContext` and computes its own class, so unlike the decorate route this one costs no
+  SSR — and the separators must be built inside the provider, since Solid resolves context through
+  the owner that created a component. *Repetition*: `separator={<X />}` yields a fresh node per read
+  because Solid compiles JSX in a prop position to a getter, but `const sep = <X />` yields **one**,
+  and inserting one node N−1 times moves it — a single separator at the last gap, silently. So the
+  prop takes a component (`separator={StackSeparator}`), which makes the element spelling a type
+  error. The value a repeated part carries (Chakra's separator margins are the `gap` prop) has no
+  rule in anyone's sheet: Stack keeps the flex `gap` on instead, same geometry, measured not assumed.
 - **`composeEventHandlers` is for part shapes C and D only.** A machine part never calls it; the
   machine's own prop getter already composes.
 - **`RootProvider`, `PropsProvider` and `Context` ship with each component**, in its batch, never as
@@ -330,14 +339,26 @@ becomes relative, matches nothing in the map, and every `chakra()` call in our o
 importing `chakra` from `@chakra-ui-solid/core`, which Node resolves through the package's own
 `exports`. Verify it against a real `cssgen` before trusting it.
 
-Nine other sites move together, and the first four are load-bearing: `chakraConfig()`'s
-`importMap.jsx` (consumer-facing — wrong, and every `<chakra.div>` in their app is unstyled),
-`packages/styled-system/panda.config.ts`'s `importMap` / `include` / `exclude`, `turbo.json`'s
-`cssgen.inputs` (its own comment: these globs must stay in step with that `include`), and
-`attribution.config.ts` + both `NOTICE.md` files for `factory.tsx`. Then `tsconfig.base.json#paths`,
-`vitest-aliases.ts`, `repo-shape.test.mjs` (`packages/core/src/components/*`, and the component
-name moves to `split("/")[4]`), the 22 `chakraUiSolid.entries`, and the docs app's imports.
-Published subpaths do not change: an entry *key* is the subpath, not the source path.
+**Every other site, and the first five are load-bearing** — each fails silently or wrecks the
+build rather than erroring usefully:
+
+1. `chakraConfig()`'s `importMap.jsx` — consumer-facing. Wrong, and every `<chakra.div>` in
+   their app is unstyled.
+2. `packages/styled-system/panda.config.ts`'s `importMap` / `include` / `exclude`.
+3. `turbo.json`'s `cssgen.inputs` — its own comment says these globs must stay in step with that
+   `include`; out of step, a style prop added anywhere is a cache hit and the sheet keeps its
+   previous contents.
+4. `apps/docs/vite.config.ts`'s `optimizeDeps.exclude` / `ssr.noExternal` — a stale name there
+   hands the docs app a runtime that is not Solid.
+5. `attribution.config.ts` (`package: "system"` → `"core"`) plus the root and package
+   `NOTICE.md` rows for `factory.tsx`, and `packages/system/{LICENSE,NOTICE.md}` move with it.
+
+Then the mechanical ones: `tsconfig.base.json#paths`, `vitest-aliases.ts`, `repo-shape.test.mjs`
+(`packages/core/src/components/*`, and the component name moves to `split("/")[4]`),
+`scripts/generate-props-tables.mjs`'s `componentsSrc`, the 22 `chakraUiSolid.entries`, both
+`tsconfig.json#include`s, `apps/docs/package.json`'s dependency and its imports, and the package
+list in `README.md`. Published subpaths do not change: an entry *key* is the subpath, not the
+source path.
 
 **Do it before the docs pages**, whose frontmatter carries `links.source: packages/components/src/…`
 per page.
