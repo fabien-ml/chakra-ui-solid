@@ -57,6 +57,12 @@ flat, one component doing both jobs.
   `ids` prop is the documented override. Ark and Chakra both forward it.
 - **Four part shapes (A–D).** The fifth — the *repeated* part (rows, cells, carousel indicators) —
   is not invented until the first component that has one. Accordion settles it.
+- **`Children.toArray` + `cloneElement` becomes `children()` plus a render effect that writes onto
+  the resolved nodes.** Solid cannot clone: by the time a parent sees a child it is a constructed
+  DOM node. Settled on Group, whose `data-first`/`data-last`/`data-between` and `--group-index` are
+  written that way, leaving Chakra's selectors untouched. **The cost is SSR** — server markup
+  carries none of it until the client takes over. This covers *decorating* a child; injecting
+  **styles** into one (Stack's separator) is the open question, and context is the likely answer.
 - **`composeEventHandlers` is for part shapes C and D only.** A machine part never calls it; the
   machine's own prop getter already composes.
 - **`RootProvider`, `PropsProvider` and `Context` ship with each component**, in its batch, never as
@@ -138,9 +144,55 @@ and exported. Worked example, 85 lines: `git -C ../hope-ui show
 e9c2f81:packages/components/src/flex/flex.tsx` — `flex.raw(...)` inside a lazy `css` getter,
 handed to `renderStyled`, so a consumer's own `css` still spreads last and wins.
 
+**And it is not optional, because a pattern claims the JSX NAME.** Panda's `jsxName` defaults to
+`capitalize(patternName)`, with no import required, so `Flex`, `Grid`, `GridItem`, `Wrap`, `Stack`,
+`Square`, `Circle`, `Center`, `Spacer`, `Float`, `Bleed`, `AspectRatio`, `Container` and
+`VisuallyHidden` are **already** styled tags in a consumer's build. A shorthand's value is a prop,
+so it exists in no source file as a style value; the consumer's own `<Flex direction="row">` going
+through that pattern is the only thing that puts `flex_row` in their sheet. Reuse it and the two
+sides agree by construction.
+
+**Where Chakra's mapping differs from the pattern's, the pattern is actively wrong** — measured,
+`packages/components/src/box/__tests__/__fixtures__/consumer`:
+
+| Component | What the consumer's build emits for it |
+|---|---|
+| `Grid` | pattern props are `columns`/`minChildWidth`/`gap`, so `templateColumns` falls to `…rest`, is not a CSS property, and emits **nothing** |
+| `GridItem` | `colSpan` → `span 2` where Chakra's is `span 2/span 2` |
+| `Wrap` | no `direction` prop, so it falls through and emits `direction: column` — a real property, meaningless value |
+| `Bleed` | two custom properties (`--bleed-x/y`), where Chakra has four edges |
+| `VisuallyHidden` | one `srOnly` class, where Chakra has nine declarations |
+
+Those are the rows that take the CSS-custom-property route. **`Float` is the opposite surprise**:
+Panda's pattern reproduces Chakra's Float exactly, defaults included, so it needs no route at all.
+
+**Two channels reach a consumer's stylesheet, and a value needs the right one.** The **pattern /
+style-prop channel** is their own source, and it is the only one that can carry a prop's value. The
+**library channel** is our published files in their `include` — a literal inside `chakra(tag, {…})`
+or `css.raw({…})`, which is where a base style, a variant and every `var(…)` rule must live.
+
 **A boolean runtime toggle needs `staticCss`.** `<Flex inline>` flips `display` to `inline-flex`
 at runtime and Panda's usage scan cannot see it — pre-generate the rule or the prop silently
 does nothing.
+
+**Two ways to write a `staticCss` row that emits nothing.** `["*"]` expands a property's *token*
+values, so on a keyword property (`alignItems`, `flexWrap`) it produces zero rules; and several
+`properties` keys in **one** entry produce zero rules. One property per entry, values enumerated.
+
+**`pattern.raw()` called with literals is extracted twice.** In a file Panda scans,
+`flex.raw({ direction: "row" })` emits `flex-direction: row` **and** `direction: row` — the raw
+prop name as a declaration, which no browser parses. This is why `packages/styled-system/
+panda.config.ts` excludes node-side tests: that is where an expected class is computed by calling
+the runtime.
+
+**An unset `var()` is safe in a longhand and fatal in a shorthand.** `grid-column-start:
+var(--unset)` is invalid at computed-value time and falls back to `auto`, exactly as if undeclared.
+`grid-area: var(--unset)` resets all four line properties — so a shorthand on the custom-property
+route must be applied **conditionally**, never from an always-on base.
+
+**The custom-property route costs the conditional value form**, since an inline style has no
+breakpoints. Narrow those props to `PlainCssValue<…>` so a responsive spelling is a type error
+rather than a prop that type-checks and does nothing.
 
 **A responsive variant prop type-checks whether or not its rules were generated.**
 `size={{ base: "sm", md: "lg" }}` *and* the array spelling `size={["sm", "lg"]}` both satisfy the

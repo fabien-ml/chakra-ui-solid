@@ -1,15 +1,19 @@
 import {
   AbsoluteCenter,
+  AspectRatio,
+  Bleed,
   Box,
   Center,
   Circle,
   chakra,
   Em,
   Flex,
+  Float,
   Grid,
   GridItem,
   Group,
   Quote,
+  SimpleGrid,
   Spacer,
   Span,
   Square,
@@ -89,6 +93,11 @@ const LayoutTier = () => (
     <Wrap justify="space-around" gap="3">
       <WrapItem />
     </Wrap>
+
+    <AspectRatio ratio={16 / 9} />
+    <Bleed inline="4" blockEnd="2" />
+    <Float placement="bottom-center" offset="1" />
+    <SimpleGrid columns={4} />
   </Span>
 );
 

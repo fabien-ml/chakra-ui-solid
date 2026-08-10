@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { declarationsForClassList } from "@chakra-ui-solid/internal-test-utils/stylesheet";
 import { css } from "@chakra-ui-solid/styled-system/css";
-import { circle, flex, spacer, square, wrap } from "@chakra-ui-solid/styled-system/patterns";
+import { circle, flex, float, spacer, square, wrap } from "@chakra-ui-solid/styled-system/patterns";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -169,6 +169,34 @@ describe("the layout tier reaches a consumer's extractor", () => {
     expect(
       consumerDeclarations(css({ gap: "var(--group-gap, 0.5rem)", isolation: "isolate" })),
     ).toEqual({ gap: "var(--group-gap, 0.5rem)", isolation: "isolate" });
+  });
+
+  it("emits every Float placement through the pattern that also defines it", () => {
+    // Panda's `float` pattern computes what Chakra's Float computes — the same nine placements, the
+    // same `offsetX ?? offset` fallback, the same defaults — so the component reuses it whole and
+    // the consumer's own `<Float placement="bottom-center" offset="1">` is mapped by the same code.
+    // Nothing here needs a custom property or a `staticCss` row.
+    expect(
+      consumerDeclarations(css(float.raw({ placement: "bottom-center", offset: "1" }))),
+    ).toMatchObject({
+      position: "absolute",
+      "inset-block-end": "var(--spacing-1)",
+      translate: "-50% 50%",
+    });
+  });
+
+  it("emits the rules AspectRatio and Bleed feed at runtime", () => {
+    // Two `var()` routes, and what their build must carry is the rule rather than the value: the
+    // ratio is an arbitrary number and the bleed amounts are per-edge. Both are literals in the
+    // components' own style configs, so both come from the library channel — as does SimpleGrid's
+    // track list, through the Grid it delegates to.
+    expect(
+      consumerDeclarations(css({ marginInlineStart: "calc(var(--bleed-inline-start, 0) * -1)" })),
+    ).toEqual({ "margin-inline-start": "calc(var(--bleed-inline-start, 0) * -1)" });
+
+    // AspectRatio's declaration lives on a `::before`, which `declarationsForClassList` cannot
+    // resolve — it reads rules whose selector *is* the class. The sheet text is the assertion.
+    expect(consumerStylesheet).toContain("padding-bottom: var(--aspect-ratio-padding)");
   });
 
   it("finds nothing for a class no source on either side wrote", () => {
