@@ -290,25 +290,37 @@ consumer's stylesheet, runtime only setting an attribute on `<html>`; unprobed t
   `disabled` prop is **not shipped** — omitting it makes passing it a type error, where a
   non-reactive prop that silently ignores changes would not. ~6 lines.
 
-## The repository mirrors `packages/react/src`, and two packages cannot
+## The repository mirrors `packages/react/src`, minus the two tiers Panda replaced
 
 **Settled, not yet executed.** The port covers styling and theming as well as components, and
-upstream holds all three as *siblings* — `packages/react/src/{components,styled-system,theme,hooks,
-utils}`. Ours put components at the src root of their own package, which spends the level those
-siblings need and makes no path diffable against upstream.
+upstream holds those as *siblings* under `packages/react/src`. Ours put components at the src root
+of their own package, which spends the level those siblings need.
 
 ```
-packages/core/src/{components/<name>,styled-system,theme,hooks,utils}   ← packages/react/src
+packages/core/src/{components/<name>,system,hooks,utils}
 packages/{styled-system,panda-preset,zag-solid,internal-test-utils}
 ```
 
 `packages/core`, published as **`@chakra-ui-solid/core`** — one import path, as `@chakra-ui/react`
-is. It absorbs today's `packages/system`, which *is* upstream's `styled-system/` in a package of
-its own. **Two cannot follow**, and both for a mechanical reason rather than taste:
-`@chakra-ui-solid/styled-system` is generated Panda output and has to be separately published or
-the library and the consumer app hold two `css()` instances; `@chakra-ui-solid/panda-preset` is
-read by Panda's config loader under Node's `import` condition and cannot sit in a
-`solid`-condition package.
+is. It absorbs today's `packages/system`.
+
+**`styled-system` is Panda's word, not Chakra's**, and getting this backwards is the trap this
+paragraph exists to close. `@chakra-ui-solid/styled-system` is Panda's generated output sitting
+under Panda's own `outdir` convention, which is why it keeps the name; upstream has a
+`src/styled-system/` only because they run their own Emotion serializer instead of Panda. **There
+is no second thing called styled-system in this repository and there must not be one.**
+
+**So two of upstream's siblings are deliberately absent, and neither is an oversight.**
+`src/styled-system/` is that serializer, and nothing of that machinery is ported (`NOTICE.md`);
+what survives it — the factory, `renderStyled`, the recipe seams — is `src/system/`. `src/theme/`
+is their token and recipe tables, which we depend on rather than vendor (`CLAUDE.md`), so our
+deltas stay in `packages/panda-preset`. Mirroring either name would advertise a parity that does
+not exist.
+
+**Two packages cannot fold in**, for a mechanical reason rather than taste:
+`@chakra-ui-solid/styled-system` is generated and has to be separately published or the library and
+the consumer app hold two `css()` instances; `@chakra-ui-solid/panda-preset` is read by Panda's
+config loader under Node's `import` condition and cannot sit in a `solid`-condition package.
 
 **The move is mechanical except for one thing, and that one thing fails silently.** Panda
 registers the `chakra` factory only from an import whose module is in `importMap.jsx`. Today our
