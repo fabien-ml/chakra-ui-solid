@@ -48,23 +48,6 @@ const justifyContent = [
 const displays = ["flex", "inline-flex", "grid", "inline-grid"];
 
 /**
- * The ten `colorPalette` values, read from `@chakra-ui/panda-preset`'s `semantic-tokens/colors.ts`.
- * `bg`, `fg` and `border` live in the same file but are semantic *groups*, not palettes.
- */
-const colorPalettes = [
-  "gray",
-  "red",
-  "orange",
-  "green",
-  "blue",
-  "yellow",
-  "teal",
-  "purple",
-  "pink",
-  "cyan",
-];
-
-/**
  * One `staticCss: ["*"]` key per recipe, merged into the inherited recipe body by `theme.extend`.
  *
  * This is the answer to the question the whole styling layer turns on: Panda generates CSS by
@@ -142,19 +125,25 @@ export const chakraSolidPreset = definePreset({
     extend: aliasUtilities,
   },
 
-  // The atomic half of the same problem: values a component's own logic picks, which no consumer
-  // source ever contains. `display` is the shape hope-ui shipped in production for exactly this
-  // reason — a `Flex` with an `inline` prop toggles `display: inline-flex` at runtime, and `Grid`
-  // does the same to `inline-grid` — and `colorPalette` is ours: a component that defaults it, or
-  // a wrapper that forwards it, emits `.color-palette_blue` and without this row that class has no
-  // rule (`plan.md` §1.3).
+  // The atomic half of the same problem: values **a component's own logic picks**, which no
+  // consumer source ever contains. `display` is the shape hope-ui shipped in production for exactly
+  // this reason — a `Flex` with an `inline` prop toggles `display: inline-flex` at runtime, `Grid`
+  // does the same to `inline-grid`, and `Center` carries it as a variant body (`plan.md` §1.3).
+  //
+  // That is the whole bar, and it is narrower than "a value someone might pass at runtime."
+  // Passing one is not supported: a style value must be statically extractable, declared here, or
+  // routed through a custom property (`CLAUDE.md`, *The hazard*), so a row that exists only to
+  // rescue a runtime-valued prop is buying back a form the library forbids — at every consumer's
+  // expense, for a rule most of them never use. Measured, on `colorPalette`, which used to sit in
+  // this list: 8 kB raw / 737 B gzip, seven of its ten palettes used by nothing, and every literal
+  // form — plain, responsive object, forwarded through a wrapper — emitting fine without it. Add a
+  // row when a *component* starts picking the value, not when an example does.
   //
   // One property per entry, which is not a style choice: several properties in a single entry
   // emits nothing.
   staticCss: {
     css: [
       { properties: { display: displays } },
-      { properties: { colorPalette: colorPalettes } },
       { properties: { flexDirection: flexDirections } },
       { properties: { flexWrap: flexWraps } },
       { properties: { alignItems: alignItems } },

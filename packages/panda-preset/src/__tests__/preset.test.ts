@@ -92,32 +92,21 @@ describe("the preset's own chain and atomic staticCss", () => {
   });
 
   it("pre-generates the atomic values a component's own logic picks", () => {
-    // The atomic half of the same problem: `display: inline-flex` toggled by a `Flex` prop, a
-    // `colorPalette` a component defaults or a wrapper forwards, and the layout shorthands whose
-    // matching Panda pattern does not carry them — `Wrap`'s `direction`, `Stack`'s `wrap`, all of
-    // `Group`'s. None appears in a consumer's source, so none is extracted. The last two rows are
-    // a *mapping* of one of those props rather than the prop itself: StackSeparator's line is
-    // `borderTopWidth` in a column stack and `borderInlineStartWidth` in a row one, which is why
-    // they alone carry `responsive: true` — a responsive `direction` makes the mapped value
-    // responsive too.
+    // The atomic half of the same problem: `display: inline-flex` toggled by a `Flex` prop, and the
+    // layout shorthands whose matching Panda pattern does not carry them — `Wrap`'s `direction`,
+    // `Stack`'s `wrap`, all of `Group`'s. None appears in a consumer's source, so none is
+    // extracted. The last two rows are a *mapping* of one of those props rather than the prop
+    // itself: StackSeparator's line is `borderTopWidth` in a column stack and
+    // `borderInlineStartWidth` in a row one, which is why they alone carry `responsive: true` — a
+    // responsive `direction` makes the mapped value responsive too.
+    //
+    // **A component picking the value is the bar, and the list is exhaustive on purpose.** There is
+    // no row for `colorPalette`: no component in this library defaults or forwards one, and a
+    // *consumer's* runtime-valued `colorPalette` is the form the library forbids rather than a case
+    // to pre-generate. Every literal form still emits without it — plain, responsive object, and
+    // forwarded through a wrapper, since the call site is the literal.
     expect(chakraSolidPreset.staticCss?.css).toEqual([
       { properties: { display: ["flex", "inline-flex", "grid", "inline-grid"] } },
-      {
-        properties: {
-          colorPalette: [
-            "gray",
-            "red",
-            "orange",
-            "green",
-            "blue",
-            "yellow",
-            "teal",
-            "purple",
-            "pink",
-            "cyan",
-          ],
-        },
-      },
       { properties: { flexDirection: ["row", "column", "row-reverse", "column-reverse"] } },
       { properties: { flexWrap: ["wrap", "nowrap", "wrap-reverse"] } },
       {
