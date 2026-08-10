@@ -64,7 +64,9 @@ const sourceClass = css({
     bg: "bg.subtle",
     p: "4",
     fontSize: "sm",
-    lineHeight: "relaxed",
+    // `tall`, not Chakra v2's `relaxed` — the v3 preset renamed the scale, and an unknown token is
+    // emitted as its own name (`line-height: relaxed`), which the browser drops with no error.
+    lineHeight: "tall",
     color: "var(--shiki-light)",
   },
   "& span": { color: "var(--shiki-light)" },
