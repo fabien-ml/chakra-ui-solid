@@ -4,10 +4,6 @@ import { aliasUtilities } from "./alias-utilities";
 import { componentNameFor, recipeBodyFor, recipeKeys, slotRecipeKeys } from "./recipe-registry";
 
 /**
- * The ten `colorPalette` values, read from `@chakra-ui/panda-preset`'s `semantic-tokens/colors.ts`.
- * `bg`, `fg` and `border` live in the same file but are semantic *groups*, not palettes.
- */
-/**
  * The layout tier's keyword shorthands, whose values arrive as a **prop** and are therefore not in
  * anyone's source as a style value.
  *
@@ -23,6 +19,7 @@ import { componentNameFor, recipeBodyFor, recipeKeys, slotRecipeKeys } from "./r
  * has a token scale — it produces nothing at all, silently.
  */
 const flexDirections = ["row", "column", "row-reverse", "column-reverse"];
+
 /**
  * The two borders a StackSeparator chooses between, and the one row here that carries
  * `responsive: true`.
@@ -34,9 +31,10 @@ const flexDirections = ["row", "column", "row-reverse", "column-reverse"];
  * mapped value inherits those conditions, so the rules have to exist at every breakpoint too.
  */
 const separatorBorderWidths = ["1px", "0"];
+
 const flexWraps = ["wrap", "nowrap", "wrap-reverse"];
-const alignments = ["flex-start", "flex-end", "center", "baseline", "stretch", "start", "end"];
-const justifications = [
+const alignItems = ["flex-start", "flex-end", "center", "baseline", "stretch", "start", "end"];
+const justifyContent = [
   "flex-start",
   "flex-end",
   "center",
@@ -47,6 +45,12 @@ const justifications = [
   "end",
 ];
 
+const displays = ["flex", "inline-flex", "grid", "inline-grid"];
+
+/**
+ * The ten `colorPalette` values, read from `@chakra-ui/panda-preset`'s `semantic-tokens/colors.ts`.
+ * `bg`, `fg` and `border` live in the same file but are semantic *groups*, not palettes.
+ */
 const colorPalettes = [
   "gray",
   "red",
@@ -149,12 +153,12 @@ export const chakraSolidPreset = definePreset({
   // emits nothing.
   staticCss: {
     css: [
-      { properties: { display: ["flex", "inline-flex", "grid", "inline-grid"] } },
+      { properties: { display: displays } },
       { properties: { colorPalette: colorPalettes } },
       { properties: { flexDirection: flexDirections } },
       { properties: { flexWrap: flexWraps } },
-      { properties: { alignItems: alignments } },
-      { properties: { justifyContent: justifications } },
+      { properties: { alignItems: alignItems } },
+      { properties: { justifyContent: justifyContent } },
       { properties: { borderTopWidth: separatorBorderWidths }, responsive: true },
       { properties: { borderInlineStartWidth: separatorBorderWidths }, responsive: true },
     ],
