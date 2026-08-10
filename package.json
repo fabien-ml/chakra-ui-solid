@@ -39,6 +39,7 @@
     "check:preflight-hidden": "node scripts/check-preflight-hidden.mjs",
     "check:dark-selector": "node scripts/check-dark-selector.mjs",
     "check:preset-token-resolution": "node scripts/check-preset-token-resolution.mjs",
+    "check:declaration-support": "node scripts/check-declaration-support.mjs",
     "check:exports": "node scripts/check-exports.mjs",
     "check:externals": "node scripts/check-externals.mjs",
     "check:peer-panda": "node scripts/check-peer-panda.mjs",

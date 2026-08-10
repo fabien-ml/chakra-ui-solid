@@ -16,17 +16,20 @@ export function MdxPagination(props: { slug: string }) {
   return (
     <nav aria-label="Pagination" class={css({ display: "flex", gap: "8", mt: "20" })}>
       <Show when={siblings().previous} fallback={<span class={css({ flex: "1" })} />}>
-        {(page) => <PaginationItem doc={page()} direction="Previous" />}
+        {(page) => <PaginationItem doc={page()} label="Previous" />}
       </Show>
       <Show when={siblings().next} fallback={<span class={css({ flex: "1" })} />}>
-        {(page) => <PaginationItem doc={page()} direction="Next" />}
+        {(page) => <PaginationItem doc={page()} label="Next" />}
       </Show>
     </nav>
   );
 }
 
-function PaginationItem(props: { doc: NavPage; direction: "Previous" | "Next" }) {
-  const isNext = () => props.direction === "Next";
+// `label`, not `direction`: Panda extracts style props from *any* capitalized JSX component, and
+// `direction` is a real CSS property — so `direction="Previous"` generated a `.direction_Previous`
+// rule whose declaration no browser parses (`check:declaration-support`, D-178).
+function PaginationItem(props: { doc: NavPage; label: "Previous" | "Next" }) {
+  const isNext = () => props.label === "Next";
 
   return (
     <DocLink
@@ -46,7 +49,7 @@ function PaginationItem(props: { doc: NavPage; direction: "Previous" | "Next" })
         class={css({ display: "block", color: "fg.muted" })}
         style={{ "text-align": isNext() ? "end" : "start" }}
       >
-        {props.direction}
+        {props.label}
       </span>
       <span
         class={css({ display: "block", mt: "1", fontWeight: "medium", color: "fg" })}

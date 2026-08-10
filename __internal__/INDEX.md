@@ -27,40 +27,42 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 
 ---
 
-## The 30 indexed files
+## The 32 indexed files
 
 | Document | Size | Lines | Sections | Largest section | Block starts |
 |---|---|---|---|---|---|
-| [`component-blueprint.md`](#component-blueprintmd) | 92.1 KB | 1663 | 79 | §11 at 20.9 KB | L65 |
-| [`decisions.md`](#decisionsmd) | 51.4 KB | 503 | 14 | §6 at 11.6 KB | L149 |
-| [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.9 KB | 125 | 1 | §3.1 at 8.9 KB | L168 |
-| [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.6 KB | 143 | 1 | §3.2 at 9.6 KB | L174 |
-| [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.5 KB | 294 | 1 | §3.3 at 20.5 KB | L180 |
-| [`decisions/3.04-p4-adapter-milestone-one.md`](#decisions304-p4-adapter-milestone-onemd) | 10.4 KB | 142 | 1 | §3.4 at 10.4 KB | L186 |
-| [`decisions/3.05-p5-blueprint.md`](#decisions305-p5-blueprintmd) | 6.6 KB | 103 | 1 | §3.5 at 6.6 KB | L192 |
-| [`decisions/3.06-p6-parity-matrix.md`](#decisions306-p6-parity-matrixmd) | 8.7 KB | 130 | 1 | §3.6 at 8.7 KB | L198 |
-| [`decisions/3.07-p7-quality-bar.md`](#decisions307-p7-quality-barmd) | 5.7 KB | 85 | 1 | §3.7 at 5.7 KB | L204 |
-| [`decisions/3.08-p8-docs-site.md`](#decisions308-p8-docs-sitemd) | 4.7 KB | 73 | 1 | §3.8 at 4.7 KB | L210 |
-| [`decisions/3.09-p9-ledger-and-index.md`](#decisions309-p9-ledger-and-indexmd) | 1.1 KB | 17 | 1 | §3.9 at 1.1 KB | L216 |
-| [`decisions/3.10-s1-repo-bootstrap.md`](#decisions310-s1-repo-bootstrapmd) | 4.8 KB | 66 | 1 | §3.10 at 4.8 KB | L222 |
-| [`decisions/3.11-s1-review.md`](#decisions311-s1-reviewmd) | 6.7 KB | 86 | 1 | §3.11 at 6.7 KB | L228 |
-| [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.7 KB | 192 | 1 | §3.12 at 15.7 KB | L234 |
-| [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 23.3 KB | 309 | 1 | §3.13 at 23.3 KB | L240 |
-| [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 60.8 KB | 771 | 1 | §3.14 at 60.8 KB | L246 |
-| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 18.8 KB | 228 | 1 | §3.15 at 18.8 KB | L252 |
-| [`decisions/3.16-s4-reconciliation.md`](#decisions316-s4-reconciliationmd) | 10.0 KB | 129 | 1 | §3.16 at 10.0 KB | L258 |
-| [`decisions/3.17-s5-landing-page-reconciliation.md`](#decisions317-s5-landing-page-reconciliationmd) | 13.7 KB | 167 | 1 | §3.17 at 13.7 KB | L264 |
-| [`definition-of-done.md`](#definition-of-donemd) | 63.4 KB | 545 | 22 | §8 at 14.8 KB | L270 |
-| [`docs-plan.md`](#docs-planmd) | 61.2 KB | 924 | 46 | §1 at 13.9 KB | L297 |
-| [`docs-site.md`](#docs-sitemd) | 80.4 KB | 888 | 37 | §2 at 19.2 KB | L348 |
-| [`plan.md`](#planmd) | 80.0 KB | 1190 | 51 | §3 at 15.7 KB | L390 |
-| [`prior-art.md`](#prior-artmd) | 75.8 KB | 1141 | 45 | §2 at 11.1 KB | L446 |
-| [`roadmap.md`](#roadmapmd) | 90.2 KB | 1209 | 50 | §4 at 14.6 KB | L496 |
-| [`testing.md`](#testingmd) | 71.9 KB | 1032 | 51 | §3 at 11.4 KB | L551 |
-| [`testing/8.01-doc-index.md`](#testing801-doc-indexmd) | 4.3 KB | 59 | 1 | §8.1 at 4.3 KB | L607 |
-| [`testing/8.02-skill-pointers.md`](#testing802-skill-pointersmd) | 5.1 KB | 71 | 1 | §8.2 at 5.1 KB | L613 |
-| [`testing/8.03-context-budget.md`](#testing803-context-budgetmd) | 10.3 KB | 152 | 3 | §8.3 at 10.3 KB | L619 |
-| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 76.4 KB | 1031 | 45 | §6 at 11.5 KB | L627 |
+| [`component-blueprint.md`](#component-blueprintmd) | 92.1 KB | 1663 | 79 | §11 at 20.9 KB | L67 |
+| [`decisions.md`](#decisionsmd) | 51.8 KB | 504 | 14 | §6 at 11.6 KB | L151 |
+| [`decisions/3.01-p1-identity-law-reference-policy.md`](#decisions301-p1-identity-law-reference-policymd) | 8.9 KB | 125 | 1 | §3.1 at 8.9 KB | L170 |
+| [`decisions/3.02-p2-evidence-base.md`](#decisions302-p2-evidence-basemd) | 9.6 KB | 143 | 1 | §3.2 at 9.6 KB | L176 |
+| [`decisions/3.03-p3-architecture.md`](#decisions303-p3-architecturemd) | 20.5 KB | 294 | 1 | §3.3 at 20.5 KB | L182 |
+| [`decisions/3.04-p4-adapter-milestone-one.md`](#decisions304-p4-adapter-milestone-onemd) | 10.4 KB | 142 | 1 | §3.4 at 10.4 KB | L188 |
+| [`decisions/3.05-p5-blueprint.md`](#decisions305-p5-blueprintmd) | 6.6 KB | 103 | 1 | §3.5 at 6.6 KB | L194 |
+| [`decisions/3.06-p6-parity-matrix.md`](#decisions306-p6-parity-matrixmd) | 8.7 KB | 130 | 1 | §3.6 at 8.7 KB | L200 |
+| [`decisions/3.07-p7-quality-bar.md`](#decisions307-p7-quality-barmd) | 5.7 KB | 85 | 1 | §3.7 at 5.7 KB | L206 |
+| [`decisions/3.08-p8-docs-site.md`](#decisions308-p8-docs-sitemd) | 4.7 KB | 73 | 1 | §3.8 at 4.7 KB | L212 |
+| [`decisions/3.09-p9-ledger-and-index.md`](#decisions309-p9-ledger-and-indexmd) | 1.1 KB | 17 | 1 | §3.9 at 1.1 KB | L218 |
+| [`decisions/3.10-s1-repo-bootstrap.md`](#decisions310-s1-repo-bootstrapmd) | 4.8 KB | 66 | 1 | §3.10 at 4.8 KB | L224 |
+| [`decisions/3.11-s1-review.md`](#decisions311-s1-reviewmd) | 6.7 KB | 86 | 1 | §3.11 at 6.7 KB | L230 |
+| [`decisions/3.12-s2-zag-solid.md`](#decisions312-s2-zag-solidmd) | 15.7 KB | 192 | 1 | §3.12 at 15.7 KB | L236 |
+| [`decisions/3.13-s3-styling-seam.md`](#decisions313-s3-styling-seammd) | 23.3 KB | 309 | 1 | §3.13 at 23.3 KB | L242 |
+| [`decisions/3.14-s3b-visual-surfaces.md`](#decisions314-s3b-visual-surfacesmd) | 60.8 KB | 771 | 1 | §3.14 at 60.8 KB | L248 |
+| [`decisions/3.15-context-budget.md`](#decisions315-context-budgetmd) | 18.8 KB | 228 | 1 | §3.15 at 18.8 KB | L254 |
+| [`decisions/3.16-s4-reconciliation.md`](#decisions316-s4-reconciliationmd) | 10.0 KB | 129 | 1 | §3.16 at 10.0 KB | L260 |
+| [`decisions/3.17-s5-landing-page-reconciliation.md`](#decisions317-s5-landing-page-reconciliationmd) | 13.7 KB | 167 | 1 | §3.17 at 13.7 KB | L266 |
+| [`decisions/3.18-declaration-support.md`](#decisions318-declaration-supportmd) | 8.0 KB | 101 | 1 | §3.18 at 8.0 KB | L272 |
+| [`definition-of-done.md`](#definition-of-donemd) | 65.0 KB | 563 | 22 | §8 at 14.8 KB | L278 |
+| [`docs-plan.md`](#docs-planmd) | 61.2 KB | 924 | 46 | §1 at 13.9 KB | L305 |
+| [`docs-site.md`](#docs-sitemd) | 80.4 KB | 888 | 37 | §2 at 19.2 KB | L356 |
+| [`plan.md`](#planmd) | 80.0 KB | 1190 | 51 | §3 at 15.7 KB | L398 |
+| [`prior-art.md`](#prior-artmd) | 75.8 KB | 1141 | 45 | §2 at 11.1 KB | L454 |
+| [`roadmap.md`](#roadmapmd) | 90.2 KB | 1209 | 50 | §4 at 14.6 KB | L504 |
+| [`testing.md`](#testingmd) | 73.3 KB | 1035 | 51 | §3 at 11.7 KB | L559 |
+| [`testing/8.01-doc-index.md`](#testing801-doc-indexmd) | 4.3 KB | 59 | 1 | §8.1 at 4.3 KB | L615 |
+| [`testing/8.02-skill-pointers.md`](#testing802-skill-pointersmd) | 5.1 KB | 71 | 1 | §8.2 at 5.1 KB | L621 |
+| [`testing/8.03-context-budget.md`](#testing803-context-budgetmd) | 10.3 KB | 152 | 3 | §8.3 at 10.3 KB | L627 |
+| [`testing/8.04-declaration-support.md`](#testing804-declaration-supportmd) | 11.2 KB | 170 | 1 | §8.4 at 11.2 KB | L635 |
+| [`zag-solid-adapter.md`](#zag-solid-adaptermd) | 76.4 KB | 1031 | 45 | §6 at 11.5 KB | L641 |
 
 ## `component-blueprint.md`
 
@@ -154,15 +156,15 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §0.2 L 74–91   1.0 KB  Changing a decision after this pass
 §1   L 92–106  0.7 KB  The entry shape, fixed once
 §2   L107–129  3.1 KB  Q1–Q8 — the gate that settled each, and where the answer lives
-§3   L130–173  5.9 KB  The ledger
-§4   L174–232  7.9 KB  The reversals, in one place
-§5   L233–273  5.1 KB  The final build order — one list, each step's gate cited
-§6   L274–422 11.6 KB  What the document pass did **not** settle
-§6.1 L342–422  7.2 KB  The S4 marking pass — what was measured, and what was only ever predicted
-§7   L423–503 10.7 KB  The reconciliation log — what P9 changed, and where
-§7.1 L429–467  7.5 KB  Carried forward by name
-§7.2 L468–489  1.4 KB  The citation convention, and the sites it was applied to
-§7.3 L490–503  1.5 KB  Two rows found at P9 that were on nobody's list
+§3   L130–174  6.4 KB  The ledger
+§4   L175–233  7.9 KB  The reversals, in one place
+§5   L234–274  5.1 KB  The final build order — one list, each step's gate cited
+§6   L275–423 11.6 KB  What the document pass did **not** settle
+§6.1 L343–423  7.2 KB  The S4 marking pass — what was measured, and what was only ever predicted
+§7   L424–504 10.7 KB  The reconciliation log — what P9 changed, and where
+§7.1 L430–468  7.5 KB  Carried forward by name
+§7.2 L469–490  1.4 KB  The citation convention, and the sites it was applied to
+§7.3 L491–504  1.5 KB  Two rows found at P9 that were on nobody's list
 ```
 
 ## `decisions/3.01-p1-identity-law-reference-policy.md`
@@ -267,31 +269,37 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §3.17 L  1–167 13.7 KB  S5 — the landing page, and the documents that still described the old one
 ```
 
+## `decisions/3.18-declaration-support.md`
+
+```
+§3.18 L  1–101 8.0 KB  The declaration-support check — asking the engine instead of the source
+```
+
 ## `definition-of-done.md`
 
 ```
 §0    L 21–42   1.2 KB  The gate rule
-§1    L 43–66   3.4 KB  Per file
-§2    L 67–103  6.3 KB  Per component
-§3    L104–151 10.7 KB  Per batch
-§3.0  L110–121  0.6 KB  The gate every batch shares
-§3.1  L122–136  5.1 KB  The probe phase
-§3.2  L137–151  4.8 KB  The batches
-§4    L152–171  1.7 KB  Per release
-§5    L172–208  3.1 KB  The axe allowance register — as it stands today
-§6    L209–240  2.2 KB  The coverage allow-list — as it stands today
-§7    L241–261  4.9 KB  Conventions, unenforced — labelled, not hidden
-§7b   L262–348  5.9 KB  Named, not yet written — the enforcement census
-§8    L349–469 14.8 KB  The assumption register
-§8.1  L373–388  2.2 KB  `brief-plan` §8's originals
-§8.2  L389–408  2.7 KB  P3, P4 and P5
-§8.3  L409–421  2.1 KB  P6 and P7
-§8.3b L422–444  2.7 KB  P8
-§8.3c L445–455  2.8 KB  S4 — the reconciliation pass
-§8.4  L456–469  0.7 KB  The three whose gate is a measurement plus a judgement
-§9    L470–490  1.3 KB  The scheduled checks — what fires them, who reads them
-§10   L491–513  3.6 KB  What P7 changes — re-plan P8 and P9 against this
-§11   L514–545  3.2 KB  What P7 could not act on
+§1    L 43–68   4.1 KB  Per file
+§2    L 69–105  6.3 KB  Per component
+§3    L106–153 10.7 KB  Per batch
+§3.0  L112–123  0.6 KB  The gate every batch shares
+§3.1  L124–138  5.1 KB  The probe phase
+§3.2  L139–153  4.8 KB  The batches
+§4    L154–173  1.7 KB  Per release
+§5    L174–210  3.1 KB  The axe allowance register — as it stands today
+§6    L211–242  2.2 KB  The coverage allow-list — as it stands today
+§7    L243–263  4.9 KB  Conventions, unenforced — labelled, not hidden
+§7b   L264–366  6.9 KB  Named, not yet written — the enforcement census
+§8    L367–487 14.8 KB  The assumption register
+§8.1  L391–406  2.2 KB  `brief-plan` §8's originals
+§8.2  L407–426  2.7 KB  P3, P4 and P5
+§8.3  L427–439  2.1 KB  P6 and P7
+§8.3b L440–462  2.7 KB  P8
+§8.3c L463–473  2.8 KB  S4 — the reconciliation pass
+§8.4  L474–487  0.7 KB  The three whose gate is a measurement plus a judgement
+§9    L488–508  1.3 KB  The scheduled checks — what fires them, who reads them
+§10   L509–531  3.6 KB  What P7 changes — re-plan P8 and P9 against this
+§11   L532–563  3.2 KB  What P7 could not act on
 ```
 
 ## `docs-plan.md`
@@ -566,14 +574,14 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §2.2 L 210–237   1.1 KB  What a correct assertion looks like
 §2.3 L 238–245   0.4 KB  The one carve-out, so the rule is not wrong
 §2.4 L 246–254   0.4 KB  Enforcement — `check:style-contract` rule 3
-§3   L 255–449  11.4 KB  The generated-CSS coverage check — `check:css-coverage`
+§3   L 255–449  11.7 KB  The generated-CSS coverage check — `check:css-coverage`
 §3.1 L 262–273   0.6 KB  What it diffs
 §3.2 L 274–308   1.9 KB  How set E is built
 §3.3 L 309–330   1.4 KB  The dedupe step — or seven permanent false failures
 §3.4 L 331–359   1.3 KB  The allow-list — shape
 §3.5 L 360–390   1.6 KB  The configuration canary — failing loudly on a `hash`/`prefix` mismatch
 §3.6 L 391–425   1.8 KB  Failure output
-§3.7 L 426–438   2.0 KB  What it does **not** catch — five things, each with the artefact that does
+§3.7 L 426–438   2.2 KB  What it does **not** catch — five things, each with the artefact that does
 §3.8 L 439–449   0.6 KB  Where it runs
 §4   L 450–530   4.5 KB  axe
 §4.1 L 452–481   1.7 KB  The runner
@@ -595,13 +603,13 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §7.2 L 733–770   2.3 KB  The warm-up and the pin — P7's configuration, once per preview
 §7.3 L 771–800   2.1 KB  There is no story gate, because a story is not the validation surface
 §7.4 L 801–831   2.0 KB  What only Storybook can see
-§8   L 832–880   9.4 KB  The distribution, styling-config and structural checks
-§9   L 881–933   5.2 KB  The attribution checks
-§10  L 934–968   2.5 KB  The bundle measurement — `check:bundle`
-§11  L 969–987   2.5 KB  The scheduled upstream checks
-§12  L 988–1009  2.4 KB  The CI job map
-§13  L1010–1026  1.0 KB  What this apparatus assumes
-§14  L1027–1032  0.3 KB  Where this document ends
+§8   L 832–883  10.3 KB  The distribution, styling-config and structural checks
+§9   L 884–936   5.2 KB  The attribution checks
+§10  L 937–971   2.5 KB  The bundle measurement — `check:bundle`
+§11  L 972–990   2.5 KB  The scheduled upstream checks
+§12  L 991–1012  2.7 KB  The CI job map
+§13  L1013–1029  1.0 KB  What this apparatus assumes
+§14  L1030–1035  0.3 KB  Where this document ends
 ```
 
 ## `testing/8.01-doc-index.md`
@@ -622,6 +630,12 @@ per file under `decisions/` and `testing.md` §8's check definitions under `test
 §8.3   L  1–152 10.3 KB  `check:context-budget` — the growth guard, in two halves
 §8.3.1 L 25–110  5.6 KB  The static half
 §8.3.2 L111–152  3.1 KB  The transcript half — `pnpm check:context-budget --sessions`
+```
+
+## `testing/8.04-declaration-support.md`
+
+```
+§8.4 L  1–170 11.2 KB  `check:declaration-support` — the emitted declaration, put to the engine
 ```
 
 ## `zag-solid-adapter.md`

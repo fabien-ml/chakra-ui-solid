@@ -44,7 +44,8 @@ failure mean for the change in front of me*. The only deliberate seam is the two
 
 Applies to every file under `packages/*/src/` — and, for the four rules whose subject is the change
 rather than the code (1.10, 1.11, 1.12, 1.13), to every commit. Enforced by the `verify` and
-`constraint` jobs, which run on every push.
+`constraint` jobs, which run on every push — **except rule 1.14, whose subject is the stylesheet the
+file causes Panda to emit**, so it runs in `styling` after `cssgen` and not before it.
 
 | # | Rule | Enforced by |
 |---|---|---|
@@ -61,6 +62,7 @@ rather than the code (1.10, 1.11, 1.12, 1.13), to every commit. Enforced by the 
 | 1.11 | **A change to any `.md` under `__internal__` regenerates `INDEX.md` in the same commit** — a `decisions/` ledger entry included. A stale anchor points a reader at a line range that is no longer the section they cited, and they read the neighbour without noticing (`testing.md` §8) | `check:doc-index` |
 | 1.12 | **A commit that renumbers a section, moves a script, or edits a skill leaves every pointer in `.agents/skills/` resolving** — and every line of a skill is still a pointer, never a rule (`testing.md` §8.2) | `check:skill-pointers` |
 | 1.13 | **No `##` section and no sharded file under `__internal__` passes 25 KB, and `CLAUDE.md` does not pass 16 KB.** A unit that reaches its ceiling is **sharded, never granted a larger number** — a ceiling raised to fit what exists is a deleted one. An exception is a row in `context-budget.config.ts`, and the row fails the check the day it stops being needed (`testing.md` §8.3) | `check:context-budget` |
+| 1.14 | **Every declaration the file causes Panda to emit parses.** Rule 1.3 asks whether a value is *extractable*; this one asks whether the CSS it produced is CSS — `mt="4x"` and `bg="bg.pannel"` satisfy 1.3, and Panda emits the unresolved value verbatim (`testing.md` §8.4). **This rule also covers `apps/docs/src/**`**, whose sheet is a consumer's Panda run over its own source, and it is where the first run's own finding was. A declaration from an upstream recipe body owes a row in `declaration-support.config.ts`, never a value fix | `check:declaration-support` |
 
 ---
 
@@ -261,39 +263,55 @@ that is a *gate* rather than a coding rule; 7.7 came with the ledger shard, 7.8 
 
 ## 7b. Named, not yet written — the enforcement census
 
-**Re-taken at S4, 2026-08-10, mechanically. The numbers did not move; the procedure did.** Every
-`check:*` named anywhere in `CLAUDE.md` or in any `.md` under `__internal__` — which since the two
-shards means the fifteen `decisions/` entries and the three `testing/` definitions as well — diffed
-against `scripts/check-*.mjs`:
+**Re-taken at S6, 2026-08-10, mechanically. One name was written; the exclusion became a class.**
+Every `check:*` named anywhere in `CLAUDE.md` or in any `.md` under `__internal__` — which since the
+two shards means the seventeen `decisions/` entries and the four `testing/` definitions as well —
+diffed against `scripts/check-*.mjs`:
 
 ```
-named across the documents   47
-written and runnable         22
+named across the documents   48
+written and runnable         23
 named but not written        25
 written but never named       0
 ```
 
-**One name is excluded, and the procedure has to say so or it does not reproduce these figures.** A
-literal grep returns **48 named / 26 unwritten**, because it matches `check:context-sessions` — a
-name that appears exactly once in the corpus, three paragraphs below, in the sentence explaining
-that it is *not* a check. The census counts artefacts a reader could mistake for enforcement, and a
-name introduced in order to be ruled out is not one. Excluding it is the honest count; **failing to
-write the exclusion down was a defect**, because the next person to run the procedure gets 48 and
-cannot tell whether something was added or whether they ran it wrong. The runnable form is:
+**Two names are excluded, and they are excluded as a class rather than one literal at a time.** The
+census counts artefacts a reader could mistake for enforcement, and **a name introduced in order to
+be ruled out is not one.** The register below is the exclusion list — adding a third is a row here,
+not an edit to the procedure:
+
+```ruled-out
+context-sessions   §7b, three paragraphs below — the sentence explaining that it is not a check
+citations          `decisions.md` §3.16 — a Rejected line; blind spot 2 of `testing.md` §8.1 argues it
+```
+
+**This is the defect this section predicted, arriving.** S4 wrote the exclusion as
+`grep -v '^context-sessions$'`, and by S5 the corpus had a second ruled-out name — `check:citations`,
+introduced at `decisions.md` §3.16 in the sentence that rejects it. The documented procedure has been
+returning **48 named / 26 unwritten** since that commit, at three consecutive `HEAD`s, and the honest
+figures were 47/22/25/0 throughout: exactly the *"the next person gets 48 and cannot tell whether
+something was added or whether they ran it wrong"* failure S4 named and then reproduced. The runnable
+form now reads the register:
 
 ```bash
+sed -n '/^```ruled-out$/,/^```$/p' __internal__/definition-of-done.md \
+  | grep -oE '^[a-z0-9-]+' | sort -u                                    > /tmp/ruled-out
 grep -rhoE 'check:[a-z0-9-]+' CLAUDE.md __internal__ --include='*.md' \
-  | sed 's/^check://' | sort -u | grep -v '^context-sessions$' > /tmp/named
-ls scripts/check-*.mjs | sed -E 's|.*/check-||; s|\.mjs$||' | sort -u  > /tmp/written
+  | sed 's/^check://' | sort -u | grep -vxF -f /tmp/ruled-out           > /tmp/named
+ls scripts/check-*.mjs | sed -E 's|.*/check-||; s|\.mjs$||' | sort -u   > /tmp/written
 comm -12 /tmp/named /tmp/written | wc -l   # written and runnable
 comm -23 /tmp/named /tmp/written | wc -l   # named but not written
 comm -13 /tmp/named /tmp/written | wc -l   # written but never named
 ```
 
-**What moved with the budget check:** `check:context-budget` — named here and in `testing.md` §8.3,
-written, and live in the `verify` job in the same commit. The unwritten twenty-five are unchanged;
-none of their subjects arrived. The two figures that moved are the same one name, exactly as they
-were when `check:skill-pointers` landed at 46/21/25/0.
+**The register lists bare names deliberately.** A row spelling `check:citations` in full would add
+the name to the corpus the first grep reads, so the register would have to exclude itself. The
+*Where* column is how a reader finds the mention the row is about.
+
+**What moved with the declaration-support check:** `check:declaration-support` — named in
+`testing.md` §8 and §8.4, written, and live in the `styling` job in the same commit. The unwritten
+twenty-five are unchanged; none of their subjects arrived. Before it, `check:context-budget` moved
+the same two figures, and `check:skill-pointers` before that at 46/21/25/0.
 
 **Its transcript half is deliberately not a row here.** It is a flag on the same script, not a
 second `check:*`, so there is nothing for the census to count — and that is why it is a flag: a

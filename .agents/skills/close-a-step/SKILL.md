@@ -28,4 +28,5 @@ description: What closing a build step in chakra-ui-solid takes — the step's o
 - `definition-of-done.md` §1 — rules 1.10 to 1.13, the four whose subject is the commit.
 - `pnpm docs:index`, `check:doc-index` — the index, regenerated in this commit.
 - `check:skill-pointers`, `check:context-budget`, `check:commit-trailers` — before the gate.
+- `pnpm cssgen`, then `check:declaration-support` — `testing.md` §8.4.
 - `CLAUDE.md` — Git conventions: when a commit is made, and what it carries.

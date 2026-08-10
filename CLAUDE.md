@@ -46,6 +46,8 @@ failing test. An unstyled component and a green suite look identical. Two standi
 - **A style value must be statically extractable, declared in `staticCss`** (the config key that
   pre-generates rules for values no source file literally writes), **or routed through a CSS custom
   property** — `style={{ "--w": w }}` with `w="var(--w)"`. There is no fourth option. — `plan.md` §3.5.
+  **Static is not resolving**: `mt="4x"` emits `margin-top: 4x`, which no browser parses.
+  — `check:declaration-support`; `testing.md` §8.4.
 - **Tests assert computed styles, never class names.** `classList.contains("p_4")` passes on a
   completely unstyled element. — `plan.md` §0.2.
 
@@ -177,7 +179,7 @@ spots.** Nothing below is a second copy of either.
 | **Per batch** | Each probe step and each of B1–B8 | `definition-of-done.md` §3 | The shared lines, plus what that batch proves that the previous one did not — **restated as a test, because prose about what a batch proves is not a gate** |
 | **Per release** | Every publish | `definition-of-done.md` §4 | The exports map, externality, the Panda peer, the attribution checks, the disclaimer, resolution sync, bundle figures, changesets |
 | **Unenforced, and labelled** | — | `definition-of-done.md` §7 | Conventions with no script, each naming what a reader is trusted to do. **Deleting an unenforceable rule is not the same as pretending it was enforced** |
-| **Named, not yet written** | The 25 `check:*` the documents name and `scripts/` does not have | `definition-of-done.md` §7b | The census, taken mechanically: **47 named, 22 live, 25 unwritten, 0 unnamed.** Most cannot be written yet because their subject does not exist; **two rows of §1 are real gaps and are named as such.** A named script is not a running one, and eleven documents written before anything was built are full of both |
+| **Named, not yet written** | The 25 `check:*` the documents name and `scripts/` does not have | `definition-of-done.md` §7b | The census, taken mechanically: **48 named, 23 live, 25 unwritten, 0 unnamed** — plus a register of names introduced only to be ruled out, which the procedure reads. Most cannot be written yet because their subject does not exist; **two rows of §1 are real gaps and are named as such** |
 
 **CI groups them into jobs** so a red build names a category before anyone opens a log —
 `testing.md` §12. **Two live registers** carry per-change contents rather than rules: the axe

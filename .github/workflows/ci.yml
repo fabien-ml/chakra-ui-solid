@@ -127,6 +127,15 @@ jobs:
       # Does an unresolvable token reference degrade quietly rather than failing the build, and
       # does our one-key `cursor.switch` delta restore what the preset silently drops?
       - run: pnpm check:preset-token-resolution
+      # The oracle for the check below is `CSS.supports` in a real engine, so this job needs the
+      # same browser the `test` matrix installs. `--only-shell` is the headless build and is what
+      # `chromium.launch()` resolves to.
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps --only-shell
+      # Every declaration in both sheets, put to the engine that will render it. A style-prop value
+      # can be perfectly static — `mt="4x"` — and still emit CSS no browser parses, which is the one
+      # door `check:style-contract` rule 1 leaves open.
+      - run: pnpm check:declaration-support
       # NOT YET WRITTEN — the coverage check needs a real slot recipe in a real consumer (step 4),
       # and the machine-facing checks need a machine (steps 4–5).
       - name: css-coverage / anatomy-parts / data-attr-vocab / style-prop-collisions (steps 4–5)

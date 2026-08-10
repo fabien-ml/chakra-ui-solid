@@ -18,8 +18,20 @@ export function generatedStylesheetPath(repoRoot) {
   return join(packageRoot, "styled-system", "styles.css");
 }
 
+/**
+ * The docs app's sheet — **a second Panda run, over a consumer's config and a consumer's source**
+ * (`apps/docs/panda.config.ts`). It carries what our own dev sheet cannot: the style props the site
+ * writes as the first consumer of the library.
+ */
+export function docsStylesheetPath(repoRoot) {
+  return join(repoRoot, "apps/docs/styled-system/styles.css");
+}
+
 export function readGeneratedStylesheet(repoRoot, checkName) {
-  const path = generatedStylesheetPath(repoRoot);
+  return readStylesheet(generatedStylesheetPath(repoRoot), checkName);
+}
+
+export function readStylesheet(path, checkName) {
   if (!existsSync(path)) {
     console.error(
       `${checkName} — the generated stylesheet is missing at ${path}.\n\n` +
