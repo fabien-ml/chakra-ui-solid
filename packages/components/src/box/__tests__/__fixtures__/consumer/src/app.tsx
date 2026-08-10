@@ -5,6 +5,7 @@ import {
   Box,
   Center,
   Circle,
+  Container,
   chakra,
   Em,
   Flex,
@@ -17,6 +18,8 @@ import {
   Spacer,
   Span,
   Square,
+  Stack,
+  StackSeparator,
   Sticky,
   Strong,
   VisuallyHidden,
@@ -90,10 +93,12 @@ const LayoutTier = () => (
       <GridItem colSpan={2} />
     </Grid>
     <Group attached grow align="stretch" />
+    <Stack direction="row" justify="space-evenly" gap="3" separator={StackSeparator} />
     <Wrap justify="space-around" gap="3">
       <WrapItem />
     </Wrap>
 
+    <Container centerContent px="10" />
     <AspectRatio ratio={16 / 9} />
     <Bleed inline="4" blockEnd="2" />
     <Float placement="bottom-center" offset="1" />

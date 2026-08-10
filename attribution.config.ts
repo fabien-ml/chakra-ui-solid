@@ -15,10 +15,10 @@
  * **The registry covers `apps/` as well as `packages/`** (`docs-site.md` §3.3). A derivative in an
  * unpublished app owes fewer things, not nothing, and `package: null` is how an entry says so.
  *
- * The `container` recipe delta in `@chakra-ui-solid/panda-preset` is the first expression-tier file
- * inside a package but outside the fork. It arrives with the **Container component at step 6a**,
- * not with the preset — the preset package itself ships at step 3 with an empty derived-file table,
- * because it vendors nothing (`definition-of-done.md` §6; `decisions.md` D-122).
+ * The `container` recipe delta in `@chakra-ui-solid/panda-preset` was the first expression-tier
+ * file inside a package but outside the fork, and it landed with the Container component rather
+ * than with the preset — which is why that package shipped with an empty derived-file table and
+ * grew a row later (`definition-of-done.md` §6; `decisions.md` D-122).
  */
 
 export interface AttributionEntry {
@@ -76,6 +76,15 @@ const zagSolidFork: AttributionEntry[] = [
 }));
 
 const chakraReact: AttributionEntry[] = [
+  {
+    // A whole recipe body, reproduced because `@chakra-ui/panda-preset` omits the `container` key
+    // that `@chakra-ui/react`'s own theme defines. One modification, and it is the `className`.
+    file: "packages/panda-preset/src/container-recipe.ts",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "packages/react/src/theme/recipes/container.ts",
+    license: "MIT",
+    package: "panda-preset",
+  },
   {
     // One table — `exceptionPropMap`, the seven SVG tags whose geometry attributes must reach the
     // DOM rather than become a class. A verbatim data table is expression, where the factory's

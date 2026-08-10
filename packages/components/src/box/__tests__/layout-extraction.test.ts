@@ -153,6 +153,37 @@ describe("the layout tier reaches a consumer's extractor", () => {
     });
   });
 
+  it("emits Stack's shorthands through the pattern that claims its name", () => {
+    // Panda's `stack` pattern maps `direction` / `align` / `justify` exactly as `flex` does, so the
+    // component calling `flex.raw` and the consumer's build calling the other one arrive at the
+    // same classes. What the component does **not** reuse is that pattern's `gap: 8px` default,
+    // which is a class no source in this library spells — Chakra's `0.5rem` is a literal in the
+    // component's own style config instead, and asserted with Wrap's above.
+    expect(
+      consumerDeclarations(css(flex.raw({ direction: "row", justify: "space-evenly" }))),
+    ).toEqual({
+      display: "flex",
+      "flex-direction": "row",
+      "justify-content": "space-evenly",
+    });
+  });
+
+  it("emits both of StackSeparator's borders, at every breakpoint", () => {
+    // Neither value is a literal anywhere: the separator's line is a *mapping* of the Stack's
+    // direction, so `staticCss` is the only thing that puts these rules in either stylesheet. The
+    // responsive half is the same mapping under a `direction={{ base, md }}`, and the conditional
+    // rules are read off the sheet text because `consumerDeclarations` deliberately ignores
+    // anything under a `@media`.
+    expect(
+      consumerDeclarations(css({ borderTopWidth: "1px", borderInlineStartWidth: "0" })),
+    ).toEqual({ "border-top-width": "1px", "border-inline-start-width": "0" });
+    expect(
+      consumerDeclarations(css({ borderTopWidth: "0", borderInlineStartWidth: "1px" })),
+    ).toEqual({ "border-top-width": "0", "border-inline-start-width": "1px" });
+    expect(consumerStylesheet).toContain("md\\:bd-t-w_0");
+    expect(consumerStylesheet).toContain("md\\:bd-s-w_1px");
+  });
+
   it("emits the shorthand keywords no pattern claims", () => {
     // `Wrap`'s `direction` and all of `Group`'s, which no pattern maps — these come from the
     // preset's `staticCss` and from nowhere else. `column-reverse` is written in no source file on
@@ -197,6 +228,23 @@ describe("the layout tier reaches a consumer's extractor", () => {
     // AspectRatio's declaration lives on a `::before`, which `declarationsForClassList` cannot
     // resolve — it reads rules whose selector *is* the class. The sheet text is the assertion.
     expect(consumerStylesheet).toContain("padding-bottom: var(--aspect-ratio-padding)");
+  });
+
+  it("emits Container's recipe, which no channel above could have carried", () => {
+    // A third channel, and the only component here that uses it: the recipe is *declared in the
+    // preset*, so a consumer's build emits it from their config rather than from either source
+    // tree — which is what the ported `container` body plus its `staticCss: ["*"]` buys. The class
+    // is the recipe's own name, and the variant is the half nobody's source spells.
+    expect(consumerDeclarations("container")).toMatchObject({
+      position: "relative",
+      "max-width": "var(--sizes-8xl)",
+      "margin-inline": "auto",
+    });
+    expect(consumerDeclarations("container--centerContent_true")).toEqual({
+      display: "flex",
+      "flex-direction": "column",
+      "align-items": "center",
+    });
   });
 
   it("finds nothing for a class no source on either side wrote", () => {

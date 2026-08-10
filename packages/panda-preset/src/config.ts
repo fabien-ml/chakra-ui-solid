@@ -12,7 +12,7 @@ import { variantKeysFor } from "./recipe-registry";
  *
  * - `{ button: ["size"] }` — one variant key on one recipe
  * - `["button", "heading"]` — every variant key on those recipes
- * - `true` — every variant key on all 74
+ * - `true` — every variant key on all 75
  */
 export type ResponsiveGrain = true | string[] | Record<string, string[]>;
 

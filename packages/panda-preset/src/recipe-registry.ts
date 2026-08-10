@@ -1,4 +1,5 @@
 import chakraPreset from "@chakra-ui/panda-preset";
+import { containerRecipe } from "./container-recipe";
 
 /**
  * Everything in this package that needs to know *which* recipes exist reads them off the imported
@@ -15,8 +16,23 @@ const theme = chakraPreset.theme as
   | { recipes?: RecipeRegistry; slotRecipes?: RecipeRegistry }
   | undefined;
 
-/** The 18 atomic recipes — `button`, `input`, `heading`, … */
-export const recipeKeys: string[] = Object.keys(theme?.recipes ?? {});
+/**
+ * The recipes this package **declares** rather than inherits, and there is exactly one.
+ *
+ * `container` is a key `@chakra-ui/react` defines in its own theme and `@chakra-ui/panda-preset`
+ * omits, so its body is ported into {@link containerRecipe} and registered here. Registering it in
+ * the same table as the inherited 18 is what makes every downstream reader cover it without being
+ * told: the `staticCss: ["*"]` declaration, the jsx hint, and `chakraConfig({ responsive })`'s
+ * expansion each walk `recipeKeys`, and a delta bolted onto the preset alone would be missing from
+ * all three.
+ */
+const localRecipes: RecipeRegistry = { container: containerRecipe };
+
+/** The 18 atomic recipes the preset ships — `button`, `input`, `heading`, … — plus `container`. */
+export const recipeKeys: string[] = [
+  ...Object.keys(theme?.recipes ?? {}),
+  ...Object.keys(localRecipes),
+];
 
 /**
  * The 56 slot recipes.
@@ -55,5 +71,10 @@ export function variantKeysFor(): Array<{ recipe: string; keys: string[] }> {
 }
 
 function registryEntry(recipeKey: string): RecipeRegistry[string] | undefined {
-  return theme?.recipes?.[recipeKey] ?? theme?.slotRecipes?.[recipeKey];
+  return theme?.recipes?.[recipeKey] ?? theme?.slotRecipes?.[recipeKey] ?? localRecipes[recipeKey];
+}
+
+/** The body a locally-declared recipe needs merged into `theme.extend`, since nothing inherits it. */
+export function recipeBodyFor(recipeKey: string): RecipeRegistry[string] | undefined {
+  return localRecipes[recipeKey];
 }

@@ -273,10 +273,17 @@ consumer's stylesheet, runtime only setting an attribute on `<html>`; unprobed t
 
 ## Traps in the parity matrix
 
-- **Six components ship with a recipe key that resolves to nothing** — `clipboard`, `pagination`,
-  `toggle`, `download-trigger`, `text`, `container`. They are unstyled by key in Chakra too and a
-  faithful port reproduces that. `container` is the exception: it needs one recipe body ported from
-  `@chakra-ui/react`, which is expression tier and owes attribution.
+- **Five components ship with a recipe key that resolves to nothing** — `clipboard`, `pagination`,
+  `toggle`, `download-trigger`, `text`. They are unstyled by key in Chakra too and a faithful port
+  reproduces that. **`container` was the sixth and no longer is**: its body is ported from
+  `@chakra-ui/react`'s theme into the preset, registered in `recipeKeys` so `staticCss`, the jsx
+  hint and `chakraConfig({ responsive })` all cover it without being told, and its `className` is
+  normalized off `chakra-container` because `componentNameFor()` reads the jsx hint out of it.
+  **It also warns, in every Panda run including a consumer's** — `[recipes] This recipe name is
+  already used in `patterns`` — because `@pandacss/preset-base` has a `container` *pattern* too.
+  Measured, benign, and not silenceable without renaming the key Chakra uses: the pattern's
+  transform is the recipe's base minus `width: 100%`, both are generated, and the recipe's own
+  rules are in both sheets.
 - **Seven slot recipes duplicate a slot.** Deduplicate before comparing; each duplicated slot must
   emit exactly one class.
 - **Recipes are not the machine surface.** Of 56 slot recipes: 34 match a machine of the same name,

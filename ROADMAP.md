@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 111 components. 20 done.
+v0.1.0 is the whole port: 111 components. 22 done.
 
 ## Done, per component
 
@@ -22,7 +22,7 @@ that component is unstyled by key in Chakra too, and a faithful port reproduces 
 **Presence**: `Z` a `@zag-js/presence` instance, `M` machine-owned visibility, `D` `Z` plus Chakra
 defaulting `lazyMount`/`unmountOnExit` to true. **CIJ** marks where Chakra feeds a render-time value
 into the style system, so no `staticCss` declaration can pre-generate the class: `●` unbounded, use
-a CSS custom property; `○` bounded to a finite set, one `staticCss` declaration closes it. The nine
+a CSS custom property; `○` bounded to a finite set, one `staticCss` declaration closes it. The ten
 marked rows are the only ones — everything else resolves statically.
 
 **⚠ carries a recorded trap — read [DECISIONS.md](DECISIONS.md) before starting that row.** Other
@@ -102,7 +102,7 @@ per-component notes (duplicate slots, part-count mismatches) are at
 - [ ] checkmark — A:checkmark · —/1
 - [ ] code — A:code · —/1
 - [ ] color-swatch — A:colorSwatch · —/1
-- [ ] container — ✗container · —/1
+- [x] container — A:container · —/1
 - [ ] download-trigger — ✗downloadTrigger · —/1
 - [ ] heading — A:heading · —/1
 - [ ] icon — A:icon · —/1
@@ -141,7 +141,7 @@ per-component notes (duplicate slots, part-count mismatches) are at
 - [x] spacer
 - [x] span
 - [x] square — ○
-- [ ] stack
+- [x] stack — ○
 - [x] sticky
 - [x] strong
 - [x] visually-hidden

@@ -6,17 +6,33 @@ import { componentNameFor, recipeKeys, slotRecipeKeys, variantKeysFor } from "..
  * list typed out here, which is what *depend, do not vendor* buys: a Chakra release that adds a
  * recipe is covered by the version bump alone. These tests pin the reads, not the list — a count
  * that moves is a real upstream change and worth seeing.
+ *
+ * One key is **not** read off it, and is named below for that reason: `container` is a recipe
+ * `@chakra-ui/react` has and the preset does not, so its body is ported into this package. The
+ * count is therefore 18 + 1, and a 19 that became a 20 by itself is the upstream change to look at.
  */
 
 describe("the recipe list, read off the upstream preset", () => {
-  it("finds 18 atomic and 56 slot recipes", () => {
-    expect(recipeKeys).toHaveLength(18);
+  it("finds 18 atomic and 56 slot recipes, plus the one recipe we declare", () => {
+    expect(recipeKeys).toHaveLength(19);
     expect(slotRecipeKeys).toHaveLength(56);
     // Zero would also be a "successful" read: `Object.keys(theme?.recipes ?? {})` on a preset whose
     // shape changed returns an empty array, and every downstream `staticCss` declaration would
     // quietly cover nothing.
     expect(recipeKeys).toContain("button");
     expect(slotRecipeKeys).toContain("dialog");
+  });
+
+  it("registers `container` alongside them rather than beside them", () => {
+    // The whole point of putting the ported recipe in this list: `staticCss: ["*"]`, the jsx hint
+    // and `chakraConfig({ responsive })` all walk `recipeKeys`, so a delta bolted onto the preset
+    // alone would be missing from all three — and each of those three fails silently.
+    expect(recipeKeys).toContain("container");
+    expect(componentNameFor("container")).toBe("Container");
+    expect(variantKeysFor().find((entry) => entry.recipe === "container")).toEqual({
+      recipe: "container",
+      keys: ["centerContent", "fluid"],
+    });
   });
 
   it("carries `swittch` verbatim, misspelling and all", () => {
@@ -57,7 +73,7 @@ describe("variantKeysFor", () => {
   });
 
   it("reports an empty list for a recipe with no variants rather than dropping it", () => {
-    // Nine of the 74 have none. Dropping them would make `chakraConfig({ responsive: true })` cover
+    // Nine of the 75 have none. Dropping them would make `chakraConfig({ responsive: true })` cover
     // 65 recipes while reporting that it covers all of them.
     const withoutVariants = variantKeysFor().filter((entry) => entry.keys.length === 0);
     expect(withoutVariants.map((entry) => entry.recipe)).toContain("tooltip");

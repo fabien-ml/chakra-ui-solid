@@ -1,7 +1,7 @@
 import chakraPreset from "@chakra-ui/panda-preset";
 import { definePreset } from "@pandacss/dev";
 import { aliasUtilities } from "./alias-utilities";
-import { componentNameFor, recipeKeys, slotRecipeKeys } from "./recipe-registry";
+import { componentNameFor, recipeBodyFor, recipeKeys, slotRecipeKeys } from "./recipe-registry";
 
 /**
  * The ten `colorPalette` values, read from `@chakra-ui/panda-preset`'s `semantic-tokens/colors.ts`.
@@ -23,6 +23,17 @@ import { componentNameFor, recipeKeys, slotRecipeKeys } from "./recipe-registry"
  * has a token scale — it produces nothing at all, silently.
  */
 const flexDirections = ["row", "column", "row-reverse", "column-reverse"];
+/**
+ * The two borders a StackSeparator chooses between, and the one row here that carries
+ * `responsive: true`.
+ *
+ * The separator draws a horizontal line in a column stack and a vertical one in a row stack, so its
+ * border widths are a *mapping* of the Stack's `direction` — computed from a prop, spelled as a
+ * style value in no file on either side of the boundary. `direction` is also the one layout
+ * shorthand a consumer routinely writes responsively (`{ base: "column", md: "row" }`), and the
+ * mapped value inherits those conditions, so the rules have to exist at every breakpoint too.
+ */
+const separatorBorderWidths = ["1px", "0"];
 const flexWraps = ["wrap", "nowrap", "wrap-reverse"];
 const alignments = ["flex-start", "flex-end", "center", "baseline", "stretch", "start", "end"];
 const justifications = [
@@ -59,7 +70,7 @@ const colorPalettes = [
  * (`slots({ size: props.size })`) it is not a literal to find in the first place. A class whose CSS
  * was never generated renders nothing and raises no error, so the failure is an unstyled component
  * and a green test suite. `staticCss: ["*"]` pre-generates every value of every variant key
- * instead — 488 values across the 74 recipes, and linear rather than combinatorial because the
+ * instead — 488 values across the 75 recipes, and linear rather than combinatorial because the
  * preset declares zero `compoundVariants` (`plan.md` §1.2).
  *
  * It rides `theme.extend`'s deep merge, the same path a consumer uses to override a recipe, so it
@@ -70,6 +81,10 @@ function staticCssForEvery(keys: string[]): Record<string, { staticCss: ["*"]; j
     keys.map((key) => [
       key,
       {
+        // Empty for all but `container`, which no inherited body exists to merge into — a recipe
+        // this package declares itself has to arrive through the same `theme.extend` key as the
+        // `staticCss` that covers it, or Panda registers the declaration and no recipe.
+        ...recipeBodyFor(key),
         staticCss: ["*"] as ["*"],
         // A tracking hint tells Panda that a JSX prop on this component belongs to this recipe.
         // It is an optimization and **nothing depends on it**: a hint is a component *name*, so it
@@ -140,6 +155,8 @@ export const chakraSolidPreset = definePreset({
       { properties: { flexWrap: flexWraps } },
       { properties: { alignItems: alignments } },
       { properties: { justifyContent: justifications } },
+      { properties: { borderTopWidth: separatorBorderWidths }, responsive: true },
+      { properties: { borderInlineStartWidth: separatorBorderWidths }, responsive: true },
     ],
   },
 });

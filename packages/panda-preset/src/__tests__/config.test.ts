@@ -121,12 +121,12 @@ describe("chakraConfig — the responsive opt-in", () => {
     expect(staticCss.recipes.button).toEqual([{ size: ["*"], variant: ["*"], responsive: true }]);
   });
 
-  it("expands `true` to all 74 recipes, `swittch` included", () => {
+  it("expands `true` to all 75 recipes, `swittch` included", () => {
     const staticCss = chakraConfig({ responsive: true }).staticCss as {
       recipes: Record<string, Array<Record<string, unknown>>>;
     };
 
-    expect(Object.keys(staticCss.recipes)).toHaveLength(74);
+    expect(Object.keys(staticCss.recipes)).toHaveLength(75);
     expect(staticCss.recipes.swittch).toBeDefined();
 
     const notResponsive = Object.entries(staticCss.recipes).filter(
@@ -136,7 +136,7 @@ describe("chakraConfig — the responsive opt-in", () => {
   });
 
   it("emits a well-formed entry for a recipe that has no variants", () => {
-    // Nine of the 74 have none, so `true` produces `[{ responsive: true }]` for them — an entry with
+    // Nine of the 75 have none, so `true` produces `[{ responsive: true }]` for them — an entry with
     // nothing to expand rather than a malformed one. What Panda *emits* for it is
     // `check:responsive-grain`'s question at step 4; this is only that the expansion stays valid.
     const withoutVariants = variantKeysFor().find((entry) => entry.keys.length === 0);
