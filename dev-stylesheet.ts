@@ -10,7 +10,7 @@
 // our own source, and Vite injects it into the page from this import.
 //
 // It is imported by **relative path on purpose**. No package here exports a `.css` file and none
-// ever will: this library publishes zero CSS, and `check:exports` asserts it. The dev stylesheet is
+// ever will: this library publishes zero CSS, and `check:no-runtime-css` asserts it. The dev stylesheet is
 // a test and Storybook artifact, never a published one (`plan.md` §4.4).
 //
 // The path is not guarded with an existence check. A missing stylesheet must fail at import — the

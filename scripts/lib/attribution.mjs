@@ -1,6 +1,6 @@
 /**
- * The logic behind the three attribution checks — `check:license-headers`, `check:notice-rows`
- * and `check:package-files` (`testing.md` §9; `CLAUDE.md`, the five obligations; `zag-solid-adapter.md` §7.3).
+ * The logic behind the three attribution checks — `check:attribution`, `check:attribution`
+ * and `check:attribution` (`testing.md` §9; `CLAUDE.md`, the five obligations; `zag-solid-adapter.md` §7.3).
  *
  * All three read one registry, `attribution.config.ts`, and all three assert **both directions**:
  * a registry entry with no header fails, and a `NOTICE.md` row with no entry fails. The reason

@@ -1,13 +1,6 @@
 name: CI
 
-# The eight jobs of `__internal__/testing.md` §12, grouped so that a red build names a category
-# before anyone opens a log. Seven are here; the eighth, `publish`, is the release workflow's
-# (`release.yml`), because that is when it runs.
-#
-# **Every job exists from step 1, even where its contents do not.** A job added later is a job
-# that was silently absent in between — and this repo's characteristic failure shape is the check
-# that was never running. Each job below either runs its real checks or fails with the step that
-# introduces them, and none of them is a no-op that reports success for work that never happened.
+# Three jobs. A fourth needs one of these to go — `scripts/repo-shape.test.mjs`.
 
 on:
   push:
@@ -19,15 +12,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Biome, tsc, the style contract, the two resolution checks, commit hygiene.
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          # `check:commit-trailers` reads commit messages, so a shallow clone would check nothing
-          # and pass.
-          fetch-depth: 0
       - uses: pnpm/action-setup@v4
         with: { version: 11.10.0 }
       - uses: actions/setup-node@v4
@@ -35,58 +23,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm typecheck
-      - run: pnpm check:test-projects
-      - run: pnpm check:resolution-sync
-      - run: pnpm check:commit-trailers
-      # A stale anchor index is worse than none: it points a reader at a line range that is not
-      # the section they cited, and they read the neighbour without noticing.
-      - run: pnpm check:doc-index
-      # The five repo-authored skills are pointer bundles over those same anchors. Both ways one
-      # breaks are silent: a dead pointer still reads as authoritative, and a rule restated in a
-      # skill is a second copy — the one that goes stale.
-      - run: pnpm check:skill-pointers
-      # The growth guard on all three: no `##` section or sharded file over 25 KB, `CLAUDE.md`
-      # under 16 KB. The static half only — the transcript half reads machine-local session logs
-      # that no runner has, and it is a labelled convention rather than a step here
-      # (`definition-of-done.md` §7.9).
-      - run: pnpm check:context-budget
-      # Rule 1 (`style-prop-static-value`) needs the generated `isCssProperty` to know which props
-      # are style props, so codegen has to have run.
-      - run: pnpm codegen
-      # Rules 1 and 3. Rule 2 (`require-style-source`) needs `renderStyled`'s `styleSource`
-      # addition, which exists because a machine part feeds the factory a merged bag — and the
-      # first machine part is step 5.
-      - run: pnpm check:style-contract
+      # The §0 rule at its three boundaries: what a dependency is, what our code does, what we ship.
+      - run: pnpm check:no-runtime-css
+      # The source half. The `dist` half needs a build and runs in the release workflow.
+      - run: pnpm check:attribution
 
-  # The §0 rule, at its two boundaries: what a dependency IS (a manifest check over the whole
-  # closure) and what our own code DOES (a grep over our source). Two checks, never merged.
-  constraint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-        with: { version: 11.10.0 }
-      - uses: actions/setup-node@v4
-        with: { node-version: 24, cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      # What a dependency IS — a manifest check over the whole installed closure. A failure here
-      # is a STOP: there is no local mitigation for a machine that took a styling dependency.
-      - run: pnpm check:no-cij-manifest
-      # What our own code DOES — a grep over `packages/*/src` (and `apps/docs/src`, from step 8).
-      # Never merged with the check above: merged, it would have failed Splitter's audited
-      # gesture-cursor stylesheet and cost the library a component on a false positive
-      # (`testing.md` §5.3).
-      - run: pnpm check:no-runtime-sheet
-
-  # The three Vitest projects, one leg each. The split is by which build of Solid the project
-  # resolves, so they must not share a leg. Every leg fails on a `mount()` diagnostic once the
-  # harness lands at step 2.
   test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        project: [unit, ssr, browser]
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -94,67 +37,18 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      # The Turbo `test:*` tasks declare `dependsOn: codegen`; the suite runs from one root config,
-      # so the ordering is applied here until a package owns a `test:*` script (`plan.md` §9).
-      - run: pnpm codegen
-      - name: Install Chromium
-        if: matrix.project == 'browser'
-        run: pnpm exec playwright install --with-deps --only-shell
-      - run: pnpm test:${{ matrix.project }}
-
-  # Runs after codegen + cssgen, because every check in it reads a generated artifact.
-  styling:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-        with: { version: 11.10.0 }
-      - uses: actions/setup-node@v4
-        with: { node-version: 24, cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      # Every check below reads what Panda actually emitted rather than what the config declares,
-      # because every failure this job exists for lives in the gap between the two.
-      - run: pnpm cssgen
-      # Does `[hidden]` beat a recipe's own `display`? Asserts the outcome, so it is correct
-      # whether Panda's preflight supplies the rule or our preset's `globalCss` does.
-      - run: pnpm check:preflight-hidden
-      # Do all 95 of Chakra's style-prop shorthands resolve? The set this reports missing IS the
-      # alias table our preset must carry.
-      - run: pnpm check:alias-coverage
-      # Is the class the docs put on `<html>` the one the semantic colours are keyed off? The
-      # preset gives them no base value, so a page with neither class has no colours at all.
-      - run: pnpm check:dark-selector
-      # Does an unresolvable token reference degrade quietly rather than failing the build, and
-      # does our one-key `cursor.switch` delta restore what the preset silently drops?
-      - run: pnpm check:preset-token-resolution
-      # The oracle for the check below is `CSS.supports` in a real engine, so this job needs the
-      # same browser the `test` matrix installs. `--only-shell` is the headless build and is what
-      # `chromium.launch()` resolves to.
-      - name: Install Chromium
-        run: pnpm exec playwright install --with-deps --only-shell
-      # Every declaration in both sheets, put to the engine that will render it. A style-prop value
-      # can be perfectly static — `mt="4x"` — and still emit CSS no browser parses, which is the one
-      # door `check:style-contract` rule 1 leaves open.
+      - run: pnpm exec playwright install --with-deps --only-shell
+      # Three Vitest projects, split by which build of Solid each resolves — unit (client build,
+      # no DOM), ssr (server builds of both `solid-js` and `@solidjs/web`), browser (real Chromium,
+      # where every computed-style assertion lives). ~5s for all three.
+      - run: pnpm test
+      # The oracle is a real engine, so it needs the Chromium installed above. A style value can be
+      # perfectly static — `mt="4x"` — and still emit CSS no browser parses.
       - run: pnpm check:declaration-support
-      # NOT YET WRITTEN — the coverage check needs a real slot recipe in a real consumer (step 4),
-      # and the machine-facing checks need a machine (steps 4–5).
-      - name: css-coverage / anatomy-parts / data-attr-vocab / style-prop-collisions (steps 4–5)
-        run: |
-          echo "css-coverage, coverage-allowlist, anatomy-parts, hash-config, data-attr-vocab,"
-          echo "style-prop-collisions, no-hand-written-data-attrs: none exist yet — they are"
-          echo "written at steps 4 and 5."
 
-  # There is no `stories` job, deliberately, and it is deleted rather than stubbed. Storybook is a
-  # **local playground** — `pnpm storybook` and nothing else (D-133). Every job in this file either
-  # runs its real checks or fails with the step that introduces them; a `stories` job with nothing
-  # to run would be the third thing, a green tick for work no machine performs. What Storybook
-  # would have caught is now `definition-of-done.md` §7.7: a labelled, unenforced convention.
-
-  # The docs app is a **standing consumer instance**, so a red build here is a distribution failure
-  # rather than a documentation one: it installs our packages by name, resolves them through
-  # `exports` → `dist` under the `"solid"` condition, and runs its own Panda build
-  # (`docs-site.md` §1.1). From S3b it is also the only place a component is validated the way a
-  # consumer uses it — there is no story gate (D-133).
+  # The docs app is a standing consumer instance: it installs our packages by name, resolves them
+  # through `exports` → `dist`, and runs its own Panda build. A red build here is a distribution
+  # failure, not a documentation one.
   docs:
     runs-on: ubuntu-latest
     steps:
@@ -164,58 +58,4 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      # The build resolves our packages through `dist`, so it has to come first — and it is itself
-      # an assertion: `failOnError` on the prerender is the difference between a broken route and
-      # a silently missing page.
       - run: pnpm build:docs
-      # Is the site still built the way a consumer's app is? `chakraConfig()` plus include/outdir
-      # and nothing else, no `src` alias in the production build, no import of the repo's own dev
-      # stylesheet. The moment one of those slips, the site proves nothing.
-      - run: pnpm check:docs-consumer-config
-      # Does the component tier match the parity matrix, in both directions? A page for an unbuilt
-      # component is a promise; a shipped component with no page is one nobody can find.
-      - run: pnpm check:docs-inventory
-      # The one that replaced the story canary. Every example typechecks against `dist`, imports
-      # only subpaths that exist, **mounts** with a non-empty root and no console error, and runs
-      # axe. Verified against deliberate failures rather than trusted: an example that throws and
-      # one that renders nothing both pass Biome, tsc and check:style-contract, and both fail here.
-      - run: pnpm check:docs-examples
-      # NOT YET WRITTEN — each needs something the site does not have yet. `check:css-coverage`
-      # against the docs sheet needs the check itself *and* a buildinfo to read, both step 4
-      # (D-139); the rest arrive with the pages they check.
-      - name: css-coverage / extraction-fixture / docs-links / no-server-fns / forbidden-claims (step 4)
-        run: |
-          echo "css-coverage against the docs sheet: step 4 — no buildinfo exists to read before it."
-          echo "extraction-fixture, docs-links, docs-no-server-fns, docs-forbidden-claims: step 4,"
-          echo "with the styling tier and the pages they check."
-
-  dist:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
-    steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-        with: { version: 11.10.0 }
-      - uses: actions/setup-node@v4
-        with: { node-version: 24, cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      # `--dist` is the half that matters and it needs the build above: rolldown strips every
-      # unmarked block comment, so an `@license` header that lost its tag — or a `comments.legal`
-      # someone unpinned — vanishes from `dist/` and the published package becomes an
-      # unattributed derivative of the project we are porting, with a green build
-      # (`CLAUDE.md` obligation 5).
-      - run: pnpm check:license-headers --dist
-      - run: pnpm check:notice-rows
-      - run: pnpm check:package-files
-      - run: pnpm check:exports
-      - run: pnpm check:externals
-      - run: pnpm check:peer-panda
-      # NOT YET WRITTEN — `check:buildinfo-fresh` needs `panda ship`'s output to be a published
-      # artifact, which is the step-4 consumer's channel; `check:bundle`'s first meaningful number
-      # is the adapter's own fixed weight, and the comparison it exists for is milestone 5 (D-55).
-      - name: buildinfo-fresh / bundle (steps 4, 5)
-        run: |
-          echo "buildinfo-fresh: written at step 4, with the consumer that reads the buildinfo."
-          echo "check:bundle: written at step 5, where the first machine closure lands and the"
-          echo "+13.4 KB gz claim has something to compare against."

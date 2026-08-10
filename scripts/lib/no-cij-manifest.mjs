@@ -1,11 +1,11 @@
 /**
- * The logic behind `check:no-cij-manifest` — **the §0 rule proper** (`testing.md` §5.1).
+ * The logic behind `check:no-runtime-css` — **the §0 rule proper** (`testing.md` §5.1).
  *
  * §0 bans runtime CSS-in-JS **engines**: a library that serializes component styles into a
  * stylesheet at render time makes build-time extraction impossible and takes the distribution
  * model with it (`plan.md` §0, §0.2). A dependency is judged by what it **is**, so the instrument
  * is a manifest check over the *installed* closure — not a source grep. The grep is the other
- * check, `check:no-runtime-sheet`, and it is scoped to our own source. Merging the two would have
+ * check, `check:no-runtime-css`, and it is scoped to our own source. Merging the two would have
  * failed Splitter, whose gesture-cursor stylesheet is not a violation and which ships
  * (`zag-solid-adapter.md` §5.3; `testing.md` §5.3).
  *

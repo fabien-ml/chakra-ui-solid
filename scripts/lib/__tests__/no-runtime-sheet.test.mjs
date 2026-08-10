@@ -8,7 +8,7 @@ import {
 
 const repoRoot = join(import.meta.dirname, "../../..");
 
-describe("check:no-runtime-sheet", () => {
+describe("check:no-runtime-css", () => {
   describe("what it catches", () => {
     it.each([
       ["const sheet = new CSSStyleSheet();", "new CSSStyleSheet"],

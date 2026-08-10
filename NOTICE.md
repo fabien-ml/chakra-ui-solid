@@ -8,7 +8,7 @@
 > **What fills a row in** is the five obligations in [`CLAUDE.md`](CLAUDE.md), and
 > [`attribution.config.ts`](attribution.config.ts) is where a derivative is declared. Every row below
 > under `packages/` or `apps/` is checked against that registry in both directions —
-> `check:notice-rows`.
+> `check:attribution`.
 >
 > **Revised at the P2 gate, 2026-08-09.** The **Adobe React Spectrum** section no longer forecasts a
 > carry-over: the port rule struck hope-ui's accessibility kernel, so no Apache-2.0 material is
@@ -38,8 +38,7 @@ resolved as bare specifiers in the published output, never bundled, shipping wit
 No obligation beyond this notice.
 
 `@zag-js/solid` is different — it is **forked**, not consumed, because the published adapter targets
-Solid 1.x (see [`__internal__/zag-solid-adapter.md`](__internal__/zag-solid-adapter.md) §1). Every
-forked file carries an `@license` header and a row here.
+Solid 1.x. Every forked file carries an `@license` header and a row here.
 
 The fork was taken from **`@zag-js/solid@1.42.0`** and is maintained against **`1.43.0`**. `1.42.0`
 is the baseline a re-sync diffs against — a reader who only knows `1.43.0` would diff the wrong
@@ -93,8 +92,7 @@ claim — its sentences. Chakra's docs are covered by the same single MIT grant 
 the root `package.json`. MIT permits the copy outright; its one condition is that the notice
 travels with it, which is what the row below is. The entry is **directory-scoped** rather than one
 row per page, because the content tier is one derivative rather than 111
-([`CLAUDE.md`](CLAUDE.md), the five obligations;
-[`__internal__/decisions.md`](__internal__/decisions.md) **D-148**).
+([`CLAUDE.md`](CLAUDE.md), *Reference use*).
 
 **The brand assets are used, and they are used knowingly.** The docs site carries Chakra's bolt —
 `BlitzIcon`, `BlitzFillIcon` and the `LogoIcon` glyph — and their `favicon.ico`. All four are files
@@ -102,9 +100,7 @@ in the same MIT-licensed repository, so the copy is permitted and the rows below
 **Trademark is a separate right that no licence moves**, and the mitigations are load-bearing: the
 site's logotype reads `chakra-ui-solid` and never `chakra`, none of Chakra's wordmark lettering is
 reproduced, no social card or combined mark exists, and the disclaimer appears verbatim above the
-fold on the docs home and in every page's footer
-([`__internal__/docs-site.md`](__internal__/docs-site.md) §3.4;
-[`__internal__/decisions.md`](__internal__/decisions.md) **D-173**).
+fold on the docs home and in every page's footer.
 
 | File | Derived from |
 | ---- | ------------ |
@@ -170,8 +166,7 @@ no sync obligation in either direction.
 hope-ui's own accessibility kernel is **not** carried over. Its `create-hide-outside.ts` is an
 Apache-2.0 derivative there, and at P1 it was expected to stay one here; the P2 gate struck it, along
 with the rest of that kernel, under the rule that this project adds no accessibility behavior beyond
-what Zag ships. See **Adobe React Spectrum** below, and
-[`__internal__/decisions.md`](__internal__/decisions.md) **D-12** for the reversal that closed the route.
+what Zag ships. See **Adobe React Spectrum** below.
 
 | File | Carried from |
 | ---- | ------------ |

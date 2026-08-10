@@ -2,9 +2,9 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 
 /**
- * The logic behind `check:no-runtime-sheet` — **hygiene on ourselves** (`testing.md` §5.2).
+ * The logic behind `check:no-runtime-css` — **hygiene on ourselves** (`testing.md` §5.2).
  *
- * The companion to `check:no-cij-manifest`, and deliberately **not** merged with it. That one
+ * The companion to `check:no-runtime-css`, and deliberately **not** merged with it. That one
  * judges a dependency by what it *is*; this one judges our own code by what it *does*, because
  * nothing in a manifest stops us growing a "just inject one keyframe at runtime" fix that installs
  * clean, passes the closure check, and defeats build-time extraction from the inside

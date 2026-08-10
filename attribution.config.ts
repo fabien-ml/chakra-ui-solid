@@ -3,7 +3,7 @@
  * *expression*, which is the only tier that owes anything (`CLAUDE.md`, *Reference use, and the expression tier*).
  *
  * **This file is the single place a derivative is declared**, and all three attribution checks
- * read it: `check:license-headers`, `check:notice-rows`, `check:package-files` (`testing.md` §9).
+ * read it: `check:attribution`, `check:attribution`, `check:attribution` (`testing.md` §9).
  * They assert both directions — an entry with no `@license` header fails, and a `NOTICE.md` row
  * with no entry fails — because both failure modes are silent and green.
  *
@@ -47,7 +47,7 @@ export interface AttributionEntry {
  * A path that owes a row in the root `NOTICE.md` and **cannot** owe an `@license` header — a
  * directory, a binary, or a third-party mark that is not our derivative at all.
  *
- * This list is what lets `check:notice-rows` scan `apps/` rows in the orphan direction. Without it
+ * This list is what lets `check:attribution` scan `apps/` rows in the orphan direction. Without it
  * every row below reads as a row with no registry entry, and the check would have to stop looking
  * at `apps/` altogether — which is the state that let a NOTICE row and its `@license` header both
  * become deletable with nothing going red.

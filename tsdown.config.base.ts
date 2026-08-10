@@ -109,7 +109,7 @@ export function createTsdownConfig(packageDir: string, options: TsdownOptions = 
     // block comment — so an `@license` header on a derivative file vanishes from `dist/` and the
     // published package becomes an unattributed derivative of the project we are porting, with a
     // green build. Unpinning this is a one-word edit nobody reviews, which is why
-    // `check:license-headers` asserts the setting *and this comment* are still here
+    // `check:attribution` asserts the setting *and this comment* are still here
     // (`CLAUDE.md` obligation 5; `testing.md` §9).
     outputOptions(options) {
       options.sourcemap = false;

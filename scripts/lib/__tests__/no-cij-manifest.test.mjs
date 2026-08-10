@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { findCijEngines, flattenPnpmTree, parseLockfilePackages } from "../no-cij-manifest.mjs";
 
-describe("check:no-cij-manifest", () => {
+describe("check:no-runtime-css", () => {
   describe("the engines", () => {
     it.each([
       "@emotion/react",

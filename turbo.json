@@ -31,7 +31,7 @@
     // The dev sheet is NOT published, and that holds by task ordering rather than by any check.
     // Measured at S4: `@chakra-ui-solid/styled-system` declares `files: ["styled-system", …]`, so
     // after a `cssgen` run `npm pack` puts `styled-system/styles.css` (319 KB) in the tarball —
-    // `check:exports` tests `files` entries for a `.css` *suffix* and a directory is not one. The
+    // `check:no-runtime-css` tests `files` entries for a `.css` *suffix* and a directory is not one. The
     // release path escapes it only because `codegen` runs `panda codegen --clean`, which deletes
     // the sheet, and `build` depends on `codegen` and never on `cssgen`. Publishing from a working
     // tree where anyone ran `pnpm cssgen` ships the CSS this library promises never to ship, with
@@ -83,10 +83,13 @@
     },
     // The three Vitest projects run from ONE root config, so today these are ordering
     // declarations rather than live tasks — nothing resolves them until a package owns a
-    // `test:*` script. Until then the CI `test` job runs `pnpm codegen` ahead of the suite,
+    // `test:*` script. Until then the root `test:*` scripts run `pnpm cssgen` ahead of the suite,
     // which is the same ordering by a different route.
+    //
+    // `unit` needs the stylesheet as well as the codegen artifacts: the preset's generated-CSS
+    // tests read what Panda emitted.
     "test:unit": {
-      "dependsOn": ["codegen"],
+      "dependsOn": ["cssgen"],
       "outputs": []
     },
     // `ssr` and `browser` need the **stylesheet**, not only the codegen artifacts: with no DOM the
