@@ -41,16 +41,27 @@ it("has at most 3 CI jobs", () => {
 /** Lines as `wc -l` counts them — a trailing newline ends the last line, it does not start a new one. */
 const lineCount = (path) => readFileSync(path, "utf8").trimEnd().split("\n").length;
 
-it("keeps its prose under 400 lines", () => {
-  // Two exclusions. `NOTICE.md` is a legal obligation whose length is set by what we derive from,
-  // not by anything anyone chose to write. `.agents/skills/` is vendored third-party reference —
-  // nobody here maintains it, and it is deleted wholesale or not at all.
+it("keeps its prose under 300 lines", () => {
+  // Three exclusions. `NOTICE.md` is a legal obligation whose length is set by what we derive from.
+  // `.agents/skills/` is vendored third-party reference nobody here maintains. `DECISIONS.md` has a
+  // cap of its own below — the target of this one is *process* prose (plans, ledgers, indexes), and
+  // capping findings alongside it is what made a hard-won trap compete with a status update.
   const files = tracked("*.md").filter(
     (file) =>
-      !file.startsWith("apps/docs/") && !file.startsWith(".agents/") && !file.endsWith("NOTICE.md"),
+      !file.startsWith("apps/docs/") &&
+      !file.startsWith(".agents/") &&
+      !file.endsWith("NOTICE.md") &&
+      file !== "DECISIONS.md",
   );
   const total = files.reduce((sum, file) => sum + lineCount(join(repoRoot, file)), 0);
-  expect(total, `${files.join(", ")} — write code instead`).toBeLessThanOrEqual(400);
+  expect(total, `${files.join(", ")} — write code instead`).toBeLessThanOrEqual(300);
+});
+
+it("keeps DECISIONS.md under 400 lines", () => {
+  // The one file that is allowed to grow, because what it holds cannot be re-derived from the code:
+  // settled shapes, and traps that were measured rather than reasoned about. It still has a ceiling
+  // — past 400 it has stopped being findings and started being a design document again.
+  expect(lineCount(join(repoRoot, "DECISIONS.md"))).toBeLessThanOrEqual(400);
 });
 
 it("keeps CLAUDE.md under 60 lines", () => {

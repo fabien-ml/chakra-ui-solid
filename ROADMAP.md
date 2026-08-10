@@ -25,8 +25,9 @@ into the style system, so no `staticCss` declaration can pre-generate the class:
 a CSS custom property; `○` bounded to a finite set, one `staticCss` declaration closes it. The nine
 marked rows are the only ones — everything else resolves statically.
 
-Per-component traps (duplicate slots, gated `aria-controls`, part-count mismatches) were dropped
-when `__internal__/` went. They are at `git show 6613a4e:__internal__/roadmap.md` §4.
+**⚠ carries a recorded trap — read [DECISIONS.md](DECISIONS.md) before starting that row.** Other
+per-component notes (duplicate slots, part-count mismatches) are at
+`git show 6613a4e:__internal__/roadmap.md` §4.
 
 ## Machine components (45)
 
@@ -40,21 +41,21 @@ when `__internal__/` went. They are at `git show 6613a4e:__internal__/roadmap.md
 - [ ] code-block — clipboard · S:codeBlock · 6/14
 - [ ] collapsible — S:collapsible · 4/4 · M
 - [ ] color-picker — S:colorPicker · 24/26 · Z
-- [ ] combobox — S:combobox · 14/16 · Z
+- [ ] combobox — S:combobox · 14/16 · Z ⚠
 - [ ] date-picker — S:datePicker · 24/26 · Z
-- [ ] dialog — S:dialog · 7/10 · D
-- [ ] drawer — dialog · S:drawer · 7/10 · D
-- [ ] editable — S:editable · 9/10
+- [ ] dialog — S:dialog · 7/10 · D ⚠
+- [ ] drawer — dialog · S:drawer · 7/10 · D ⚠
+- [ ] editable — S:editable · 9/10 ⚠
 - [ ] file-upload — S:fileUpload · 12/15
-- [ ] floating-panel — S:floatingPanel · 11/11 · D
+- [ ] floating-panel — S:floatingPanel · 11/11 · D ⚠
 - [ ] hover-card — S:hoverCard · 5/5 · Z
-- [ ] listbox — S:listbox · 10/11
+- [ ] listbox — S:listbox · 10/11 ⚠
 - [ ] marquee — S:marquee · 5/5
 - [ ] menu — S:menu · 14/15 · D
 - [ ] number-input — S:numberInput · 8/8
 - [ ] pagination — ✗pagination · 7/—
 - [ ] pin-input — S:pinInput · 4/4
-- [ ] popover — S:popover · 10/13 · Z
+- [ ] popover — S:popover · 10/13 · Z ⚠
 - [ ] presence — Z
 - [ ] progress — S:progress · 9/9
 - [ ] progress-circle — progress · S:progressCircle · 9/9
@@ -64,9 +65,9 @@ when `__internal__/` went. They are at `git show 6613a4e:__internal__/roadmap.md
 - [ ] rating-group — S:ratingGroup · 4/5
 - [ ] scroll-area — S:scrollArea · 6/6
 - [ ] segment-group — radio-group · S:segmentGroup · 6/6
-- [ ] select — S:select · 15/16 · Z
+- [ ] select — S:select · 15/16 · Z ⚠
 - [ ] slider — S:slider · 10/12
-- [ ] splitter — S:splitter · 4/5
+- [ ] splitter — S:splitter · 4/5 ⚠
 - [ ] steps — S:steps · 10/12
 - [ ] switch — S:swittch · 4/5
 - [ ] tabs — S:tabs · 5/6 · Z
