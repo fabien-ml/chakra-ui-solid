@@ -1,6 +1,6 @@
 // Carried from hope-ui `ef91b69`,
 // `packages/primitives/src/zag-solid/__tests__/refs.test.ts`. Same author, MIT — ours, forked on
-// copy (`legal.md` §1.6).
+// copy (`CLAUDE.md`, *Reference use*).
 
 import { describe, expect, it } from "vitest";
 import { createRefs } from "../refs";

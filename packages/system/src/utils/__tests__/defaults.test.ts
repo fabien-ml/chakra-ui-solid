@@ -1,5 +1,5 @@
 // Carried from hope-ui `main` (1dc059f), `packages/primitives/src/utils/__tests__/defaults.test.ts`,
-// alongside the source it tests. Same author, MIT — ours, forked on copy (`legal.md` §1.6).
+// alongside the source it tests. Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { createSignal, flush } from "solid-js";
 import { describe, expect, it } from "vitest";

@@ -1,6 +1,6 @@
 // Carried from hope-ui `ef91b69`,
 // `packages/primitives/src/zag-solid/__tests__/bindable.test.ts`. Same author, MIT — ours, forked
-// on copy (`legal.md` §1.6).
+// on copy (`CLAUDE.md`, *Reference use*).
 
 import { createRoot, createSignal, flush } from "solid-js";
 import { describe, expect, it, vi } from "vitest";

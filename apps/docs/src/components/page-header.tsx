@@ -12,7 +12,7 @@ import type { DocPage } from "~/lib/site-map";
  *
  * The `chakra` link points at the upstream page for the same component, and it is deliberate
  * rather than a courtesy: a reader who wanted the official project should leave in one click
- * (`legal.md` §3.3.3 item 2).
+ * (`docs-site.md` §3.4 row 4).
  */
 const LINK_LABELS: Record<string, string> = {
   source: "Source",
@@ -25,7 +25,7 @@ const LINK_LABELS: Record<string, string> = {
  * A link value that is a URL renders as an anchor; anything else renders as text.
  *
  * The one that is not a URL today is `source`. chakra-ui.com builds it into a `tree/main/...` link
- * on its own repository; ours is private (`legal.md` §3.5), so a link would 404 for every reader.
+ * on its own repository; ours is private (`decisions.md` D-02), so a link would 404 for every reader.
  * The path still tells you where the code lives, and the day the repository is public the
  * frontmatter value becomes a URL and this renders a link with nothing else changing.
  */

@@ -1,5 +1,5 @@
 // Carried from hope-ui `main` (1dc059f), `packages/internal-test-utils/src/axe/axe.ts`. Same
-// author, MIT — ours, forked on copy (`legal.md` §1.6).
+// author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import axe from "axe-core";
 

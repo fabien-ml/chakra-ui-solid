@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/internal-test-utils/src/axe/__tests__/axe.browser.test.ts`. Same author, MIT — ours,
-// forked on copy (`legal.md` §1.6).
+// forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { describe, expect, it } from "vitest";
 import { mount } from "../../mount/mount";

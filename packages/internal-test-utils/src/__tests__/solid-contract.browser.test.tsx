@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/primitives/src/__tests__/solid-contract.browser.test.tsx`. Same author, MIT — ours,
-// forked on copy (`legal.md` §1.6).
+// forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { applyRef, hydrate } from "@solidjs/web";
 // `sharedConfig` is re-exported by `@solidjs/web`'s *types* but not by its runtime bundle —

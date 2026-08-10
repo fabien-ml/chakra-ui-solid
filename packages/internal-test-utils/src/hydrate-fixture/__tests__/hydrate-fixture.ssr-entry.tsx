@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/internal-test-utils/src/hydrate-fixture/__tests__/hydrate-fixture.ssr-entry.tsx`.
-// Same author, MIT — ours, forked on copy (`legal.md` §1.6).
+// Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import type { JSX } from "@solidjs/web";
 import { renderToStream } from "@solidjs/web";

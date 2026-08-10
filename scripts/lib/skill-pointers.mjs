@@ -137,7 +137,7 @@ export function parseSkill(source) {
  * paths and script names.
  *
  * **An anchor is governed by the nearest backticked `*.md` before it on the same line**, which is
- * how the corpus already reads — `` `legal.md` §2.2 — the header; §2.3 why it is load-bearing ``
+ * how the corpus already reads — `` `zag-solid-adapter.md` §7.1 — the headers; §7.2 the rows ``
  * carries two anchors and names the document once. An anchor with nothing before it is reported
  * rather than guessed at.
  */

@@ -1,4 +1,4 @@
-// Carried from hope-ui `main` (1dc059f), `vitest.setup.jest-dom-optout.ts` (`legal.md` §1.6).
+// Carried from hope-ui `main` (1dc059f), `vitest.setup.jest-dom-optout.ts` (`CLAUDE.md`, *Reference use*).
 //
 // Intentionally empty. This file exists purely to opt the node projects out of
 // `vite-plugin-solid`'s automatic `@testing-library/jest-dom` wiring.

@@ -17,7 +17,7 @@ source**; §10 of this document lists every row P4 had to change so P5 is re-pla
 written.
 
 **Settled earlier and not reopened here.** Brand `chakra-ui-solid` / scope `@chakra-ui-solid`
-(`legal.md` §3.3.3). The **port rule** — no accessibility behavior beyond what Zag ships, nothing
+(`decisions.md` D-01). The **port rule** — no accessibility behavior beyond what Zag ships, nothing
 invented that Chakra UI v3 does not have, SolidJS idioms excepted (`prior-art.md` §8.2). Zag target
 **1.43.0**. Solid pinned at **2.0.0-beta.32**. The a11y kernel is struck to `createRegisteredId`
 alone.
@@ -34,7 +34,7 @@ reports untracked reads inside (`[STRICT_READ_UNTRACKED]`); Solid 1.x has none.
 ## 0. What milestone one is, and what "done" means
 
 `@chakra-ui-solid/zag-solid` is a **fork** of `@zag-js/solid`, not a dependency: the published
-adapter targets Solid 1.x and nothing upstream is built for Solid 2.0 (`legal.md` §1.3). It ships
+adapter targets Solid 1.x and nothing upstream is built for Solid 2.0 (`zag-solid-adapter.md` §1). It ships
 seven source files and seven test files, depends on `@zag-js/core` / `@zag-js/types` /
 `@zag-js/utils` and on Solid, and on **nothing in this repository**.
 
@@ -71,7 +71,7 @@ The plan's Q6 reads: *"Do the hope-ui carry-overs get copied from `e9c2f81` verb
   at `e9c2f81` (`prior-art.md` §0.3).
 - **"A provenance note and no sync obligation" is the *hope-ui-ownership* answer**, and the fork is
   not hope-ui-owned in the sense that answer assumes. It is a **third-party MIT derivative** of
-  `chakra-ui/zag` (`legal.md` §1.3). `legal.md` §1.6's *"carry-overs are ours"* does not reach it.
+  `chakra-ui/zag` (`zag-solid-adapter.md` §1). `CLAUDE.md`, *Reference use*'s *"carry-overs are ours"* does not reach it.
 
 So Q6 gets two answers.
 
@@ -86,13 +86,13 @@ unchanged except for the four deltas §4.3 names, and re-attribute them as a thi
 | **Not** `e9c2f81` | The fork does not exist at that ref |
 | **Not** upstream `1.43.0` | That is the re-derive alternative, rejected in §1.3 |
 | **Attribution** | **Not** a provenance note. Seven `@license` headers naming `chakra-ui/zag` → `packages/frameworks/solid/src/<file>.ts`, © 2021 Chakra UI, MIT, **plus** a row in the root `NOTICE.md` and in the package's (§7) |
-| **Sync obligation, hope-ui direction** | **None.** Fork on copy, exactly as `legal.md` §1.6 states — record the source commit, do not record a promise |
-| **Sync obligation, upstream direction** | **Yes, and standing.** `legal.md` §5 puts a per-release check on `@zag-js/solid`: diff upstream's `packages/frameworks/solid/src/` file set and contents against the fork, and check whether the peer range admits `solid-js@2` yet — the day it does, the fork is a deletion candidate |
+| **Sync obligation, hope-ui direction** | **None.** Fork on copy, exactly as `CLAUDE.md`, *Reference use* states — record the source commit, do not record a promise |
+| **Sync obligation, upstream direction** | **Yes, and standing.** `testing.md` §11 puts a per-release check on `@zag-js/solid`: diff upstream's `packages/frameworks/solid/src/` file set and contents against the fork, and check whether the peer range admits `solid-js@2` yet — the day it does, the fork is a deletion candidate |
 
 That last row is the substantive difference between the fork and every other carry-over in the repo,
 and the reason Q6 could not be answered once for all of them. Everything else we take from hope-ui is
 ours and dead-ends on copy. The fork is a live tracking relationship with a third party, and it is
-**meant to be retired** (`legal.md` §1.3).
+**meant to be retired** (`zag-solid-adapter.md` §1).
 
 Six per-file design notes come with it — `__internal__/primitives/zag-solid/{bindable, machine,
 merge-props, normalize-props, refs, track}.md` at `ef91b69`. They record *why* each divergence
@@ -111,11 +111,11 @@ are not separable** — copying the fork means copying the harness in the same m
 | `internal-test-utils` — `mount/mount.ts` (the reactivity-diagnostic gate), `axe/`, `hydrate-fixture/` | **`main`** | copy | **Ours** — provenance note |
 | Three-project Vitest split — `vitest.config.ts`, `vitest-aliases.ts`, `vitest-hydration-bridge.ts`, `vitest.setup.jest-dom-optout.ts` | **`main`** | copy, then extend | **Ours** |
 | `solid-contract.{test.ts, ssr.test.tsx, browser.test.tsx}` — `packages/primitives/src/__tests__/` | **`main`** | copy, then extend (§6.3) | **Ours** |
-| `tsdown.config.base.ts` incl. `deps.neverBundle` and the pinned `comments.legal` | `e9c2f81` **or** `main` | copy, **comment included** — `legal.md` §2.3 makes the setting load-bearing for the seven headers, and the comment is what stops someone unpinning it | **Ours** |
+| `tsdown.config.base.ts` incl. `deps.neverBundle` and the pinned `comments.legal` | `e9c2f81` **or** `main` | copy, **comment included** — `CLAUDE.md` obligation 5 makes the setting load-bearing for the seven headers, and the comment is what stops someone unpinning it | **Ours** |
 | `__internal__/solid-2.0-notes.md` | **`main` (246 lines)**, *not* `e9c2f81` (`docs/`, 151) | copy, then prune | **Ours** |
 | The six `zag-solid` per-file design notes | **`ef91b69`** | copy | **Ours** |
 
-**Attribution posture, unchanged from `legal.md` §1.6:** same author, same MIT license, so no
+**Attribution posture, unchanged from `CLAUDE.md`, *Reference use*:** same author, same MIT license, so no
 third-party obligation and **no `NOTICE.md` row**. A provenance note in the header anyway — hope-ui
 path plus commit — so the lineage stays legible and the next reader can find the commit where the
 design was argued. Fork on copy, both directions.
@@ -162,7 +162,7 @@ milestone's gate (§6.5). Re-deriving the gate is re-deriving the thing that pro
 
 **Also rejected: a git submodule or git dependency on hope-ui instead of a copy.** hope-ui's `main`
 is the Tailwind era; the Panda-era and spike code is reachable only by ref, never as a published
-package. And `legal.md` §1.6's fork-on-copy is the intended posture, not a fallback.
+package. And `CLAUDE.md`, *Reference use*'s fork-on-copy is the intended posture, not a fallback.
 
 ---
 
@@ -241,12 +241,12 @@ moves is:
 |---|---|
 | The `@zag-js/*` machine versions in the workspace catalog | `machine.ts`, `bindable.ts`, `merge-props.ts`, `normalize-props.ts`, `refs.ts`, `track.ts`, `index.ts` |
 | Machine **anatomy** and `connect()` surfaces — a major is where parts get renamed | The public API (§3.1) |
-| The `data-*` vocabulary the preset's slot recipes select on | The seven `@license` headers — they name the upstream *file*, not a version (`legal.md` §1.3) |
+| The `data-*` vocabulary the preset's slot recipes select on | The seven `@license` headers — they name the upstream *file*, not a version (`zag-solid-adapter.md` §1) |
 | `@zag-js/core`'s `mergeProps` behavior, which the fork delegates to (§4.3 delta 2) | The test plan's shape |
 
 So the v2 exposure is **P6's parity matrix and P5's part components**, not this package. Two caveats
 that keep it honest: the two branches are compared at one moment each, so a later v2 commit can
-diverge; and `2.0.0-next.1` is a `next` prerelease, so the surface is not frozen. `legal.md` §5's
+diverge; and `2.0.0-next.1` is a `next` prerelease, so the surface is not frozen. `testing.md` §11's
 `@zag-js/solid` row already carries the standing file-set diff that would catch it.
 
 ---
@@ -318,7 +318,7 @@ Plus the mechanical Solid 2.0 migrations, which are not divergences in the same 
 
 ### 3.5 What that costs a future re-sync
 
-The fork is meant to be retired the day upstream ships a Solid 2.0 adapter (`legal.md` §1.3;
+The fork is meant to be retired the day upstream ships a Solid 2.0 adapter (`zag-solid-adapter.md` §1;
 `prior-art.md` §3.2 records that upstream has committed to it). The retirement is not free, and the
 five divergences are the bill:
 
@@ -330,7 +330,7 @@ five divergences are the bill:
 | 4 — real `flush` | Retires. Same |
 | 5 — dropped `useSyncExternalStore` | Retires by addition, at zero cost |
 
-**The mechanical part of the re-sync is cheap and already specified:** `legal.md` §5's
+**The mechanical part of the re-sync is cheap and already specified:** `testing.md` §11's
 `@zag-js/solid` row is a file-set-and-contents diff plus a peer-range check. **The expensive part is
 that our 86 test cases have to keep passing against upstream's implementation** — which is the right
 shape, because that is exactly the check that says whether the swap is safe.
@@ -545,7 +545,7 @@ the reference checkout, which is `main` at `421844f` — one commit-set from the
 so the P4 result is **provisional on the published tarballs** and step 2 confirms it. §6.5 folds
 both into the milestone gate as a script.
 
-Thereafter it re-runs **on every Zag minor**, folded into `legal.md` §5's `@zag-js/*` row alongside
+Thereafter it re-runs **on every Zag minor**, folded into `testing.md` §11's `@zag-js/*` row alongside
 the anatomy diff — so a *new* injection site in a future release surfaces as a diff against these
 four rather than blending in.
 
@@ -711,13 +711,13 @@ done                                                                     # 0 ×7
 ```
 
 The fork's provenance today is a prose paragraph in `index.ts` — honest, useful, **not the MIT
-notice**, and **not tagged `@license`, so the build strips it** (`legal.md` §1.3, §2.3). Rolldown
+notice**, and **not tagged `@license`, so the build strips it** (`zag-solid-adapter.md` §1; `CLAUDE.md` obligation 5). Rolldown
 removes every unmarked block comment, which means the published package would become an unattributed
 derivative silently, with a green build.
 
 ### 7.1 The seven headers
 
-One per source file, in `@chakra-ui-solid/zag-solid/src/`. The shape is `legal.md` §2.2's MIT form,
+One per source file, in `@chakra-ui-solid/zag-solid/src/`. The shape is `CLAUDE.md` obligation 2's MIT form,
 with the upstream **file** named — a reader auditing the claim has to be able to open the thing we
 derived from:
 
@@ -746,7 +746,7 @@ derived from:
 | `track.ts` | `packages/frameworks/solid/src/track.ts` |
 | `index.ts` | `packages/frameworks/solid/src/index.ts` |
 
-**All seven, including the ones that have diverged furthest.** `legal.md` §1.3 settles this: parts of
+**All seven, including the ones that have diverged furthest.** `zag-solid-adapter.md` §1 settles this: parts of
 `merge-props.ts` and `bindable.ts` may no longer be derivatives in any meaningful sense, and
 re-deriving the line file by file is not worth anyone's afternoon. The cost of a header is a header;
 the cost of being wrong is shipping an unattributed derivative **of the project we are porting**.
@@ -755,7 +755,7 @@ The version does **not** go in the header — it names the file, not a release. 
 
 ### 7.2 The `NOTICE.md` rows — and the number that matters
 
-Two files, per `legal.md` §2.4. The root is the audit surface; the package's is the one that travels
+Two files, per `CLAUDE.md` obligation 3. The root is the audit surface; the package's is the one that travels
 in the npm tarball and the only one a consumer who never visits the repo will see.
 
 **Root `NOTICE.md` → the existing `## Zag.js` section.** Its table is `_(none yet)_` today and the
@@ -776,7 +776,7 @@ Plus a **baseline sentence** in that section, and it is the load-bearing part:
 > The fork was taken from **`@zag-js/solid@1.42.0`** and is maintained against **`1.43.0`**. `1.42.0`
 > is the baseline a re-sync diffs against.
 
-**Why the baseline and not just the current target:** `legal.md` §1.3 — *"the `NOTICE.md` row should
+**Why the baseline and not just the current target:** `zag-solid-adapter.md` §1 — *"the `NOTICE.md` row should
 record the baseline the fork was taken from, because that is the number a future re-sync diffs
 against."* A reader who only knows `1.43.0` would diff the wrong direction and mistake §4.3's three
 deltas for our changes rather than upstream's.
@@ -786,9 +786,9 @@ the same baseline sentence and the MIT text quoted once.
 
 ### 7.3 The checklist, in commit order
 
-Following `legal.md` §2.6, with the milestone-one specifics filled in:
+Following `CLAUDE.md`, the five obligations, with the milestone-one specifics filled in:
 
-- [ ] **1.** Confirm the expression tier. Settled — a fork is `legal.md` §1.4's paradigm case, and
+- [ ] **1.** Confirm the expression tier. Settled — a fork is `CLAUDE.md`, *Reference use*'s paradigm case, and
       §1.3 says attribute all seven regardless of how far each has diverged.
 - [ ] **2.** Seven `@license` headers, MIT shape, each naming its upstream file (§7.1).
 - [ ] **3.** Root `NOTICE.md` — seven rows into the existing `## Zag.js` table, plus the `1.42.0`
@@ -796,19 +796,19 @@ Following `legal.md` §2.6, with the milestone-one specifics filled in:
 - [ ] **4.** `packages/zag-solid/NOTICE.md` — created, seven rows, same baseline, MIT text.
 - [ ] **5.** Not applicable — upstream is MIT, so no `licenses/LICENSE-APACHE-2.0.txt` and no §4(b)
       line is *required* (it is included anyway because it is honest and costs nothing).
-      `legal.md` §1.2 records that the port rule removed the repo's only Apache-2.0 route; nothing
+      `decisions.md` D-12 records that the port rule removed the repo's only Apache-2.0 route; nothing
       here reopens it.
 - [ ] **6.** `LICENSE` **untouched.** The MIT grant covers our own code and must not be made to look
       as if it reaches the derived portions.
 - [ ] **7.** `packages/zag-solid/package.json` → `"files": ["dist", "LICENSE", "NOTICE.md"]`
-      (`legal.md` §2.5), and `LICENSE` copied into the package.
+      (`CLAUDE.md` obligation 4), and `LICENSE` copied into the package.
 - [ ] **8.** `comments.legal` pinned `true` in `tsdown.config.base.ts`, **with hope-ui's comment
-      carried across**, not just the setting (`legal.md` §2.3). Without it the headers vanish from
+      carried across**, not just the setting (`CLAUDE.md` obligation 5). Without it the headers vanish from
       `dist/` and neither failure is visible in review.
 - [ ] **9.** Provenance notes (not `@license`) on the hope-ui-owned items §1.2 brings in — path plus
       commit, no `NOTICE.md` row.
 
-**Same commit as the code.** Not a follow-up, for the reason `legal.md` §2.3 gives: both failure
+**Same commit as the code.** Not a follow-up, for the reason `CLAUDE.md` obligation 5 gives: both failure
 modes here are silent and green.
 
 ---
@@ -943,7 +943,7 @@ here explicitly and left 1/2/5/10 to P4/P6.
 
 | # | Assumption | Status after P4 | Gate |
 |---|---|---|---|
-| **2** | *"Each machine's `anatomy` export at 1.43.0 — asserted authoritative, not enumerated per machine"* | **Open, and not this milestone's to close.** The adapter is anatomy-blind: `useMachine` binds `Machine<T>` generically and never names a part. Nothing in the 86 cases or the 51 upstream cases touches an anatomy export | **P6**, building the parity matrix from `ls __reference-impl__/zag/packages/machines` ∩ each machine's `anatomy`. Standing check thereafter: `legal.md` §5's `@zag-js/*` row diffs anatomy per minor |
+| **2** | *"Each machine's `anatomy` export at 1.43.0 — asserted authoritative, not enumerated per machine"* | **Open, and not this milestone's to close.** The adapter is anatomy-blind: `useMachine` binds `Machine<T>` generically and never names a part. Nothing in the 86 cases or the 51 upstream cases touches an anatomy export | **P6**, building the parity matrix from `ls __reference-impl__/zag/packages/machines` ∩ each machine's `anatomy`. Standing check thereafter: `testing.md` §11's `@zag-js/*` row diffs anatomy per minor |
 | **8** | *"Whether any Zag 1.43.0 machine injects a stylesheet at runtime"* | **RUN AT P4 — and the question turned out to be the wrong one.** §0 bans CSS-in-JS **engines**, and there are none in the closure: **PASS**. Two machines do touch a stylesheet (`splitter`, twice) and neither is a violation (§5.3). Nothing is blocked and no component is lost | **Step 2**, re-run against the *installed* closure as a CI script. §6.5 makes it a gate line |
 | **10** | *"The spike's adapter fork applies unchanged to Zag 1.43.0 — likely, not certain"* | **CLOSED, and REFUTED.** Three named deltas (§4.3 D1/D2/D3), all one line each, one of them the fork's own tripwire firing as designed. D3 is a semantic divergence the port rule resolves against the fork | **Step 2**, by applying the three deltas and re-running the suite. D2 is self-verifying: the test goes red on the bump and green on the fix |
 

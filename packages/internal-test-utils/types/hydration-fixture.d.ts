@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/internal-test-utils/types/hydration-fixture.d.ts`. Same author, MIT — ours, forked on
-// copy (`legal.md` §1.6).
+// copy (`CLAUDE.md`, *Reference use*).
 
 /**
  * The hydration-fixture bridge (`vitest-hydration-bridge.ts`, wired into the `browser` Vitest

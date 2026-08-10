@@ -4,7 +4,7 @@ import { Container } from "~/components/container";
 import { DISCLAIMER } from "~/config";
 
 /**
- * The footer. Its whole job is `legal.md` §3.3.3 item 1: the disclaimer, verbatim, on **every**
+ * The footer. Its whole job is `docs-site.md` §3.4 row 4: the disclaimer, verbatim, on **every**
  * page, with chakra-ui.com as a live link — the link is part of the wording rather than a
  * courtesy, because it is what turns a disclaimer into a redirect.
  *

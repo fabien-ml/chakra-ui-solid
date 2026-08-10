@@ -1,5 +1,5 @@
 // Carried from hope-ui `main` (1dc059f), `solid-babel-options.ts`. Same author, MIT — ours, and
-// forked on copy: there is no sync obligation in either direction (`legal.md` §1.6).
+// forked on copy: there is no sync obligation in either direction (`CLAUDE.md`, *Reference use*).
 
 import type { Options as SolidPluginOptions } from "vite-plugin-solid";
 

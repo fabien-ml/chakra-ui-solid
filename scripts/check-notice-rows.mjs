@@ -4,7 +4,7 @@
 // package's, and no row exists without an entry (`testing.md` §9, DoD 4.7).
 //
 // The root file is the audit surface. The package file is the one that travels in the npm tarball
-// and the only one a consumer who never visits the repository will see (`legal.md` §2.4).
+// and the only one a consumer who never visits the repository will see (`CLAUDE.md` obligation 3).
 
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";

@@ -1,6 +1,6 @@
 /**
  * The logic behind the three attribution checks — `check:license-headers`, `check:notice-rows`
- * and `check:package-files` (`testing.md` §9; `legal.md` §2.6; `zag-solid-adapter.md` §7.3).
+ * and `check:package-files` (`testing.md` §9; `CLAUDE.md`, the five obligations; `zag-solid-adapter.md` §7.3).
  *
  * All three read one registry, `attribution.config.ts`, and all three assert **both directions**:
  * a registry entry with no header fails, and a `NOTICE.md` row with no entry fails. The reason
@@ -15,7 +15,7 @@
  *
  * `@license` is the load-bearing token, not decoration: we ship JSX-preserved **source**, and
  * rolldown strips every unmarked block comment. An attribution written as a plain `/** … *​/`
- * vanishes from `dist/` (`legal.md` §2.3) — which is exactly the state the fork was in at
+ * vanishes from `dist/` (`CLAUDE.md` obligation 5) — which is exactly the state the fork was in at
  * hope-ui's tip.
  */
 export function checkLicenseHeader(entry, contents) {
@@ -74,7 +74,7 @@ export function findMissingDistHeaders(entries, readDistFiles) {
 /**
  * `comments.legal` pinned **with its comment**. The setting alone is a one-word edit nobody
  * reviews; the comment is what stops someone unpinning it, so both are asserted
- * (`legal.md` §2.3).
+ * (`CLAUDE.md` obligation 5).
  */
 export function checkCommentsLegalPinned(tsdownBaseConfig) {
   const problems = [];
@@ -88,7 +88,7 @@ export function checkCommentsLegalPinned(tsdownBaseConfig) {
   if (!/comments\.legal.+license obligation/s.test(tsdownBaseConfig)) {
     problems.push(
       "the comment explaining WHY `comments.legal` is pinned is gone from tsdown.config.base.ts. " +
-        "`legal.md` §2.3 requires the comment, not just the setting: without it the next reader " +
+        "`CLAUDE.md` obligation 5 requires the comment, not just the setting: without it the next reader " +
         "sees a redundant-looking option and unpins it",
     );
   }
@@ -96,7 +96,7 @@ export function checkCommentsLegalPinned(tsdownBaseConfig) {
 }
 
 /**
- * A `NOTICE.md` table row mentioning this path. Both files, both directions (`legal.md` §2.4).
+ * A `NOTICE.md` table row mentioning this path. Both files, both directions (`CLAUDE.md` obligation 3).
  *
  * The root row is owed by every entry. The package row is owed only by entries a package
  * publishes: a `NOTICE.md` is the notice that travels in the tarball, and an entry with no package
@@ -166,7 +166,7 @@ export function findOrphanNoticeRows(
  * `files` must carry `LICENSE` and `NOTICE.md`, and every file an `@license` header promises is
  * "distributed with this package as …" must actually be in that array. The default `files` ships
  * `dist` and nothing else, which is what makes this the easiest promise in the repo to break
- * (`legal.md` §2.5).
+ * (`CLAUDE.md` obligation 4).
  */
 export function findPackageFilesProblems(packages) {
   const problems = [];

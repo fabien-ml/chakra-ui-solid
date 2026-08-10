@@ -12,8 +12,8 @@ built and deployed how, and what CI asserts about the result.
 section must show and which settled decision it renders — is `docs-plan.md`, and §0 below draws that
 line so no page is specced twice. It is also not the evidence (`prior-art.md`), the architecture
 (`plan.md`), the component pattern (`component-blueprint.md`), the inventory (`roadmap.md`), the
-apparatus (`testing.md`), the bar (`definition-of-done.md`) or the licensing mechanism (`legal.md`).
-All seven are cited by section, never restated.
+apparatus (`testing.md`) or the bar (`definition-of-done.md`). All six are cited by section, never
+restated, and the licensing mechanism is `CLAUDE.md`'s five obligations.
 
 **Vocabulary, once.** **Static extraction** is Panda's build-time scan of source files, which
 generates exactly the CSS the values it finds name. **`staticCss`** is the Panda config key that
@@ -33,7 +33,7 @@ document has no such sections for. **P9 named it and applied it:** `plan.md` is 
 plans). Every citation in this document follows it.
 
 **Settled earlier, not reopened here.** The brand, the repository name and the docs-site naming
-(`legal.md` §3.3.3, §3.5, §3.6); the **port rule** (`prior-art.md` §8.2); Zag `1.43.0`; Solid
+(`decisions.md` D-01, D-02); the **port rule** (`prior-art.md` §8.2); Zag `1.43.0`; Solid
 `2.0.0-beta.32`; TanStack Start's **beta 2.x** line; `plan.md` §0's constraint at both boundaries;
 **zero published CSS with Panda a hard prerequisite** (`plan.md` §4.4); the a11y kernel; the batch
 order (`roadmap.md` §9); P3's Q2/Q4, P4's Q6, P5's Q7, P7's enforcement design.
@@ -159,17 +159,17 @@ The output is `dist/client`, a static tree with one `index.html` per route, plus
 
 1. **Name the Pages project `chakra-ui-solid`.** Cloudflare derives the subdomain from the project
    name, so this is what produces `chakra-ui-solid.pages.dev`. It is first-come and it is the one
-   naming decision `legal.md` §6 item 2 leaves open, assigned here, to be done **at setup** rather
+   naming decision `decisions.md` §6 item 2 leaves open, assigned here, to be done **at setup** rather
    than at first deploy.
-2. **No custom domain** (`legal.md` §3.3.3, §3.6). `chakra-ui-solid.dev` / `.com` are deliberately
+2. **No custom domain** (`decisions.md` D-01). `chakra-ui-solid.dev` / `.com` are deliberately
    not bought; a custom domain is a swap, not a migration, if that ever changes.
 3. **Deploy `dist/client` as static assets.** No Workers runtime, no server functions, no
    `_redirects` beyond a 404 mapping to the prerendered not-found page.
 4. **Preview deploys on pull requests**, production on the release branch. The preview URL is what
    §7.1's smoke test runs against, so the gate needs no production deploy to close.
-5. **The site goes public before the repository does.** The repository is private (`legal.md` §3.5),
-   so a public docs site is itself the trigger for `legal.md` §6 item 1 — the maintainer message.
-   `legal.md` §3.7 draws that line at *"a public docs site or public repository presented as
+5. **The site goes public before the repository does.** The repository is private (`decisions.md` D-02),
+   so a public docs site is itself the trigger for `decisions.md` §6 item 1 — the maintainer message.
+   `decisions.md` D-168 draws that line at *"a public docs site or public repository presented as
    usable"*, so a preview URL shared with a reviewer is not it and a launched site is.
 
 ### 1.7 Plan B — Vite SPA + `@solidjs/router`, and what makes it an exit rather than a rewrite
@@ -240,7 +240,7 @@ documented" into "Plan B is reachable".
 
 **A structural copy of chakra-ui.com's IA, minus the tiers whose mechanism does not exist here** —
 `get-started/`, `components/`, `styling/`, `theming/`. Charts excluded (`roadmap.md` §5.7).
-**Structure is not expression; a sentence is** (`legal.md` §1.4) — §3 is where that line is drawn
+**Structure is not expression; a sentence is** (`CLAUDE.md`, *Reference use*) — §3 is where that line is drawn
 page by page, and it is not re-derived here.
 
 **The top bar is exactly four items: Get Started · Components · Styling · Theming.** No sponsor
@@ -256,7 +256,7 @@ step that gives them content.
 
 | Route | Renders | Source | Spec | Live |
 |---|---|---|---|---|
-| `/` | The parity sentence verbatim, the disclaimer, the Panda prerequisite | `plan.md` §0, §4.4; `legal.md` §3.4 | `docs-plan.md` §3 | **3b** |
+| `/` | The parity sentence verbatim, the disclaimer, the Panda prerequisite | `plan.md` §0, §4.4; `docs-site.md` §3.4 | `docs-plan.md` §3 | **3b** |
 | `/docs/get-started/installation` | The prerequisite above the install snippet; the consumer's `panda.config.ts` | `plan.md` §4.4, §3.4 | `docs-plan.md` §4 | **3b** |
 | `/docs/get-started/frameworks/vite` | That there is no special step, and why there is anything to say | `plan.md` §8 | `docs-plan.md` §4 | **3b** |
 | `/docs/get-started/frameworks/tanstack-start` | Same two settings, for a Start consumer | `plan.md` §8 | `docs-plan.md` §4 | **3b** |
@@ -313,7 +313,7 @@ its own** (**D-155**): the top bar is four items, and a fifth content directory 
 |---|---|
 | `get-started/frameworks/next-app`, `next-pages`, `remix` | **No Solid equivalent to guide.** These are React frameworks; the Solid ones are Vite, SolidStart and TanStack Start, and each has a page (§2.1). Nothing is being withheld — there is no such consumer |
 | `get-started/frameworks/tanstack-router` | **Renamed to `tanstack-start`.** Theirs documents the router because that is what a React app uses ours through; the Solid line we run against is `@tanstack/solid-start`, which is also what this site is built on (`docs-plan.md` §4.2) |
-| `get-started/changelog` | An external link to a file in a public repository. Ours is private (`legal.md` §3.5), so the nav item would point at a 404. It reappears the day the repository is public, on the same trigger as `get-started/contributing` |
+| `get-started/changelog` | An external link to a file in a public repository. Ours is private (`decisions.md` D-02), so the nav item would point at a 404. It reappears the day the repository is public, on the same trigger as `get-started/contributing` |
 | `components/concepts/overview` | **The group is dropped, not the pages** — the four rows below say where each went. An overview page for a component tier whose index is a top-bar item is a page whose whole content is the nav |
 | `components/concepts/composition` | **Relocated to `/docs/styling/styled-factory`, and per component to `### render`** (`docs-plan.md` §8.8). Their page is largely about `asChild`, which is the one thing we are certain not to have; the replacement is a prop on every part, so it is documented on every part's page |
 | `components/concepts/animation` | **Relocated** to `/docs/styling/animation-styles` for the preset half and to each component's `### Presence` section for the behavior half (`docs-plan.md` §8.11). Splitting it is not a preference: the two halves have different owners here — one is the preset, one is the machine |
@@ -331,9 +331,9 @@ its own** (**D-155**): the top bar is four items, and a fifth content directory 
 | `get-started/frameworks/storybook` | **Dropped as a page; the hazard it carried is not** (**D-137**). Storybook is a local playground here and contributes no gate (**D-133**), so a top-level framework page for it would be the only nav item on the site pointing at something we do not treat as a deliverable. The measured crash — Storybook 10.5 makes `HTMLElement.prototype.focus` an accessor and Zag's read of it throws `Illegal invocation` (**D-130**) — reaches any consumer running a Zag machine in Storybook, so it moves to a **section on `/docs/get-started/frameworks/vite`**, which is where a reader configuring a Vite-based dev harness already is. It lands with the first machine component (step 5), which is the first moment the hazard can actually bite a reader |
 | `components/server-component` | No Solid equivalent. React Server Components are a React-specific model and SolidStart has its own; there is nothing to port and nothing to warn about |
 | `components/testing` | Deferred. What it would say that no other page says is *assert computed styles, never class names* — and that already appears in its highest-value position, at the end of the install page's *did it work?* section, where a reader is looking for exactly it |
-| `get-started/contributing` | The repository is private (`legal.md` §3.5). The page reappears the day it is not |
+| `get-started/contributing` | The repository is private (`decisions.md` D-02). The page reappears the day it is not |
 | `docs/charts/*` | **Excluded on a dependency ground**, not a styling one: `@chakra-ui/charts` peer-depends on `recharts >= 3` and `react >= 18`, and there is no Solid charting substrate to bind to (`roadmap.md` §5.7). The reason belongs on the migration page, where a reader looking for charts will actually be |
-| `docs/styling/chakra-factory` | **Renamed**, not dropped — `/docs/styling/styled-factory`. Naming a page after their factory uses the mark as an identifier for our own API surface, which is exactly the line `legal.md` §3.2 draws |
+| `docs/styling/chakra-factory` | **Renamed**, not dropped — `/docs/styling/styled-factory`. Naming a page after their factory uses the mark as an identifier for our own API surface, which is exactly the line `docs-site.md` §3.4 draws |
 | Component pages for `for` and `show` | Excluded as Solid-native (`roadmap.md` §5.3, §5.4). The migration page maps them to `solid-js`'s own `<For>` / `<Show>` — the mapping is the deliverable, not a page |
 | Their composition pages — `password-input`, `rich-text-editor`, `calendar`, `prose`, `toggle-tip`, `overlay-manager`, `link-overlay` | These document **compositions**, not library components: they live in Chakra's compositions app and are installed into a consumer's source by its CLI. Under the port rule we ship no compositions, so there is nothing to document. Whether we ever ship a compositions tier is not a docs question and is not opened here |
 
@@ -401,7 +401,7 @@ list that means anything here.
 > header per file, and 111 headers is the per-file bookkeeping D-148 collapsed. `check:notice-rows`
 > is unaffected — its orphan scan reads `packages/…` rows only.
 >
-> `legal.md` §1.4's three tiers are **unchanged for code**, which is what they were written for.
+> `CLAUDE.md`, *Reference use*'s three tiers are **unchanged for code**, which is what they were written for.
 
 > **§3.4's *no logo, wordmark or favicon derivative* is RETIRED, and §3.3's proxy is SPENT, S4,
 > 2026-08-10** (**D-173**, **D-174**). The landing page carries Chakra's bolt in three forms and
@@ -421,7 +421,7 @@ list that means anything here.
 
 ### 3.1 The rule, cited
 
-`legal.md` §1.4's three tiers, unchanged: **reasoning** owes nothing, **API shape** owes nothing,
+`CLAUDE.md`, *Reference use*'s three tiers, unchanged: **reasoning** owes nothing, **API shape** owes nothing,
 **expression** — a function's structure and sequence, a data table, its comments — owes an `@license`
 header plus a row in the root `NOTICE.md` and the package's. Structure is not expression; a sentence
 is. That line is not re-derived here; §3.2 applies it page-part by page-part.
@@ -436,12 +436,12 @@ instead, and which tier it lands in.
 | 1 | **A page's frontmatter `description`** and its opening sentence — Chakra's are written prose | Ours, written from the component's own behavior. The *keys* (`title`, `description`, `links`) are structure and are copied deliberately | Expression → **rewritten** |
 | 2 | **Each example's explanatory sentence** — *"Use the `size` prop to change the size of the …"* appears once per example across their component tier | Ours. This is the single largest surface, roughly one sentence per example across 113 pages, and it is the one that would be easiest to paste and hardest to notice | Expression → **rewritten** |
 | 3 | **Example source files.** Chakra keeps ~1 200 of them, one per documented example | Ours, written against our API — `render` not `asChild`, `ids` on the Root, no runtime `css` values. Convergence on the anatomy is expected and owes nothing; convergence on *content*, ordering and copy is the tell. §3.3 is the proxy | API shape ↔ expression → **written fresh, with a mechanical proxy** |
-| 4 | **The anatomy snippet** under `## Usage` — the part tree | Copied in shape, because part names *are* the API and `legal.md` §1.4 puts them at the API-shape tier. Ours differs where the anatomy differs (`roadmap.md` §4's `Parts` column) | API shape → **owes nothing** |
+| 4 | **The anatomy snippet** under `## Usage` — the part tree | Copied in shape, because part names *are* the API and `CLAUDE.md`, *Reference use* puts them at the API-shape tier. Ours differs where the anatomy differs (`roadmap.md` §4's `Parts` column) | API shape → **owes nothing** |
 | 5 | **The props tables** | Generated from our types and our preset (§4.2). Never transcribed from their published tables — which is also the only version that stays true | Generated → **owes nothing** |
-| 6 | **The token tables** — colors, spacing, radii, shadows, typography | Rendered at build time from the **installed** `@chakra-ui/panda-preset`. That is `legal.md` §1.5's *depend, do not vendor* doing its job: we render what the dependency contains, we do not transcribe it into our source | Data, at build time → **owes nothing** |
+| 6 | **The token tables** — colors, spacing, radii, shadows, typography | Rendered at build time from the **installed** `@chakra-ui/panda-preset`. That is `CLAUDE.md`, *Reference use*'s *depend, do not vendor* doing its job: we render what the dependency contains, we do not transcribe it into our source | Data, at build time → **owes nothing** |
 | 7 | **Illustrations and anatomy diagrams** | Any anatomy figure is generated from the machine's `anatomy` export, or drawn fresh. Nothing is traced, recolored or re-lettered from theirs | Expression → **none reproduced** |
 | 8 | **Screenshots of chakra-ui.com** | None, anywhere — including in the README, social cards and this repo's `__internal__/` | Expression → **none reproduced** |
-| 9 | **The migration page quoting Chakra** | Short API signatures and prop names (API shape). Never their explanatory paragraphs. The one long quotation the site carries is `legal.md` §3.4's disclaimer, which is ours | API shape → **owes nothing** |
+| 9 | **The migration page quoting Chakra** | Short API signatures and prop names (API shape). Never their explanatory paragraphs. The one long quotation the site carries is `docs-site.md` §3.4's disclaimer, which is ours | API shape → **owes nothing** |
 | 10 | **`llms-full.txt`** | Generated from our MDX source, so it inherits whatever the pages carry — which means a single pasted upstream paragraph is republished in a second, machine-readable form. Flagged because it multiplies rows 1 and 2 rather than adding a new one | Derived → **inherits** |
 | 11 | **The docs site's own UI** — nav, search, sidebar, code-block chrome | Ours, written against our own components and preset. Looking Chakra-ish is the product working correctly; reproducing their layout *as an identity* is §3.4's question, not this section's | Trademark → §3.4 |
 | 11a | **The site's icons and favicon** — the bolt in three forms, `favicon.ico` | **Theirs, copied**, under the same MIT grant as their code. Row 11 covers the UI we wrote; this row covers four files we did not. Registry entry, `@license` header and a root `NOTICE.md` row — §3.3 | Expression → **attributed** |
@@ -585,7 +585,7 @@ pointing at `docs-plan.md`:
   *Corrected from 18* (**D-158**): their nav declares sixteen and their content directory holds
   seventeen — `divide` has a page and no nav entry — and ours takes the seventeen.
 
-Both regenerate on a preset bump, which is the point: `legal.md` §5's preset-minor trigger already
+Both regenerate on a preset bump, which is the point: `testing.md` §11's preset-minor trigger already
 fires `check:css-coverage`, and these pages change in the same PR rather than months later.
 
 ### 4.4 The playground, constrained by `plan.md` §0
@@ -635,7 +635,7 @@ decision than a playground.
 > §2.1, `check:llms-fresh` is not written, `docs-plan.md` §4.4's `ai/llms` page goes with them, and
 > §2.2's `ai/*` row becomes *we ship none of the three, for now*.
 >
-> **The trigger is `legal.md` §3.7's**, and it is the same moment: the first public release. That is
+> **The trigger is `decisions.md` D-168's**, and it is the same moment: the first public release. That is
 > not a coincidence and it is the whole reason the deferral is affordable — **the audience for
 > these files does not exist until the site is public.** A generated file nobody can fetch is a
 > maintenance obligation with no reader, and keeping it current through eight batches of churn
@@ -854,8 +854,8 @@ here with their gate and carried to P9 as §8 row 3.
 - `definition-of-done.md` §10 — row **2** (D-2's answer absorbed into `docs-plan.md` §1.2 sections 4
   and 6, unchanged and not re-answered).
 - `docs-plan.md` §2 — **D-1** answered (`docs-plan.md` §1.4), **D-2** absorbed.
-- `legal.md` §6 — item **2** (name the Pages project `chakra-ui-solid`, §1.6 step 1). Item **1**'s
-  trigger is noted where it fires (§1.6 step 5) but remains `legal.md`'s to close.
+- `decisions.md` §6 — item **2** (name the Pages project `chakra-ui-solid`, §1.6 step 1). Item **1**'s
+  trigger is noted where it fires (§1.6 step 5) but is D-168's to close.
 - `plan.md` §12 — row **13** (the responsive opt-in's docs home is `docs-plan.md` §6, with the
   failure it fixes staying on `docs-plan.md` §1), row **14** (the README first line, §8 row 5),
   row **5** (`chakraConfig` gets its own reference page, §2.1), row **9** (the Cause column, carried

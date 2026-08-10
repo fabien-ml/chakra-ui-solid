@@ -1,6 +1,6 @@
 /**
  * The registry of expression-tier derivatives — one entry per file that reproduces an upstream's
- * *expression*, which is the only tier that owes anything (`legal.md` §1.4, §2.6).
+ * *expression*, which is the only tier that owes anything (`CLAUDE.md`, *Reference use, and the expression tier*).
  *
  * **This file is the single place a derivative is declared**, and all three attribution checks
  * read it: `check:license-headers`, `check:notice-rows`, `check:package-files` (`testing.md` §9).

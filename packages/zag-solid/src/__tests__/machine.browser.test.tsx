@@ -1,6 +1,6 @@
 // Carried from hope-ui `ef91b69`,
 // `packages/primitives/src/zag-solid/__tests__/machine.browser.test.tsx`. Same author, MIT — ours,
-// forked on copy (`legal.md` §1.6). The 38 cases here are the port of upstream's `machine.test.ts`
+// forked on copy (`CLAUDE.md`, *Reference use*). The 38 cases here are the port of upstream's `machine.test.ts`
 // (35) + `nested-states.test.ts` (7), consolidated — so 86 + 51 is not 137
 // (`zag-solid-adapter.md` §6.2).
 

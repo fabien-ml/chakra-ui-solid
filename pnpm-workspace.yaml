@@ -44,7 +44,7 @@ catalog:
   # block at the same version.
   #
   # 1.43.0 is the fork's *target*; 1.42.0 is the baseline it was taken from and the number a
-  # re-sync diffs against (`NOTICE.md`, `legal.md` §1.3). The three deltas between them are
+  # re-sync diffs against (`NOTICE.md`, `zag-solid-adapter.md` §1). The three deltas between them are
   # `zag-solid-adapter.md` §4.3.
   "@zag-js/core": 1.43.0
   "@zag-js/types": 1.43.0

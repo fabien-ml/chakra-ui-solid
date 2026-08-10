@@ -1,5 +1,5 @@
 // Carried from hope-ui `main` (1dc059f), `packages/primitives/src/utils/run-if-function.ts`. Same author,
-// MIT — ours, forked on copy (`legal.md` §1.6).
+// MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 /**
  * Resolve a value-or-factory: call it if it's a function, otherwise return it as-is.

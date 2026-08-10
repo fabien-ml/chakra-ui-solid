@@ -13,7 +13,7 @@ and expensive later.
 pages share, the build gate — which are `docs-site.md`. The division of labour is that document's §0
 and is restated in §0 below so the boundary is not guessed at. Nor is it the decisions the pages
 render: every claim below is cited to `plan.md`, `prior-art.md`, `component-blueprint.md`,
-`roadmap.md`, `testing.md`, `definition-of-done.md` or `legal.md` by section, never restated as new.
+`roadmap.md`, `testing.md`, `definition-of-done.md` by section, never restated as new.
 **Where a page spec and its source document disagree, the source document wins**, and the spec is the
 thing that gets fixed.
 
@@ -43,7 +43,7 @@ Seven specs: **four page specs, two tier specs, and one template applied 113 tim
 | # | Spec | Renders | Source |
 |---|---|---|---|
 | **§1** | `/docs/styling/static-extraction` | §3.5's dynamic-value contract, as a consumer-facing contract rather than an architecture note | `plan.md` §3.5, §1.4, §0.2 |
-| **§3** | Docs home | The parity sentence, verbatim: *"as close to Chakra v3 parity as is achievable without runtime CSS-in-JS"* | `plan.md` §0; `legal.md` §3.4, §4.1 |
+| **§3** | Docs home | The parity sentence, verbatim: *"as close to Chakra v3 parity as is achievable without runtime CSS-in-JS"* | `plan.md` §0; `docs-site.md` §3.4; `decisions.md` D-01 |
 | **§4** | Install / setup, and the `get-started/` tier | Panda as a hard prerequisite — the non-optional `peerDependency`, and the README's first line above the install snippet | `plan.md` §4.4, §3.4, §8, §12 row 14 |
 | **§5** | Coming from Chakra UI (React) | The §0.4 delta table with its **Cause** column, plus the six per-component rows P6 corrected (`for`/`show` excluded, `portal`/`client-only`/`presence` shipped, `environment` relocated, charts excluded) | `plan.md` §0.4; `roadmap.md` §5, §13 row 1 |
 | **§6** | `chakraConfig` reference | The preset's function export and its knobs, `responsive` among them | `plan.md` §3.3, §3.4, §3.8 |
@@ -244,7 +244,7 @@ Three secondary reasons, in order of weight:
    `outdir`, and nothing else (`plan.md` §3.4). The docs app's `include` also carries the buildinfo
    and 113 pages' worth of source; the fixture's carries one directory.
 2. **It is fast enough to run on every Panda and preset bump**, which is when the rows are most
-   likely to change (`legal.md` §5). A full site build per fixture run would make the check something
+   likely to change (`testing.md` §11). A full site build per fixture run would make the check something
    people batch, and a check that is batched is a check that is read late.
 3. **Reusing the same `chakraConfig()` call removes the drift the "dedicated build" objection is
    about.** The honest worry with a separate build is that it stops resembling what ships; sharing
@@ -485,7 +485,7 @@ find its content simply does nothing (`roadmap.md` §5.1). That sentence is the 
 ### 4.4 `ai/llms` — deferred to before first public release
 
 **Deferred at S3b with the whole AI tier and the five generated files it indexes** (`docs-site.md`
-§4.6; **D-138**), on the same trigger as `legal.md` §3.7's maintainer message, because the audience
+§4.6; **D-138**), on the same trigger as `decisions.md` D-168's maintainer message, because the audience
 for a directory page to generated files does not exist until those files are fetchable.
 
 The spec below is not deleted, and the cost of deferring it is stated at `docs-site.md` §4.6 rather
@@ -577,7 +577,7 @@ there:
 
 | Verbatim | Why there |
 |---|---|
-| **The README's first paragraph** | The npm package page is where a mistaken install begins (`legal.md` §3.3.3 item 1) |
+| **The README's first paragraph** | The npm package page is where a mistaken install begins (`decisions.md` D-01 item 1) |
 | **The docs home**, under the descriptor (§3.2) | The first thing a reader meets |
 | **The install page**, above the snippet (§4.1) — as the Panda prerequisite line, which is its operative half | The last moment before a reader commits |
 | **This page's lede** | The page a reader arrives at *from* Chakra, already comparing |
@@ -752,8 +752,8 @@ arriving from `createSystem` assume nothing is reachable at runtime at all.
   Chakra's runtime theme has) and one `cursor.switch` token key (which restores a `cursor: pointer`
   the preset silently loses). Two keys, both named, with what each fixes (`definition-of-done.md` §6).
 - **That `@chakra-ui/panda-preset` is in your dependency tree**, by design — we depend, we do not
-  vendor (`legal.md` §1.5). It is one config-only package with no CSS, and it is *the* reason the
-  design system matches. `legal.md` §1.5 asks for this to be said in the docs; this is where.
+  vendor (`CLAUDE.md`, *Reference use*). It is one config-only package with no CSS, and it is *the* reason the
+  design system matches. `CLAUDE.md`, *Reference use* asks for this to be said in the docs; this is where.
 
 ### 7.5 What these tiers must not say
 
@@ -766,7 +766,7 @@ link, once per tier, not per page.
 ## 8. The component page — one template, applied 111 times
 
 **Frame:** Chakra's component page structure, copied exactly — frontmatter, preview, `## Usage`,
-`## Examples`, `## Props`. **Structure is not expression** (`legal.md` §1.4); the sentences inside it
+`## Examples`, `## Props`. **Structure is not expression** (`CLAUDE.md`, *Reference use*); the sentences inside it
 are ours (`docs-site.md` §3.2 rows 1 and 2).
 
 **Applied once at S3b, to `Box`** — the only component that exists. What that first application
@@ -790,7 +790,7 @@ exist on most components.
 | `source` | the component's directory |
 | `recipe` | its preset key — `S:dialog`, `A:button`, or absent where the key resolves to nothing (`roadmap.md` §4) |
 | `machine` | its `@zag-js/*` machine, or absent for the 15 multi-part components and the layout surface |
-| `chakra` | **the upstream page for the same component.** An outward link, and `legal.md` §3.3.3 item 2 makes it a virtue rather than a courtesy: a reader who wanted the official project should leave in one click |
+| `chakra` | **the upstream page for the same component.** An outward link, and `decisions.md` D-01 item 2 makes it a virtue rather than a courtesy: a reader who wanted the official project should leave in one click |
 
 **No `storybook` link.** Chakra's frontmatter has one; ours does not, because Storybook here is a dev
 harness and a compile-mode canary, not user-facing docs (`brief-plan` §2.10).
@@ -805,7 +805,7 @@ is the property a copy-pasted snippet cannot have.
 
 The import line — which must match `plan.md` §5.5's subpaths, and is checked
 (`check:docs-examples`) — and the anatomy snippet: the part tree, nested as it is written. Part names
-are API shape and owe nothing (`legal.md` §1.4); the tree is ours where our anatomy differs.
+are API shape and owe nothing (`CLAUDE.md`, *Reference use*); the tree is ours where our anatomy differs.
 
 ### 8.4 `## Examples`
 

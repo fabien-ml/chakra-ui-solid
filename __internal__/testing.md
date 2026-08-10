@@ -443,7 +443,7 @@ coverage check exists for, and none of them is visible to it.
   `importMap` + buildinfo in `include` — **whose own source never names the variant**. That run is
   `plan.md` §1's gate and the thing that confirms or refutes per-recipe `staticCss` (**P3-A**).
 - **On every `@chakra-ui/panda-preset` bump**, because a removed variant silently unstyles rather
-  than erroring (`legal.md` §5). Not optional on a preset bump.
+  than erroring (`testing.md` §11). Not optional on a preset bump.
 
 ---
 
@@ -492,7 +492,7 @@ never a global flag:
   inherited: "zag-solid-adapter.md §8.2; component-blueprint.md §9.2",  // OUR evidence, not a URL
   cause: "ariaHidden calls hideOthers unconditionally; the published exports map makes " +
          "suppressOthers unreachable. Chakra v3 has the identical defect (prior-art.md §7).",
-  reviewAt: "each @zag-js/* minor — legal.md §5",
+  reviewAt: "each @zag-js/* minor — testing.md §11",
 }
 ```
 
@@ -601,7 +601,7 @@ extraction from the inside.
 - **Question 2 (the manifest)** needs the *installed* closure and therefore runs first at **step 2**,
   as a line in the milestone-one gate (`zag-solid-adapter.md` §6.5), which is also where the P4
   result stops being provisional.
-- **Both re-run on every Zag minor**, folded into `legal.md` §5's `@zag-js/*` row alongside the
+- **Both re-run on every Zag minor**, folded into `testing.md` §11's `@zag-js/*` row alongside the
   anatomy diff, **diffing against the four recorded hits** — so a *new* injection site in a future
   release surfaces as a diff rather than blending in.
 
@@ -880,8 +880,8 @@ D-163 built is general, and this is its second use.
 
 ## 9. The attribution checks
 
-`legal.md` §6 items 6 and 7 assign these here. **Both failure modes are silent and green**, which is
-why they are scripts rather than a review habit (`legal.md` §2.3).
+`decisions.md` §6 items 6 and 7 assign these here. **Both failure modes are silent and green**, which is
+why they are scripts rather than a review habit (`CLAUDE.md` obligation 5).
 
 **The registry.** One checked-in file, `attribution.config.ts` at the repo root, listing every
 expression-tier derivative: `{ file, upstreamProject, upstreamFile, license, package }`. Every check
@@ -918,11 +918,11 @@ wrong.
 
 | Script | Asserts | A failure means |
 |---|---|---|
-| `check:license-headers` | (a) every registry entry's source file opens with an `@license` header of the right shape, naming the **upstream file**; (b) **the header is still present in `dist/`** — entries with `package: null` build no `dist/` and are skipped by (b) alone; (c) `comments.legal` is pinned `true` in `tsdown.config.base.ts`, **with its comment** | (b) is the load-bearing one. Rolldown strips every unmarked block comment, so an untagged provenance paragraph vanishes from `dist/` and the published package becomes an unattributed derivative — of the project we are porting — silently, with a green build (`legal.md` §2.3). (c) is how (b) breaks: unpinning `comments.legal` is a one-word edit nobody reviews |
-| `check:notice-rows` | Every registry entry has a row in the root `NOTICE.md` — **and** in its own package's, unless `package` is `null`; every `noticeOnlyPaths` path has a root row; and **no `packages/` or `apps/` row exists without an entry in one of the two lists** | A stale row claims a derivation that is not there; a missing row is the obligation itself. The root file is the audit surface, the package file is the one that travels in the tarball and the only one a consumer who never visits the repo will see (`legal.md` §2.4) |
-| `check:package-files` | Every published package's `files` contains `LICENSE` and `NOTICE.md`, and **every file named in an `@license` header's *"distributed with this package as …"* clause is actually in that array** | That clause is a promise to the consumer and it is the easiest one in the repo to break — the default `files` ships `dist` and nothing else (`legal.md` §2.5) |
-| `check:readme-disclaimer` | **Every published package's README** carries the disclaimer, not just the root's | `legal.md` §6 item 7, and the reason it is a check: a per-package README is written once per package and then never looked at again. It runs at **publish time** — a `prepublishOnly` gate plus a release-workflow job — so a new package cannot ship without it |
-| `check:fork-drift` | Upstream `@zag-js/solid`'s `packages/frameworks/solid/src/` file set and contents against the fork; and whether upstream's peer range admits `solid-js@2` | Not a failure — a **report**. The fork is meant to be retired: the day the peer range admits 2.x, it is a deletion candidate (`legal.md` §1.3, §5) |
+| `check:license-headers` | (a) every registry entry's source file opens with an `@license` header of the right shape, naming the **upstream file**; (b) **the header is still present in `dist/`** — entries with `package: null` build no `dist/` and are skipped by (b) alone; (c) `comments.legal` is pinned `true` in `tsdown.config.base.ts`, **with its comment** | (b) is the load-bearing one. Rolldown strips every unmarked block comment, so an untagged provenance paragraph vanishes from `dist/` and the published package becomes an unattributed derivative — of the project we are porting — silently, with a green build (`CLAUDE.md` obligation 5). (c) is how (b) breaks: unpinning `comments.legal` is a one-word edit nobody reviews |
+| `check:notice-rows` | Every registry entry has a row in the root `NOTICE.md` — **and** in its own package's, unless `package` is `null`; every `noticeOnlyPaths` path has a root row; and **no `packages/` or `apps/` row exists without an entry in one of the two lists** | A stale row claims a derivation that is not there; a missing row is the obligation itself. The root file is the audit surface, the package file is the one that travels in the tarball and the only one a consumer who never visits the repo will see (`CLAUDE.md` obligation 3) |
+| `check:package-files` | Every published package's `files` contains `LICENSE` and `NOTICE.md`, and **every file named in an `@license` header's *"distributed with this package as …"* clause is actually in that array** | That clause is a promise to the consumer and it is the easiest one in the repo to break — the default `files` ships `dist` and nothing else (`CLAUDE.md` obligation 4) |
+| `check:readme-disclaimer` | **Every published package's README** carries the disclaimer, not just the root's | `decisions.md` §6 item 7, and the reason it is a check: a per-package README is written once per package and then never looked at again. It runs at **publish time** — a `prepublishOnly` gate plus a release-workflow job — so a new package cannot ship without it |
+| `check:fork-drift` | Upstream `@zag-js/solid`'s `packages/frameworks/solid/src/` file set and contents against the fork; and whether upstream's peer range admits `solid-js@2` | Not a failure — a **report**. The fork is meant to be retired: the day the peer range admits 2.x, it is a deletion candidate (`zag-solid-adapter.md` §1; `testing.md` §11) |
 
 **Commit order matters and is checkable.** `zag-solid-adapter.md` §7.3's checklist requires the
 attribution to land **in the same commit as the code**. `check:license-headers` and
@@ -968,7 +968,7 @@ in the fork**, with the component-layer count at the fork's tip being **0**.
 
 ## 11. The scheduled upstream checks
 
-`legal.md` §5's tracking policy, turned into jobs — one per upstream, because a single "check for
+`testing.md` §11's tracking policy, turned into jobs — one per upstream, because a single "check for
 updates" habit produces a single kind of check and these break different things. Each posts its diff
 as the PR's job summary. **What fires them and who is expected to read that summary is
 `definition-of-done.md` §9.**
@@ -980,8 +980,8 @@ as the PR's job summary. **What fires them and who is expected to read that summ
 | `@zag-js/*` minor | **`check:anatomy-diff`** + `check:no-cij-manifest` + `check:no-runtime-sheet` + `check:data-attr-vocab` | The anatomy command is `roadmap.md` §1.2's, verbatim — 51 machines, 49 anatomy exports, 406 parts — diffed against our part components; then the §0 audit re-run against the four recorded hits (§5.4) | Parts added or renamed, and `data-*` drift — the two ways a machine bump reaches a part component (`roadmap.md` §1.4) |
 | `@zag-js/solid` any | `check:fork-drift` | §9 | Fork drift, and the retirement signal |
 | Panda minor | `check:panda-artifacts` | Regenerate and diff the generated artifacts (`css`/`cva`/`sva` signatures, `is-valid-prop`, the exports map); re-assert the no-runtime-sheet property **over the generated output**; assert we are still on Panda 1.x while the preset declares `@pandacss/types@^1.4.2` | The generated surface is three of this repo's assumptions (**P5-A**, **P5-B**, **P7-A**) and one of its checks' inputs |
-| Any upstream **major** | The legal re-check | Re-verify the `license` field and `LICENSE` copyright line of every package in `legal.md` §1.1, and re-stamp the table with the date | A major is when a project changes its license, and the only way to notice is to look |
-| Each release of ours | `check:readme-disclaimer`, the `dist` job, and the `legal.md` §1.1 re-stamp | §8, §9 | A license table with no date is a table nobody trusts |
+| Any upstream **major** | The legal re-check | Re-verify the `license` field and `LICENSE` copyright line of every package in `NOTICE.md`, and re-stamp it with the date | A major is when a project changes its license, and the only way to notice is to look |
+| Each release of ours | `check:readme-disclaimer`, the `dist` job, and the `NOTICE.md` re-stamp | §8, §9 | A license table with no date is a table nobody trusts |
 
 ---
 

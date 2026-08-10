@@ -241,7 +241,7 @@ it would be a divergence from the port target rather than fidelity to it.
 **Decision: our preset adds one token key, and does not touch the recipe.**
 `theme.extend.tokens.cursor.switch = { value: "pointer" }` — the same `theme.extend` merge path
 `plan.md` §1.2 already relies on for the per-recipe `staticCss` deltas. One key, no recipe body
-re-emitted, so it stays inside `legal.md` §1.5's *depend, do not vendor*, and unlike the `container`
+re-emitted, so it stays inside `CLAUDE.md`, *Reference use*'s *depend, do not vendor*, and unlike the `container`
 delta (§2.5) it owes no `@license` header because a one-word token value is not expression.
 
 **What does not change:** the **slot-recipe** registry key stays `swittch`, consumed verbatim per
@@ -264,7 +264,7 @@ across that flattening caught two definitions and missed a value.
 by design. The 406 parts in §1.2 are the enumeration the assumption promised.
 `zag-solid-adapter.md` §9.1 assigned this to P6 explicitly; `component-blueprint.md` §12.1 carried it
 as *"open, and P6's"*. It is now a **standing check** rather than an assumption:
-`legal.md` §5's `@zag-js/*` row diffs anatomy per minor, and the command in §1.2 is what it runs.
+`testing.md` §11's `@zag-js/*` row diffs anatomy per minor, and the command in §1.2 is what it runs.
 
 ---
 
@@ -401,7 +401,7 @@ enumerated per component with a reason, exactly like the axe allowances
 `Container` is the only one that needs a decision rather than a note: **one `container` recipe delta
 in `@chakra-ui-solid/panda-preset`**, ported from `@chakra-ui/react`'s
 `theme/recipes/container.ts`. That is a recipe **body** reproduced from Chakra, so unlike everything
-else in `plan.md` §1.3 it is expression-tier under `legal.md` §1.4 — it owes an `@license`
+else in `plan.md` §1.3 it is expression-tier under `CLAUDE.md`, *Reference use* — it owes an `@license`
 header and root + package `NOTICE.md` rows. One file, recorded so P7 does not add it silently.
 
 ---
@@ -538,7 +538,7 @@ exclusion or note in this document leans on a non-Panda tier** — there is none
 
 | Component | Machine | Recipe | Parts | Pres | CIJ | Status | Batch | Notes |
 |---|---|---|---|---|---|---|---|---|
-| field | — | S:field | —/8 | | | ships | B3 | **The largest machine-less behavior in the library.** Ark implements it in 226 React lines; under `legal.md` §1.4 we read the ARIA contract, never the expression. **Duplicate slot `requiredIndicator`** |
+| field | — | S:field | —/8 | | | ships | B3 | **The largest machine-less behavior in the library.** Ark implements it in 226 React lines; under `CLAUDE.md`, *Reference use* we read the ARIA contract, never the expression. **Duplicate slot `requiredIndicator`** |
 | fieldset | — | S:fieldset | —/5 | | | ships | B3 | Ark: 115 React lines. `+content` |
 | native-select | — | S:nativeSelect | —/3 | | | ships | B3 | Chakra's anatomy is `createAnatomy("select")` — **the same `data-scope` as `select`**. A hand-written selector that assumes scope uniqueness will match both |
 | alert | — | S:alert | —/5 | | | ships | B6 | |
@@ -1119,7 +1119,7 @@ Two shapes the matrix makes measurable that were not before:
 | # | Assumption | Status after P6 | Gate |
 |---|---|---|---|
 | **1** | *"Zag v1's machine list — the 56 machines are read from the **v2** checkout; `cascade-select`, `gridlist`, `image-cropper`, `scheduler`, `dnd`, `toc` may be v2-only"* | **CLOSED.** 51 machines at `main`/1.43.0 (§1.2). `cascade-select`, `image-cropper` and `toc` **exist**; `gridlist`, `scheduler`, `dnd` are v2-only. None of the three that exist is portable — Chakra has no component for any of them (§2.4). Confirms `prior-art.md` §10.2 row 10 | — |
-| **2** | *"Each machine's `anatomy` export at 1.43.0 — asserted authoritative, not enumerated per machine"* | **CLOSED, and confirmed** (§1.4). 49 of 51 export one; 2 are headless by design; 406 parts enumerated | Standing: `legal.md` §5's anatomy diff per Zag minor |
+| **2** | *"Each machine's `anatomy` export at 1.43.0 — asserted authoritative, not enumerated per machine"* | **CLOSED, and confirmed** (§1.4). 49 of 51 export one; 2 are headless by design; 406 parts enumerated | Standing: `testing.md` §11's anatomy diff per Zag minor |
 | **5** | *"`@ark-ui/react` version — brief says 5.38.1; Chakra 3.36.1 pins 5.37.2. Assumed close enough for reference reading"* | **NARROWED, and one concrete divergence found.** Chakra 3.36.1 pins **5.37.2** (`grep '"@ark-ui/react"' packages/react/package.json`); our checkout is **5.38.1**. Ark 5.38.1 ships a `drawer` on `@zag-js/drawer` that Chakra's Drawer does not use (§2.2), so at least one component differs between the two versions in a way that reaches this matrix. **Every machine mapping in §4 was measured from Chakra's own import, not from Ark's folder list**, so the matrix does not depend on the version we happen to have | **Still open** for anything read from Ark's *implementation* rather than Chakra's imports — `component-blueprint.md` §1.2's `aria-controls` list and §6.2's `useCollapsible` are both such reads. Re-checked at **step 5** and **B2** against the installed 5.37.2 |
 
 ### 12.2 Assumptions P6 introduces
@@ -1128,7 +1128,7 @@ Two shapes the matrix makes measurable that were not before:
 |---|---|---|---|
 | **P6-A** | The popper `--z-index` seam is priceable in one component, and the price is the same for the other eight | §8's whole sequencing argument. If Popover is cheap and Select is not, the seam is per-machine and B5/B8 each owe their own probe | **Step 5b**, then re-confirmed at the first B5 component |
 | **P6-B** | Ark's `useCollapsible` shape (§6.2) is the *only* second presence source — no other machine exposes visibility that Ark wraps this way | §6's two families become three, and the render strategy needs a third source | **B2**. Cheap: `grep -rl 'isUnmounted' ark-ui/packages/react/src/` |
-| **P6-C** | The six components whose recipe key resolves to nothing (§2.5) are unstyled **by intent** upstream, not by a bug about to be fixed | The coverage-check allow-list, and whether `Container`'s preset delta is a port or a divergence | **Step 4**, when the coverage check first runs; and a standing check on each Chakra minor (`legal.md` §5) |
+| **P6-C** | The six components whose recipe key resolves to nothing (§2.5) are unstyled **by intent** upstream, not by a bug about to be fixed | The coverage-check allow-list, and whether `Container`'s preset delta is a port or a divergence | **Step 4**, when the coverage check first runs; and a standing check on each Chakra minor (`testing.md` §11) |
 | **P6-D** | Chakra's own `anatomy.ts` — not the preset's `slots` arrays — is the authoritative slot list, so the seven duplicates are transcription artifacts with no runtime meaning | The coverage check's dedupe step, and any generated per-slot type | **Step 4**. If a duplicated slot turns out to emit two classes, the dedupe is wrong and the preset needs a delta |
 | **P6-E** | `Field`'s behavior can be re-derived from its ARIA contract without reading Ark's 226-line expression, at a cost comparable to a machine component | B3, and the eight components that consume Field's context | **B3.** This is the only component in the library with no machine and no permission to copy |
 | **P6-F** | An unresolvable token reference — the preset's `cursor: "switch"` against a token registered as `swittch` (§1.3c) — **drops the declaration rather than failing the build**, and a `theme.extend.tokens.cursor.switch` key restores it | Whether the fix is one token key or an upstream wait. If Panda *errors* instead, the preset does not build for anyone and the finding is larger than one component | **Step 3**, the first `panda codegen`. Cheap and unambiguous: build once with the delta and once without, and read the emitted `cursor` declaration |
@@ -1151,7 +1151,7 @@ preset's animations) → closed at P2, resolved the other way. `plan.md` §11.2'
 > exclusion note · row 1b → `plan.md` §0.4 gains the `React→Solid` row, with a pointer left on
 > `component-blueprint.md` §11.12 · row 2 → `plan.md` §10 (115 directories) · row 3 → `plan.md` §10
 > (the slot-recipe half, false by 15) · row 7 → `plan.md` §1.3 · row 7b → `plan.md` §3.3 and
-> `legal.md` §6 item 3 · row 9 → `plan.md` §5.2 · row 10 → `plan.md` §12 row 3. The full log is
+> `decisions.md` §6 item 3 · row 9 → `plan.md` §5.2 · row 10 → `plan.md` §12 row 3. The full log is
 > `decisions.md` §7.
 
 | # | The source says | P6 decides | Touches |
@@ -1164,7 +1164,7 @@ preset's animations) → closed at P2, resolved the other way. `plan.md` §11.2'
 | **5** | `component-blueprint.md` §11.13: `RootProvider` needs *"a public `useDialog` hook (`plan.md` §5.5's `./hooks` subpath)"* | **Measured wrong.** Chakra exports `useDialog` from the **component's own barrel**; `./hooks` is 14 unrelated utility hooks, 7 of which are React re-render machinery and are excluded individually (§5.8, §10). `RootProvider`/`PropsProvider`/`Context` are **per-component rows in each batch**, not a deferred sweep | **P7, P8, P9** |
 | **6** | `component-blueprint.md` §7.2's render strategy takes its `present` from a `@zag-js/presence` instance | **Two presence families.** `collapsible` and `accordion` take it from the **collapsible machine's own `visible`** (§6.2). The render strategy must be source-agnostic, and that refactor lands at **step 5**, not after B2 is written against the presence-only shape | **P7** (the DoD's presence tests) |
 | **7** | `plan.md` §1.3 treats `swittch` as a spelling oddity in the slot-recipe registry — *"invisible to consumers either way"* | **Wider, and one reference is broken.** `swittch` is also the `cursor` **token** key, while the Switch recipe references `cursor: "switch"` — so the preset's Switch **silently loses its `cursor: pointer`**, where Chakra's runtime theme does not (§1.3c). It is a preset defect, not Chakra behavior, so inheriting it is a divergence. **Our preset adds one `theme.extend.tokens.cursor.switch` key**; the slot-recipe key stays `swittch`, verbatim. The upstream issue now has a concrete defect to report | **P7** (the preset delta, the upstream filing), **P9** |
-| **7b** | `plan.md` §1.3's *"depend, do not vendor"* holds with no expression-tier files outside the `zag-solid` fork | Two preset deltas P6 adds, and they are **not** the same tier: the `cursor.switch` token key is one word and owes nothing; the **`container` recipe** (§1.3a, §2.5) is a recipe **body** reproduced from `@chakra-ui/react` — expression-tier under `legal.md` §1.4, owing an `@license` header and root + package `NOTICE.md` rows. Plus **six components whose recipe key resolves to nothing in Chakra too** (§2.5), which the coverage check must allow-list | **P7** (the preset, the coverage allow-list), **P9** |
+| **7b** | `plan.md` §1.3's *"depend, do not vendor"* holds with no expression-tier files outside the `zag-solid` fork | Two preset deltas P6 adds, and they are **not** the same tier: the `cursor.switch` token key is one word and owes nothing; the **`container` recipe** (§1.3a, §2.5) is a recipe **body** reproduced from `@chakra-ui/react` — expression-tier under `CLAUDE.md`, *Reference use*, owing an `@license` header and root + package `NOTICE.md` rows. Plus **six components whose recipe key resolves to nothing in Chakra too** (§2.5), which the coverage check must allow-list | **P7** (the preset, the coverage allow-list), **P9** |
 | **8** | `plan.md` §10's build order ends at step 7 | **Step 5b inserted** (Popover, the floating probe, §8) and **B1–B8** written past step 7 (§9.2). Workstream B keeps its position and carries **45 components**; five of its atomic recipes are hard prerequisites for B3/B4/B8 | **P7** (the DoD is per-batch), **P8** (docs follow the batches) |
 | **9** | `plan.md` §5.2's dependency table lists in-repo edges only | **37 `@zag-js/*` machine packages on `components`**, `@zag-js/presence` on `system`, four Zag utility packages, and **`@pandacss/dev` as the graph's first required-of-the-consumer edge** (§11). Per-**batch** closure growth is the honest metric; per-component is the arithmetic error `prior-art.md` §10.2 rows 6/8 correct | **P7** (the bundle check at milestone 5), **P9** |
 | **10** | `plan.md` §12 row 3 still reads *"with a **three-rung** fallback ladder (§1)"* | **Stale.** `a8b4995` rewrote §1.5 to **two rungs** — the prebuilt-stylesheet floor was removed by §4.4. **Flagged, not fixed**: `plan.md` is P3's document and editing it here would put the same correction in two places. **Recorded for P9's reconciliation pass** | **P9** |

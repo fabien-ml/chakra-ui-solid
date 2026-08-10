@@ -1,5 +1,5 @@
 // Carried from hope-ui `main` (1dc059f), `packages/primitives/src/render/render.tsx`. Same author,
-// MIT — ours, forked on copy (`legal.md` §1.6).
+// MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import type { JSX, ValidComponent } from "@solidjs/web";
 import { applyRef, Dynamic } from "@solidjs/web";

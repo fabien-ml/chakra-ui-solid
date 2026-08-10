@@ -56,7 +56,7 @@ describe("theme.extend — the token delta", () => {
     // The upstream preset registers this token as `swittch` while its own Switch recipe references
     // `cursor: "switch"`, so the reference resolves to nothing and Switch silently loses its
     // pointer cursor. One key restores it. Any *second* token here would be a theme fork, which
-    // `legal.md` §1.5 forbids — this assertion is what keeps the delta one key wide.
+    // `CLAUDE.md`, *Reference use* forbids — this assertion is what keeps the delta one key wide.
     expect(extension?.tokens).toEqual({ cursor: { switch: { value: "pointer" } } });
   });
 

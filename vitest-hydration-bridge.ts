@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f), `vitest-hydration-bridge.ts`, with the `@hope-ui/*` alias
 // swapped for `chakraSolidAlias` and `HYDRATION_ENTRIES` reduced to the one subject that exists at
-// step 2. Same author, MIT — ours, forked on copy (`legal.md` §1.6).
+// step 2. Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { join } from "node:path";
 import { createServer, type Plugin, type ViteDevServer } from "vite";

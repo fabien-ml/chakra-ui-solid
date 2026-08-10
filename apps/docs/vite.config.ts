@@ -1,5 +1,5 @@
 // Adapted from hope-ui `main` (b2df60d), `apps/docs/vite.config.ts`. Same author, MIT — ours,
-// forked on copy (`legal.md` §1.6). What is carried is the **configuration**: every comment below
+// forked on copy (`CLAUDE.md`, *Reference use*). What is carried is the **configuration**: every comment below
 // that names a crash names one somebody diagnosed there. The Tailwind plugin is dropped (styling
 // here is the app's own Panda run) and the alias table is the repo's shared one rather than a
 // second copy.

@@ -1,5 +1,5 @@
 // Carried from hope-ui `e9c2f81`, `packages/components/src/system/style-props.tsx` (104 lines).
-// Same author, MIT — ours, forked on copy (`legal.md` §1.6). Three prop-surface additions on top of
+// Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*). Three prop-surface additions on top of
 // it, each named below and each `plan.md` §2.3's. Renamed after what it exports: style props are
 // one of `renderStyled`'s inputs, not the thing this file is.
 

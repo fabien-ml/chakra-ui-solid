@@ -75,13 +75,13 @@ describe("check:context-budget", () => {
 
     it("fails a `##` section over the ceiling", () => {
       const units = measureUnits(
-        [document("legal.md", section(3, "Trademark", SECTION_CEILING_BYTES + 1))],
+        [document("attribution.md", section(3, "Trademark", SECTION_CEILING_BYTES + 1))],
         "",
       );
       const faults = findBudgetFaults(units, []);
 
       expect(kinds(faults)).toEqual(["oversized-section"]);
-      expect(faults[0].unit.name).toBe("legal.md §3");
+      expect(faults[0].unit.name).toBe("attribution.md §3");
     });
 
     it("fails a shard over the ceiling with no allow-list row", () => {
@@ -140,7 +140,7 @@ describe("check:context-budget", () => {
       // No `tsc` pass in this repo reads a root config file, so a row without `ceilingBytes` would
       // compare against `undefined` and grant its file unlimited growth in silence.
       const units = measureUnits(
-        [document("legal.md", section(3, "Trademark", SECTION_CEILING_BYTES + 1))],
+        [document("attribution.md", section(3, "Trademark", SECTION_CEILING_BYTES + 1))],
         "",
       );
       const faults = findBudgetFaults(units, [
@@ -171,7 +171,7 @@ describe("check:context-budget", () => {
     it("reports every failing unit rather than stopping at the first", () => {
       const units = measureUnits(
         [
-          document("legal.md", section(3, "Trademark", SECTION_CEILING_BYTES + 1)),
+          document("attribution.md", section(3, "Trademark", SECTION_CEILING_BYTES + 1)),
           document("decisions/3.14-s3b.md", `### 3.14 S3b\n${"y".repeat(SHARD_CEILING_BYTES)}`),
         ],
         "x".repeat(OPERATIVE_INDEX_CEILING_BYTES + 1),
@@ -207,7 +207,7 @@ describe("check:context-budget", () => {
   describe("formatBudgetFaults", () => {
     it("groups by kind and heads each group with what that kind means", () => {
       const units = measureUnits(
-        [document("legal.md", section(3, "Trademark", SECTION_CEILING_BYTES + 1))],
+        [document("attribution.md", section(3, "Trademark", SECTION_CEILING_BYTES + 1))],
         "x".repeat(OPERATIVE_INDEX_CEILING_BYTES + 1),
       );
 
@@ -216,7 +216,7 @@ describe("check:context-budget", () => {
       expect(report).toContain("oversized-section — ");
       expect(report).toContain("shard its parts into files");
       expect(report).toContain("operative-index-over — ");
-      expect(report).toContain("legal.md §3");
+      expect(report).toContain("attribution.md §3");
     });
   });
 

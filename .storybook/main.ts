@@ -1,5 +1,5 @@
 // Adapted from hope-ui `main` (b2df60d), `.storybook/main.ts`. Same author, MIT — ours, forked on
-// copy (`legal.md` §1.6). The Tailwind plugin is dropped (our dev stylesheet comes from Panda, and
+// copy (`CLAUDE.md`, *Reference use*). The Tailwind plugin is dropped (our dev stylesheet comes from Panda, and
 // `preview.ts` imports it) and the alias table is the repo's shared one rather than a second copy.
 
 import type { StorybookConfig } from "storybook-solidjs-vite";

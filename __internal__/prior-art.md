@@ -938,7 +938,7 @@ are a Solid 2.0 mechanism, not accessibility. The behavior kernel is Zag's, enti
 ### 8.3 Presence, drawn precisely — the one carry-over that becomes a build
 
 "Replace with Ark's" would be the wrong instruction, so here is the exact line. **Ark is not a
-dependency and never will be** (`legal.md` §1.4: *Ark is `what`, never `how`*). Presence is a **Zag
+dependency and never will be** (`CLAUDE.md`, *Reference use*: *Ark is `what`, never `how`*). Presence is a **Zag
 machine like any other**, so it goes through **our own `zag-solid` adapter** — no special case:
 
 ```bash
@@ -952,7 +952,7 @@ cat __reference-impl__/ark-ui/packages/react/src/components/presence/use-presenc
 | `lazyMount`, `unmountOnExit`, `skipAnimationOnMount`, `hideMode`; the `data-state` + `hidden` prop getter; the gate that renders `null` when unmounted | **Ours to write.** ~30 lines of render strategy, **not in the machine** — Ark invents them, and Chakra's public API exposes them |
 
 That second row is why this is a build and not a `git show`. It is **API-shape reading** (owes
-nothing, `legal.md` §1.4) — reproduce the prop names and semantics, never the expression. Chakra's
+nothing, `CLAUDE.md`, *Reference use*) — reproduce the prop names and semantics, never the expression. Chakra's
 `DialogRoot` ships `defaultProps: { unmountOnExit: true, lazyMount: true }`, so these are consumer-
 visible and parity requires them.
 
@@ -969,7 +969,7 @@ Three places Ark's code is React-shaped and a Solid version is simply smaller:
 
 ## 9. Carry-over verdicts with attribution status
 
-Cross-referenced against `legal.md` §1.2 (Apache-2.0 enters through hope-ui), §1.3 (the fork's MIT
+Cross-referenced against `decisions.md` D-12 (Apache-2.0 enters through hope-ui), §1.3 (the fork's MIT
 obligation) and §1.6 (hope-ui carry-overs are ours, with a provenance note). The a11y-kernel rows
 carry [§8.2](#82-the-port-rule--no-a11y-beyond-zag-nothing-chakra-does-not-have)'s verdicts.
 
@@ -1034,19 +1034,20 @@ or a faithful port reads as a regression. Copy it as a floor, not a specificatio
 
 ### 9.2 The port rule removes the repo's only Apache-2.0 obligation
 
-`legal.md` §1.2 opens by correcting the plan: *"Apache-2.0 enters through hope-ui's
+`decisions.md` D-12 opens by correcting the plan: *"Apache-2.0 enters through hope-ui's
 `createHideOutside`, which §2.11 marks copy, mandatory."* That was right on the plan as it stood.
 **Under the port rule it no longer enters.** `createHideOutside` is the sole planned Apache-2.0
 carry-over, and the exception mechanism that could have pulled in `create-dismissable.ts`,
 `create-press.ts` or `scroll-into-view.ts` is gone with it.
 
-So the whole graph is MIT again, which is the state `legal.md` §1.1 describes and §1.2 departs from:
+So the whole graph is MIT again, which is the state `NOTICE.md` describes and the
+Apache-2.0 route departed from:
 
-- `licenses/LICENSE-APACHE-2.0.txt` is **not needed** — `legal.md` §1.2 deliberately did not add it
+- `licenses/LICENSE-APACHE-2.0.txt` is **not needed** — `decisions.md` D-12 deliberately did not add it
   yet, and that call now stands permanently rather than pending.
 - `NOTICE.md`'s pre-declared Apache-2.0 section keeps its *not yet applicable* marker.
 - The only attribution the repo still owes is the **seven `@license` headers on the `zag-solid` fork**
-  (MIT, `legal.md` §1.3) plus provenance notes on the hope-ui carry-overs (§1.6).
+  (MIT, `zag-solid-adapter.md` §1) plus provenance notes on the hope-ui carry-overs (§1.6).
 
 **This needs P1's sign-off, not just P2's.** `legal.md` §0's summary table and §1.2 both assert the
 Apache-2.0 obligation as live. They should be revised to record it as *avoided by the port rule*
@@ -1093,7 +1094,7 @@ rather than three-quarters true.
 | 6 | §1.4: Dialog paid *"**12 `untrack` calls**"* | 12 is **occurrences of the word** (imports and comments included) in non-test source at `c102292`. **Call sites: 2 in the component, 2 in the fork.** The listbox findings' own table uses the honest metric ("call sites in the component layer: 2") | **P4, P5** — quoting 12 overstates the seam ~3× |
 | 7 | §1.4 / §2.11: *"`createPresence` (~249 lines)"* alongside *"`createHideOutside` (~128 code lines)"* | Mixed units in one sentence. 249 is **raw**; presence is **143 code**. hideOutside's 128 and focusRestore's 26 are **code** (§0.4) | Any later doc quoting a volume figure |
 | 8 | §1.4: *"4 of 8 packages already shared by the second component"* | At 1.43.0 the listbox closure is 8 packages of which **5** are shared with dialog's 11 and **3** are new (`listbox`, `collection`, `focus-visible`) — `anatomy` is shared, not new. Favourable direction | **P4, P6** |
-| 9 | §0.5: Chakra's `styled-system/` is *"47 files"* | **46** top-level files + a `generated/` subdirectory (51 total). `legal.md` §1.4 already says 46 | Cosmetic — flagged so the two documents do not diverge |
+| 9 | §0.5: Chakra's `styled-system/` is *"47 files"* | **46** top-level files + a `generated/` subdirectory (51 total). `CLAUDE.md`, *Reference use* already says 46 | Cosmetic — flagged so the two documents do not diverge |
 | 10 | §8 assumption 1: *"`cascade-select`, `gridlist`, `image-cropper`, `scheduler`, `dnd`, `toc` may be v2-only"* | At 1.43.0, `cascade-select`, `image-cropper` and `toc` **exist**. Only `gridlist`, `scheduler`, `dnd` are v2-only | **P6** |
 | 11 | §8 assumption 4: *"`staticCss` in a preset covers internally-emitted variants — plausible, **undemonstrated**"* | The **atomic-utility half is demonstrated in production** at `e9c2f81` (§2.7). Only the recipe-variant half is open | **P3** — narrows open question 2 |
 | 12 | §4: *"no `Co-Authored-By` … (hope-ui's convention, carried over)"* | It is hope-ui's *current* convention, not its historical one: 31 of the Panda era's 43 commits carry the trailer; the spike's 7 carry none | None — recorded so the attribution is accurate |

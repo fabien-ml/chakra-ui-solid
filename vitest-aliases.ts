@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f), `vitest-aliases.ts`, with the `@hope-ui/*` table replaced
-// by an empty `@chakra-ui-solid/*` one. Same author, MIT — ours, and forked on copy (`legal.md`
-// §1.6).
+// by an empty `@chakra-ui-solid/*` one. Same author, MIT — ours, and forked on copy
+// (`CLAUDE.md`, *Reference use*).
 
 import { existsSync } from "node:fs";
 import { createRequire } from "node:module";

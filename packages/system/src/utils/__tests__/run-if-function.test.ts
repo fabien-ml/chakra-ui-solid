@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/primitives/src/utils/__tests__/run-if-function.test.ts`, alongside the source it tests.
-// Same author, MIT — ours, forked on copy (`legal.md` §1.6).
+// Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { describe, expect, it, vi } from "vitest";
 import { runIfFunction } from "../run-if-function";

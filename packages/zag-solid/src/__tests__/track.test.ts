@@ -1,6 +1,6 @@
 // Carried from hope-ui `ef91b69`,
 // `packages/primitives/src/zag-solid/__tests__/track.test.ts`. Same author, MIT — ours, forked on
-// copy (`legal.md` §1.6). A2's regression surface.
+// copy (`CLAUDE.md`, *Reference use*). A2's regression surface.
 
 import { createRoot, createSignal, flush } from "solid-js";
 import { describe, expect, it, vi } from "vitest";

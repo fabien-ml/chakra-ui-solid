@@ -1,6 +1,6 @@
 <!--
 Carried from hope-ui `ef91b69`, `__internal__/primitives/zag-solid/machine.md`. Same author, MIT —
-ours, forked on copy (`legal.md` §1.6). Every `__internal__/…` path, `CLAUDE.md` reference and
+ours, forked on copy (`CLAUDE.md`, *Reference use*). Every `__internal__/…` path, `CLAUDE.md` reference and
 `@hope-ui/*` specifier **below** is hope-ui's at that commit, not this repo's; follow them into
 `../hope-ui`. The spike findings they cite (`__internal__/spikes/zag-{dialog,listbox}-findings.md`)
 are where the four defects were measured, and `prior-art.md` §6 is this repo's summary of them.

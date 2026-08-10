@@ -80,7 +80,7 @@ if (failures.length > 0) {
   console.error(
     `check:license-headers — ${failures.length} attribution failure(s):\n\n${failures.join("\n")}\n\n` +
       "Every one of these is silent and green without this check: the published package becomes " +
-      "an unattributed derivative of the project we are porting (`legal.md` §2.3).\n",
+      "an unattributed derivative of the project we are porting (`CLAUDE.md` obligation 5).\n",
   );
   process.exit(1);
 }

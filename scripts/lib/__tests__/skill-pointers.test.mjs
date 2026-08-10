@@ -65,12 +65,14 @@ describe("check:skill-pointers", () => {
 
   describe("collectCitations", () => {
     it("governs an anchor by the nearest backticked document before it", () => {
-      const citations = collectCitations("- `legal.md` §2.2 — the header; §2.3 why it matters.");
+      const citations = collectCitations(
+        "- `attribution.md` §2.2 — the header; §2.3 why it matters.",
+      );
 
       expect(citations).toEqual([
-        { kind: "path", raw: "legal.md", path: "legal.md" },
-        { kind: "anchor", raw: "§2.2", document: "legal.md", anchor: "2.2" },
-        { kind: "anchor", raw: "§2.3", document: "legal.md", anchor: "2.3" },
+        { kind: "path", raw: "attribution.md", path: "attribution.md" },
+        { kind: "anchor", raw: "§2.2", document: "attribution.md", anchor: "2.2" },
+        { kind: "anchor", raw: "§2.3", document: "attribution.md", anchor: "2.3" },
       ]);
     });
 
@@ -109,9 +111,9 @@ describe("check:skill-pointers", () => {
 
   describe("countProseWords", () => {
     it("counts what is left once the citations are removed", () => {
-      expect(countProseWords("- `legal.md` §2.6 — the checklist for a new derivative file.")).toBe(
-        7,
-      );
+      expect(
+        countProseWords("- `attribution.md` §2.6 — the checklist for a new derivative file."),
+      ).toBe(7);
     });
 
     it("counts a hyphenated word once", () => {
@@ -124,7 +126,7 @@ describe("check:skill-pointers", () => {
       [
         { name: "decisions.md", source: "## 3. The ledger" },
         { name: "decisions/3.15-context-budget.md", source: "### 3.15 The context budget" },
-        { name: "legal.md", source: "## 2. Attribution" },
+        { name: "attribution.md", source: "## 2. Attribution" },
       ],
       parseSections,
     );
@@ -136,8 +138,8 @@ describe("check:skill-pointers", () => {
     });
 
     it("does not fold an anchor into a document that has no such section", () => {
-      expect(resolve("legal.md", "3.15")).toBe(false);
-      expect(resolve("legal.md", "2")).toBe(true);
+      expect(resolve("attribution.md", "3.15")).toBe(false);
+      expect(resolve("attribution.md", "2")).toBe(true);
     });
 
     it("rejects an anchor in a document nothing knows about", () => {
@@ -152,7 +154,7 @@ describe("check:skill-pointers", () => {
     it("passes a skill whose every line points somewhere", () => {
       expect(
         findSkillFaults(
-          [skill("docs-page", "## 1. A", "", "- `legal.md` §2 — the mechanism.")],
+          [skill("docs-page", "## 1. A", "", "- `attribution.md` §2 — the mechanism.")],
           allResolve,
         ),
       ).toEqual([]);
@@ -160,11 +162,11 @@ describe("check:skill-pointers", () => {
 
     it("names the document an anchor does not exist in", () => {
       expect(
-        faultKinds([skill("docs-page", "- `legal.md` §99 — nowhere.")], {
+        faultKinds([skill("docs-page", "- `attribution.md` §99 — nowhere.")], {
           ...allResolve,
           resolveAnchor: () => false,
         }),
-      ).toEqual(["dead-pointer: legal.md has no §99"]);
+      ).toEqual(["dead-pointer: attribution.md has no §99"]);
     });
 
     it("catches a path and a script that do not exist", () => {
@@ -185,11 +187,11 @@ describe("check:skill-pointers", () => {
 
     it("checks an anchor inside a heading too", () => {
       expect(
-        faultKinds([skill("docs-page", "## 1. See `legal.md` §99")], {
+        faultKinds([skill("docs-page", "## 1. See `attribution.md` §99")], {
           ...allResolve,
           resolveAnchor: () => false,
         }),
-      ).toEqual(["dead-pointer: legal.md has no §99"]);
+      ).toEqual(["dead-pointer: attribution.md has no §99"]);
     });
 
     it("rejects a body line that cites nothing", () => {
@@ -200,7 +202,7 @@ describe("check:skill-pointers", () => {
     });
 
     it("rejects a paragraph written beside a citation", () => {
-      const paragraph = `- \`legal.md\` §2 — ${"word ".repeat(MAX_PROSE_WORDS + 1)}`;
+      const paragraph = `- \`attribution.md\` §2 — ${"word ".repeat(MAX_PROSE_WORDS + 1)}`;
 
       expect(faultKinds([skill("docs-page", paragraph)])).toEqual([
         `not-a-pointer: ${MAX_PROSE_WORDS + 1} words outside its citations, ceiling is ${MAX_PROSE_WORDS}`,
@@ -216,7 +218,7 @@ describe("check:skill-pointers", () => {
     it("fails a skill that has to be scrolled", () => {
       const long = skill(
         "docs-page",
-        ...Array(MAX_SKILL_LINES).fill("- `legal.md` §2 — a pointer."),
+        ...Array(MAX_SKILL_LINES).fill("- `attribution.md` §2 — a pointer."),
       );
 
       expect(faultKinds([long])).toEqual([
@@ -226,7 +228,7 @@ describe("check:skill-pointers", () => {
 
     it("fails a name that does not match the directory the skill loads from", () => {
       const mismatched = {
-        ...skill("docs-page", "- `legal.md` §2 — a pointer."),
+        ...skill("docs-page", "- `attribution.md` §2 — a pointer."),
         name: "docs-pages",
       };
 
@@ -239,7 +241,7 @@ describe("check:skill-pointers", () => {
       const undescribed = {
         name: "docs-page",
         file: ".agents/skills/docs-page/SKILL.md",
-        source: lines("---", "name: docs-page", "---", "", "- `legal.md` §2 — a pointer."),
+        source: lines("---", "name: docs-page", "---", "", "- `attribution.md` §2 — a pointer."),
       };
 
       expect(faultKinds([undescribed])).toEqual([

@@ -9,7 +9,7 @@ alternatives that were rejected and *why not*, what the decision blocks or unblo
 gate it was settled at, and the document section that owns its reasoning. It is a **record**, not an
 argument: no entry re-derives its evidence, and every one cites a section instead.
 
-**What it is not.** The reasoning — that lives in the ten documents beside this one. Nor the rules:
+**What it is not.** The reasoning — that lives in the nine documents beside this one. Nor the rules:
 those are `CLAUDE.md`. **A rule never appears here and a rationale never appears there** (§0).
 
 **How to use it.** Three questions it answers that nothing else does. *Was this already decided?* —
@@ -17,9 +17,9 @@ those are `CLAUDE.md`. **A rule never appears here and a rationale never appears
 *Which open question closed where?* — §2. And two it answers for the implementation pass: *what did
 the document pass leave open, and what unblocks it?* — §6; *what is the build order?* — §5.
 
-**The ledger disagrees with itself in places, and that is the point.** Five decisions were reversed
-during the pass and two were reversed twice; §4 lists them with the reversal visible. `legal.md` §3.3
-sets the rule this follows: *a record that quietly agrees with itself is worth nothing later.*
+**The ledger disagrees with itself in places, and that is the point.** §4 lists every reversal with
+the reversal visible — 34 rows, four of them decisions reversed twice. The rule this follows:
+*a record that quietly agrees with itself is worth nothing later.*
 
 **Vocabulary, once.** A **machine** is a `@zag-js/*` state machine — framework-agnostic behavior and
 ARIA; its **anatomy** is its named parts, each of which becomes one **part component**
@@ -31,11 +31,11 @@ generated renders nothing and raises no error.
 
 ---
 
-## 0. The division of labour — this file, `CLAUDE.md`, and the eleven `__internal__` documents
+## 0. The division of labour — this file, `CLAUDE.md`, and the nine documents beside it
 
 Three surfaces, three questions, and **nothing is written in two of them**:
 
-| | `CLAUDE.md` | `decisions.md` (this file) | The other ten `__internal__` documents |
+| | `CLAUDE.md` | `decisions.md` (this file) | The other nine `__internal__` documents |
 |---|---|---|---|
 | Answers | **What must I do, and where is the rule written down?** | **What was decided, what was rejected, and when?** | **Why is it right?** |
 | Contains | Enforced rules, one line each, and a pointer per rule | Decision entries — decision, rejected alternatives + *why not*, effect, gate, and a citation — **one file each under [`decisions/`](decisions/)**, indexed by §3's table | The evidence, the measurements, the argument, the code |
@@ -77,7 +77,7 @@ Nothing here is frozen. The implementation pass will falsify some of it — that
 exist for, and §6 lists exactly which entries are waiting on a measurement.
 
 **When a decision changes, it gets a new entry marked as a reversal — it does not get edited.** The
-old entry stays, with the reversal visible, and §4 gains a row. `legal.md` §3.3's rule is the reason:
+old entry stays, with the reversal visible, and §4 gains a row. The reason:
 *a record that quietly agrees with itself is worth nothing later.* Four decisions in this pass were
 reversed twice, and every one of those reversals is only legible because the first version was left
 standing.
@@ -111,17 +111,17 @@ eight are closed.
 
 | Q | Question | Settled at | Answer | Lives in |
 |---|---|---|---|---|
-| **Q1** | Brand and npm scope | **P1 gate, 2026-08-08** | `chakra-ui-solid`, under the owned `@chakra-ui-solid` scope. Mark-derived, deliberately, with `@solid-chakra` held as a pre-paid exit | `legal.md` §3.3.3 · **D-01** |
+| **Q1** | Brand and npm scope | **P1 gate, 2026-08-08** | `chakra-ui-solid`, under the owned `@chakra-ui-solid` scope. Mark-derived, deliberately, with `@solid-chakra` held as a pre-paid exit | **D-01** |
 | **Q2** | How consumers get CSS for recipe variants their source never writes | **P3 gate, 2026-08-09** | Per-recipe `staticCss: ["*"]` through `theme.extend` in `@chakra-ui-solid/panda-preset`, plus an atomic `staticCss.css` block and ten `colorPalette` values. Two-rung fallback ladder; confirmed or refuted at step 4 | `plan.md` §1 · **D-23** |
-| **Q3** | How loudly the parity delta is stated to end users | **P1 gate** (recorded), **P8** (placed) | Prominent — the fixed sentence in the README, `CLAUDE.md` and the docs home; the delta table with its **Cause** column on the migration page; the extraction guide as the loudest page on the site | `legal.md` §3.4; `plan.md` §0.4; `docs-plan.md` §1, §5 · **D-06** |
+| **Q3** | How loudly the parity delta is stated to end users | **P1 gate** (recorded), **P8** (placed) | Prominent — the fixed sentence in the README, `CLAUDE.md` and the docs home; the delta table with its **Cause** column on the migration page; the extraction guide as the loudest page on the site | `docs-site.md` §3.4; `plan.md` §0.4; `docs-plan.md` §1, §5 · **D-06** |
 | **Q4** | Style-props API: Chakra-shape or Panda-shape | **P3 gate** | Panda-shape, with Chakra names aliased only where all three conditions of the aliasing rule hold — at most 95 names, the list itself a step-3 deliverable | `plan.md` §2 · **D-26** |
-| **Q5** | Re-clone `zag` at `main` (1.43.0), keeping `v2` as a second worktree | **P1 gate** | Yes. Target **1.43.0**; `v2` kept as a secondary checkout, which is what let P4 prove the adapter byte-identical across the major | `legal.md` §0.1; `zag-solid-adapter.md` §2.3 · **D-05** |
+| **Q5** | Re-clone `zag` at `main` (1.43.0), keeping `v2` as a second worktree | **P1 gate** | Yes. Target **1.43.0**; `v2` kept as a secondary checkout, which is what let P4 prove the adapter byte-identical across the major | `CLAUDE.md`, *reference checkouts*; `zag-solid-adapter.md` §2.3 · **D-05** |
 | **Q6** | hope-ui carry-overs copied verbatim or re-derived | **P4 gate** | **Copied — and the question needed two answers.** The fork: copied from `ef91b69`, all fourteen files, attributed as a *third-party* MIT derivative with a standing upstream sync obligation. The hope-ui-owned items: copied per item, per ref, with a provenance note and no sync obligation in either direction | `zag-solid-adapter.md` §1 · **D-46**, **D-47** |
 | **Q7** | Dialog or Accordion as the worked blueprint component | **P5 gate** | **Dialog** — the only candidate crossing every unevidenced seam at once. Accordion's one residual, the repeated part, was assigned to P6 and settled there | `component-blueprint.md` §0 · **D-57** |
-| **Q8** | Private or public repo at first commit | **P1 gate, 2026-08-08** — recorded at **P9**, per `brief-plan` §4 | **Private**, on a personal GitHub account, **no GitHub organization** for either owned name. What it affects: branch protection, CI secrets, and whether the README disclaimer is load-bearing on day one — it is, independently of this, so it is already written | `legal.md` §3.5, §6 · **D-02** |
+| **Q8** | Private or public repo at first commit | **P1 gate, 2026-08-08** — recorded at **P9**, per `brief-plan` §4 | **Private**, on a personal GitHub account, **no GitHub organization** for either owned name. What it affects: branch protection, CI secrets, and whether the README disclaimer is load-bearing on day one — it is, independently of this, so it is already written | §6 · **D-02** |
 
 **Q8 is recorded, not decided, and the distinction matters.** P1 settled it on the evidence in
-`legal.md` §3.3.3 and §3.5; P9's job at this gate was to make sure the answer is findable from the
+`decisions.md` D-01 and §3.5; P9's job at this gate was to make sure the answer is findable from the
 question rather than only from the section that happens to contain it. The same sweep produced the
 other seven rows.
 
@@ -129,7 +129,7 @@ other seven rows.
 
 ## 3. The ledger
 
-**One file per entry, under [`decisions/`](decisions/).** 175 decisions, D-01 … D-175, in seventeen
+**One file per entry, under [`decisions/`](decisions/).** 176 decisions, D-01 … D-176, in seventeen
 files grouped by the phase that settled them. Reversals are marked **⟲** and collected in §4.
 
 **The anchors did not move when the bodies did.** `` `decisions.md` §3.13 `` still names the S3
@@ -141,6 +141,13 @@ entry's line range and size.
 order, `§7` the reconciliation log — and a `§3.N` is a sibling entry, linked at the two places one
 is cited. **A D-number is found by grepping `__internal__/decisions/`**, not this file; the
 **Decisions** column narrows that to one file first.
+
+> **`legal.md` is a deleted document, and the references to it below are records rather than
+> pointers.** It was removed at `1eb56e8`; its 286 citations were repointed at the surviving home of
+> each rule at **D-176**, which lists where each went. What is left names the document because the
+> sentence is *about* what it once said — a **Reasoning** line recording where P1 argued something, a
+> past measurement of its size, or §6.1's marking register. **Those are not repointed**, because a
+> record of where an argument lived is falsified by moving it. To read one, `git show 1eb56e8^:__internal__/legal.md`.
 
 | § | The phase, and the file it lives in | Decisions | What it settled |
 |---|---|---|---|
@@ -160,7 +167,7 @@ is cited. **A D-number is found by grepping `__internal__/decisions/`**, not thi
 | **3.14** | [S3b — the visual surfaces](decisions/3.14-s3b-visual-surfaces.md) | D-128 … D-161 | Step 3b closed: Storybook demoted to a local playground, the docs site reworked against the open reference, and Chakra's docs prose found to be plain MIT |
 | **3.15** | [The context budget — the documents as a working surface](decisions/3.15-context-budget.md) | D-162 … D-166 | Not a build-order step: the anchor index, this shard, five pointer-only skills, and the 25 KB ceiling that guards all three |
 | **3.16** | [S4 — the reconciliation pass, measured against predicted](decisions/3.16-s4-reconciliation.md) | D-167 … D-172 | Not a build-order step: the eleven documents marked M/I/P/S against what was actually built. Fifteen stale claims, seven of them survivors of one sweep — the register is §6.1 |
-| **3.17** | [S5 — the landing page, and the documents that still described the old one](decisions/3.17-s5-landing-page-reconciliation.md) | D-173 … D-175 | Not a build-order step: the docs home shipped chakra-ui.com's structure and Chakra's bolt, and four places still said neither was allowed. One was a missing check — the registry could not express `apps/` |
+| **3.17** | [S5 — the landing page, and the documents that still described the old one](decisions/3.17-s5-landing-page-reconciliation.md) | D-173 … D-176 | Not a build-order step: the docs home shipped chakra-ui.com's structure and Chakra's bolt, and four places still said neither was allowed. One was a missing check — the registry could not express `apps/` |
 
 ---
 
@@ -184,7 +191,7 @@ that stops being one.
 
 | # | Reversed **once** | From | To |
 |---|---|---|---|
-| **D-01** | Brand | `legal.md` §3.3.2's analysis concludes **for `@solid-chakra`** | `@chakra-ui-solid`, against the analysis, on the author's preference and a precedent matching this construction exactly. §3.3.2 is **not rewritten to agree** |
+| **D-01** | Brand | The written analysis concludes **for `@solid-chakra`** (`legal.md` §3.3.2, a record — see §3's note) | `@chakra-ui-solid`, against the analysis, on the author's preference and a precedent matching this construction exactly. The analysis was **not rewritten to agree** |
 | **D-25** | The fallback ladder | three rungs | **two** — the prebuilt-stylesheet floor removed by D-30 |
 | **D-27** | `renderStyled` additions | three | **four** — `styleSource`, with a worked failure in the checkout |
 | **D-28** | Where the base-preset fix lives | in `panda.config.ts` | **in `@chakra-ui-solid/panda-preset`**, so a consumer cannot omit it |
@@ -320,11 +327,11 @@ register.
   recorded as a gap rather than an oversight.
 
 **Open with a trigger rather than a step**
-- `legal.md` §6 item 1 — message the Chakra maintainers at first public release (D-03). Not an
+- `decisions.md` §6 item 1 — message the Chakra maintainers at first public release (D-03). Not an
   assumption and not gated by a build; the trigger is defined and the answer is either a fact or the
   first rung of the exit ladder. **⚠ Contradicted by D-110** — *"no maintainer contacted"* — and
-  marked, not resolved, at `legal.md` §3.7. The trigger is unreached either way.
-- `legal.md` §6 item 8 — keep `@solid-chakra` held. Costs a renewal and nothing else.
+  marked, not resolved, at `decisions.md` D-168. The trigger is unreached either way.
+- `decisions.md` §6 item 8 — keep `@solid-chakra` held. Costs a renewal and nothing else.
 
 **Three whose gate is a measurement plus a judgement**, listed here as well because they are the ones
 most likely to be read as pass/fail: **P5-E** (the presence instance count — *acceptable* is a review
@@ -373,7 +380,7 @@ restatement**:
 | 4 | `testing.md` §4.1 | *"a reason and an issue number"* — two paragraphs above §4.2's corrected text | **D-110** | 2026-08-09 |
 | 5 | `component-blueprint.md` §9.3 | *"each carries the upstream issue number"* | **D-110** | 2026-08-09 |
 | 6 | `prior-art.md` §10.1 row F | *"with a named upstream issue each"* | **D-110** | 2026-08-09 |
-| 7 | `legal.md` §3.7 + §6 above | *message the Chakra maintainers at first public release* | **D-110** (*"no maintainer contacted"*) | 2026-08-09 |
+| 7 | `decisions.md` D-168 + §6 above | *message the Chakra maintainers at first public release* | **D-110** (*"no maintainer contacted"*) | 2026-08-09 |
 | 8 | `zag-solid-adapter.md` §6.5 | `✅ A1 filed upstream` — **a green tick on the one line that is open** | **D-109**, which required it recorded as open *"rather than quietly dropped or marked done"* | 2026-08-09 |
 | 9 | `definition-of-done.md` §3.1 step 2 | *"A1 filed"* listed among a discharged step's proofs | **D-109** | 2026-08-09 |
 | 10 | `definition-of-done.md` rule 2.1 | *"no inline allowance is expressible"* | The shipped helper: `expectNoA11yViolations(container, { allowIncomplete })`, whose own docstring says to name a rule *"at the call site"* | step 1 |
@@ -455,7 +462,7 @@ pointer left wherever a reader would otherwise re-derive it.
 | `docs-site.md` §8 row 5 | `plan.md` **§4.4** | the README first line, one placement, owner P8 | **Three placements** — README first line, docs home, above the install snippet — and the file itself is written at step 8 |
 | `docs-site.md` §8 row 6 | **`CLAUDE.md`** § document index | a **ten**-row document register | **Eleven** — `docs-plan.md` is a peer, not a section. The index also states the row-vs-file arithmetic, since `testing.md` and `definition-of-done.md` share one register row |
 | `docs-site.md` §8 row 7 | **`CLAUDE.md`** § precedence; **§0** above | no stated precedence between the register's contents list and the later documents | **The later document wins**, stated once for the whole set |
-| `legal.md` §6 item 2 | `legal.md` **§6** | open, assigned to P8 | **Closed at P8** — naming the Pages project is step one of the Cloudflare setup |
+| `decisions.md` §6 item 2 | `legal.md` **§6** | open, assigned to P8 | **Closed at P8** — naming the Pages project is step one of the Cloudflare setup |
 
 ### 7.2 The citation convention, and the sites it was applied to
 
@@ -486,7 +493,7 @@ the convention rather than the problem.
 | `prior-art.md` **§7** and **§10.1 row F** | *"ZagDialog's six axe allowances are the baseline"* | These are the two sites `zag-solid-adapter.md` §6.4 and §8.2 **cite**. Correcting the citing documents and leaving the cited one stale would have made the correction unfindable from the direction a reader travels | Six stands as ZagDialog's measurement; ours is `aria-hidden-focus`, open-state only, with both sites pointing at `component-blueprint.md` §9.2 |
 | `legal.md` **§1.5** | *"the preset's 19 recipes, 57 slot recipes"* | `prior-art.md` §4.2 measured **18 + 56** and says both figures *"should be corrected wherever they appear"*; `plan.md` §12 row 12 carries it as **18 + 56 throughout**. One surviving instance makes "throughout" false, and the numbers are the bound the whole `staticCss` design is sized against | **18 recipes, 56 slot recipes** |
 
-**One row found and deliberately not fixed.** `legal.md` §1.2 contains *"the definition of done was to
+**One row found and deliberately not fixed.** `decisions.md` D-12 contains *"the definition of done was to
 run axe on every mounting test with zero allowances."* It is **past tense inside the retained
 Apache-2.0 analysis** — the premise that made that route live, kept because §0 says the analysis
 becomes live again the instant anyone proposes an exception. The document's own header already records

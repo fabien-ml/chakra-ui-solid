@@ -44,7 +44,7 @@ jobs:
           echo "$pending pending changeset(s), $zeroed package(s) at 0.0.0 — policy satisfied."
 
       # NOT YET WRITTEN — nothing is publishable before step 2, and `check:readme-disclaimer` is a
-      # publish-time gate on a per-package README that does not exist yet (`legal.md` §6 item 7).
+      # publish-time gate on a per-package README that does not exist yet (`testing.md` §9).
       - name: publish (step 2 onward)
         run: |
           echo "No package is publishable yet. This job gains the dist checks,"

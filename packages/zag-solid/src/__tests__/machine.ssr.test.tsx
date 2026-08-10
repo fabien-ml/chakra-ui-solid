@@ -1,6 +1,6 @@
 // Carried from hope-ui `ef91b69`,
 // `packages/primitives/src/zag-solid/__tests__/machine.ssr.test.tsx`. Same author, MIT — ours,
-// forked on copy (`legal.md` §1.6).
+// forked on copy (`CLAUDE.md`, *Reference use*).
 
 // `renderToStringAsync` at `@solidjs/web@2.0.0-beta.19` — the beta the fork was written against.
 // It does not exist at `2.0.0-beta.32`, which this repo pins: the server build exports

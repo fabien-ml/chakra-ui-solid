@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f), `packages/primitives/src/__tests__/solid-contract.test.ts`,
 // and extended with the three `flush()` cases of `zag-solid-adapter.md` §6.3. Same author, MIT —
-// ours, forked on copy (`legal.md` §1.6).
+// ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import {
   createContext,

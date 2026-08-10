@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/primitives/src/internal/__tests__/create-registered-id.browser.test.tsx`, alongside the
-// source it tests. Same author, MIT — ours, forked on copy (`legal.md` §1.6).
+// source it tests. Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { expectNoA11yViolations, mount } from "@chakra-ui-solid/internal-test-utils";
 import { createSignal, Show } from "solid-js";

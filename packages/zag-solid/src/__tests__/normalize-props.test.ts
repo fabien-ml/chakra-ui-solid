@@ -1,6 +1,6 @@
 // Carried from hope-ui `ef91b69`,
 // `packages/primitives/src/zag-solid/__tests__/normalize-props.test.ts`. Same author, MIT — ours,
-// forked on copy (`legal.md` §1.6). A1's regression surface.
+// forked on copy (`CLAUDE.md`, *Reference use*). A1's regression surface.
 
 import { describe, expect, it } from "vitest";
 import { normalizeProps } from "../normalize-props";

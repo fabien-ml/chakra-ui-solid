@@ -1,9 +1,14 @@
 # Third-party notices
 
-> **Skeleton.** The repo has no source files yet, so every derived-file table below is empty by
-> fact, not by omission. The sections exist up front so the first derivative lands into a shape that
-> already matches [`__internal__/legal.md`](__internal__/legal.md) §2 — see §2.6 there for the
-> checklist that fills a row in.
+> **The sections outnumber the tables that have rows, and that is the design.** A section exists per
+> upstream we read, whether or not anything is derived from it, so an empty table is a statement
+> rather than an absence. Three carry rows today — Zag.js, Chakra UI, Framework logos. The rest are
+> guards.
+>
+> **What fills a row in** is the five obligations in [`CLAUDE.md`](CLAUDE.md), and
+> [`attribution.config.ts`](attribution.config.ts) is where a derivative is declared. Every row below
+> under `packages/` or `apps/` is checked against that registry in both directions —
+> `check:notice-rows`.
 >
 > **Revised at the P2 gate, 2026-08-09.** The **Adobe React Spectrum** section no longer forecasts a
 > carry-over: the port rule struck hope-ui's accessibility kernel, so no Apache-2.0 material is
@@ -33,8 +38,8 @@ resolved as bare specifiers in the published output, never bundled, shipping wit
 No obligation beyond this notice.
 
 `@zag-js/solid` is different — it is **forked**, not consumed, because the published adapter targets
-Solid 1.x (see [`__internal__/legal.md`](__internal__/legal.md) §1.3). Every forked file carries an
-`@license` header and a row here.
+Solid 1.x (see [`__internal__/zag-solid-adapter.md`](__internal__/zag-solid-adapter.md) §1). Every
+forked file carries an `@license` header and a row here.
 
 The fork was taken from **`@zag-js/solid@1.42.0`** and is maintained against **`1.43.0`**. `1.42.0`
 is the baseline a re-sync diffs against — a reader who only knows `1.43.0` would diff the wrong
@@ -88,7 +93,7 @@ claim — its sentences. Chakra's docs are covered by the same single MIT grant 
 the root `package.json`. MIT permits the copy outright; its one condition is that the notice
 travels with it, which is what the row below is. The entry is **directory-scoped** rather than one
 row per page, because the content tier is one derivative rather than 111
-([`__internal__/legal.md`](__internal__/legal.md) §2.6;
+([`CLAUDE.md`](CLAUDE.md), the five obligations;
 [`__internal__/decisions.md`](__internal__/decisions.md) **D-148**).
 
 **The brand assets are used, and they are used knowingly.** The docs site carries Chakra's bolt —
@@ -165,8 +170,8 @@ no sync obligation in either direction.
 hope-ui's own accessibility kernel is **not** carried over. Its `create-hide-outside.ts` is an
 Apache-2.0 derivative there, and at P1 it was expected to stay one here; the P2 gate struck it, along
 with the rest of that kernel, under the rule that this project adds no accessibility behavior beyond
-what Zag ships. See **Adobe React Spectrum** below and
-[`__internal__/legal.md`](__internal__/legal.md) §1.2.
+what Zag ships. See **Adobe React Spectrum** below, and
+[`__internal__/decisions.md`](__internal__/decisions.md) **D-12** for the reversal that closed the route.
 
 | File | Carried from |
 | ---- | ------------ |
@@ -189,11 +194,10 @@ No Apache-2.0 material enters this repository, and `licenses/LICENSE-APACHE-2.0.
 **not** present.
 
 **What would reopen it:** any decision to close a Zag accessibility gap in our own layer. That is a
-scope decision before it is a licensing one. If it is ever taken, this section becomes live and
-[`__internal__/legal.md`](__internal__/legal.md) §1.2 carries the checklist —
-`licenses/LICENSE-APACHE-2.0.txt` added to the repo **and** to the owning package's
-`package.json#files`, plus the Apache-2.0 §4(b) *"This file has been modified from the original"*
-line in every derived file's header, which MIT does not require and Apache-2.0 does.
+scope decision before it is a licensing one. If it is ever taken, this section becomes live and the
+checklist is this paragraph: `licenses/LICENSE-APACHE-2.0.txt` added to the repo **and** to the
+owning package's `package.json#files`, plus the Apache-2.0 §4(b) *"This file has been modified from
+the original"* line in every derived file's header, which MIT does not require and Apache-2.0 does.
 
 | File | Derived from |
 | ---- | ------------ |

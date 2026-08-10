@@ -11,8 +11,8 @@ paraphrasing it.
 
 **What it is not.** The apparatus (`testing.md`), the evidence (`prior-art.md`), the architecture
 (`plan.md`), the adapter spec (`zag-solid-adapter.md`), the component pattern
-(`component-blueprint.md`), the inventory (`roadmap.md`) or the licensing mechanism (`legal.md`). All
-seven are cited by section.
+(`component-blueprint.md`) or the inventory (`roadmap.md`). All six are cited by section, and the
+licensing mechanism is `CLAUDE.md`'s five obligations.
 
 **Vocabulary** is `testing.md`'s, once, and not repeated.
 
@@ -54,7 +54,7 @@ rather than the code (1.10, 1.11, 1.12, 1.13), to every commit. Enforced by the 
 | 1.4 | **Any `renderStyled` call whose `props` is a `mergeProps(...)` result also passes `styleSource`** (`component-blueprint.md` §4.1.1) | `check:style-contract` rule 2 |
 | 1.5 | **No runtime stylesheet.** No `insertRule`, `adoptedStyleSheets`, `new CSSStyleSheet`, `createElement("style")`, `document.head.append*` or `<style` in our own source (`CLAUDE.md`; `plan.md` §0) | `check:no-runtime-sheet` |
 | 1.6 | **No new dependency introduces a CSS-in-JS engine** anywhere in the closure (`CLAUDE.md`; `plan.md` §0) | `check:no-cij-manifest` |
-| 1.7 | **A derivative file carries its `@license` header, its `attribution.config.ts` entry, and its `NOTICE.md` rows — in the same commit as the code** (`legal.md` §2.3, §2.6; `zag-solid-adapter.md` §7.3). **This rule alone also covers `apps/*/src/`**: a derivative in an unpublished app owes the entry, the header and the root row, and `package: null` is how it drops the three that only reach an npm consumer (`docs-site.md` §3.3) | `check:license-headers`; `check:notice-rows`; `check:package-files` |
+| 1.7 | **A derivative file carries its `@license` header, its `attribution.config.ts` entry, and its `NOTICE.md` rows — in the same commit as the code** (`CLAUDE.md`, the five obligations; `zag-solid-adapter.md` §7.3). **This rule alone also covers `apps/*/src/`**: a derivative in an unpublished app owes the entry, the header and the root row, and `package: null` is how it drops the three that only reach an npm consumer (`docs-site.md` §3.3) | `check:license-headers`; `check:notice-rows`; `check:package-files` |
 | 1.8 | **A test file's name resolves to exactly one Vitest project.** A mis-suffixed test is a test that never runs and nothing says so | `check:test-projects` |
 | 1.9 | `mount()` is silent in every test the file adds — no `[STRICT_READ_UNTRACKED]`, no `[REACTIVE_WRITE_IN_OWNED_SCOPE]`. **A diagnostic is a defect, not a missing wrapper** (`component-blueprint.md` §2.1, §2.2) | `mount()` itself, in all three projects (`testing.md` §1.4) |
 | 1.10 | Commit message carries the rationale only — no `Co-Authored-By`, no *"Generated with"* trailer | `check:commit-trailers` |
@@ -140,7 +140,7 @@ Four lines, from `roadmap.md` §9.2:
 |---|---|---|
 | **B1** — reuse | **One machine, two public components, two slot recipes — twice.** A test mounts Dialog and Drawer, and Popover and ActionBar, and asserts *different computed styles for the same part under the same variant props*, from the same machine. And `check:bundle` asserts **zero new machine packages** for a five-component batch | The six `lazyMount`/`unmountOnExit` defaults, table-driven: closed ⇒ not in the DOM, for `action-bar`, `dialog`, `drawer`, `floating-panel`, `menu`, `tooltip` |
 | **B2** — the repeated part | **`roadmap.md` §7.2's five proofs, each a test, and none of them optional**: (1) the per-item context is created once per item and read by every descendant, with no part reaching past it into Root state; (2) the item props bag round-trips through the Root's getters unmodified; (3) **the context is built without an untracked read** — it is created inside a repeat callback, which Solid 2.0 labels a strict-read phase, so a `mount()` diagnostic there is a genuine defect; (4) **N items allocate the same `_hk` on server and client**, by round-trip fixture with a non-trivial list; (5) **the slot class map is resolved once on the Root, not once per item** — every `ItemTrigger` carries the same class string and the recipe function is invoked once, by spy | Only when all five hold does `component-blueprint.md` §3.2 gain **shape E**. **Until then no other component with a repeated part starts** — nine batched components depend on it. Also family M (**P6-B**), by pinned `grep -rl 'isUnmounted'` fixture |
-| **B3** — the field family | **A multi-part family with no machine** — the only one. Field's behavior is re-derived from the ARIA contract, and the mechanical proxy for *"never its expression"* is that `packages/components/src/field/**` has **no `@license` header and no `NOTICE.md` row**: if it needs one, the re-derivation failed (`legal.md` §1.4) | A Field ARIA conformance suite written from the spec; atomic recipes composed *into* a slot recipe, proven by computed style; `input-group`'s runtime `calc()` converted to route 3 and held there by rule 1 |
+| **B3** — the field family | **A multi-part family with no machine** — the only one. Field's behavior is re-derived from the ARIA contract, and the mechanical proxy for *"never its expression"* is that `packages/components/src/field/**` has **no `@license` header and no `NOTICE.md` row**: if it needs one, the re-derivation failed (`CLAUDE.md`, *Reference use*) | A Field ARIA conformance suite written from the spec; atomic recipes composed *into* a slot recipe, proven by computed style; `input-group`'s runtime `calc()` converted to route 3 and held there by rule 1 |
 | **B4** — form controls | **Three public components on one machine** (`radio-group`) — `check:bundle` closure delta of one. **`editable`'s top-level `size` is the live case for `styleSource`**: a browser test asserts the `<input>` carries `size="1"` *and* that its computed width tracks its content, which is the exact failure rule 1.4 prevents and which a class-name assertion cannot see | `swittch` as a generated function name (it compiles, or it does not); `toggle`'s absent recipe on §6's allow-list; Field's context consumed from outside its own family |
 | **B5** — collections | **The restrictive-content-model hazard, settled either way.** A `Select` docs example with a hidden native `<select>` — a static child and a dynamic sibling — **mounts** under `check:docs-examples`, which is a gate. What that gate cannot see is the `hydratable: false` compile, and with no story gate nothing here can (**D-133**): the hazard did not reproduce at `babel-preset-solid@2.0.0-beta.32` and the default backend is no longer Babel (**D-131**), so B5 owes a re-measurement and a verdict — *reproduced and fixed*, or *retired with its evidence* — rather than a passing job | `@zag-js/collection` and the `./collection` subpath; `aria-activedescendant`; `check:floating-zindex` re-run against a collection component (**P6-A**) |
 | **B6** — display & data | **The 15 machine-less slot recipes at volume**, over the shape B3 proved: 2.7 checks a slot list with no anatomy beside it | Two more allow-list entries (`clipboard`, and `codeBlock`'s machine styled by a second recipe); one machine styled by two recipes again (`progress`) |
@@ -161,11 +161,11 @@ Four lines, from `roadmap.md` §9.2:
 | 4.6 | Every `@license` header survives to `dist/`, and `comments.legal` is still pinned with its comment | `check:license-headers` |
 | 4.7 | Root and per-package `NOTICE.md` rows match the registry exactly, in both directions | `check:notice-rows` |
 | 4.8 | Every published package's `files` carries `LICENSE` and `NOTICE.md`, and every file an `@license` header promises is in it | `check:package-files` |
-| 4.9 | **The disclaimer is in every published package's README** — a publish-time gate, not a habit (`legal.md` §6 item 7) | `check:readme-disclaimer` |
+| 4.9 | **The disclaimer is in every published package's README** — a publish-time gate, not a habit (`decisions.md` §6 item 7) | `check:readme-disclaimer` |
 | 4.10 | The three dev-time resolution files agree | `check:resolution-sync` |
 | 4.11 | Bundle figures recorded against the budget; **per-batch closure growth, never a flat per-component number** | `check:bundle` |
 | 4.12 | ESM-only; changesets — and **no changeset while at `0.0.0`** (`plan.md` §8) | The release workflow's changeset step |
-| 4.13 | `legal.md` §1.1's license table re-verified and re-stamped with the date | The `publish` job's legal step (`legal.md` §5) |
+| 4.13 | `NOTICE.md`'s per-project license record re-verified and re-stamped with the date | The `publish` job's legal step (`testing.md` §11) |
 
 ---
 
@@ -229,7 +229,7 @@ them `plan.md` §0.2's silent unstyling shipped upstream on purpose, and a faith
   `cursor: pointer` the preset silently loses because its Switch recipe references a `cursor` token
   the preset registers as `swittch`. **Owes nothing**, and must not enter `attribution.config.ts`.
 - The `container` recipe **body**, ported from `@chakra-ui/react`'s `theme/recipes/container.ts` —
-  expression-tier under `legal.md` §1.4, the first such file outside the `zag-solid` fork, and the
+  expression-tier under `CLAUDE.md`, *Reference use*, the first such file outside the `zag-solid` fork, and the
   reason `@chakra-ui-solid/panda-preset` gains its first `NOTICE.md`.
 
 **And one upstream filing P7 owns**, now with a concrete defect rather than a spelling observation: a
@@ -247,8 +247,8 @@ that is a *gate* rather than a coding rule; 7.7 came with the ledger shard, 7.8 
 
 | # | Convention | Why no script | What *is* enforced |
 |---|---|---|---|
-| 7.1 | **The expression-tier judgement** — *"could a reader diff my file against theirs and see the same structure and sequence?"* (`legal.md` §2.1) | It is a reading, not a predicate. Nothing can decide it from source | The **consequence**: once declared in `attribution.config.ts`, every obligation is checked in both directions (`check:license-headers`, `check:notice-rows`, `check:package-files`) |
-| 7.2 | **Ark is `what`, never `how`**; Chakra's `styled-system/` is API shape only (`legal.md` §1.4; `plan.md` §0.5) | Same reason as 7.1 | For Field — the one component with no machine and no permission to copy — the proxy is real: **no header and no NOTICE row under `components/src/field/**`**, or the re-derivation failed (§3.2 B3) |
+| 7.1 | **The expression-tier judgement** — *"could a reader diff my file against theirs and see the same structure and sequence?"* (`CLAUDE.md`, *Reference use*) | It is a reading, not a predicate. Nothing can decide it from source | The **consequence**: once declared in `attribution.config.ts`, every obligation is checked in both directions (`check:license-headers`, `check:notice-rows`, `check:package-files`) |
+| 7.2 | **Ark is `what`, never `how`**; Chakra's `styled-system/` is API shape only (`CLAUDE.md`, *Reference use*; `plan.md` §0.5) | Same reason as 7.1 | For Field — the one component with no machine and no permission to copy — the proxy is real: **no header and no NOTICE row under `components/src/field/**`**, or the re-derivation failed (§3.2 B3) |
 | 7.3 | **Never strip Zag's `hidden` to work around a recipe's `display`**, except as a delegation whose new owner you can name (`component-blueprint.md` §6.3) | A strip is a destructure, and distinguishing a delegation from a workaround needs the reason | **Rule 2.13** covers every presence-gated part with a computed-style test in the failing configuration — which is where the rule bites. Strips on non-presence parts are review-only |
 | 7.4 | **Comments explain *why*, and read for a reader with no repo knowledge** (`CLAUDE.md`) | Unenforceable by construction | Biome catches nothing here. This is the one rule that is purely a review contract |
 | 7.5 | **Read the machine's prop list; do not invent one** (`component-blueprint.md` §2.4) | Partially enforced: where a machine exports `Props`, the component's interface extending it is a type error away from wrong. Chakra-only props are outside that | `tsc`, for the machine half |
@@ -475,7 +475,7 @@ The jobs are `testing.md` §11. The ownership is here.
   Chakra bump and a Zag bump in the same PR means the coverage check and the anatomy diff fail
   together and neither is diagnosable. Versions are pinned exactly in the workspace catalog, because
   a floating range turns a reviewable upstream change into an unreproducible local one
-  (`legal.md` §5).
+  (`testing.md` §11).
 - **Who reads the output:** the PR's human reviewer, and each check posts its diff as the job
   summary, so reading the diff *is* the review rather than an errand beside it.
 - **They fail rather than warn.** `prior-art.md` §8.1: a check verified by nobody running it is
@@ -484,7 +484,7 @@ The jobs are `testing.md` §11. The ownership is here.
   hygiene: the **Zag minor → anatomy diff** is what keeps `brief-plan` §8 assumption 2 *closed* rather
   than merely answered once, and the **preset minor → coverage check** is not optional, because under
   the no-runtime-CSS rule a removed variant silently unstyles rather than erroring.
-- **Any upstream major** → the legal re-check and a re-stamped `legal.md` §1.1 table (rule 4.13).
+- **Any upstream major** → the legal re-check and a re-stamped `NOTICE.md` (rule 4.13).
 
 ---
 
@@ -492,7 +492,7 @@ The jobs are `testing.md` §11. The ownership is here.
 
 > **Every row marked P9 was applied at P9**, each in exactly one place: row 1 →
 > `zag-solid-adapter.md` §6.4, §8.2 · row 3 → `plan.md` §5.2 · row 4 → `CLAUDE.md`'s document index ·
-> row 5 → `legal.md` §6 items 6 and 7 · row 6 → `legal.md` §2.6 · row 7 →
+> row 5 → `decisions.md` §6 items 6 and 7 · row 6 → `CLAUDE.md`, the five obligations · row 7 →
 > `component-blueprint.md` §1.3 · row 8 → `plan.md` §0.4 · row 9 → `plan.md` §12 row 3. Row 2 was
 > P8's and is discharged in `docs-plan.md` §1.2. The full log is `decisions.md` §7; this table stays
 > as the record of what was carried.
@@ -503,8 +503,8 @@ The jobs are `testing.md` §11. The ownership is here.
 | **2** | `docs-plan.md` §2 **D-2**: does the route-3 lint rule exist by the time the static-extraction page ships? | **Yes, by five steps — with one qualification about whose source it runs on.** The answer and its consequences for the page are `testing.md` §6.5 | **P8** — §1.2 section 4 loses its hedge and gains a scope sentence; section 6 gains the three consumer-reachable mechanisms |
 | **3** | `plan.md` §5.2: `internal-test-utils` depends on `system` | **Right about the direction, early about the date.** At milestone one the harness touches no styling and that edge must not exist; it appears at milestone 3 (`testing.md` §1.8) | **P9** |
 | **4** | `brief-plan` §4.1 doc 6: *"per-file and per-component DoD"* | **Four tiers.** Per **batch** is where a batch's proof stops being prose (`roadmap.md` §13 row 8), and per **release** is where the distribution and attribution checks live | **P9** |
-| **5** | `legal.md` §6 items 6 and 7 are open, assigned to P7 | **Closed here, by name:** `check:license-headers`, `check:notice-rows`, `check:package-files` for item 6; `check:readme-disclaimer` as a **publish-time** gate for item 7 | **P9** — `legal.md`'s open-items table |
-| **6** | `legal.md` §2.6 describes a per-file checklist; nothing names where the list of derivatives lives | **`attribution.config.ts` at the repo root** is the registry every attribution check reads — eight entries today, seven fork files plus the `container` recipe delta | **P9** |
+| **5** | `decisions.md` §6 items 6 and 7 are open, assigned to P7 | **Closed here, by name:** `check:license-headers`, `check:notice-rows`, `check:package-files` for item 6; `check:readme-disclaimer` as a **publish-time** gate for item 7 | **P9** — `legal.md`'s open-items table |
+| **6** | `CLAUDE.md`, the five obligations describes a per-file checklist; nothing names where the list of derivatives lives | **`attribution.config.ts` at the repo root** is the registry every attribution check reads — eight entries today, seven fork files plus the `container` recipe delta | **P9** |
 | **7** | `brief-plan` §2.10 / `component-blueprint.md` §1.3: Storybook is a dev harness and a canary | **It is also a required CI job.** `test:storybook` builds and drives every story; it must be Storybook, not `composeStories` under Vitest, because the two failures it exists for are invisible to any other compile (`testing.md` §7.3, §7.4) | **P9** |
 | **8** | `roadmap.md` §13 row 1b: `plan.md` §0.4 gains a `React→Solid` row — Portal's `disabled` is absent | **Recorded, not written.** `plan.md` is P3's document and editing it here would put the same correction in two places, exactly as with row 10 below | **P9** |
 | **9** | `plan.md` §12 row 3: *"a **three-rung** fallback ladder (§1)"* | **Stale, and left stale on purpose.** `a8b4995` rewrote §1.5 to **two** rungs — §4.4 removed the prebuilt-stylesheet floor. `roadmap.md` §13 row 10 flagged it; P7 carries it forward unedited for the same reason | **P9** — the reconciliation pass |

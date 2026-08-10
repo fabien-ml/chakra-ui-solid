@@ -195,7 +195,7 @@ jobs:
       # unmarked block comment, so an `@license` header that lost its tag — or a `comments.legal`
       # someone unpinned — vanishes from `dist/` and the published package becomes an
       # unattributed derivative of the project we are porting, with a green build
-      # (`legal.md` §2.3).
+      # (`CLAUDE.md` obligation 5).
       - run: pnpm check:license-headers --dist
       - run: pnpm check:notice-rows
       - run: pnpm check:package-files

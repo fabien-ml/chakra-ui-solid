@@ -4,7 +4,7 @@
 // every file an `@license` header promises is actually in it (`testing.md` §9, DoD 4.8).
 //
 // The default `files` field ships `dist` and nothing else, which makes the header's "distributed
-// with this package as LICENSE" clause the easiest promise in the repo to break (`legal.md` §2.5).
+// with this package as LICENSE" clause the easiest promise in the repo to break (`CLAUDE.md` obligation 4).
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";

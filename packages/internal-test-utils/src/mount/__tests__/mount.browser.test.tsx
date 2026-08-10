@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/internal-test-utils/src/mount/__tests__/mount.browser.test.tsx`. Same author, MIT —
-// ours, forked on copy (`legal.md` §1.6).
+// ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { createSignal } from "solid-js";
 import { describe, expect, it, vi } from "vitest";

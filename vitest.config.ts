@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f), `vitest.config.ts`, with the globs lifted into
 // `vitest-projects.ts` so `check:test-projects` reads the same declaration. Same author, MIT —
-// ours, forked on copy (`legal.md` §1.6).
+// ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { playwright } from "@vitest/browser-playwright";
 import solid from "vite-plugin-solid";

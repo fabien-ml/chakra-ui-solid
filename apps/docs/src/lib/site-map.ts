@@ -34,8 +34,8 @@ export interface DocLinks {
   recipe?: string;
   /** Its `@zag-js/*` machine, or absent where it has none. */
   machine?: string;
-  /** The upstream page for the same component — an outward link, and `legal.md` §3.3.3 item 2
-   * makes it a virtue: a reader who wanted the official project leaves in one click. */
+  /** The upstream page for the same component — an outward link, and `docs-site.md` §3.4
+   * row 4 makes it a virtue: a reader who wanted the official project leaves in one click. */
   chakra?: string;
 }
 

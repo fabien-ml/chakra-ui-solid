@@ -20,7 +20,7 @@ this document departs from the plan so P4 and P5 get re-planned before P4 begins
 > record is `decisions.md`.
 
 **Two things settled earlier and not reopened here.** The brand is `chakra-ui-solid`, scope
-`@chakra-ui-solid` (`legal.md` §3.3.3). The **port rule** is *no accessibility behavior beyond what
+`@chakra-ui-solid` (`decisions.md` D-01). The **port rule** is *no accessibility behavior beyond what
 Zag ships, nothing invented that Chakra UI v3 does not have, SolidJS idioms excepted*
 (`prior-art.md` §8.2).
 
@@ -113,7 +113,7 @@ paragraph used to carry was wrong by four.
 ### 0.5 Consequence for the reference policy
 
 `@chakra-ui/react`'s `src/styled-system/` (46 files plus a `generated/` directory) **is an Emotion
-serializer.** Reference for **API shape and naming only — never implementation** (`legal.md` §1.4).
+serializer.** Reference for **API shape and naming only — never implementation** (`CLAUDE.md`, *Reference use*).
 Reading `css.types.ts` to learn what `SystemStyleObject` accepts is correct; porting its resolution
 pipeline violates §0 long before it raises a licensing question. §2 is where that line does real
 work.
@@ -187,7 +187,7 @@ declaration is the same merge path applied one level deeper.
   `staticCss` blocks are not documented and not verifiable here, so the asymmetry decides it.
 - **It is granular without a second registry.** Adding a recipe delta later touches one object, not
   an object and a name list that must agree.
-- **It never re-emits a recipe body**, which is the condition `legal.md` §1.5 and §6 item 3 attached
+- **It never re-emits a recipe body**, which is the condition `CLAUDE.md`, *Reference use*, attaches
   to *"depend, do not vendor"*. That condition is met: our preset references recipe **keys**, never
   recipe **contents**.
 
@@ -228,7 +228,7 @@ export default definePreset({
 
 `Object.keys(chakraPreset.theme.recipes)` reads the key list off the imported preset object rather
 than hard-coding 74 names, so a Chakra release that adds a recipe is covered by the version bump
-alone — which is the whole point of `legal.md` §1.5's *depend, do not vendor*.
+alone — which is the whole point of `CLAUDE.md`, *Reference use*'s *depend, do not vendor*.
 
 **The ten `colorPalette` values**, measured from `semantic-tokens/colors.ts`: `gray`, `red`, `orange`,
 `green`, `blue`, `yellow`, `teal`, `purple`, `pink`, `cyan`. (`bg`, `fg` and `border` are semantic
@@ -360,7 +360,7 @@ grep -oE 'shorthand: \[[^]]*\]' __reference-impl__/chakra-ui/packages/react/src/
 The mechanism stands — the static key list, the lazy value reads in the `class` getter, the `css`-key
 exclusion, the precedence order, and the SSR-safe pure-computation property are all correct as
 written (`prior-art.md` §2.5). Three prop-surface items are missing, all **API shape** and therefore
-free to adopt (`legal.md` §1.4):
+free to adopt (`CLAUDE.md`, *Reference use*):
 
 | # | Chakra has | `renderStyled` today | Change |
 |---|---|---|---|
@@ -389,10 +389,10 @@ be parity; neither changes the decision.
 counts:
 
 1. It is a **data table reproduced from `@chakra-ui/react`'s Emotion runtime** — expression tier under
-   `legal.md` §1.4, owing an `@license` header and root + package `NOTICE.md` rows, on a file we would
+   `CLAUDE.md`, *Reference use*, owing an `@license` header and root + package `NOTICE.md` rows, on a file we would
    then maintain against every Chakra release.
 2. It would **override** the seven utilities the Chakra preset defines, silently forking the package
-   we depend on and defeating `legal.md` §1.5's tracking argument.
+   we depend on and defeating `CLAUDE.md`, *Reference use*'s tracking argument.
 3. Most of the 95 are already Panda's — same author, largely the same set — so the bulk of the work is
    redundant, and the redundant part is the part that goes stale.
 4. `isCssProperty` is generated from config, so every added utility widens the prop surface the factory
@@ -452,7 +452,7 @@ declared `presets: [basePreset]` (`prior-art.md` §2.2).
 
 `@pandacss/preset-base` therefore becomes a **dependency of `@chakra-ui-solid/panda-preset`**,
 alongside `@chakra-ui/panda-preset`. Both are MIT and config-only; the preset package's runtime cost
-stays zero (`legal.md` §1.5).
+stays zero (`CLAUDE.md`, *Reference use*).
 
 Rejected: **drop `eject`.** That readmits `@pandacss/preset-panda`'s default theme, which is the
 thing `eject` exists to remove. Rejected: **leave the fix in the config.** It works, and it fails
@@ -461,8 +461,8 @@ open — a consumer who omits it gets an unstyled library with no error, which i
 ### 3.3 `@chakra-ui-solid/panda-preset` — what it is and what it exports
 
 A **public, config-only package with zero CSS**, depending on `@chakra-ui/panda-preset` and
-`@pandacss/preset-base`. It is the whole "look'n'feel for free" premise and the package `legal.md`
-§1.5 rules must **depend, not vendor**. Two exports:
+`@pandacss/preset-base`. It is the whole "look'n'feel for free" premise, and the package `CLAUDE.md`
+rules must **depend, not vendor**. Two exports:
 
 **One subpath, `.`, with two exports.** There is no `./config`: a consumer who needs the preset and a
 consumer who needs the config fragment are the same consumer, and a second subpath only adds a way to
@@ -478,7 +478,7 @@ opt-in of §3.8 is a change of argument rather than a change of call shape. One 
 object-or-function ambiguity.
 
 Everything the preset adds is a **key** on top of the official preset — never a recipe body, never a
-token table. That is the condition `legal.md` §6 item 3 asked P3 to check, and it holds **for the
+token table. That is the condition `decisions.md` §6 item 3 asked P3 to check, and it holds **for the
 `staticCss` and alias deltas above**.
 
 **P6 added two deltas that this sentence does not cover, and they are not the same tier**
@@ -487,7 +487,7 @@ token table. That is the condition `legal.md` §6 item 3 asked P3 to check, and 
 | Delta | Tier | Consequence |
 |---|---|---|
 | `theme.extend.tokens.cursor.switch = { value: "pointer" }` (§1.3) | One word. **Owes nothing** | Must **not** enter `attribution.config.ts` — a check demanding a header for a token value would be wrong (`testing.md` §9) |
-| The **`container` recipe body**, ported from `@chakra-ui/react`'s `theme/recipes/container.ts` | **Expression** under `legal.md` §1.4 — the first such file outside the `zag-solid` fork | An `@license` header, a registry entry, and the preset package's first `NOTICE.md`. It lands with the Container component at step 6 and retires that component's coverage allow-list entry in the same commit |
+| The **`container` recipe body**, ported from `@chakra-ui/react`'s `theme/recipes/container.ts` | **Expression** under `CLAUDE.md`, *Reference use* — the first such file outside the `zag-solid` fork | An `@license` header, a registry entry, and the preset package's first `NOTICE.md`. It lands with the Container component at step 6 and retires that component's coverage allow-list entry in the same commit |
 
 *Depend, do not vendor* still holds as the rule; the `container` recipe is the one measured exception,
 and it is exceptional because the preset is exactly one recipe short of Chakra's runtime theme.
@@ -882,10 +882,10 @@ The split, from `prior-art.md` §8.3:
 
 | Concern | Owner |
 |---|---|
-| `present`, `onExitComplete`, `immediate`; `skip` / `present` / `setNode` / `unmount`; **animation-name detection and `animationend` waiting** | **`@zag-js/presence`** — a Zag machine we consume through **our own adapter**, exactly like `dialog` or `listbox`. Not a special case, and **not Ark**: Ark is not a dependency and never will be (`legal.md` §1.4) |
+| `present`, `onExitComplete`, `immediate`; `skip` / `present` / `setNode` / `unmount`; **animation-name detection and `animationend` waiting** | **`@zag-js/presence`** — a Zag machine we consume through **our own adapter**, exactly like `dialog` or `listbox`. Not a special case, and **not Ark**: Ark is not a dependency and never will be (`CLAUDE.md`, *Reference use*) |
 | `lazyMount`, `unmountOnExit`, `skipAnimationOnMount`, `hideMode`; the `data-state` + `hidden` prop getter; the gate that renders `null` when unmounted | **Ours to write** — ~30 lines of render strategy that is not in the machine. Ark invents these and Chakra's public API exposes them (`DialogRoot` ships `defaultProps: { unmountOnExit: true, lazyMount: true }`), so parity requires them |
 
-Reading Ark for the prop names and semantics is **API-shape tier and owes nothing** (`legal.md` §1.4);
+Reading Ark for the prop names and semantics is **API-shape tier and owes nothing** (`CLAUDE.md`, *Reference use*);
 reproducing its expression would not be. Three places the Solid version is simply smaller:
 `wasEverPresent` is a closure variable rather than a `useRef`; `useEvent(props.onExitComplete)` is a
 stale-closure workaround that deletes outright because Solid props are already live; and
@@ -1010,7 +1010,7 @@ Carried from hope-ui and proven against Solid 2.0 (`prior-art.md` §2.6, `brief-
   to rediscover.
 - **`comments.legal` pinned**, and it is load-bearing for attribution rather than cosmetic: an
   untagged provenance paragraph gets stripped by the build, which is exactly the state the `zag-solid`
-  fork is in today (`legal.md` §1.3, §2.3). The seven `@license` headers the fork owes depend on this
+  fork is in today (`zag-solid-adapter.md` §1; `CLAUDE.md` obligation 5). The seven `@license` headers the fork owes depend on this
   setting surviving.
 - **ESM-only.** Changesets, with **no changeset while at `0.0.0`**.
 - Document **`ssr.noExternal`** for SolidStart consumers.
@@ -1096,7 +1096,7 @@ is not, and P6's roadmap should sequence it accordingly.
 |---|---|---|---|
 | **3** | Panda `1.12.0` ↔ `@chakra-ui/panda-preset@3.36.1` (the preset declares `@pandacss/types@^1.4.2`) | Open. Untested anywhere visible — hope-ui ran Panda against a *hand-authored* preset | **Step 3**, first `panda codegen` |
 | **4** | `staticCss` in a preset covers internally-emitted recipe variants | **Narrowed** by `prior-art.md` §10.2 row 11 — the atomic half is demonstrated in production at `e9c2f81`; only the recipe half is open. §1's whole design targets it | **Step 4 gate** |
-| **7** | npm scope availability | **CLOSED at P1.** `@chakra-ui-solid` is owned (`legal.md` §3.3.1) | — |
+| **7** | npm scope availability | **CLOSED at P1.** `@chakra-ui-solid` is owned (`decisions.md` D-01) | — |
 | **8** | Whether any Zag `1.43.0` machine injects a stylesheet at runtime | Open, and a §0 **prerequisite** rather than an assumption to carry | **Step 2**, when `@zag-js/*` first enters the tree |
 | **9** | The preset's `data-*` vocabulary already matches Zag's | Spot-checked at P2 across 6 of 56 slot recipes, all matching (`prior-art.md` §4.3). The full diff is *"the single cheapest check with the largest downside if skipped"* | **Step 4** |
 | **11** | `createPresence` composes with Chakra's preset animations | **CLOSED at P2, resolved the other way.** 9 of 56 slot recipes use `animationName`; zero use `transitionProperty` in an `_open`/`_closed` block, so `@zag-js/presence` is the correct mechanism (`prior-art.md` §8.2). §6 records the consequence | — |

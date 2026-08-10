@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f), `tsdown.config.base.ts`, with `deps.neverBundle`
 // re-scoped to this repo and extended with the Panda tail. Same author, MIT — ours, forked on
-// copy (`legal.md` §1.6).
+// copy (`CLAUDE.md`, *Reference use*).
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -110,7 +110,7 @@ export function createTsdownConfig(packageDir: string, options: TsdownOptions = 
     // published package becomes an unattributed derivative of the project we are porting, with a
     // green build. Unpinning this is a one-word edit nobody reviews, which is why
     // `check:license-headers` asserts the setting *and this comment* are still here
-    // (`legal.md` §2.3; `testing.md` §9).
+    // (`CLAUDE.md` obligation 5; `testing.md` §9).
     outputOptions(options) {
       options.sourcemap = false;
       options.comments = {

@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/primitives/src/__tests__/solid-contract.ssr.test.tsx`. Same author, MIT — ours, forked
-// on copy (`legal.md` §1.6).
+// on copy (`CLAUDE.md`, *Reference use*).
 
 import { Dynamic, type JSX, renderToStream } from "@solidjs/web";
 import { children, createUniqueId, Show } from "solid-js";

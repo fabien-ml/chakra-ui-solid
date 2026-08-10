@@ -79,8 +79,8 @@ describe("check:doc-index", () => {
     });
 
     it("skips an unnumbered heading rather than inventing an anchor for it", () => {
-      // `legal.md` has one: `#### Why the route is closed`. Nothing cites it, because there is
-      // nothing to cite it by.
+      // `decisions.md` §6.1 has four: `#### What the pass found` and siblings. Nothing
+      // cites them, because there is nothing to cite them by.
       expect(parseSections(lines("## Unnumbered", "### 1.1 Numbered"))).toHaveLength(1);
     });
 

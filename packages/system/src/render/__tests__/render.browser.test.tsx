@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/primitives/src/render/__tests__/render.browser.test.tsx`, alongside the source it
-// tests. Same author, MIT — ours, forked on copy (`legal.md` §1.6).
+// tests. Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { expectNoA11yViolations, mount } from "@chakra-ui-solid/internal-test-utils";
 import { omit } from "solid-js";

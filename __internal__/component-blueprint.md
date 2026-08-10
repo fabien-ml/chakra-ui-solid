@@ -396,7 +396,7 @@ always beats a class** — which is what makes §5's route 3 work.
 
 ### 3.5 The `render` prop
 
-Polymorphism is a `render` prop, never `asChild` (`legal.md` §1.4). It is a **function** receiving the
+Polymorphism is a `render` prop, never `asChild` (`CLAUDE.md`, *Reference use*). It is a **function** receiving the
 computed props and returning the element — never a JSX element, because a Solid JSX element is an
 already-constructed DOM node by the time it reaches us and Solid has no `cloneElement`, so accepting
 one could only mean dropping every computed prop.
@@ -715,7 +715,7 @@ it bites hardest.
 | `present`, `onExitComplete`, `immediate`; `skip`/`present`/`setNode`/`unmount`; **animation-name detection and `animationend` waiting** | **`@zag-js/presence`** |
 | `lazyMount`, `unmountOnExit`, `skipAnimationOnMount`, `hideMode`; the `data-state` + `hidden` prop getter; the gate that renders nothing when unmounted | **Ours** — ~30 lines of render strategy that is not in the machine. Ark invents them and Chakra's public API exposes them, so parity requires them. `hideMode` is the one we do not ship (§7.3) |
 
-Reading Ark for the prop names and semantics is API-shape tier and owes nothing (`legal.md` §1.4).
+Reading Ark for the prop names and semantics is API-shape tier and owes nothing (`CLAUDE.md`, *Reference use*).
 Reproducing its expression would not be.
 
 **The plan's objection is closed and does not return.** `brief-plan` §8 assumption 11 doubted that

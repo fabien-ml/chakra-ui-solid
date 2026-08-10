@@ -1,6 +1,6 @@
 // Carried from hope-ui `ef91b69`,
 // `packages/primitives/src/zag-solid/__tests__/merge-props.test.ts`. Same author, MIT — ours,
-// forked on copy (`legal.md` §1.6). Upstream's 9 cases plus three laziness cases the `$PROXY`
+// forked on copy (`CLAUDE.md`, *Reference use*). Upstream's 9 cases plus three laziness cases the `$PROXY`
 // rewrite made assertable (`zag-solid-adapter.md` §6.2).
 
 import { createMemo, createRoot, createSignal, flush, merge } from "solid-js";

@@ -4,7 +4,7 @@
  * is ours to edit here.
  */
 
-/** `legal.md` §4.1's docs-home descriptor, leading positive. */
+/** The docs-home descriptor, leading positive — the form settled at the P1 gate (`decisions.md` D-01). */
 export const SITE_NAME = "chakra-ui-solid";
 
 export const SITE_DESCRIPTION =
@@ -28,8 +28,8 @@ export const PANDA_PREREQUISITE =
   "Requires Panda CSS in your build. Not optional — this library publishes no CSS.";
 
 /**
- * `legal.md` §3.4's disclaimer, verbatim. Required near the top of the docs home **and** in the
- * footer of every page (`legal.md` §3.3.3 item 1), and the link to chakra-ui.com is part of the
+ * The disclaimer, verbatim (`docs-site.md` §3.4 row 4). Required near the top of the docs home **and** in the
+ * footer of every page (`docs-site.md` §3.4 row 4), and the link to chakra-ui.com is part of the
  * wording rather than a courtesy — it is what turns a disclaimer into a redirect.
  *
  * Split at the link so the link is a real anchor rather than a string containing a URL.

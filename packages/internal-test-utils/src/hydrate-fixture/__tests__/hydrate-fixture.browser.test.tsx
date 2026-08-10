@@ -1,6 +1,6 @@
 // Carried from hope-ui `main` (1dc059f),
 // `packages/internal-test-utils/src/hydrate-fixture/__tests__/hydrate-fixture.browser.test.tsx`.
-// Same author, MIT — ours, forked on copy (`legal.md` §1.6).
+// Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import probeServerHtml from "virtual:hydration-fixture?id=hydrate-fixture";
 import { describe, expect, it } from "vitest";

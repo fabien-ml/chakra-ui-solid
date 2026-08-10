@@ -34,7 +34,7 @@ const colorPalettes = [
  * preset declares zero `compoundVariants` (`plan.md` §1.2).
  *
  * It rides `theme.extend`'s deep merge, the same path a consumer uses to override a recipe, so it
- * adds one key to each inherited body and re-emits none of them (`legal.md` §1.5).
+ * adds one key to each inherited body and re-emits none of them (`CLAUDE.md`, *Reference use*).
  */
 function staticCssForEvery(keys: string[]): Record<string, { staticCss: ["*"]; jsx: string[] }> {
   return Object.fromEntries(
