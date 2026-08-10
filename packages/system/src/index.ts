@@ -4,6 +4,14 @@ export type {
   RootNode,
 } from "./environment/environment";
 export { EnvironmentProvider, useEnvironmentContext } from "./environment/environment";
+export type {
+  Chakra,
+  ChakraComponent,
+  ChakraFactoryOptions,
+  ChakraStylingProps,
+  HTMLChakraProps,
+} from "./factory/factory";
+export { chakra } from "./factory/factory";
 export type { CreateRegisteredIdOptions } from "./internal/create-registered-id";
 export { createRegisteredId } from "./internal/create-registered-id";
 export type { Locale, LocaleProviderProps, UseFilterProps, UseFilterReturn } from "./locale/locale";

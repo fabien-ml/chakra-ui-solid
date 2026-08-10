@@ -37,7 +37,7 @@ export interface ChakraConfigOptions {
  * export default defineConfig({
  *   ...chakraConfig(),
  *   include: [
- *     "./node_modules/@chakra-ui-solid/components/dist/panda.buildinfo.json",
+ *     "./node_modules/@chakra-ui-solid/components/dist/**\/*.jsx",
  *     "./src/**\/*.{ts,tsx}",
  *   ],
  *   outdir: "styled-system-app",
@@ -47,10 +47,12 @@ export interface ChakraConfigOptions {
  * **Spreading is shallow**, so any key the consumer re-declares replaces ours outright. That is
  * intended for `include` and `outdir`, and measured per key everywhere else (`plan.md` §3.4):
  *
- * - `presets` — a re-declare drops **every** Chakra token and recipe. Name the call and spread ours
- *   back in: `presets: [...(chakra.presets ?? []), myPreset]`.
+ * - `presets` — a re-declare drops **every** Chakra token and recipe. Name the call (`const base =
+ *   chakraConfig()`) and spread ours back in: `presets: [...(base.presets ?? []), myPreset]`.
  * - `staticCss` — the same wipe, and only reachable when the consumer passed `responsive`, because
  *   that is the one case where this function writes a top-level `staticCss` block of its own.
+ * - `importMap` — a re-declare unregisters the `chakra` factory, and every `<chakra.button bg="…">`
+ *   then emits nothing at all. Add to `base.importMap` rather than replacing it.
  * - `theme` — safe under `theme.extend`, which merges. A bare `theme` drops about half of Chakra's
  *   tokens.
  *
@@ -73,13 +75,28 @@ export function chakraConfig(options: ChakraConfigOptions = {}): Config {
     // capitalized JSX component in the consumer's source, with no factory and no registration —
     // which is the only reason `<Box p={4}>` in their files produces a rule at all.
     jsxFramework: "solid",
+    // A **different knob** from `jsxFramework`, and the one with the silent failure. Panda decides
+    // a tag is styled by `isPandaComponent(tag) || isUpperCase(tag)`, and `chakra.button` is
+    // lowercase — so without this the fallback declines it and every `<chakra.button bg="…">` in
+    // the consumer's source produces ZERO rules, with no error and an unstyled page. It also
+    // renames the three generated JSX types to Chakra v3's own names (`HTMLChakraProps`,
+    // `ChakraComponent`, `ChakraVariantProps`).
+    jsxFactory: "chakra",
     // Must match the setting our published `styled-system` was generated with. See above.
     hash: false,
     preflight: true,
     // Panda's external-package model: this tells the consumer's extractor that the styled-system
     // API it is looking for lives in our published package rather than in a directory they
     // generated.
-    importMap: "@chakra-ui-solid/styled-system",
+    //
+    // The `jsx` half is the other half of `jsxFactory` above, and it is just as load-bearing:
+    // Panda registers a factory only from an import whose NAME is the `jsxFactory` **and** whose
+    // MODULE is listed here. `chakra` ships from `@chakra-ui-solid/system` and is re-exported by
+    // `@chakra-ui-solid/components`, so a consumer writes either import and both register.
+    importMap: [
+      "@chakra-ui-solid/styled-system",
+      { jsx: ["@chakra-ui-solid/system", "@chakra-ui-solid/components"] },
+    ],
   };
 
   const responsive = expandResponsive(options.responsive);

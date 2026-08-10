@@ -26,6 +26,10 @@ export default defineConfig({
   // capitalized JSX component with no factory and no registration. The generated `jsx/index`
   // factory itself targets Solid 1.x and is never exported (`prior-art.md` §2.3).
   jsxFramework: "solid",
+  // Mirrors `chakraConfig()`, and for the same reason: `chakra.button` is lowercase, so without
+  // this Panda's `isUpperCase` fallback declines the tag and every factory element in our own
+  // source — tests and stories included — emits zero rules with no error.
+  jsxFactory: "chakra",
   // Unhashed class names, and it is load-bearing across the library/consumer boundary rather than
   // merely tidy: our published runtime computes `p_4`, and a consumer whose config hashes gets a
   // stylesheet carrying different names — every class we emit is then absent from their sheet,
@@ -33,14 +37,22 @@ export default defineConfig({
   hash: false,
   preflight: true,
   // **Our own source only, for the dev stylesheet** Storybook and the browser tests render
-  // against. It is not the consumer's extraction channel — that is the buildinfo `panda ship`
-  // writes, which they add to their own `include`. Keeping the two apart is what stops a green
-  // local suite from hiding a broken consumer (`plan.md` §4.1).
+  // against. It is not the consumer's extraction channel — that is our published `dist/`, which
+  // they add to their own `include`. Keeping the two apart is what stops a green local suite from
+  // hiding a broken consumer (`plan.md` §4.1).
   include: ["../{system,components}/src/**/*.{ts,tsx}"],
   // Set explicitly so an inherited default cannot quietly drop a directory.
   exclude: [],
   outdir: "styled-system",
-  // `importMap` is deliberately unset. It is the *consumer's* knob — it points their extractor at
-  // our published package — and this config generates into its own package and imports by
-  // relative path.
+  // The same `importMap` a consumer gets from `chakraConfig()`, and it has to be written out here
+  // rather than left to the default. The default is `<outdir>/…`, which our `css()` imports match
+  // only by accident — `"@chakra-ui-solid/styled-system/css".includes("styled-system/css")` — and
+  // which the factory does not match at all: `chakra` is registered only when the module it was
+  // imported from is in `importMap.jsx`, and ours is imported from `@chakra-ui-solid/system`. Left
+  // unset, `jsxFactory` above would be inert here and every `<chakra.*>` in our own source would
+  // emit nothing.
+  importMap: [
+    "@chakra-ui-solid/styled-system",
+    { jsx: ["@chakra-ui-solid/system", "@chakra-ui-solid/components"] },
+  ],
 });

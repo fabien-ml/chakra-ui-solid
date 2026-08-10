@@ -250,7 +250,7 @@ export const docsNav: NavItem[] = [
           // Ours, with no upstream counterpart, and the loudest page on the site
           // (`docs-site.md` §2.3). Second, because the overview's first link is this page.
           { title: "Static Extraction", url: "static-extraction" },
-          { title: "Styled Factory", url: "styled-factory" },
+          { title: "Chakra Factory", url: "chakra-factory" },
           { title: "Responsive Design", url: "responsive-design" },
           { title: "CSS Variables", url: "css-variables" },
           { title: "Dark Mode", url: "dark-mode" },

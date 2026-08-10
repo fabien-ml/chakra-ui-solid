@@ -26,9 +26,19 @@ function stylesheetPath(): string {
   return join(packageRoot, "styled-system", "styles.css");
 }
 
+const parsedByCss = new Map<string, Root>();
 let parsed: Root | undefined;
 
-function stylesheet(): Root {
+function stylesheet(css?: string): Root {
+  if (css !== undefined) {
+    let parsedCss = parsedByCss.get(css);
+    if (parsedCss === undefined) {
+      parsedCss = postcss.parse(css);
+      parsedByCss.set(css, parsedCss);
+    }
+    return parsedCss;
+  }
+
   if (parsed !== undefined) {
     return parsed;
   }
@@ -64,15 +74,20 @@ function isConditional(node: ChildNode): boolean {
 }
 
 /**
- * Every declaration the generated stylesheet applies to `.<className>` unconditionally — no
- * `@media`, no `@supports`. Returns `{}` when the class has no rule at all, which is the failure
- * worth reporting.
+ * Every declaration a stylesheet applies to `.<className>` unconditionally — no `@media`, no
+ * `@supports`. Returns `{}` when the class has no rule at all, which is the failure worth
+ * reporting.
+ *
+ * `css` names the sheet to read, and defaults to our own generated one. A **consumer fixture**
+ * passes its own CSS text instead: whether *their* Panda run emitted a rule is a different question
+ * from whether ours did, and it is the only one that catches a config the consumer inherits and we
+ * never exercise.
  */
-export function declarationsForClass(className: string): Record<string, string> {
+export function declarationsForClass(className: string, css?: string): Record<string, string> {
   const wanted = `.${className}`;
   const declarations: Record<string, string> = {};
 
-  stylesheet().walkRules((rule) => {
+  stylesheet(css).walkRules((rule) => {
     if (isConditional(rule)) {
       return;
     }
@@ -95,12 +110,12 @@ export function declarationsForClass(className: string): Record<string, string> 
  * the rules in the sheet — so this is a coarse answer, and precise cascade questions belong in the
  * browser project where the engine answers them.
  */
-export function declarationsForClassList(classList: string): Record<string, string> {
+export function declarationsForClassList(classList: string, css?: string): Record<string, string> {
   return classList
     .split(/\s+/)
     .filter(Boolean)
     .reduce<Record<string, string>>(
-      (all, className) => Object.assign(all, declarationsForClass(className)),
+      (all, className) => Object.assign(all, declarationsForClass(className, css)),
       {},
     );
 }

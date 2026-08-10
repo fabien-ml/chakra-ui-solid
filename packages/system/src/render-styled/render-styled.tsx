@@ -35,7 +35,8 @@ export interface RenderStyledOptions<
   /**
    * The full incoming props bag: DOM props + style props (`p`, `bg`, `_hover`, …) + `class` /
    * `style` / the `css` escape hatch. Style props, `class`, `css` and `unstyled` are consumed here;
-   * everything else is forwarded verbatim.
+   * everything else is forwarded verbatim, unless {@link RenderStyledOptions.forwardProp} says
+   * otherwise.
    */
   props: Props;
   /** Consumer render-prop override; receives the computed props. */
@@ -43,12 +44,45 @@ export interface RenderStyledOptions<
   /** A component-internal ref setter; `renderElement` merges it with the consumer's own `ref`. */
   ref?: JSX.RefCallback<El>;
   /**
-   * Class(es) placed *below* style props in the cascade — the seam the recipe layer plugs into.
-   * `createSlotClasses(...)().content` is the usual argument. Suppressed when the caller passes
-   * `unstyled`.
+   * Class(es) placed *below* style props in the cascade — the seam the **generated recipes** plug
+   * into. `createSlotClasses(...)().content` is the usual argument. Suppressed when the caller
+   * passes `unstyled`.
+   *
+   * It works because Panda emits those recipes into `@layer recipes` and style props into `@layer
+   * utilities`, and the layer order decides. A class with no layer of its own is not below anything
+   * — see {@link RenderStyledOptions.baseStyles}.
    */
   recipeClass?: Accessor<string | undefined>;
+  /**
+   * A style **object** merged underneath the style props in one `css()` call, rather than composed
+   * beside them as a second class. Suppressed by `unstyled`, like `recipeClass`.
+   *
+   * The distinction from `recipeClass` is a cascade fact, not a preference. An inline `cva()`
+   * config — what the `chakra` factory takes — emits *atomic* classes into the same `@layer
+   * utilities` as style props, so an element carrying both `px_5` (the recipe) and `px_1` (the
+   * style prop) is decided by which rule Panda happened to write first, which is the order the two
+   * appear in the *source*. Merging the objects first collapses them to one class and one answer.
+   */
+  baseStyles?: Accessor<SystemStyleObject | undefined>;
+  /**
+   * Whether a key reaches the DOM, given whether Panda considers it a style prop. Default:
+   * `!isStyleProp`.
+   *
+   * The decision belongs here because this is what knows a key is a style prop. Overriding it in
+   * the forwarding direction is what makes `<chakra.circle r="40">` render a circle: `r` — like
+   * every SVG geometry attribute — answers `true` to `isCssProperty`, so the default swallows it
+   * into a class and the shape has no radius, silently. Overriding it in the withholding direction
+   * is `shouldForwardProp`, which keeps a transient prop off the element.
+   *
+   * `children` and `ref` are never asked about. They are how the element gets its content and how
+   * a caller reaches it, and a predicate written to filter one prop would otherwise take both with
+   * it.
+   */
+  forwardProp?: (key: string, isStyleProp: boolean) => boolean;
 }
+
+/** @see RenderStyledOptions.forwardProp */
+const ALWAYS_FORWARDED = new Set(["children", "ref"]);
 
 /**
  * The one reusable style-props mechanism every component and part opts into — `renderElement`
@@ -76,19 +110,36 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
     unstyled?: boolean;
   };
 
-  // Which passed keys are style props is stable for a given render — the KEY (`p`, `bg`) is static;
-  // only its VALUE is reactive — so compute the list once and read the values lazily in the `class`
-  // getter below. That is what preserves style-prop reactivity. `isCssProperty("css")` is true, but
-  // the `css` escape hatch is a *nested* style object, not a per-prop value: Panda's `css()` does
-  // not flatten a `css` KEY, so folding it in with the others emits garbage (`color:css_red`).
-  // Exclude it here and pass its value as a sibling `css()` argument in the getter below, which is
-  // how Panda merges it (and lets it win ties — the documented escape-hatch precedence).
-  const styleKeys = Object.keys(props).filter((key) => isCssProperty(key) && key !== "css");
-
   // Addition 3 — the five `html*` renames. `htmlSize` reaches the element as `size`, and so on for
   // `width`, `height`, `translate` and `content`, all of which are style props here and would
-  // otherwise be swallowed into a class with nothing to say so.
+  // otherwise be swallowed into a class with nothing to say so. Decided before `forwardProp` is
+  // consulted, so an escape hatch cannot be filtered out by a predicate aimed at the style prop it
+  // stands in for.
   const htmlKeys = Object.keys(props).filter((key) => key in HTML_PROP_RENAMES);
+
+  // Which passed keys are style props is stable for a given render — the KEY (`p`, `bg`) is static;
+  // only its VALUE is reactive — so partition the keys once and read the values lazily in the
+  // `class` getter below. That is what preserves style-prop reactivity. `isCssProperty("css")` is
+  // true, but the `css` escape hatch is a *nested* style object, not a per-prop value: Panda's
+  // `css()` does not flatten a `css` KEY, so folding it in with the others emits garbage
+  // (`color:css_red`). Exclude it here and pass its value as a sibling `css()` argument in the
+  // getter below, which is how Panda merges it (and lets it win ties — the documented escape-hatch
+  // precedence).
+  const styleKeys: string[] = [];
+  const withheldKeys: string[] = [];
+
+  for (const key of Object.keys(props)) {
+    if (key === "css" || key in HTML_PROP_RENAMES || ALWAYS_FORWARDED.has(key)) {
+      continue;
+    }
+    const isStyleProp = isCssProperty(key);
+    // `??` rather than `||`: a predicate answering `false` is a decision, and only an absent
+    // predicate falls back to the default.
+    if (options.forwardProp?.(key, isStyleProp) ?? !isStyleProp) {
+      continue;
+    }
+    (isStyleProp ? styleKeys : withheldKeys).push(key);
+  }
 
   // `as`/`render`/`class`/`css`/`unstyled` and the style props never reach the element as
   // attributes: `as`/`render` are handled by `renderElement`, `class`/`css` and the style props
@@ -104,6 +155,7 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
     "unstyled",
     ...htmlKeys,
     ...styleKeys,
+    ...withheldKeys,
   ) as Props;
 
   // Getters rather than a plain object, so a rename stays as reactive as the prop it renames.
@@ -129,16 +181,23 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
       }
 
       // Addition 1 — `css` accepts an array. `css()` is variadic and merges left to right, so the
-      // array form is a spread rather than a manual merge.
+      // array form is a spread rather than a manual merge — and it is the same variadic call that
+      // puts `baseStyles` underneath the style props.
       const cssProp = props.css;
       const cssArguments = Array.isArray(cssProp) ? cssProp : [cssProp];
 
+      // Addition 2 — `unstyled` opts the element out of the theme styles, whichever seam supplied
+      // them. Style props and the `css` prop still apply: the opt-out is of the recipe, not of
+      // styling.
+      const unstyled = props.unstyled === true;
+
       return cx(
-        // Addition 2 — `unstyled` opts the element out of the theme styles by suppressing the
-        // recipe class. Style props and the `css` prop still apply: the opt-out is of the recipe,
-        // not of styling.
-        props.unstyled === true ? undefined : options.recipeClass?.(),
-        css(styles as SystemStyleObject, ...cssArguments),
+        unstyled ? undefined : options.recipeClass?.(),
+        css(
+          unstyled ? undefined : options.baseStyles?.(),
+          styles as SystemStyleObject,
+          ...cssArguments,
+        ),
         props.class as string | undefined,
       );
     },

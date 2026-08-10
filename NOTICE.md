@@ -82,8 +82,11 @@ and slot recipes are used as shipped, not copied into this repository. No obliga
 notice.
 
 `@chakra-ui/react` is a **read reference** for public API shape, prop names, component anatomy, and
-naming. Its `src/styled-system/` is an Emotion serializer and is read for API shape only, never for
-implementation. Files that reproduce Chakra's expression get a row.
+naming. Its `src/styled-system/` is an Emotion serializer and is read for API shape, not for
+implementation — nothing of that machinery is ported, because Panda replaces it at build time. Files
+that reproduce Chakra's expression get a row, and `factory.tsx` is one: its `exceptionPropMap` — the
+seven SVG tags whose geometry attributes must reach the DOM rather than be folded into a class — is
+carried over verbatim, because a data table is expression where the API around it is not.
 
 **The documentation content is different, and it is a derivative.** `apps/docs/src/content` follows
 chakra-ui.com's page structure, section order, example set and — where our API has not changed the
@@ -104,6 +107,7 @@ fold on the docs home and in every page's footer.
 
 | File | Derived from |
 | ---- | ------------ |
+| `packages/system/src/factory/factory.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/styled-system/factory.tsx` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/site/icons.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
 | `apps/docs/public/favicon.ico` | `chakra-ui/chakra-ui` — `apps/www/app/favicon.ico` |

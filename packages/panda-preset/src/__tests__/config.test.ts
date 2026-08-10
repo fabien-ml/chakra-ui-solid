@@ -24,6 +24,10 @@ const SHARED_KNOBS = {
   hash: false,
   eject: true,
   jsxFramework: "solid",
+  // Not a name-shaping knob but a name-*existence* one, and it fails the same way: `chakra.button`
+  // is lowercase, so without this Panda's `isUpperCase` fallback declines the tag and emits no rule
+  // at all for it. Both configs carry it or one of the two sheets is missing every factory rule.
+  jsxFactory: "chakra",
   preflight: true,
 } as const;
 
@@ -54,11 +58,27 @@ describe("chakraConfig — the knobs that must match ours", () => {
     expect(ourConfigSource).not.toMatch(/^\s*prefix:/m);
   });
 
-  it("points the consumer's extractor at our published package", () => {
-    // `importMap` is the consumer's knob and ours deliberately leaves it unset: theirs must say the
-    // styled-system API lives in our package rather than in a directory they generated.
-    expect(chakraConfig().importMap).toBe("@chakra-ui-solid/styled-system");
-    expect(ourConfigSource).not.toMatch(/^\s*importMap:/m);
+  it("points the extractor at our published package, on both sides", () => {
+    // `importMap` says where the styled-system API lives. Both configs set it, and both set the
+    // same value: the default is `<outdir>/…`, which our own `css()` imports match only by
+    // accident and which the factory does not match at all.
+    expect(chakraConfig().importMap).toEqual([
+      "@chakra-ui-solid/styled-system",
+      { jsx: ["@chakra-ui-solid/system", "@chakra-ui-solid/components"] },
+    ]);
+    expect(ourConfigSource).toMatch(/^\s*importMap: \[\s*"@chakra-ui-solid\/styled-system",/m);
+  });
+
+  it("names every module the `chakra` factory can be imported from", () => {
+    // The other half of `jsxFactory`, and the half with no symptom: Panda registers the factory
+    // only from an import whose name is `chakra` AND whose module is listed here. Miss a package
+    // and a consumer who imported from it gets zero rules and no error — so the list is asserted
+    // against the packages that actually export `chakra`, not against itself.
+    const [, jsxEntry] = chakraConfig().importMap as [string, { jsx: string[] }];
+    expect(jsxEntry.jsx).toEqual(["@chakra-ui-solid/system", "@chakra-ui-solid/components"]);
+    expect(ourConfigSource).toMatch(
+      /jsx: \["@chakra-ui-solid\/system", "@chakra-ui-solid\/components"\]/,
+    );
   });
 
   it("lists exactly one preset, so the same one-liner is correct on both sides", () => {

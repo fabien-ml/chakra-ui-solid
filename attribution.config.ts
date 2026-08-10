@@ -75,6 +75,19 @@ const zagSolidFork: AttributionEntry[] = [
   package: "zag-solid",
 }));
 
+const chakraReact: AttributionEntry[] = [
+  {
+    // One table — `exceptionPropMap`, the seven SVG tags whose geometry attributes must reach the
+    // DOM rather than become a class. A verbatim data table is expression, where the factory's
+    // API shape around it is not.
+    file: "packages/system/src/factory/factory.tsx",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "packages/react/src/styled-system/factory.tsx",
+    license: "MIT",
+    package: "system",
+  },
+];
+
 const docsApp: AttributionEntry[] = [
   {
     file: "apps/docs/src/components/site/icons.tsx",
@@ -85,7 +98,7 @@ const docsApp: AttributionEntry[] = [
   },
 ];
 
-export const attributions: AttributionEntry[] = [...zagSolidFork, ...docsApp];
+export const attributions: AttributionEntry[] = [...zagSolidFork, ...chakraReact, ...docsApp];
 
 export const noticeOnlyPaths: NoticeOnlyPath[] = [
   {

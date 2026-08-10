@@ -57,7 +57,7 @@ import { defineConfig } from "@pandacss/dev";
 export default defineConfig({
   ...chakraConfig(),
   include: [
-    "./node_modules/@chakra-ui-solid/components/dist/panda.buildinfo.json",
+    "./node_modules/@chakra-ui-solid/components/dist/**/*.jsx",
     "./src/**/*.{ts,tsx}",
   ],
   outdir: "styled-system-app",
@@ -77,7 +77,7 @@ export default defineConfig({
   presets: [...(chakra.presets ?? []), myPreset],
   // `theme` is the safe one, as long as your keys go under `extend`.
   theme: { extend: { tokens: { colors: { brand: { value: "#5b8" } } } } },
-  // `include` and `outdir` as above — keep the buildinfo path.
+  // `include` and `outdir` as above — keep the `dist` glob.
 });
 ```
 

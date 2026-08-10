@@ -1,0 +1,185 @@
+---
+title: Chakra Factory
+description: Use the chakra factory to create supercharged components
+links:
+  source: packages/system/src/factory
+  chakra: https://chakra-ui.com/docs/styling/chakra-factory
+---
+
+## Overview
+
+Chakra factory serves as a way to create supercharged JSX component from any HTML element to enable
+them receive JSX style props.
+
+```js
+import { chakra } from "@chakra-ui-solid/components";
+```
+
+The chakra factory can be used in two ways: as a JSX element or as a factory function.
+
+## JSX Element
+
+Style props are CSS properties that you can pass as props to your components. With the JSX factory,
+you can use `chakra.<element>` syntax to create JSX elements that support style props.
+
+```jsx
+import { chakra } from "@chakra-ui-solid/components";
+
+const Button = (props) => (
+  <chakra.button bg="blue.500" color="white" py="2" px="4" rounded="md">
+    {props.children}
+  </chakra.button>
+);
+```
+
+## Factory function
+
+Use the `chakra` function to convert native elements or custom components. The key requirement is
+that the component **must** accept `class` as props.
+
+```jsx
+const Link = chakra("a");
+
+function Example() {
+  return <Link bg="red.200" href="https://chakra-ui.com" />;
+}
+```
+
+Another example with a custom component.
+
+```jsx
+function Panel(props) {
+  return <section class={props.class}>{props.children}</section>;
+}
+
+const StyledPanel = chakra(Panel);
+
+function Example() {
+  return (
+    <StyledPanel bg="bg.panel" p="4">
+      <div>Hello</div>
+    </StyledPanel>
+  );
+}
+```
+
+### Attaching styles
+
+Use the `chakra` function to attach styles or recipes to components.
+
+```jsx
+const Link = chakra("a", {
+  base: {
+    bg: "papayawhip",
+    color: "red.500",
+  },
+});
+
+// usage: <Link href="https://chakra-ui.com" />
+```
+
+### Attaching recipes
+
+Here's an example of attaching a recipe to the component.
+
+```jsx
+const Card = chakra("div", {
+  base: {
+    shadow: "lg",
+    rounded: "lg",
+    bg: "white",
+  },
+  variants: {
+    variant: {
+      outline: {
+        border: "1px solid",
+        borderColor: "red.500",
+      },
+      solid: {
+        bg: "red.500",
+        color: "white",
+      },
+    },
+  },
+});
+
+// usage: <Card variant="outline" />
+```
+
+Every value above is read out of **your source** at build time, so a value the extractor cannot see
+has no rule and the element renders unstyled with no error. Pass the dynamic half through a CSS
+custom property, or declare the finite set in `staticCss` — see
+[Static Extraction](/docs/styling/static-extraction).
+
+### Forwarding props
+
+By default, the `chakra` factory only filters chakra related style props from getting to the DOM.
+For more fine-grained control of how props are forwarded, pass the `shouldForwardProp` option.
+
+Here's an example that forwards all props that doesn't start with `$`
+
+```tsx
+function shouldForwardProp(prop: string) {
+  return !prop.startsWith("$");
+}
+
+const Component = chakra("div", {}, { shouldForwardProp });
+```
+
+`shouldForwardProp` replaces the default rule outright, so it also decides which keys become styles.
+Combine it with `isCssProperty`, which knows this preset's own utilities and tokens, to keep the
+default behaviour for everything you are not filtering.
+
+```tsx
+import { chakra } from "@chakra-ui-solid/components";
+import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
+
+function shouldForwardProp(prop: string, variantKeys: string[]) {
+  return !variantKeys?.includes(prop) && !isCssProperty(prop);
+}
+
+const Component = chakra("div", {}, { shouldForwardProp });
+```
+
+Pass `forwardProps` instead to add to the default rule rather than replace it. Every SVG geometry
+attribute — `cx`, `cy`, `r`, `d`, `transform` and their neighbours — is a style prop here, so the
+seven SVG tags are added to `forwardProps` for you and `<chakra.circle r={20} />` renders a circle.
+
+## Default Props
+
+Use the `defaultProps` option to pass default props to the component.
+
+```jsx {9}
+const Button = chakra(
+  "button",
+  {
+    base: {
+      bg: "blue.500",
+      color: "white",
+    },
+  },
+  { defaultProps: { type: "button" } },
+);
+```
+
+## Polymorphism
+
+Every component created with the chakra factory can accept the `as` and `render` props to change the
+underlying DOM element.
+
+```tsx
+<Button as="a" href="https://chakra-ui.com">
+  Chakra UI
+</Button>
+```
+
+or
+
+```tsx
+<Button render={(props) => <a {...props} href="https://chakra-ui.com" />}>Chakra UI</Button>
+```
+
+`render` is where the React version has `asChild`, and it takes a **function** rather than a child
+element. A SolidJS JSX element is an already-constructed DOM node by the time it reaches the
+component and there is no `cloneElement`, so accepting one could only mean dropping every prop that
+was computed for it.

@@ -20,16 +20,15 @@ export default defineConfig({
   ...chakraConfig(),
 
   include: [
-    // The buildinfo channel: values *our* components name that a consumer's source never literally
-    // writes — recipe variants above all — reach their extractor through this file rather than
-    // through their own globs (`plan.md` §4.1, §3.4).
+    // The library channel: values *our* components name that a consumer's source never literally
+    // writes — a style config handed to `chakra()` inside a component, recipe variants — reach
+    // their extractor through our published files rather than through their own globs.
     //
-    // It matches nothing today, and that is a fact rather than an oversight:
-    // `@chakra-ui-solid/components` emits no buildinfo until it has a recipe to declare, which is
-    // step 4. The path is written now so this file is already the documented consumer shape, and
-    // it is the same step at which `check:css-coverage` against this app's sheet starts meaning
-    // anything — a coverage check with no buildinfo to read has nothing to be wrong about.
-    "./node_modules/@chakra-ui-solid/components/dist/panda.buildinfo.json",
+    // A glob over `dist/` rather than a buildinfo artifact, because `tsdown` builds with
+    // `transform.jsx: "preserve"`: what we publish IS JSX-preserved source, so a consumer's
+    // extractor can read it the same way it reads their own `src`. It matches nothing until the
+    // package is built, and nothing in it needs a rule until a component calls `chakra()`.
+    "./node_modules/@chakra-ui-solid/components/dist/**/*.jsx",
     // Our own source, which is what a consumer's glob is. `.mdx` is in the list because a fenced
     // code block is not the only thing a content file carries — an MDX page may write JSX
     // directly, and a style prop Panda never scanned renders nothing and raises no error.
