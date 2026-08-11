@@ -323,13 +323,13 @@ consumer's stylesheet, runtime only setting an attribute on `<html>`; unprobed t
 
 ## The repository mirrors `packages/react/src`, minus the two tiers Panda replaced
 
-**Step 1 executed 2026-08-11; step 2 still pending.** The port covers styling and theming as well as components, and
-upstream holds those as *siblings* under `packages/react/src`. Ours put components at the src root
-of their own package, which spends the level those siblings need.
+**Done 2026-08-11, and it lands one package short of the mirror.** The port covers styling and
+theming as well as components, and upstream holds those as *siblings* under `packages/react/src`.
+Ours put components at the src root of their own package, which spent the level those siblings need.
 
 ```
-packages/chakra-ui-solid/src/{components/<name>,system,hooks,utils}
-packages/{styled-system,panda-preset,zag-solid,internal-test-utils}
+packages/chakra-ui-solid/src/{components/<name>,hooks,utils}
+packages/{system,styled-system,panda-preset,zag-solid,internal-test-utils}
 ```
 
 **The main package is the unscoped `chakra-ui-solid`**, reserved on npm 2026-08-11; the satellites
@@ -346,48 +346,43 @@ their Emotion serializer, none of which is ported (`NOTICE.md`); what survives i
 tables, which we depend on rather than vendor (`CLAUDE.md`), so our deltas stay in
 `packages/panda-preset`. Mirroring either name would advertise a parity that does not exist.
 
-**Two packages cannot fold in**, mechanically: `@chakra-ui-solid/styled-system` is generated and
+**Three packages cannot fold in**, mechanically: `@chakra-ui-solid/styled-system` is generated and
 must be published separately or library and consumer hold two `css()` instances; `panda-preset` is
-read by Panda's config loader under Node's `import` condition, not a `solid`-condition package.
+read by Panda's config loader under Node's `import` condition, not a `solid`-condition package; and
+`system` for the reason the paragraph below measures.
 
-**It lands in two steps, because only the second can fail silently. Step 1 — the reshape:**
-`packages/components` → `packages/chakra-ui-solid`; `packages/system` stays a package of its own.
-Every import remains a bare specifier `importMap.jsx` resolves, so nothing can go quietly unstyled,
-and `src/{hooks,utils}` gain the home `create-context`, `merge-props` and `merge-refs` need before
-the first machine component.
+**The reshape:** `packages/components` → `packages/chakra-ui-solid`, components
+under `src/components/<name>`; `src/{hooks,utils}` gain the home `create-context`, `merge-props` and
+`merge-refs` need before the first machine component. `src/index.ts` arrives with the first of them
+— until then the `.` entry is `src/components/index.ts` and a second barrel would hold one line.
 
-**Step 2 — absorb `system`, gated on a real `cssgen`.** Panda registers the `chakra` factory only
-from an import whose module is in `importMap.jsx`. Merged, that import turns relative, matches
-nothing, and every `chakra()` call in our own source extracts **zero rules** — with a green build.
-The answer is a **self-referencing import**: components go on importing `chakra` from
-`chakra-ui-solid`, which Node resolves through the package's own `exports`. Prove it against the
-fixture at `src/box/__tests__/__fixtures__/consumer` before moving anything.
+**`system` stays a package of its own, and this is settled rather than pending.** Absorbing it was
+tried on 2026-08-11 and reverted; the constraint is Panda's extraction model, not tidiness. Panda
+registers the `chakra` factory only from an import whose module string is in `importMap.jsx`, so a
+relative `../../system` matches nothing and every `chakra()` call in our own source extracts **zero
+rules** with a green build — measured, four probe files, one per spelling. The apparent answer is a
+**self-referencing import** (`chakra-ui-solid` importing itself, which Node resolves through its own
+`exports`), and it does fix extraction. It breaks the **types**: tsdown wipes `dist/` before it
+builds, so the declaration generator resolves the self-reference to the `dist/index.d.ts` it is
+about to write, gives up, and publishes `declare const Center: any` — 10 components, and only the
+docs app's `tsc` against `dist` sees it. A sibling package has no such problem because Turbo's
+`^build` writes its declarations first. Upstream imports its factory relatively because Emotion
+resolves at runtime and there is no extractor to satisfy; we have one, so **the package boundary is
+what buys a factory import that is both extractable and typeable**. Four tsdown/`rolldown-plugin-dts`
+levers were tried (`deps.dts.alwaysBundle`, `deps.dts.neverBundle`, `dts.resolver`, `dts.generator`)
+and a subpath self-reference fails the build outright. Reopen only if that generator learns to
+resolve a self-reference through `tsconfig#paths` instead of through `dist`.
 
-**Every site the name reaches, and the first five are load-bearing** — each fails silently or
-wrecks the build rather than erroring usefully:
+**Published subpaths are keys, never source paths.** A `chakraUiSolid.entries` *key* is the subpath
+a consumer imports; only its value moved when components went under `src/components/`. Renaming a
+key is the breaking change, and moving a file is not.
 
-1. `defineChakraConfig()`'s `importMap.jsx` — consumer-facing. Wrong, and every `<chakra.div>` in
-   their app is unstyled.
-2. `packages/styled-system/panda.config.ts`'s `importMap` / `include` / `exclude`.
-3. `turbo.json`'s `cssgen.inputs` — its own comment says these globs must stay in step with that
-   `include`; out of step, a style prop added anywhere is a cache hit and the sheet keeps its
-   previous contents.
-4. `apps/docs/vite.config.ts`'s `optimizeDeps.exclude` / `ssr.noExternal` — a stale name there
-   hands the docs app a runtime that is not Solid.
-5. `attribution.config.ts` (`package: "system"` → `"chakra-ui-solid"`) plus the root and package
-   `NOTICE.md` rows for `factory.tsx`, and `packages/system/{LICENSE,NOTICE.md}` — at step 2.
-6. `tsdown.config.base.ts`'s `neverBundle`, unscoped-only: it externalises siblings by the
-   `/^@chakra-ui-solid\//` prefix, which `chakra-ui-solid` no longer matches. Unlisted it is
-   inlined into whatever imports it — `styled-system` duplicating is the two-`css()` bug above.
-
-Then the mechanical ones: `tsconfig.base.json#paths`, `vitest-aliases.ts`, `repo-shape.test.mjs`
-(`packages/chakra-ui-solid/src/components/*`, and the component name moves to `split("/")[4]`),
-`scripts/generate-props-tables.mjs`'s `componentsSrc`, the 22 `chakraUiSolid.entries`, both
-`tsconfig.json#include`s, `apps/docs/package.json`'s dependency and its imports, and the package
-list in `README.md`. Published subpaths do not change: an entry *key* is the subpath, not the
-source path. Every docs page's frontmatter carried a `links.source:` of its own — 22 already
-written, so this reshape was overdue rather than early, and each page deferred past it would have
-been one more to revisit.
+**A name lives in more places than a grep for it finds**, and the ones that matter fail silently
+rather than erroring: `importMap.jsx` on both sides, `panda.config.ts`'s `include` / `exclude`,
+`turbo.json`'s `cssgen.inputs` — which its own comment says must stay in step with that `include` —
+and the docs app's `optimizeDeps.exclude` / `ssr.noExternal`. Panda matches an `importMap` entry by
+**substring**, so a wrong name can go on working by accident: `@chakra-ui-solid/components` still
+matched the entry `chakra-ui-solid`. Never read that as evidence the entry is right.
 
 ## Build order
 
