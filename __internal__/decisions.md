@@ -224,6 +224,46 @@ generated types (`ConditionalValue<V> = V | Array<V | null> | {…}`), while the
 consumer's config. Forgetting `defineChakraConfig({ responsive })` is a silent unstyling in two spellings,
 and the array form is the one no doc page shows.
 
+## A JSX-valued prop read twice is built twice — the `children()` procedure
+
+**A JSX-element *prop* compiles to a lazy getter that runs `createComponent` on every read.** Not a
+value: a getter. So a `spinner={<MySpinner />}` read in two places builds `MySpinner` twice and
+throws one away, along with whatever state it set up. The trigger is exactly **read more than once
+in one render** — almost always a flow-control gate plus its body:
+
+```tsx
+<Match when={props.text}>…{props.text}…</Match>   // two builds, one discarded
+```
+
+Resolve once with `children()` and read the accessor everywhere, **default inside the call**:
+
+```tsx
+const spinner = children(() => props.spinner ?? <Spinner size="inherit" />);
+// gate and body now both read the memo
+<Match when={spinner()}>…{spinner()}…</Match>
+```
+
+`children()`'s memo is lazy, so an unselected branch builds nothing — which is also why the default
+belongs there and **not** in `withDefaults`, whose `defaults` object literal is constructed eagerly
+on every call. Module scope is not the alternative either: JSX there runs at import time and 500s
+the SSR route.
+
+**A slot read exactly once needs nothing** — inside a `<Show>` or not — and neither does a
+directly-written child (`<Button><Icon /></Button>`), which the compiler creates once as a value.
+Only props are getters. `Switch` reads only the selected branch's children, so a `props.children`
+appearing in three `<Match>` bodies is still one read. A reflexive `children()` on a single read
+only adds a memo and relocates the subtree's hydration key, so it is a cost with no return.
+
+**Why it needs writing down:** the discarded build is invisible to every other assertion. Same
+markup, same geometry, same computed styles, green suite. Measured in `loader.tsx` on 2026-08-12 —
+raw reads built both slots exactly twice — which is why any multi-read slot also owes a
+**single-creation test that counts real constructions** (`loader.browser.test.tsx`).
+
+On `@solidjs/web` before `2.0.0-beta.32` the gate read also consumed a hydration key it then
+discarded, mis-keying the body node on the client only; beta.32 fixed that axis and leaves this one
+untouched. Full procedure and its evidence: hope-ui's `__internal__/solid-2.0-notes.md`, search
+"`children()` decision procedure".
+
 ## SSR and the Solid compiler
 
 - **A `Portal` must never render during SSR** — `@solidjs/web`'s throws rather than degrading. Guard

@@ -26,8 +26,9 @@ and this file is the only one read on every task.
 **Four things the corpus says that are no longer true**, because it was written before the
 2026-08-10 cut and restored on 2026-08-11 without rewriting:
 
-1. It names **51 `check:*` scripts. Three exist** — `no-runtime-css`, `attribution`,
-   `declaration-support`. Never implement one because a document specifies it.
+1. It names **51 `check:*` scripts. Four exist** — `no-runtime-css`, `attribution`,
+   `declaration-support`, and `ssr-coverage`, which was asked for on 2026-08-12 and is the only one
+   added back. Never implement one because a document specifies it.
 2. `INDEX.md`, `pnpm docs:index`, `check:doc-index` and `check:skill-pointers` are gone, so every
    rule about regenerating an index or holding a skill pointer is dead — `definition-of-done.md`
    is full of them.
@@ -59,6 +60,38 @@ component and a green suite look identical. So:
   `check:declaration-support` puts every emitted declaration to a real Chromium.
 - **Tests assert computed styles, never class names.** `classList.contains("p_4")` passes on a
   completely unstyled element.
+
+## The second hazard: a JSX prop read twice
+
+A JSX-element **prop** — `spinner={<X />}`, `text={<X />}`, an icon slot — compiles to a lazy getter
+that runs `createComponent` on **every read**. Reading it in a gate and again in the body builds it
+twice and discards one, with the same silent-green signature as above: identical markup, identical
+computed styles, passing suite.
+
+- **Read more than once in one render → resolve it once with `children()`** and read that accessor
+  everywhere, with the default *inside* the call: `children(() => props.spinner ?? <Spinner />)`.
+  `withDefaults` cannot hold it — its `defaults` object is built eagerly — and module scope is
+  worse: JSX there runs at import time and 500s the SSR route.
+- **Read exactly once → do nothing.** `<Show>` or not, a written-in child or a single slot read
+  needs no `children()`, and a reflexive one just moves the subtree's hydration key.
+- **Any multi-read slot owes a test that counts real constructions**, because nothing else can see
+  the extra one — `loader/__tests__/loader.browser.test.tsx`.
+
+`__internal__/decisions.md`, *A JSX-valued prop read twice*, has the procedure and the measurement.
+
+## Every component server-renders, and `check:ssr-coverage` says so
+
+`components/__tests__/components.ssr.test.tsx` renders every barrel export once on the server and
+asserts its own completeness against that barrel — so a new component is registered there or the
+suite is red. It exists for the two failures that take a whole route down rather than one element:
+module-scope JSX, and a DOM global read during render (`Element is not defined`).
+
+Hydration round-trips stay per-component, because each costs a `*.ssr-entry.tsx` and a row in
+`HYDRATION_ENTRIES` (`vitest-hydration-bridge.ts`); `box` and `loader` carry one. Add one when a
+component's tree is conditional or resolves a slot through `children()`. `check:ssr-coverage` — the
+fourth check script, and the only one added since the cut — enforces the wiring: registry and
+fixture files agree both ways, every registered id is really hydrated, every `*.ssr.test.tsx`
+really renders.
 
 ## The port rule, and reference use
 

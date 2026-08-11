@@ -1,9 +1,15 @@
-import { type MountedElement, mountElement } from "@chakra-ui-solid/internal-test-utils";
+import loaderServerHtml from "virtual:hydration-fixture?id=loader";
+import {
+  hydrateFixture,
+  type MountedElement,
+  mountElement,
+} from "@chakra-ui-solid/internal-test-utils";
 import type { JSX } from "@solidjs/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { Box } from "../../box";
 import { Span } from "../../span";
 import { Loader } from "../loader";
+import { Tree } from "./loader.ssr-entry";
 
 let mounted: MountedElement | undefined;
 
@@ -174,5 +180,32 @@ describe("Loader", () => {
 
     expect(getComputedStyle(spinner).width).toBe("24px");
     expect(getComputedStyle(spinner).height).toBe("24px");
+  });
+});
+
+describe("Loader — server render, then hydrate", () => {
+  it("reuses every server node across both slot-resolving branches", () => {
+    // The half neither other project can see. `children()` resolves in the ambient owner rather
+    // than at the position it is read, so it does not consume the hydration key a raw read there
+    // would — and the whole subtree after it keys accordingly. If server and client disagree,
+    // `hydrate()` either claims a server node under a different client tree or gives up and
+    // client-renders, and **both are silent**: the markup, the styles and the geometry all still
+    // look right. `hydrateFixture` is what makes them fail — it asserts hydration logged nothing,
+    // added and dropped no element, and reused every server node as the same object.
+    const { container, dispose } = hydrateFixture(loaderServerHtml, () => <Tree />);
+
+    const label = container.querySelector('[data-probe="label"]');
+    const customSpinner = container.querySelector('[data-probe="custom-spinner"]');
+    if (!(label instanceof HTMLElement) || !(customSpinner instanceof HTMLElement)) {
+      throw new Error("the hydrated tree is missing its probe elements");
+    }
+
+    // The styles have to survive on the server's own nodes, not on nodes a fallback rebuilt: the
+    // hidden wrapper still hides its children, and the spinner-only branch still centres its
+    // overlay on the positioned Box.
+    expect(getComputedStyle(label).visibility).toBe("hidden");
+    expect(getComputedStyle(customSpinner).visibility).toBe("visible");
+
+    dispose();
   });
 });

@@ -56,6 +56,14 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
   // and client must name the same classes — and if they do not, the element is styled by whichever
   // side won, silently.
   box: join(repoRoot, "packages/chakra-ui-solid/src/components/box/__tests__/box.ssr-entry.tsx"),
+  // The first subject whose tree is *conditional*. Loader branches on `visible`/`text`/`spinner`
+  // and resolves two of them through `children()`, which allocates in the ambient owner rather
+  // than at the position it is read — so its hydration keys are exactly the thing that has to
+  // match, and the thing no assertion about markup or styles can see.
+  loader: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/loader/__tests__/loader.ssr-entry.tsx",
+  ),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;
