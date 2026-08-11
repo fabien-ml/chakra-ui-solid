@@ -1084,7 +1084,7 @@ relatively (§7.2). Nothing outside `core` needs the name.
 ### 11.1 File layout
 
 ```
-packages/components/src/dialog/
+packages/chakra-ui-solid/src/components/dialog/
 ├── index.ts                     export * as Dialog from "./namespace"; public types
 ├── namespace.ts                 the dotted surface — Chakra's namespace.ts, name for name
 ├── dialog.types.ts              public prop interfaces
@@ -1102,7 +1102,7 @@ packages/components/src/dialog/
 └── __tests__/                   unit · ssr · browser (`brief-plan` §2.8's three projects)
 ```
 
-`Portal` is **not** here — it is `packages/components/src/portal/` (§0.3, §11.12).
+`Portal` is **not** here — it is `packages/chakra-ui-solid/src/components/portal/` (§0.3, §11.12).
 
 ### 11.2 `dialog-context.ts`
 
@@ -1511,7 +1511,7 @@ export const DialogActionTrigger: Component<DialogActionTriggerProps> = (props) 
 ### 11.12 `Portal` — a standalone component, in its own folder
 
 ```tsx
-// packages/components/src/portal/portal.tsx
+// packages/chakra-ui-solid/src/components/portal/portal.tsx
 import { useEnvironmentContext } from "@chakra-ui-solid/core"
 import { isServer, Portal as SolidPortal } from "@solidjs/web"
 import type { Component, JSX } from "solid-js"
@@ -1646,7 +1646,7 @@ adapter; a machine reaches them through the service object `useMachine` construc
 | **4** | `brief-plan` §2.11 / §7 concern 3: *"drop by default, **adopt by exception**"*, with a per-component retained-primitive column in the roadmap | **The column is deleted.** The port rule removed the exception mechanism (§8). Restates `prior-art.md` §10.1 row D | **P6** — deletes a planned column |
 | **5** | `brief-plan` §4.1 doc 5 lists `portal` among the *"React-idiom or Solid-native"* exclusions | **`Portal` must ship.** It is in Chakra's public API and is the canonical way to render Dialog's Content, and Solid's `Portal` has different prop names and throws server-side (§11.12). P6 records it as a component with three `React→Solid` deltas, not an exclusion — and **decides the third**, a non-reactive `disabled` | **P6** |
 | **6** | `plan.md` §5.3's list of what `@chakra-ui-solid/core` owns | **Two additions:** `createComponentContext` (row 6), and `RenderStrategyProps` / `PresenceApi` as public types (row 4). Also: `core` gains a direct `@zag-js/presence` dependency, and `components` gains one `@zag-js/<machine>` per component — neither appears in `plan.md` §5.2's table | **P6, P9** |
-| **7** | `plan.md` §5.5: `@chakra-ui-solid/components` mirrors Chakra's subpaths one-to-one | Chakra's namespace carries **`RootProvider`** and **`PropsProvider`** on every machine component. Deferred, not excluded — `RootProvider` needs the `./hooks` subpath's `useDialog` (§11.13) | **P6** |
+| **7** | `plan.md` §5.5: `chakra-ui-solid` mirrors Chakra's subpaths one-to-one | Chakra's namespace carries **`RootProvider`** and **`PropsProvider`** on every machine component. Deferred, not excluded — `RootProvider` needs the `./hooks` subpath's `useDialog` (§11.13) | **P6** |
 | **8** | `prior-art.md` §3.4: a *"~15-line, three-row recurring floor"* per component | **hope-ui's number, against hope-ui's stack.** Re-measured against Chakra it is two named arguments per part plus one line on presence-gated triggers (§1.4). The warning that the floor **grows by category** stands, and a floating component is still untested by anyone | **P6** (build-order risk), **P7** |
 | **9** | `brief-plan` §2.11: `composeEventHandlers` is *"needed the moment a part composes a consumer handler with a machine handler"* | **A machine part never calls it** — the adapter's `mergeProps` chains `on*` across sources. It is needed for shapes C and D only (§3.4). The carry-over stands; its justification changes | **P9** |
 | **10** | hope-ui's parts strip `id` from consumer props | **Do not strip.** Ark and Chakra forward it; `ids` on the Root is the supported override and it is proven to work (§3.4) | **P6, P8** (docs must carry `ids`) |

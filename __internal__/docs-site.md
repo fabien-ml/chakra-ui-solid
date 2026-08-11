@@ -97,7 +97,7 @@ here because getting it wrong produces a failure whose message names the wrong c
 | Knob | Value | Why it is not optional |
 |---|---|---|
 | `ssr.noExternal` | `[/^@chakra-ui-solid\//]` | We ship **JSX-preserved `.jsx`** under the `"solid"` export condition, with no `"import"`/`"default"` fallback (`plan.md` §8). Node cannot import raw JSX, so the prerender pass must inline and compile our packages rather than externalize them. Externalized, every route fails at build with a syntax error pointing at *our* `dist`, which reads as a broken package rather than a missing config line |
-| `optimizeDeps.exclude` | our packages | The client build's dependency pre-bundler compiles JSX **as React**. A pre-bundled `@chakra-ui-solid/components` produces a runtime that is not Solid, and the symptom is a component that renders nothing |
+| `optimizeDeps.exclude` | our packages | The client build's dependency pre-bundler compiles JSX **as React**. A pre-bundled `chakra-ui-solid` produces a runtime that is not Solid, and the symptom is a component that renders nothing |
 | `plugins` order | `mdx()` with `enforce: "pre"`, **before** `vite-plugin-solid` | MDX must emit JSX (`jsx: true`) for the Solid compiler to compile; compiled the other way round we get MDX's hyperscript shim and lose the real Solid runtime (§1.5) |
 | `tanstackStart({ prerender })` | enabled, `crawlLinks`, `failOnError` | §1.6. `failOnError` is the difference between a broken route and a silently missing page |
 
@@ -551,7 +551,7 @@ build time:
 | Input | What it contributes | Read from |
 |---|---|---|
 | **The machine's `Props` type** | Most Root props — `open`, `defaultOpen`, `onOpenChange`, `ids`, `modal`, … | `@zag-js/<machine>`'s types, resolved through our lockfile |
-| **Our own part props** | Everything we add: `render`, `unstyled`, `as`, the style-prop surface, Chakra-only props | The TypeScript compiler API over `packages/components/src/<component>/**` |
+| **Our own part props** | Everything we add: `render`, `unstyled`, `as`, the style-prop surface, Chakra-only props | The TypeScript compiler API over `packages/chakra-ui-solid/src/components/<component>/**` |
 | **The recipe's variant map** | `size`, `variant`, `colorPalette` and their literal unions, plus `defaultVariants` | The imported preset object — the same read `plan.md` §1.3 already does, and **P7-A**'s fallback path |
 
 Two properties this buys, and one trap it does not close:
@@ -715,7 +715,7 @@ arrive with the machinery they check, and a check with nothing to check is not w
 | `check:docs-examples` | §4.1: every example typechecks, imports only real subpaths, **mounts** with no console error and a non-empty root, and runs axe | The example is a file, not a deliverable — the exact failure `prior-art.md` §8.1's fourth clause is named after | **S3b** |
 | `check:extraction-fixture` | `docs-plan.md` §1.4's catalogue: each ✅ row's class is present in the fixture's generated sheet and each ❌ row's is absent, and the page's tables are regenerated from the result | A row on the loudest page in the docs became false. Prose cannot hold that claim across a Panda minor (`docs-plan.md` §1.4) | step 4, with the page |
 | `check:prerender-complete` | §7.1's four assertions on `dist/client` | The static deployment is incomplete or is an SPA shell. Both look like a working `pnpm dev` | step 8 (**P8-A**) |
-| `check:docs-inventory` | Every `/docs/components/*` route has a `roadmap.md` §4 row whose `Status` begins with `ships` and whose directory exists under `packages/components/src`, and every such component has a route. A `relocated` row owes no component page (§2.4) | A page for an unbuilt component is a promise (`roadmap.md` §9.2); a built component with no page is a component nobody finds | **S3b** |
+| `check:docs-inventory` | Every `/docs/components/*` route has a `roadmap.md` §4 row whose `Status` begins with `ships` and whose directory exists under `packages/chakra-ui-solid/src/components`, and every such component has a route. A `relocated` row owes no component page (§2.4) | A page for an unbuilt component is a promise (`roadmap.md` §9.2); a built component with no page is a component nobody finds | **S3b** |
 | `check:props-tables` | §4.2: an entry for every part component `check:anatomy-parts` knows about | A missing table renders as an empty box, and an empty box looks intentional | step 4, with `check:anatomy-parts` |
 | `check:playground-values` | §4.4: every control's value set is a subset of the recipe's variant map or a `staticCss`-declared set | The playground offers a value that renders nothing — `plan.md` §0.2 shipped as a feature | step 4, with the first playground |
 | ~~`check:llms-fresh`~~ | **Not written** — deferred with the AI tier (§4.6, **D-138**) | — | before first public release |
@@ -731,7 +731,7 @@ arrive with the machinery they check, and a check with nothing to check is not w
 (**D-139**). The check does not exist yet — it is `testing.md` §3 and arrives with the step-4
 throwaway consumer — and there is a second reason it could not mean anything here even if it did:
 the docs app's Panda run reaches values *our* components name through the **buildinfo**, which
-`@chakra-ui-solid/components` does not emit until it has a recipe to declare. A coverage check with
+`chakra-ui-solid` does not emit until it has a recipe to declare. A coverage check with
 no buildinfo to read has nothing to be wrong about. `apps/docs/panda.config.ts` already names the
 path, and `apps/docs/turbo.json`'s `cssgen` inputs already declare the coupling, so the check is
 the only piece still missing at step 4. §3.1 step 4 and this row now say the same thing.
@@ -806,7 +806,7 @@ here with their gate and carried to P9 as §8 row 3.
 | **P8-A** | `dist/client` is self-sufficient for static hosting — no route needs a server runtime | §7.1 assertions 1–4, then 5–7 | Step 8, and every docs build thereafter |
 | ~~**P8-B**~~ | **Closed at S3b.** MDX compiles through `vite-plugin-solid` under Solid 2.0 with the `compiler: "babel"` pin (§1.4) | The docs build ran, six routes prerendered with their prose in the HTML, and an MDX page rendering three examples mounts them in the `browser` project | — |
 | **P8-C** | **Split into three at S3b** (**D-142**), because one gate covered three subjects with three different first-existence dates. §4.2 gives the generator three inputs and P8-C asserted all of them at once against a Dialog that does not exist until step 5 | — | see below |
-| **P8-C1** | The generator reads **our own part props** from the TypeScript compiler API with no running system object | **Closed at S3b**: a non-empty, correct table for `Box` — `as` and `render`, with their types and their JSDoc, read from `packages/components/src/box/box.tsx` | — |
+| **P8-C1** | The generator reads **our own part props** from the TypeScript compiler API with no running system object | **Closed at S3b**: a non-empty, correct table for `Box` — `as` and `render`, with their types and their JSDoc, read from `packages/chakra-ui-solid/src/components/box/box.tsx` | — |
 | **P8-C2** | The generator reads the **recipe's variant map** with no running system object | The variant section of the first component page with a recipe. **Shares its fate with P7-A**, which needs the same map and is already dated step 4 | Step 4 |
 | **P8-C3** | The generator reads a **machine's `Props` type** from `@zag-js/<machine>` through our lockfile | A non-empty, correct Root props table for Dialog — the first component page with a machine | Step 5 |
 | **P8-D** | The docs app's Panda run is representative of a consumer's, so `check:css-coverage` against its sheet means what the step-4 run means | `check:docs-consumer-config` (§6.1) — **live from S3b**, which is the half that can pass now. The coverage half needs the check itself and the buildinfo, both step 4 (**D-139**). Note what neither proves: representativeness of one config, not of all | Step 4, every push |

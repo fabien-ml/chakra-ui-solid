@@ -1,4 +1,4 @@
-# The Zag adapter — `@chakra-ui-solid/zag-solid`, milestone one
+# The Zag adapter — `packages/core/src/zag/`, milestone one
 
 **Status:** written at P4, 2026-08-09. Settles the plan's open question **Q6** (carry-overs copied vs
 re-derived), answered separately for the third-party fork and for the hope-ui-owned code. Every
@@ -33,7 +33,7 @@ reports untracked reads inside (`[STRICT_READ_UNTRACKED]`); Solid 1.x has none.
 
 ## 0. What milestone one is, and what "done" means
 
-`@chakra-ui-solid/zag-solid` is a **fork** of `@zag-js/solid`, not a dependency: the published
+`packages/core/src/zag/` is a **fork** of `@zag-js/solid`, not a dependency: the published
 adapter targets Solid 1.x and nothing upstream is built for Solid 2.0 (`zag-solid-adapter.md` §1). It ships
 seven source files and seven test files, depends on `@zag-js/core` / `@zag-js/types` /
 `@zag-js/utils` and on Solid, and on **nothing in this repository**.
@@ -717,7 +717,7 @@ derivative silently, with a green build.
 
 ### 7.1 The seven headers
 
-One per source file, in `@chakra-ui-solid/zag-solid/src/`. The shape is `CLAUDE.md` obligation 2's MIT form,
+One per source file, in `packages/core/src/zag/`. The shape is `CLAUDE.md` obligation 2's MIT form,
 with the upstream **file** named — a reader auditing the claim has to be able to open the thing we
 derived from:
 
@@ -763,13 +763,13 @@ prose above it already anticipates these seven rows. Replace with:
 
 | File | Derived from |
 | ---- | ------------ |
-| `packages/zag-solid/src/machine.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/machine.ts` |
-| `packages/zag-solid/src/bindable.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/bindable.ts` |
-| `packages/zag-solid/src/merge-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/merge-props.ts` |
-| `packages/zag-solid/src/normalize-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/normalize-props.ts` |
-| `packages/zag-solid/src/refs.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/refs.ts` |
-| `packages/zag-solid/src/track.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/track.ts` |
-| `packages/zag-solid/src/index.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/index.ts` |
+| `packages/core/src/zag/machine.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/machine.ts` |
+| `packages/core/src/zag/bindable.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/bindable.ts` |
+| `packages/core/src/zag/merge-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/merge-props.ts` |
+| `packages/core/src/zag/normalize-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/normalize-props.ts` |
+| `packages/core/src/zag/refs.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/refs.ts` |
+| `packages/core/src/zag/track.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/track.ts` |
+| `packages/core/src/index.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/index.ts` |
 
 Plus a **baseline sentence** in that section, and it is the load-bearing part:
 
@@ -781,7 +781,7 @@ record the baseline the fork was taken from, because that is the number a future
 against."* A reader who only knows `1.43.0` would diff the wrong direction and mistake §4.3's three
 deltas for our changes rather than upstream's.
 
-**`packages/zag-solid/NOTICE.md`** — created by this commit, listing only its own seven files, with
+**`packages/core/NOTICE.md`** — created by this commit, listing only its own seven files, with
 the same baseline sentence and the MIT text quoted once.
 
 ### 7.3 The checklist, in commit order
@@ -793,14 +793,14 @@ Following `CLAUDE.md`, the five obligations, with the milestone-one specifics fi
 - [ ] **2.** Seven `@license` headers, MIT shape, each naming its upstream file (§7.1).
 - [ ] **3.** Root `NOTICE.md` — seven rows into the existing `## Zag.js` table, plus the `1.42.0`
       baseline sentence (§7.2).
-- [ ] **4.** `packages/zag-solid/NOTICE.md` — created, seven rows, same baseline, MIT text.
+- [ ] **4.** `packages/core/NOTICE.md` — created, seven rows, same baseline, MIT text.
 - [ ] **5.** Not applicable — upstream is MIT, so no `licenses/LICENSE-APACHE-2.0.txt` and no §4(b)
       line is *required* (it is included anyway because it is honest and costs nothing).
       `decisions-ledger.md` D-12 records that the port rule removed the repo's only Apache-2.0 route; nothing
       here reopens it.
 - [ ] **6.** `LICENSE` **untouched.** The MIT grant covers our own code and must not be made to look
       as if it reaches the derived portions.
-- [ ] **7.** `packages/zag-solid/package.json` → `"files": ["dist", "LICENSE", "NOTICE.md"]`
+- [ ] **7.** `packages/core/package.json` → `"files": ["dist", "LICENSE", "NOTICE.md"]`
       (`CLAUDE.md` obligation 4), and `LICENSE` copied into the package.
 - [ ] **8.** `comments.legal` pinned `true` in `tsdown.config.base.ts`, **with hope-ui's comment
       carried across**, not just the setting (`CLAUDE.md` obligation 5). Without it the headers vanish from

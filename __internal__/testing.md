@@ -404,14 +404,14 @@ emits is read from its documentation and not from an artifact
 
   dialog · slot recipe · content · size=cover
     class      dialog__content--size_cover
-    emitted by @chakra-ui-solid/components/dialog  (roadmap.md §4.1)
+    emitted by chakra-ui-solid/dialog  (roadmap.md §4.1)
     declared   theme.extend.slotRecipes.dialog.staticCss = ["*"]     ← declared, NOT generated
     → the per-recipe declaration did not survive the preset merge.
       plan.md §1.5 rung 1: move to a config-level staticCss block.   (assumption P3-A)
 
   flex · atomic · display=inline-flex
     class      d_inline-flex
-    emitted by @chakra-ui-solid/components/flex     (roadmap.md §4.4, CIJ ○)
+    emitted by chakra-ui-solid/flex     (roadmap.md §4.4, CIJ ○)
     declared   NOWHERE
     → a component's own logic picks this value and no consumer source writes it.
       plan.md §3.5 route 2: add it to the preset's staticCss.css block (plan.md §1.3).
@@ -677,7 +677,7 @@ beside the rule, not a change to it.
 
 ### 6.4 The census — `check:style-prop-collisions` (P5-D's gate, and `dir`'s tripwire)
 
-Not a lint rule: a test that runs the machines. For every machine `@chakra-ui-solid/components`
+Not a lint rule: a test that runs the machines. For every machine `chakra-ui-solid`
 consumes, it instantiates the machine, calls every `get*Props()` getter, collects the union of
 top-level keys, and intersects it with the generated `isCssProperty` vocabulary.
 
@@ -853,7 +853,7 @@ failure line below is what the failure *means*, not what it prints.
 | `check:anatomy-parts` | For every shipping component: **one part component per machine anatomy key, and one per unique recipe slot** — plus the `RootProvider` / `PropsProvider` / `Context` exports its `roadmap.md` §10 row declares | The two lists are not the same set and neither contains the other (`component-blueprint.md` §3.1). A missing machine part is an ARIA relationship the machine emits and nothing consumes; a missing slot component is a style block nothing wears. Both are silent. It reads the anatomy from the machine and the slot list from the generated recipe — **deduplicated first** (§3.3) — so it cannot be satisfied by a stale hand-written list |
 | `check:floating-zindex` | **A browser test, not a script.** The computed `z-index` / `--z-index` on a floating element survives interleaved reactive re-renders and `raf` writes, with the measured value recorded | `@zag-js/popper` writes `--z-index` **imperatively** into the floating element's `style` attribute inside a `raf`, while Solid binds that same attribute reactively, with a `MutationObserver` watching it — two writers on one attribute, one watching the other (`roadmap.md` §8.1). **Nine Chakra components inherit whatever it costs**, and nobody has measured it. Introduced at step 5b as the floating probe's whole deliverable: a number, and either a sentence in the blueprint or a rule (**P6-A**) |
 | `check:declaration-support` | **Every declaration in both generated sheets parses** — `CSS.supports(property, value)` in real Chromium, driven from a Node script through Playwright | A style-prop value can satisfy §6.1's rule 1 and still resolve to nothing: `mt="4x"` and `bg="bg.pannel"` are both static, both extractable, and Panda emits the raw value when a token does not resolve. The rule is generated, the element wears the class, and the property is never set — `plan.md` §0.2 through the one door the style contract leaves open. It is §3.7's last row asked of the whole sheet at once — §8.4 |
-| `check:no-hand-written-data-attrs` | Zero `data-*` string literals in `packages/components/src/**` (tests excluded) | We write none — every state attribute comes from the machine's `connect()` (`component-blueprint.md` §3.7). A speculative translation getter is **invisible** when unnecessary, which is why the rule is "do not add one" and this is how that is checked |
+| `check:no-hand-written-data-attrs` | Zero `data-*` string literals in `packages/chakra-ui-solid/src/components/**` (tests excluded) | We write none — every state attribute comes from the machine's `connect()` (`component-blueprint.md` §3.7). A speculative translation getter is **invisible** when unnecessary, which is why the rule is "do not add one" and this is how that is checked |
 | `check:commit-trailers` | No commit message contains `Co-Authored-By`, `Co-authored-by` or *"Generated with"* | `CLAUDE.md`'s git convention, as a commit-msg hook plus a CI pass over the branch's commits |
 | `check:doc-index` | `__internal__/INDEX.md` is byte-identical to a fresh `pnpm docs:index` | The index disagrees with the documents, so a citation resolves to the wrong line range — §8.1 |
 | `check:skill-pointers` | Every pointer in every repo-authored skill under `.agents/skills/` resolves, and every line of one is a pointer | A skill is a reading order over the corpus and nothing else. A dead pointer sends a reader to a section that is not the one named; a rule restated in a skill is a second copy, and the copy is the one that goes stale — §8.2 |

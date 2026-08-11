@@ -29,7 +29,7 @@ function hydrateFixture(
   deliberate re-render distinguishable from a silent client render. The only case today is
   `I18nProvider` with no `locale` prop: it renders the server's `en-US`, then adopts the visitor's
   browser locale, rebuilding every locale-derived node (see the "Calendar locale hydration" tests in
-  `packages/components/src/calendar/__tests__/calendar.browser.test.tsx`). Reaching for this flag
+  `packages/chakra-ui-solid/src/components/calendar/__tests__/calendar.browser.test.tsx`). Reaching for this flag
   anywhere else almost certainly means the client tree drifted from the server's.
 
 Returns `{ container, dispose }`. Drive interaction or run `expectNoA11yViolations(container)`

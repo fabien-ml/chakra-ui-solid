@@ -398,7 +398,7 @@ here, before they have installed anything.
 **1 — Install.** Three of ours and one of theirs:
 
 ```
-@chakra-ui-solid/components  @chakra-ui-solid/panda-preset  @chakra-ui-solid/styled-system
+chakra-ui-solid  @chakra-ui-solid/panda-preset  @chakra-ui-solid/styled-system
 @pandacss/dev  (a dev dependency of yours — we declare it as a non-optional peer)
 ```
 
@@ -544,7 +544,7 @@ reader who finds `Portal` in our exports after reading that it was excluded stop
 | `portal` | **ships**, cut to ~6 lines | Solid's own `Portal` **throws** during SSR, and mounts to `document.body` while the machine looks its elements up through `getRootNode()`. **`disabled` is not shipped in either form** — a non-reactive prop that silently ignores changes is `plan.md` §0.2 in prop form, and omitting it makes passing it a type error (`roadmap.md` §5.1) |
 | `client-only` | **ships**, ~12 lines | Not a React idiom: server markup and first-client-render markup must agree. `createSignal(false)` + `onMount` is the Solid form of the same behavior (`roadmap.md` §5.2) |
 | `presence` | **ships** | A public, styled component in Chakra, and a public one here. The one thing it does not get is `hideMode: "activity"` — React 19's `<Activity>` has no Solid equivalent (`roadmap.md` §5.6; `component-blueprint.md` §7.3) |
-| `environment` | **relocated** | A context, not a component. It ships from `@chakra-ui-solid/system` and is re-exported from `components/environment` so Chakra's import path resolves (`roadmap.md` §5.5) |
+| `environment` | **relocated** | A context, not a component. It ships from `@chakra-ui-solid/core` and is re-exported from `components/environment` so Chakra's import path resolves (`roadmap.md` §5.5) |
 
 Plus **charts**, which is the one clean exclusion and is not one of the 115: `@chakra-ui/charts` peer-
 depends on `recharts` and `react`, and there is no Solid charting substrate to bind to. **The reason

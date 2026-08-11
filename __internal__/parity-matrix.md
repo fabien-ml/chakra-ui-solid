@@ -582,7 +582,7 @@ distinction to bridge. **Same API, strictly better semantics, already in the rea
 `components/environment/index.ts` is a pure re-export of Ark's `EnvironmentProvider` /
 `useEnvironmentContext` (measured — the file has no implementation). It is a **context**, not a
 component: no anatomy, no recipe, no machine, nothing to render. `plan.md` §7.2 already places it in
-`@chakra-ui-solid/system` as one of two contexts, and `component-blueprint.md` §2.3 already threads
+`@chakra-ui-solid/core` as one of two contexts, and `component-blueprint.md` §2.3 already threads
 `getRootNode` from it into every machine.
 
 **Ships from `system`, re-exported from `components/environment`** so Chakra's import path resolves.
@@ -593,7 +593,7 @@ machine component's shadow-DOM correctness.
 
 Chakra ships `Presence` as `chakra(ArkPresence)` — a **public, styled component** (measured,
 `components/presence/index.tsx`), not an internal mechanism. `plan.md` §6 and
-`component-blueprint.md` §7 already build `createPresence` in `@chakra-ui-solid/system` over the
+`component-blueprint.md` §7 already build `createPresence` in `@chakra-ui-solid/core` over the
 `@zag-js/presence` machine; the public component is a thin styled wrapper over it plus the render
 strategy.
 
@@ -671,7 +671,7 @@ plus `lazyMount`/`unmountOnExit` — the identical render-strategy expression as
 different source. `AccordionItemTrigger` then gates `aria-controls` on `collapsible.isUnmounted`, not
 on a presence.
 
-**Consequence for `@chakra-ui-solid/system`:** the render strategy of `component-blueprint.md` §7.2
+**Consequence for `@chakra-ui-solid/core`:** the render strategy of `component-blueprint.md` §7.2
 must be **separable from the presence machine** — the `lazyMount`/`unmountOnExit`/`unmounted`
 computation takes a `present: Accessor<boolean>` and does not care where it comes from. That is a
 small refactor of a 30-line function, and it is cheap now and annoying after B2 is written against
@@ -826,7 +826,7 @@ that the previous one did not, and has a gate.
 | Step | What | Gate |
 |---|---|---|
 | 1 | Repo bootstrap | Three Vitest projects green; `solid-contract` characterization tests written |
-| 2 | `@chakra-ui-solid/zag-solid` | `zag-solid-adapter.md` §6.5. Plus the §0 manifest audit re-run against the *installed* closure |
+| 2 | the Zag adapter fork | `zag-solid-adapter.md` §6.5. Plus the §0 manifest audit re-run against the *installed* closure |
 | 3 | Styling seam — Panda config, preset, `renderStyled`, style props. **Plus the two contexts** (locale, environment) | `Box` renders correct **computed styles** in unit, SSR and browser, and a consumer `panda.config.ts` override changes them |
 | 4 | One real slot recipe, in a throwaway consumer whose source never names the variant | `plan.md` §1's gate — `staticCss` per recipe confirmed or the ladder's rung 2 taken |
 | **5** | **Dialog** — the blueprint end to end. **Plus `Portal`**, and the render strategy split so `present` can come from a machine as well as a presence (§6.2) | `component-blueprint.md` §11 compiles; axe clean on closed-state assertions, `aria-hidden-focus` only on open (§9.2 there); SSR→hydrate round-trip |
@@ -906,9 +906,9 @@ them is a `useX` machine hook. So:
 | Surface | Count | Shape | Lands |
 |---|---|---|---|
 | **`Context`** — `<Dialog.Context>{(api) => …}</Dialog.Context>`, a render prop over the component's own context | **43** components | **Per-component row.** Ten lines, no recipe, no machine props | **With the component's batch.** No separate work item |
-| **`useX` / `useXContext`** — the machine hook and its context reader | one per machine family | **Per-component row**, exported from the component's own subpath (`@chakra-ui-solid/components/dialog`), **not** from `./hooks` | With the component's batch. `useX` is what `RootProvider` consumes |
+| **`useX` / `useXContext`** — the machine hook and its context reader | one per machine family | **Per-component row**, exported from the component's own subpath (`chakra-ui-solid/dialog`), **not** from `./hooks` | With the component's batch. `useX` is what `RootProvider` consumes |
 | **`RootProvider`** — `<Dialog.RootProvider value={useDialog(...)}>` | **41** components | **Per-component row**, but it needs `useX` first | With the component's batch |
-| **`PropsProvider`** — a defaults-injection context | **47** components | **One cross-cutting mechanism in `@chakra-ui-solid/system`**, then one thin row per component | **Mechanism at step 5b** (the first batch with two components on one machine, which is where injected defaults first earn their keep); rows with each batch |
+| **`PropsProvider`** — a defaults-injection context | **47** components | **One cross-cutting mechanism in `@chakra-ui-solid/core`**, then one thin row per component | **Mechanism at step 5b** (the first batch with two components on one machine, which is where injected defaults first earn their keep); rows with each batch |
 | **`./hooks`** — the fourteen standalone hooks | 7 ship, 7 excluded (§5.8) | **A `plan.md` §5.5 subpath obligation**, independent of any component | **Step 6.** `useBreakpoint`/`useMediaQuery` are needed by the responsive story, and `useListCollection` by B5 |
 
 ```bash
@@ -930,9 +930,9 @@ of which `component-blueprint.md` §13 row 6 flagged and none of which is in tha
 
 | Package | Gains | Size, measured |
 |---|---|---|
-| `@chakra-ui-solid/system` | `@zag-js/presence` | 1 machine package. Presence is a machine like any other (`plan.md` §6) |
-| `@chakra-ui-solid/components` | one `@zag-js/<machine>` per machine component | **37** distinct machine packages — the 38 Chakra reaches (§2.4) minus `presence`, which `system` owns |
-| `@chakra-ui-solid/components` | non-machine Zag utilities | `@zag-js/collection` (the `./collection` subpath, `plan.md` §5.5), `@zag-js/focus-trap` (the `FocusTrap` component), `@zag-js/highlight-word` (`Highlight`), `@zag-js/dom-query` (Field's element lookups). `@zag-js/i18n-utils` belongs to `system`'s locale context (`plan.md` §7.2) |
+| `@chakra-ui-solid/core` | `@zag-js/presence` | 1 machine package. Presence is a machine like any other (`plan.md` §6) |
+| `chakra-ui-solid` | one `@zag-js/<machine>` per machine component | **37** distinct machine packages — the 38 Chakra reaches (§2.4) minus `presence`, which `system` owns |
+| `chakra-ui-solid` | non-machine Zag utilities | `@zag-js/collection` (the `./collection` subpath, `plan.md` §5.5), `@zag-js/focus-trap` (the `FocusTrap` component), `@zag-js/highlight-word` (`Highlight`), `@zag-js/dom-query` (Field's element lookups). `@zag-js/i18n-utils` belongs to `system`'s locale context (`plan.md` §7.2) |
 | `preset`, `styled-system`, `components` | **`@pandacss/dev` as a non-optional `peerDependency`** | `plan.md` §4.4. This is the graph's **first required-of-the-consumer edge** — a dependency the package manager enforces on someone else's tree |
 
 **The real closure is 43 external packages before transitives** — 41 on `components` (37 machines +
