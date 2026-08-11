@@ -30,15 +30,18 @@
     // `package.json#exports` points at `dist/` for consumers, which would otherwise make the
     // editor and `tsc --noEmit` read a stale build: add an export to one package and its
     // dependants cannot see it until someone rebuilds. `vitest-aliases.ts` aliases to source for
-    // exactly this reason, and `check:resolution-sync` asserts the two agree — with the docs
-    // app's Vite alias as the third member, from step 8.
+    // exactly this reason, and the two must carry the same set — with the docs app's Vite alias as
+    // the third member, which takes `vitest-aliases.ts`'s array directly and so cannot drift.
+    // `check:resolution-sync` used to assert that and was deleted in `76382c5`, so this list and
+    // `vitest-aliases.ts` are now kept in step by hand. Nothing reports it when they are not: the
+    // package resolves to a stale sibling `dist/` and every build and every test still passes.
     //
     // Relative paths in an inherited config resolve against the config that declares them, so
     // these are repo-root-relative and every package inherits them unchanged.
     //
     // `internal-test-utils` is private and never published; it is here for the same reason as a
-    // published sibling — its consumers must read its `src`, and `check:resolution-sync` has
-    // nothing to compare until both files carry the same set.
+    // published sibling — its consumers must read its `src`, and the two lists are only comparable
+    // when both carry the same set.
     //
     // Two packages are deliberately absent, and both for the same reason — they have no `src` a
     // path could point at:

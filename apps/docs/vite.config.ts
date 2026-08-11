@@ -18,16 +18,15 @@ import remarkSmartypants from "remark-smartypants";
 import { defineConfig } from "vite";
 import viteSolid from "vite-plugin-solid";
 import { solidPluginOptions } from "../../solid-babel-options.ts";
-import { exampleSourceHighlighter } from "./highlight-plugin.ts";
-
-// Re-exported, not re-declared. `plan.md` §9 keeps three files as **one unit** — this one,
+// Imported, not re-declared. `plan.md` §9 keeps three files as **one unit** — this one,
 // `tsconfig.base.json#paths` and `vitest-aliases.ts` — because drift between them is silent: a
 // package resolves to a stale sibling `dist/` and everything still builds and still passes.
-// `scripts/check-resolution-sync.mjs` imports this name from this file by name, and re-exporting
-// the shared array is what makes the three agree by construction rather than by vigilance.
-export { chakraSolidAlias } from "../../vitest-aliases.ts";
-
+// Taking the shared array is what makes this file agree with `vitest-aliases.ts` by construction;
+// `tsconfig.base.json#paths` is the one that still has to be kept in step by hand, since
+// `check:resolution-sync` went with the rest of the apparatus (`76382c5`). This module also used to
+// re-export the name, purely so that script could import it from here; nothing imports it now.
 import { chakraSolidAlias } from "../../vitest-aliases.ts";
+import { exampleSourceHighlighter } from "./highlight-plugin.ts";
 
 const src = fileURLToPath(new URL("./src", import.meta.url));
 

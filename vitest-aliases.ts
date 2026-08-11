@@ -9,8 +9,9 @@ import { join } from "node:path";
 // The workspace → src and `solid-js`/`@solidjs/web` → server-build aliases, extracted
 // into their own module so that `vitest.config.ts`'s three projects — and, from step 2, the
 // hydration-fixture bridge — are consumers of the *same* arrays rather than four copies that can
-// drift. `plan.md` §9's "always resolve to src, never a sibling's dist" invariant lives here, and
-// `check:resolution-sync` is what holds this file and `tsconfig.base.json#paths` together.
+// drift. `plan.md` §9's "always resolve to src, never a sibling's dist" invariant lives here.
+// Nothing holds this file and `tsconfig.base.json#paths` together any more — `check:resolution-sync`
+// did until `76382c5` deleted it — so the two are kept in step by hand.
 
 const requireFromRoot = createRequire(join(import.meta.dirname, "package.json"));
 
@@ -50,10 +51,10 @@ export function resolveServerEntry(packageName: string): string {
  * this directly: a fix was edited, the owning package's own tests went green, and the dependant's
  * tests kept failing identically against the stale pre-fix `dist`.
  *
- * Every entry here owes a matching `tsconfig.base.json#paths` entry **in the same commit**;
- * `check:resolution-sync` is what says so. Every package here has a root barrel and no subpaths, so
- * these are exact-anchored matches rather than wildcards — an unanchored `find` would also capture
- * `@chakra-ui-solid/core-something`, and the check rejects one.
+ * Every entry here owes a matching `tsconfig.base.json#paths` entry **in the same commit**, and
+ * since `check:resolution-sync` was deleted nothing but review says so. Every package here has a
+ * root barrel and no subpaths, so these are exact-anchored matches rather than wildcards — an
+ * unanchored `find` would also capture `@chakra-ui-solid/core-something`.
  *
  * `@chakra-ui-solid/styled-system` and `@chakra-ui-solid/panda-preset` are absent on purpose:
  * neither has a `src` to point at. The long form of both reasons is in `tsconfig.base.json`,
