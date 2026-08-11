@@ -34,7 +34,7 @@ const src = fileURLToPath(new URL("./src", import.meta.url));
 /**
  * The docs app is a **consumer** — that is the load-bearing part, not an incidental one
  * (`docs-site.md` §1.1). It imports our packages by name, writes its own `panda.config.ts` from
- * `chakraConfig()`, and runs its own Panda build. Take any of those shortcuts away and the site
+ * `defineChakraConfig()`, and runs its own Panda build. Take any of those shortcuts away and the site
  * stops being evidence and becomes decoration, which is what `check:docs-consumer-config` exists
  * to prevent.
  *

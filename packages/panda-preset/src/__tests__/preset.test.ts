@@ -134,7 +134,7 @@ describe("the preset's own chain and atomic staticCss", () => {
   });
 
   it("declares no top-level `staticCss.recipes`", () => {
-    // Deliberate, and the opposite of `chakraConfig()`'s block: a top-level recipe block here would
+    // Deliberate, and the opposite of `defineChakraConfig()`'s block: a top-level recipe block here would
     // compete with a consumer's own, because spreading a config is shallow. The per-recipe
     // declarations above ride `theme.extend`'s deep merge instead.
     expect(chakraSolidPreset.staticCss?.recipes).toBeUndefined();

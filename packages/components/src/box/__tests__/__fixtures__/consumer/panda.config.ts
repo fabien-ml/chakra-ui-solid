@@ -1,5 +1,4 @@
-import { chakraConfig } from "@chakra-ui-solid/panda-preset";
-import { defineConfig } from "@pandacss/dev";
+import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
 
 /**
  * A consumer's `panda.config.ts`, written the way the docs will tell a consumer to write one, and
@@ -12,13 +11,11 @@ import { defineConfig } from "@pandacss/dev";
  * it is their sheet giving a different rule to a class name our runtime already computed, and the
  * only way to test that is to generate their sheet and read it.
  *
- * `chakraConfig()` carries every knob that has to match ours — `hash` above all, since a
+ * `defineChakraConfig()` sets every knob that has to match ours — `hash` above all, since a
  * consumer who hashed would get a sheet whose rule names our runtime never emits, and every
  * component would render naked with no error anywhere.
  */
-export default defineConfig({
-  ...chakraConfig(),
-
+export default defineChakraConfig({
   include: [
     // Their source. Panda's `jsxStyleProps: "all"` extracts style props from any capitalized JSX
     // component with no factory and no registration, which is why `<Box p="4">` in a consumer's

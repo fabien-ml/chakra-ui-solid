@@ -307,11 +307,11 @@ export const docsNav: NavItem[] = [
           { title: "Semantic Tokens", url: "semantic-tokens" },
           { title: "Recipes", url: "recipes" },
           { title: "Slot Recipes", url: "slot-recipes" },
-          // `chakraConfig` is ours and has no Chakra counterpart — their nearest thing is
+          // `defineChakraConfig` is ours and has no Chakra counterpart — their nearest thing is
           // `createSystem`, which does not exist here (`plan.md` §0.4). It sits in Theming rather
           // than in a fifth `reference/` tier, which the top bar does not have and
           // `check:docs-inventory` rejects outright.
-          { title: "chakraConfig", url: "chakra-config" },
+          { title: "defineChakraConfig", url: "chakra-config" },
         ],
       },
       {

@@ -1,24 +1,20 @@
-import { chakraConfig } from "@chakra-ui-solid/panda-preset";
-import { defineConfig } from "@pandacss/dev";
+import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
 
 /**
  * The docs app's Panda config — **a consumer's config, not a privileged in-repo one**.
  *
- * This is the shape `plan.md` §3.4 documents and the install page tells a reader to write:
- * `chakraConfig()` spread, plus `include` and `outdir`, and nothing else. The knobs that have to
- * match our published runtime — `hash` above all — arrive inside `chakraConfig()`, so there is no
- * knob here to get wrong. `check:docs-consumer-config` asserts exactly that shape, because the
- * moment this file grows a hand-written knob the site stops being evidence that a consumer's build
- * works and becomes decoration (`docs-site.md` §1.1).
+ * This is the shape the install page tells a reader to write: `defineChakraConfig()` with `include`
+ * and `outdir`, and nothing else. There is no `defineConfig` import and no spread, because the knobs
+ * that have to match our published runtime — `hash` above all — are set inside the call and are a
+ * type error to pass. The moment this file grows a hand-written knob the site stops being evidence
+ * that a consumer's build works and becomes decoration (`docs-site.md` §1.1).
  *
  * Nothing imports the repo's own dev stylesheet either. `packages/styled-system/styled-system/
  * styles.css` is generated from *our* source for the browser tests and Storybook; the sheet this
  * app renders against is the one the `cssgen` script below writes from *this* config, over *this*
  * app's source. Those are two different Panda runs on purpose.
  */
-export default defineConfig({
-  ...chakraConfig(),
-
+export default defineChakraConfig({
   include: [
     // The library channel: values *our* components name that a consumer's source never literally
     // writes — a style config handed to `chakra()` inside a component, recipe variants — reach

@@ -126,7 +126,7 @@ const componentsByTag = new Map<string, ChakraComponent<ValidComponent>>();
  * `cva()` here only recomputes the class names those rules were generated under. That requires
  * `jsxFactory: "chakra"` in the scanning config — `chakra.button` is lowercase, so without it
  * Panda's `isUpperCase` fallback declines the tag and the page renders unstyled with no error.
- * `chakraConfig()` carries the setting so a consumer cannot miss it.
+ * `defineChakraConfig()` carries the setting so a consumer cannot miss it.
  *
  * A value Panda cannot read out of the source — `bg={props.color}` — has no rule and renders
  * nothing. Route those through a CSS custom property (`style={{ "--bg": color() }}` with

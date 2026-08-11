@@ -25,7 +25,7 @@
     },
     // Two stylesheets, from two Panda runs. `styled-system`'s is **ours** — the dev sheet the
     // browser tests and `check:css-coverage` assert against. `components`' is a **consumer's**,
-    // generated from a fixture config that spreads `chakraConfig()`, and it is what proves an
+    // generated from a fixture config that calls `defineChakraConfig()`, and it is what proves an
     // override in their config changes what our components render.
     //
     // The dev sheet is NOT published, and that holds by task ordering rather than by any check.

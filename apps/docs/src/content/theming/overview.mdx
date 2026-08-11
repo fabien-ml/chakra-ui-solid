@@ -13,26 +13,23 @@ The React version's theming system is built around the API of
 close to the same object — it lives in `panda.config.ts`, and a build compiles it instead of an
 engine serializing it while your app runs.
 
-> **Almost nothing on this page is ours.** `defineConfig`, `theme.extend`, tokens, semantic tokens,
-> recipes, conditions — all of it is Panda's own API, and [Panda's docs](https://panda-css.com/docs)
-> are the reference for any key not covered here. This library contributes two things to it: the
-> preset carrying Chakra's design system, and [`chakraConfig()`](/docs/theming/chakra-config), which
-> sets the handful of keys that have to agree with our published runtime.
+> **Almost nothing on this page is ours.** `theme.extend`, tokens, semantic tokens, recipes,
+> conditions — all of it is Panda's own API, and [Panda's docs](https://panda-css.com/docs) are the
+> reference for any key not covered here. This library contributes two things to it: the preset
+> carrying Chakra's design system, and
+> [`defineChakraConfig()`](/docs/theming/chakra-config), which stands in for Panda's `defineConfig`
+> and sets the handful of keys that have to agree with our published runtime.
 
 Three steps here as well, and the last two are where they part:
 
-- Define the styling system configuration using Panda's `defineConfig` function
+- Define the styling system configuration using `defineChakraConfig`
 - Generate the stylesheet with `panda codegen`
 - Import the stylesheet you generated
 
 ```ts title="panda.config.ts"
-import { chakraConfig } from "@chakra-ui-solid/panda-preset";
-import { defineConfig } from "@pandacss/dev";
+import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
 
-const chakra = chakraConfig();
-
-export default defineConfig({
-  ...chakra,
+export default defineChakraConfig({
   theme: {
     extend: {
       tokens: {
@@ -47,19 +44,19 @@ export default defineConfig({
 
 Nothing wraps your app. There is no `createSystem`, because there is no engine to hand a system to,
 and no `ChakraProvider`, because by the time the app runs your theme is a stylesheet. Three
-differences with the React version's `theme.ts`, and they are the whole of it: `defineConfig` is
+differences with the React version's `theme.ts`, and they are the whole of it: the config object is
 Panda's rather than Chakra's, customizations go under `theme.extend` rather than merging with a
 `defaultConfig`, and a build step replaces the provider.
 
-> `chakraConfig()` already puts the preset in `presets` — do not import it again here. And
-> **spreading is shallow**: naming the call and spreading it back in is what keeps a re-declared key
-> from replacing ours outright. [Installation](/docs/get-started/installation) covers the setup this
-> page assumes.
+> `defineChakraConfig()` already puts the preset in `presets` — do not import it again here. It is
+> also the only call in the file: there is no `defineConfig` to wrap it in and nothing to spread, so
+> no key you write can replace one it set. [Installation](/docs/get-started/installation) covers the
+> setup this page assumes.
 
 ## Config
 
-The system is configured using the `defineConfig` function. This function accepts a configuration
-object that allows you to customize the styling system's behavior.
+The system is configured using the `defineChakraConfig` function. This function accepts a
+configuration object that allows you to customize the styling system's behavior.
 
 After a config is defined, `panda codegen` reads it and writes the stylesheet.
 
@@ -69,39 +66,40 @@ After a config is defined, `panda codegen` reads it and writes the stylesheet.
 React version spells it `cssVarsRoot`.
 
 ```ts title="panda.config.ts"
-export default defineConfig({
-  ...chakra,
+export default defineChakraConfig({
   cssVarRoot: ":where(:root, :host)",
+  include: [...],
 });
 ```
 
 ### prefix
 
-Not available. Both halves of Panda's `prefix` change names our published runtime has already
-committed to, and the failure is silent — see [Keys that must match ours](#keys-that-must-match-ours).
+Not available, and a **type error** rather than a documented warning. Both halves of Panda's
+`prefix` change names our published runtime has already committed to, and the failure is silent —
+see [Keys that must match ours](#keys-that-must-match-ours).
 
 ### globalCss
 
 `globalCss` is used to apply global styles to the system.
 
 ```ts title="panda.config.ts"
-export default defineConfig({
-  ...chakra,
+export default defineChakraConfig({
   globalCss: {
     "html, body": { margin: 0, padding: 0 },
   },
+  include: [...],
 });
 ```
 
 ### preflight
 
-`preflight` is used to apply css reset styles to the system. `chakraConfig()` turns it on; pass
-`false` to drop it, or a scope to confine it to one element.
+`preflight` is used to apply css reset styles to the system. `defineChakraConfig()` turns it on;
+pass `false` to drop it, or a scope to confine it to one element.
 
 ```ts title="panda.config.ts"
-export default defineConfig({
-  ...chakra,
+export default defineChakraConfig({
   preflight: { scope: ".chakra-reset" },
+  include: [...],
 });
 ```
 
@@ -120,8 +118,7 @@ properties the React version's does:
 - `slotRecipes`: for defining component slot recipes
 
 ```ts title="panda.config.ts"
-export default defineConfig({
-  ...chakra,
+export default defineChakraConfig({
   theme: {
     extend: {
       breakpoints: { sm: "320px", md: "768px", lg: "960px", xl: "1200px" },
@@ -139,6 +136,7 @@ export default defineConfig({
       },
     },
   },
+  include: [...],
 });
 ```
 
@@ -155,7 +153,9 @@ theme: {
 }
 ```
 
-> **A bare `theme` drops about half of Chakra's tokens.** `extend` merges; the key itself replaces.
+> **A bare `theme` would drop Chakra's whole token table and all 19 recipes** — `extend` merges,
+> the key itself replaces. So `theme` here accepts `extend` and nothing else: `theme: { tokens: … }`
+> is a type error naming the fix.
 
 ### conditions
 
@@ -163,9 +163,9 @@ Use the `conditions` config property to define custom selectors and media query 
 in the system.
 
 ```ts title="panda.config.ts"
-export default defineConfig({
-  ...chakra,
+export default defineChakraConfig({
   conditions: { cqSm: "@container(min-width: 320px)", child: "& > *" },
+  include: [...],
 });
 ```
 
@@ -214,10 +214,11 @@ rules our class names never match — an unstyled component, with nothing raised
 | `separator` | `p_4` becomes `p=4` in the sheet only |
 | `presets` | A re-declare drops every Chakra token and recipe |
 | `importMap` | Unregisters the `chakra` factory, and every `<chakra.button>` emits nothing |
-| `staticCss` | Drops the responsive recipe variants `chakraConfig({ responsive })` wrote |
+| `staticCss` | A `css` array of yours replaces the preset's outright — in `extend` too — taking `<Flex inline>`, `<Wrap>` and every `StackSeparator` with it |
 
-`chakraConfig()` sets the first three and leaves them out of your reach unless you re-declare them.
-The last three are the shallow-spread hazard: name the call and spread the value back in.
+None of these is yours to get wrong, and none of them takes a documented warning. The first three,
+plus `jsxFramework`, `jsxFactory` and `eject`, are a **type error** to pass. The last three are
+**merged**: your presets come after ours, and your `staticCss` is unioned with the preset's. [defineChakraConfig](/docs/theming/chakra-config) is the full account.
 
 ## The system object
 

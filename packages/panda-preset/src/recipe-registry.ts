@@ -22,7 +22,7 @@ const theme = chakraPreset.theme as
  * `container` is a key `@chakra-ui/react` defines in its own theme and `@chakra-ui/panda-preset`
  * omits, so its body is ported into {@link containerRecipe} and registered here. Registering it in
  * the same table as the inherited 18 is what makes every downstream reader cover it without being
- * told: the `staticCss: ["*"]` declaration, the jsx hint, and `chakraConfig({ responsive })`'s
+ * told: the `staticCss: ["*"]` declaration, the jsx hint, and `defineChakraConfig({ responsive })`'s
  * expansion each walk `recipeKeys`, and a delta bolted onto the preset alone would be missing from
  * all three.
  */
@@ -60,7 +60,7 @@ export function componentNameFor(recipeKey: string): string {
 /**
  * Every recipe with its variant key names — `{ recipe: "button", keys: ["size", "variant"] }`.
  *
- * `chakraConfig({ responsive })` needs these to expand its two coarser grains: `["button"]` means
+ * `defineChakraConfig({ responsive })` needs these to expand its two coarser grains: `["button"]` means
  * *every* variant key on Button, and nothing else knows which those are.
  */
 export function variantKeysFor(): Array<{ recipe: string; keys: string[] }> {

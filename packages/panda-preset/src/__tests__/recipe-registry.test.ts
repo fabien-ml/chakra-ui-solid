@@ -25,7 +25,7 @@ describe("the recipe list, read off the upstream preset", () => {
 
   it("registers `container` alongside them rather than beside them", () => {
     // The whole point of putting the ported recipe in this list: `staticCss: ["*"]`, the jsx hint
-    // and `chakraConfig({ responsive })` all walk `recipeKeys`, so a delta bolted onto the preset
+    // and `defineChakraConfig({ responsive })` all walk `recipeKeys`, so a delta bolted onto the preset
     // alone would be missing from all three — and each of those three fails silently.
     expect(recipeKeys).toContain("container");
     expect(componentNameFor("container")).toBe("Container");
@@ -73,7 +73,7 @@ describe("variantKeysFor", () => {
   });
 
   it("reports an empty list for a recipe with no variants rather than dropping it", () => {
-    // Nine of the 75 have none. Dropping them would make `chakraConfig({ responsive: true })` cover
+    // Nine of the 75 have none. Dropping them would make `defineChakraConfig({ responsive: true })` cover
     // 65 recipes while reporting that it covers all of them.
     const withoutVariants = variantKeysFor().filter((entry) => entry.keys.length === 0);
     expect(withoutVariants.map((entry) => entry.recipe)).toContain("tooltip");

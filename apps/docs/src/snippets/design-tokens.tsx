@@ -1,8 +1,6 @@
-import { chakraConfig } from "@chakra-ui-solid/panda-preset";
-import { defineConfig } from "@pandacss/dev";
+import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
 
-export default defineConfig({
-  ...chakraConfig(),
+export default defineChakraConfig({
   theme: {
     extend: {
       semanticTokens: {

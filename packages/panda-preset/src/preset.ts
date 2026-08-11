@@ -90,7 +90,7 @@ function staticCssForEvery(keys: string[]): Record<string, { staticCss: ["*"]; j
  *
  * `presets` is declared **here rather than in a `panda.config.ts`** so that `presets:
  * [chakraSolidPreset]` is the whole story on both sides of the library/consumer boundary. Panda's
- * `eject: true` (which our config and `chakraConfig()` both set, to keep Panda's own default theme
+ * `eject: true` (which our config and `defineChakraConfig()` both set, to keep Panda's own default theme
  * from merging alongside Chakra's and disagreeing about `colors.gray.*`) drops the default presets,
  * and `@chakra-ui/panda-preset` declares no base of its own while reaching for
  * `utilities: { extend }` and `conditions: { extend }`. Left to a config file this fix works and

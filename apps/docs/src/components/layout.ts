@@ -10,7 +10,7 @@ import { css } from "@chakra-ui-solid/styled-system/css";
  * chakra-ui.com's shell is a sticky header of a known height with two sticky columns beside the
  * article, and every one of those three pieces measures itself against the header. Their theme
  * declares the two numbers as `globalCss` custom properties; ours cannot, because a consumer's
- * `panda.config.ts` is `chakraConfig()` plus `include`/`outdir` and nothing else — the docs app
+ * `panda.config.ts` is `defineChakraConfig()` with `include`/`outdir` and nothing else — the docs app
  * writes the config it tells readers to write, and `check:docs-consumer-config` enforces that
  * (`docs-site.md` §1.1). So the same two properties are declared here instead, which is an ordinary
  * Panda rule in this app's own sheet.

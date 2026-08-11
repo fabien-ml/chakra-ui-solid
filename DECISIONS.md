@@ -221,7 +221,7 @@ rather than a prop that type-checks and does nothing.
 **A responsive variant prop type-checks whether or not its rules were generated.**
 `size={{ base: "sm", md: "lg" }}` *and* the array spelling `size={["sm", "lg"]}` both satisfy the
 generated types (`ConditionalValue<V> = V | Array<V | null> | {…}`), while the CSS comes from the
-consumer's config. Forgetting `chakraConfig({ responsive })` is a silent unstyling in two spellings,
+consumer's config. Forgetting `defineChakraConfig({ responsive })` is a silent unstyling in two spellings,
 and the array form is the one no doc page shows.
 
 ## SSR and the Solid compiler
@@ -292,7 +292,7 @@ consumer's stylesheet, runtime only setting an attribute on `<html>`; unprobed t
   `toggle`, `download-trigger`, `text`. They are unstyled by key in Chakra too and a faithful port
   reproduces that. **`container` was the sixth and no longer is**: its body is ported from
   `@chakra-ui/react`'s theme into the preset, registered in `recipeKeys` so `staticCss`, the jsx
-  hint and `chakraConfig({ responsive })` all cover it without being told, and its `className` is
+  hint and `defineChakraConfig({ responsive })` all cover it without being told, and its `className` is
   normalized off `chakra-container` because `componentNameFor()` reads the jsx hint out of it.
   **It also warns, in every Panda run including a consumer's** — `[recipes] This recipe name is
   already used in `patterns`` — because `@pandacss/preset-base` has a `container` *pattern* too.
@@ -364,7 +364,7 @@ importing `chakra` from `@chakra-ui-solid/core`, which Node resolves through the
 **Every other site, and the first five are load-bearing** — each fails silently or wrecks the
 build rather than erroring usefully:
 
-1. `chakraConfig()`'s `importMap.jsx` — consumer-facing. Wrong, and every `<chakra.div>` in
+1. `defineChakraConfig()`'s `importMap.jsx` — consumer-facing. Wrong, and every `<chakra.div>` in
    their app is unstyled.
 2. `packages/styled-system/panda.config.ts`'s `importMap` / `include` / `exclude`.
 3. `turbo.json`'s `cssgen.inputs` — its own comment says these globs must stay in step with that
@@ -390,6 +390,6 @@ per page.
 - **Popover comes immediately after Dialog and before B1**, to measure the popper seam on one
   component before any volume depends on it.
 - **Responsive recipe variants are off by default**, with a three-grain opt-in through
-  `chakraConfig({ responsive })`: omitted, `{ button: ["size"] }`, or `["button"]`.
+  `defineChakraConfig({ responsive })`: omitted, `{ button: ["size"] }`, or `["button"]`.
 - **`for` and `show` are excluded** — Solid has `<For>` and `<Show>`. Charts is excluded separately;
   it is not a component folder.

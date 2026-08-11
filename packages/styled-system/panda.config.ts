@@ -5,10 +5,9 @@ import { defineConfig } from "@pandacss/dev";
  * Panda's config for **our own** generated output — the `css()` / `cva()` / `sva()` runtime this
  * repo publishes, and the dev stylesheet the browser tests assert against.
  *
- * It is not the consumer's config and does not try to be: a consumer spreads `chakraConfig()` from
- * `@chakra-ui-solid/panda-preset`, which carries the knobs that must match this
- * one and leaves `include` and `outdir` to them. Two knobs differ deliberately, and both are
- * commented below.
+ * It is not the consumer's config and does not try to be: a consumer calls `defineChakraConfig()`
+ * from `@chakra-ui-solid/panda-preset`, which sets the knobs that must match this one and takes
+ * `include` and `outdir` from them. Two knobs differ deliberately, and both are commented below.
  */
 export default defineConfig({
   // Drops `@pandacss/preset-panda` — Panda's default *theme*. Without it Panda's token palette
@@ -26,15 +25,20 @@ export default defineConfig({
   // capitalized JSX component with no factory and no registration. The generated `jsx/index`
   // factory itself targets Solid 1.x and is never exported (`prior-art.md` §2.3).
   jsxFramework: "solid",
-  // Mirrors `chakraConfig()`, and for the same reason: `chakra.button` is lowercase, so without
+  // Mirrors `defineChakraConfig()`, and for the same reason: `chakra.button` is lowercase, so without
   // this Panda's `isUpperCase` fallback declines the tag and every factory element in our own
   // source — tests and stories included — emits zero rules with no error.
   jsxFactory: "chakra",
   // Unhashed class names, and it is load-bearing across the library/consumer boundary rather than
   // merely tidy: our published runtime computes `p_4`, and a consumer whose config hashes gets a
   // stylesheet carrying different names — every class we emit is then absent from their sheet,
-  // silently. `chakraConfig()` is what stops that being constructable (`plan.md` §3.4).
+  // silently. `defineChakraConfig()` is what stops that being constructable (`plan.md` §3.4).
   hash: false,
+  // Panda's own default, written out because `defineChakraConfig()` writes it out too. Left
+  // inherited on both sides the two agreed by coincidence, and a consumer who set `separator: "="`
+  // met nothing to stop them: their sheet would carry `p=4` while this runtime went on computing
+  // `p_4`, and every component would render naked with no error anywhere.
+  separator: "_",
   preflight: true,
   // **Our own source only, for the dev stylesheet** Storybook and the browser tests render
   // against. It is not the consumer's extraction channel — that is our published `dist/`, which
@@ -51,7 +55,7 @@ export default defineConfig({
   // `check:declaration-support` exists to reject. JSX does not do this; only the `raw` call does.
   exclude: ["../{system,components}/src/**/*.test.ts"],
   outdir: "styled-system",
-  // The same `importMap` a consumer gets from `chakraConfig()`, and it has to be written out here
+  // The same `importMap` a consumer gets from `defineChakraConfig()`, and it has to be written out here
   // rather than left to the default. The default is `<outdir>/…`, which our `css()` imports match
   // only by accident — `"@chakra-ui-solid/styled-system/css".includes("styled-system/css")` — and
   // which the factory does not match at all: `chakra` is registered only when the module it was
