@@ -211,7 +211,7 @@ naming a file (`blueprint §1.2`) points there instead.
       Part of the input-group family
 - [ ] input-group — ●
       `calc(var(--input-height) - ${offset})` (§3.1)
-- [ ] loader
+- [x] loader
       Composition of `Spinner` + `AbsoluteCenter`
 - [x] quote
 - [x] simple-grid — ●
