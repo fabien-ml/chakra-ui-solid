@@ -1,6 +1,6 @@
-import { Box, type BoxProps } from "@chakra-ui-solid/components";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import { Dynamic } from "@solidjs/web";
+import { Box, type BoxProps } from "chakra-ui-solid";
 import type { Component } from "solid-js";
 import { codePaneClass } from "~/components/code-pane";
 import { Example } from "~/components/example";

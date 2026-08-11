@@ -1,4 +1,4 @@
-import { AbsoluteCenter, Box, Circle, HStack } from "@chakra-ui-solid/components";
+import { AbsoluteCenter, Box, Circle, HStack } from "chakra-ui-solid";
 
 const Overlay = () => (
   <AbsoluteCenter bg="bg/80" backdropFilter="blur(2px)" rounded="md" p="4">

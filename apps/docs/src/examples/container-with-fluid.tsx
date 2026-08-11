@@ -1,4 +1,4 @@
-import { Container } from "@chakra-ui-solid/components";
+import { Container } from "chakra-ui-solid";
 import { DecorativeBox } from "../components/decorative-box";
 
 export default function ContainerWithFluid() {

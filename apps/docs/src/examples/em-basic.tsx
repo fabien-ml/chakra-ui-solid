@@ -1,4 +1,4 @@
-import { Box, Em } from "@chakra-ui-solid/components";
+import { Box, Em } from "chakra-ui-solid";
 
 export default function EmBasic() {
   return (

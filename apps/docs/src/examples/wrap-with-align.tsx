@@ -1,4 +1,4 @@
-import { Center, Wrap, WrapItem } from "@chakra-ui-solid/components";
+import { Center, Wrap, WrapItem } from "chakra-ui-solid";
 import { For } from "solid-js";
 
 export default function WrapWithAlign() {

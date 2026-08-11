@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { Box } from "chakra-ui-solid";
 import { createSignal, For, onSettled, Show } from "solid-js";
 import type { TocEntry } from "~/lib/site-map";
 

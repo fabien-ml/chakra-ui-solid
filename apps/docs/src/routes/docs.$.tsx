@@ -1,6 +1,6 @@
-import { Box } from "@chakra-ui-solid/components";
 import { Dynamic } from "@solidjs/web";
 import { createFileRoute } from "@tanstack/solid-router";
+import { Box } from "chakra-ui-solid";
 import { Show } from "solid-js";
 import { Container } from "~/components/container";
 import { DocsSidebar } from "~/components/docs-sidebar";

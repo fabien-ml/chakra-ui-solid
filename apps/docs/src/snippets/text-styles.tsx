@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui-solid/components";
+import { Box } from "chakra-ui-solid";
 
 export function Hero() {
   return (

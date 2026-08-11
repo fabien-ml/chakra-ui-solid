@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { Box } from "chakra-ui-solid";
 
 export default function BoxWithRenderProp() {
   return (

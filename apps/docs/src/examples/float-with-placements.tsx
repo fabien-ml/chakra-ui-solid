@@ -1,5 +1,5 @@
-import { Box, Circle, Float, HStack, Stack } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { Box, Circle, Float, HStack, Stack } from "chakra-ui-solid";
 
 /**
  * The nine written out, where the React version maps over a list.

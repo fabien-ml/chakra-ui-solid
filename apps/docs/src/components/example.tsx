@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui-solid/components";
 import { Dynamic } from "@solidjs/web";
+import { Box } from "chakra-ui-solid";
 import type { Component } from "solid-js";
 import { Show } from "solid-js";
 

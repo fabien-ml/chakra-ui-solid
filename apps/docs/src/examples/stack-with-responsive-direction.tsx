@@ -1,4 +1,4 @@
-import { Stack } from "@chakra-ui-solid/components";
+import { Stack } from "chakra-ui-solid";
 import { DecorativeBox } from "../components/decorative-box";
 
 export default function StackWithResponsiveDirection() {

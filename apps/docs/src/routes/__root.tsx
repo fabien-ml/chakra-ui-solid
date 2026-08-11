@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
 
-import { Box } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/solid-router";
+import { Box } from "chakra-ui-solid";
 import { shellClass } from "~/components/layout";
 import { NotFound } from "~/components/not-found";
 import { SiteGradientDefs } from "~/components/site/icons";

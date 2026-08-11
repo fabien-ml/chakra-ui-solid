@@ -12,7 +12,7 @@ Chakra factory serves as a way to create supercharged JSX component from any HTM
 them receive JSX style props.
 
 ```js
-import { chakra } from "@chakra-ui-solid/components";
+import { chakra } from "chakra-ui-solid";
 ```
 
 The chakra factory can be used in two ways: as a JSX element or as a factory function.
@@ -23,7 +23,7 @@ Style props are CSS properties that you can pass as props to your components. Wi
 you can use `chakra.<element>` syntax to create JSX elements that support style props.
 
 ```jsx
-import { chakra } from "@chakra-ui-solid/components";
+import { chakra } from "chakra-ui-solid";
 
 const Button = (props) => (
   <chakra.button bg="blue.500" color="white" py="2" px="4" rounded="md">
@@ -131,7 +131,7 @@ Combine it with `isCssProperty`, which knows this preset's own utilities and tok
 default behaviour for everything you are not filtering.
 
 ```tsx
-import { chakra } from "@chakra-ui-solid/components";
+import { chakra } from "chakra-ui-solid";
 import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
 
 function shouldForwardProp(prop: string, variantKeys: string[]) {

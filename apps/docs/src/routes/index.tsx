@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui-solid/components";
 import { createFileRoute } from "@tanstack/solid-router";
+import { Box } from "chakra-ui-solid";
 import { Blob } from "~/components/site/blob";
 import { DesignSystemSection } from "~/components/site/design-system-section";
 import { FrameworkSection } from "~/components/site/framework-section";

@@ -1,4 +1,4 @@
-import { Box, type BoxProps } from "@chakra-ui-solid/components";
+import { Box, type BoxProps } from "chakra-ui-solid";
 import { omit, Show } from "solid-js";
 import { BlitzFillIcon } from "~/components/site/icons";
 

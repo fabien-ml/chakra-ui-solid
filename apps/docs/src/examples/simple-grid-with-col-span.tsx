@@ -1,4 +1,4 @@
-import { GridItem, SimpleGrid } from "@chakra-ui-solid/components";
+import { GridItem, SimpleGrid } from "chakra-ui-solid";
 import { DecorativeBox } from "../components/decorative-box";
 
 export default function SimpleGridWithColSpan() {

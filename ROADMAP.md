@@ -163,5 +163,5 @@ per-component notes (duplicate slots, part-count mismatches) are at
 - for / show — excluded
 
 `color-mode`, `environment` and `locale` are relocated: the primitive lives in
-`@chakra-ui-solid/system` and `packages/components` re-exports it so Chakra's import path resolves.
+`@chakra-ui-solid/system` and `chakra-ui-solid` re-exports it so Chakra's import path resolves.
 `for` and `show` are excluded — Solid has `<For>` and `<Show>`.

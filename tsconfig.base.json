@@ -26,7 +26,7 @@
     // fails the browser build loudly, which is the guard that actually holds.
     "types": ["node"],
 
-    // In-repo, `@chakra-ui-solid/*` always resolves to source — never to a sibling's `dist/`.
+    // In-repo, every package of ours always resolves to source — never to a sibling's `dist/`.
     // `package.json#exports` points at `dist/` for consumers, which would otherwise make the
     // editor and `tsc --noEmit` read a stale build: add an export to one package and its
     // dependants cannot see it until someone rebuilds. `vitest-aliases.ts` aliases to source for
@@ -53,7 +53,7 @@
     "paths": {
       "@chakra-ui-solid/zag-solid": ["./packages/zag-solid/src/index.ts"],
       "@chakra-ui-solid/system": ["./packages/system/src/index.ts"],
-      "@chakra-ui-solid/components": ["./packages/components/src/index.ts"],
+      "chakra-ui-solid": ["./packages/chakra-ui-solid/src/components/index.ts"],
       "@chakra-ui-solid/internal-test-utils": ["./packages/internal-test-utils/src/index.ts"],
       // Its own specifier rather than a re-export from the barrel above: this helper reads the
       // generated stylesheet with `node:fs`, and the barrel is imported by the `browser` project,

@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { Box } from "chakra-ui-solid";
 import { createSignal, For } from "solid-js";
 
 export interface CodeTab {

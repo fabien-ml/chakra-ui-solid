@@ -1,5 +1,5 @@
-import { AspectRatio, Box } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { AspectRatio, Box } from "chakra-ui-solid";
 
 export default function AspectRatioWithImage() {
   return (

@@ -78,11 +78,11 @@ it("has no `__internal__/` directory", () => {
 it("keeps every component to 3 source files", () => {
   // `name.tsx`, `index.ts`, and at most one more. Tests and fixtures are not counted — the cap is
   // on ceremony, not on coverage.
-  const oversized = tracked("packages/components/src/*")
+  const oversized = tracked("packages/chakra-ui-solid/src/components/*")
     .filter((file) => /\.tsx?$/.test(file))
     .filter((file) => !file.includes("__tests__") && !file.includes("__fixtures__"))
     .reduce((byComponent, file) => {
-      const component = file.split("/")[3];
+      const component = file.split("/")[4];
       byComponent.set(component, (byComponent.get(component) ?? 0) + 1);
       return byComponent;
     }, new Map());
@@ -90,7 +90,7 @@ it("keeps every component to 3 source files", () => {
   for (const [component, count] of oversized) {
     expect(
       count,
-      `packages/components/src/${component} has ${count} source files`,
+      `packages/chakra-ui-solid/src/components/${component} has ${count} source files`,
     ).toBeLessThanOrEqual(3);
   }
 });

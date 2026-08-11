@@ -1,4 +1,4 @@
-import { Box, type BoxProps } from "@chakra-ui-solid/components";
+import { Box, type BoxProps } from "chakra-ui-solid";
 
 /**
  * Chakra's `Container`: a centred `8xl` column with the same responsive gutter.

@@ -1,6 +1,6 @@
 /**
- * Not a component — a re-export, so `@chakra-ui-solid/components/environment` resolves where a
- * reader coming from Chakra expects it to.
+ * Not a component — a re-export, so `chakra-ui-solid/environment` resolves where a reader coming
+ * from Chakra expects it to.
  *
  * The context itself lives in `@chakra-ui-solid/system`, because machines consume it and the system
  * layer is what machines depend on. Chakra's own `components/environment/index.ts` is a pure

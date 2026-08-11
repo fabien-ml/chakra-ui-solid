@@ -55,7 +55,7 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
   // `css()` is pure render-time computation and `hash: false` makes its output stable, so server
   // and client must name the same classes — and if they do not, the element is styled by whichever
   // side won, silently.
-  box: join(repoRoot, "packages/components/src/box/__tests__/box.ssr-entry.tsx"),
+  box: join(repoRoot, "packages/chakra-ui-solid/src/components/box/__tests__/box.ssr-entry.tsx"),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

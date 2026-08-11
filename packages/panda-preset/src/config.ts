@@ -110,10 +110,10 @@ const LOCKED = {
   // The `jsx` half is the other half of `jsxFactory` above, and it is just as load-bearing: Panda
   // registers a factory only from an import whose NAME is the `jsxFactory` **and** whose MODULE is
   // listed here. `chakra` ships from `@chakra-ui-solid/system` and is re-exported by
-  // `@chakra-ui-solid/components`, so a consumer writes either import and both register.
+  // `chakra-ui-solid`, so a consumer writes either import and both register.
   importMap: [
     "@chakra-ui-solid/styled-system",
-    { jsx: ["@chakra-ui-solid/system", "@chakra-ui-solid/components"] },
+    { jsx: ["@chakra-ui-solid/system", "chakra-ui-solid"] },
   ],
 } as const satisfies Config;
 
@@ -125,7 +125,7 @@ const LOCKED = {
  *
  * export default defineChakraConfig({
  *   include: [
- *     "./node_modules/@chakra-ui-solid/components/dist/**\/*.jsx",
+ *     "./node_modules/chakra-ui-solid/dist/**\/*.jsx",
  *     "./src/**\/*.{ts,tsx}",
  *   ],
  *   outdir: "styled-system-app",

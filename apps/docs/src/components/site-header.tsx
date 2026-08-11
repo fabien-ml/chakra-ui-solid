@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui-solid/components";
 import { Link, useLocation } from "@tanstack/solid-router";
+import { Box } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { ColorModeToggle } from "~/components/color-mode-toggle";
 import { Container } from "~/components/container";

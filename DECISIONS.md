@@ -177,7 +177,7 @@ through that pattern is the only thing that puts `flex_row` in their sheet. Reus
 sides agree by construction.
 
 **Where Chakra's mapping differs from the pattern's, the pattern is actively wrong** — measured,
-`packages/components/src/box/__tests__/__fixtures__/consumer`:
+`packages/chakra-ui-solid/src/components/box/__tests__/__fixtures__/consumer`:
 
 | Component | What the consumer's build emits for it |
 |---|---|
@@ -323,7 +323,7 @@ consumer's stylesheet, runtime only setting an attribute on `<html>`; unprobed t
 
 ## The repository mirrors `packages/react/src`, minus the two tiers Panda replaced
 
-**Settled, not yet executed.** The port covers styling and theming as well as components, and
+**Step 1 executed 2026-08-11; step 2 still pending.** The port covers styling and theming as well as components, and
 upstream holds those as *siblings* under `packages/react/src`. Ours put components at the src root
 of their own package, which spends the level those siblings need.
 
@@ -385,9 +385,9 @@ Then the mechanical ones: `tsconfig.base.json#paths`, `vitest-aliases.ts`, `repo
 `scripts/generate-props-tables.mjs`'s `componentsSrc`, the 22 `chakraUiSolid.entries`, both
 `tsconfig.json#include`s, `apps/docs/package.json`'s dependency and its imports, and the package
 list in `README.md`. Published subpaths do not change: an entry *key* is the subpath, not the
-source path. Every docs page's frontmatter carries a `links.source: packages/components/src/…` of
-its own — 22 already written, so this reshape is overdue rather than early, and each page deferred
-past it is one more to revisit.
+source path. Every docs page's frontmatter carried a `links.source:` of its own — 22 already
+written, so this reshape was overdue rather than early, and each page deferred past it would have
+been one more to revisit.
 
 ## Build order
 

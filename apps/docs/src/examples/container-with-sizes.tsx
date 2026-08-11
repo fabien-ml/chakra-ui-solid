@@ -1,4 +1,4 @@
-import { Container, Stack } from "@chakra-ui-solid/components";
+import { Container, Stack } from "chakra-ui-solid";
 import { DecorativeBox } from "../components/decorative-box";
 
 /**

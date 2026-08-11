@@ -27,7 +27,8 @@ export interface TsdownOptions {
 }
 
 /**
- * Shared tsdown build config for every publishable `@chakra-ui-solid/*` package.
+ * Shared tsdown build config for every publishable package here — `chakra-ui-solid` and its
+ * `@chakra-ui-solid/*` satellites.
  *
  * We ship **JSX-preserved source** only, under the `"solid"` export condition, with no
  * `"import"` / `"default"` fallback: the consumer's own `vite-plugin-solid` compiles each element
@@ -72,9 +73,11 @@ export function createTsdownConfig(packageDir: string, options: TsdownOptions = 
     deps: {
       // Externals, in three groups, each for its own reason:
       //
-      // - Solid and every `@chakra-ui-solid/*` sibling, so the consumer resolves them — each
-      //   sibling via *its own* `"solid"` condition. Applies to the **dts** build too, so the
-      //   emitted declarations reference siblings by bare specifier, never a src path.
+      // - Solid and every sibling of ours, so the consumer resolves them — each sibling via *its
+      //   own* `"solid"` condition. `chakra-ui-solid` needs a pattern of its own: it is the one
+      //   package outside the `@chakra-ui-solid/` scope, and unlisted it is inlined into whatever
+      //   imports it. Applies to the **dts** build too, so the emitted declarations reference
+      //   siblings by bare specifier, never a src path.
       //   `@chakra-ui-solid/styled-system` is the load-bearing member: inlined, the library and
       //   the consumer app end up with two `css` runtime instances, silently (`plan.md` §4.3).
       // - `@zag-js/*`, the machine packages. Bundling them would duplicate a machine per
@@ -89,6 +92,7 @@ export function createTsdownConfig(packageDir: string, options: TsdownOptions = 
         /^solid-js/,
         /^@solidjs\//,
         /^@chakra-ui-solid\//,
+        /^chakra-ui-solid$/,
         /^@zag-js\//,
         /^@pandacss\//,
         /^pkg-types$/,

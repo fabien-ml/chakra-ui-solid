@@ -1,4 +1,4 @@
-import { Box, Circle, Float } from "@chakra-ui-solid/components";
+import { Box, Circle, Float } from "chakra-ui-solid";
 
 export default function FloatWithOffset() {
   return (

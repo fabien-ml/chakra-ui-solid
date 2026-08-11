@@ -1,4 +1,4 @@
-import { AspectRatio } from "@chakra-ui-solid/components";
+import { AspectRatio } from "chakra-ui-solid";
 
 export default function AspectRatioWithMap() {
   return (

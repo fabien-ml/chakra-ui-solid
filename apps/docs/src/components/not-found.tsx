@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui-solid/components";
 import { Link } from "@tanstack/solid-router";
+import { Box } from "chakra-ui-solid";
 
 export function NotFound() {
   return (

@@ -1,4 +1,4 @@
-import { Box, Group } from "@chakra-ui-solid/components";
+import { Box, Group } from "chakra-ui-solid";
 
 /** Chakra's Button has not shipped here yet — see the note under this example. */
 const OutlineButton = (props: { children: string }) => (

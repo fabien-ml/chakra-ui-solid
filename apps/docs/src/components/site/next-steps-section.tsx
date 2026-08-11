@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui-solid/components";
+import { Box } from "chakra-ui-solid";
 import { Container } from "~/components/container";
 import { Blob } from "~/components/site/blob";
 import { DocLinkButton } from "~/components/site/link-button";

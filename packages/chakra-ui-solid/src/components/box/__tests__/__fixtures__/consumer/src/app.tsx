@@ -25,7 +25,7 @@ import {
   VisuallyHidden,
   Wrap,
   WrapItem,
-} from "@chakra-ui-solid/components";
+} from "chakra-ui-solid";
 
 /**
  * A consumer's source file, and the only thing their Panda run scans.

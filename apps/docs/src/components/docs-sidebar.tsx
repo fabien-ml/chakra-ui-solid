@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui-solid/components";
+import { Box } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { DocLink } from "~/components/doc-link";
 import { type NavPage, sidebarGroups } from "~/lib/site-map";

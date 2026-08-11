@@ -39,7 +39,7 @@ architecture documents the implementation is being built from, plus the workspac
 they specify. The stack targets `solid-js@2.0.0-beta.x`, and nothing upstream is built for SolidJS
 2.0 yet, so every Solid-2.0-shaped adaptation here is ours.
 
-Packages will publish under the `@chakra-ui-solid` scope: `@chakra-ui-solid/components`,
+The library publishes as the unscoped `chakra-ui-solid`; its satellites keep the scope —
 `@chakra-ui-solid/styled-system`, `@chakra-ui-solid/panda-preset`, and the rest.
 
 ## Credit where it is due

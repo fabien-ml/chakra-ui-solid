@@ -1,4 +1,4 @@
-import { Box, Center, HStack } from "@chakra-ui-solid/components";
+import { Box, Center, HStack } from "chakra-ui-solid";
 
 /** Chakra's example frames a `react-icons` icon; no Icon component has shipped here yet. */
 const Dot = () => (

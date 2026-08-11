@@ -1,5 +1,5 @@
 {
-  "name": "chakra-ui-solid",
+  "name": "@chakra-ui-solid/monorepo",
   "version": "0.0.0",
   "private": true,
   "description": "Chakra UI v3's component API for SolidJS 2.0 — Zag.js behavior, Panda CSS styling, no runtime CSS-in-JS",

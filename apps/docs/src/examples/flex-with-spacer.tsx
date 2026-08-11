@@ -1,4 +1,4 @@
-import { Box, Flex, Spacer } from "@chakra-ui-solid/components";
+import { Box, Flex, Spacer } from "chakra-ui-solid";
 
 export default function FlexWithSpacer() {
   return (

@@ -1,4 +1,4 @@
-import { AspectRatio, Center } from "@chakra-ui-solid/components";
+import { AspectRatio, Center } from "chakra-ui-solid";
 
 export default function AspectRatioBasic() {
   return (

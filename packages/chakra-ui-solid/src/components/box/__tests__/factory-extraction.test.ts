@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
  * error, no warning, an element with a class attribute nothing in the sheet answers. Every runtime
  * test in this repo passes in that state, because `css()` computes a class either way. So the
  * question has to be asked of a real `panda cssgen` run over a consumer's source, which is what
- * `__fixtures__/consumer` is and what `pnpm --filter @chakra-ui-solid/components cssgen` produces.
+ * `__fixtures__/consumer` is and what `pnpm --filter chakra-ui-solid cssgen` produces.
  *
  * It lives beside Box because the consumer fixture does — one fixture app, one Panda run, and the
  * factory is a second thing that app now writes.

@@ -1,5 +1,5 @@
-import { Box, Center } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { Box, Center } from "chakra-ui-solid";
 
 const Arrow = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">

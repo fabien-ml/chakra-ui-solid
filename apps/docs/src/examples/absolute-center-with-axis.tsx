@@ -1,4 +1,4 @@
-import { AbsoluteCenter, Box, VStack } from "@chakra-ui-solid/components";
+import { AbsoluteCenter, Box, VStack } from "chakra-ui-solid";
 import { For } from "solid-js";
 
 const axes = ["horizontal", "vertical", "both"] as const;

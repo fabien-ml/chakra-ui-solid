@@ -1,4 +1,4 @@
-import { Box, Group, Stack } from "@chakra-ui-solid/components";
+import { Box, Group, Stack } from "chakra-ui-solid";
 
 const OutlineButton = (props: { children: string }) => (
   <Box

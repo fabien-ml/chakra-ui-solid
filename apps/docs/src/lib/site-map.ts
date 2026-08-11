@@ -28,7 +28,7 @@ export interface TocEntry {
  * compile-mode canary, not user-facing docs.
  */
 export interface DocLinks {
-  /** The component's directory under `packages/components/src`. */
+  /** The component's directory under `packages/chakra-ui-solid/src/components`. */
   source?: string;
   /** Its preset key, or absent where the key resolves to nothing (`roadmap.md` §4). */
   recipe?: string;

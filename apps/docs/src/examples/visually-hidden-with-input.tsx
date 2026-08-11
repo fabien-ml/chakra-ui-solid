@@ -1,5 +1,5 @@
-import { HStack, VisuallyHidden } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { HStack, VisuallyHidden } from "chakra-ui-solid";
 
 export default function VisuallyHiddenWithInput() {
   return (

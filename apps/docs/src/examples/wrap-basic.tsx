@@ -1,5 +1,5 @@
-import { Box, Wrap } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { Box, Wrap } from "chakra-ui-solid";
 
 const Badge = (props: { children: JSX.Element }) => (
   <Box

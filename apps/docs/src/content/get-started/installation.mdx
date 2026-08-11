@@ -39,7 +39,7 @@ To set up chakra-ui-solid in your project, follow the steps below.
 Three of ours, and one of Panda's.
 
 ```bash
-pnpm add @chakra-ui-solid/components @chakra-ui-solid/panda-preset @chakra-ui-solid/styled-system
+pnpm add chakra-ui-solid @chakra-ui-solid/panda-preset @chakra-ui-solid/styled-system
 pnpm add -D @pandacss/dev
 ```
 
@@ -55,7 +55,7 @@ import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
 
 export default defineChakraConfig({
   include: [
-    "./node_modules/@chakra-ui-solid/components/dist/**/*.jsx",
+    "./node_modules/chakra-ui-solid/dist/**/*.jsx",
     "./src/**/*.{ts,tsx}",
   ],
   outdir: "styled-system-app",
@@ -73,7 +73,7 @@ export default defineChakraConfig({
   // Customizations go under `extend`. A bare `theme` is a type error here.
   theme: { extend: { tokens: { colors: { brand: { value: "#5b8" } } } } },
   // `include` and `outdir` as above — keep the `dist` glob.
-  include: ["./node_modules/@chakra-ui-solid/components/dist/**/*.jsx", "./src/**/*.{ts,tsx}"],
+  include: ["./node_modules/chakra-ui-solid/dist/**/*.jsx", "./src/**/*.{ts,tsx}"],
   outdir: "styled-system-app",
 });
 ```
@@ -98,7 +98,7 @@ sheet exists and it is yours; ours does not exist at all.
   <Step title="Enjoy!">
 
 ```tsx
-import { Box } from "@chakra-ui-solid/components";
+import { Box } from "chakra-ui-solid";
 
 const Demo = () => {
   return (
@@ -117,7 +117,7 @@ const Demo = () => {
 Render something, then read a **computed style**:
 
 ```tsx
-import { Box } from "@chakra-ui-solid/components";
+import { Box } from "chakra-ui-solid";
 
 <Box p="4" bg="bg.panel" />;
 

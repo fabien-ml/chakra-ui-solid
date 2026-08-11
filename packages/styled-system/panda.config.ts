@@ -44,7 +44,7 @@ export default defineConfig({
   // against. It is not the consumer's extraction channel — that is our published `dist/`, which
   // they add to their own `include`. Keeping the two apart is what stops a green local suite from
   // hiding a broken consumer (`plan.md` §4.1).
-  include: ["../{system,components}/src/**/*.{ts,tsx}"],
+  include: ["../{system,chakra-ui-solid}/src/**/*.{ts,tsx}"],
   // Set explicitly so an inherited default cannot quietly drop a directory. The one entry is the
   // **node-side** tests, and it is not a workaround: nothing in that project renders, so the dev
   // sheet owes them nothing, while what they do write is a hazard. A `.ts` test computes an
@@ -53,7 +53,7 @@ export default defineConfig({
   // `direction: row` rule beside the `flex-direction: row` one. A shorthand name is not a CSS
   // property, so that second rule is a declaration no browser parses, which is what
   // `check:declaration-support` exists to reject. JSX does not do this; only the `raw` call does.
-  exclude: ["../{system,components}/src/**/*.test.ts"],
+  exclude: ["../{system,chakra-ui-solid}/src/**/*.test.ts"],
   outdir: "styled-system",
   // The same `importMap` a consumer gets from `defineChakraConfig()`, and it has to be written out here
   // rather than left to the default. The default is `<outdir>/…`, which our `css()` imports match
@@ -64,6 +64,6 @@ export default defineConfig({
   // emit nothing.
   importMap: [
     "@chakra-ui-solid/styled-system",
-    { jsx: ["@chakra-ui-solid/system", "@chakra-ui-solid/components"] },
+    { jsx: ["@chakra-ui-solid/system", "chakra-ui-solid"] },
   ],
 });

@@ -3,7 +3,7 @@ title: Box
 description:
   The most abstract styling component, on top of which all other components here are built.
 links:
-  source: packages/components/src/box
+  source: packages/chakra-ui-solid/src/components/box
   chakra: https://chakra-ui.com/docs/components/box
 ---
 
@@ -15,7 +15,7 @@ The `Box` component provides an easy way to write styles with ease. It provides 
 tokens and an unmatched DX when writing responsive styles.
 
 ```tsx
-import { Box } from "@chakra-ui-solid/components";
+import { Box } from "chakra-ui-solid";
 ```
 
 ```tsx
@@ -76,7 +76,7 @@ The `Box` component supports all CSS properties as props, making it easy to styl
 
 <PropsTable component="box" />
 
-Both rows are read from the interface in `packages/components/src/box/box.tsx` by the generator,
+Both rows are read from the interface in `packages/chakra-ui-solid/src/components/box/box.tsx` by the generator,
 not transcribed. The inherited half is named rather than expanded: `JsxStyleProps` is the entire
 style-prop vocabulary, and `PatchHtmlProps<JSX.HTMLAttributes<HTMLElement>>` is the DOM attribute
 surface with the five `html*` renames applied.

@@ -1,4 +1,4 @@
-import { AbsoluteCenter, Box } from "@chakra-ui-solid/components";
+import { AbsoluteCenter, Box } from "chakra-ui-solid";
 
 export default function AbsoluteCenterBasic() {
   return (

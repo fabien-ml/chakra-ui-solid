@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui-solid/components";
+import { Box } from "chakra-ui-solid";
 import { Show } from "solid-js";
 import { DocLink } from "~/components/doc-link";
 import { type NavPage, siblingsOf } from "~/lib/site-map";

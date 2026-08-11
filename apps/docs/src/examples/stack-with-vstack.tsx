@@ -1,4 +1,4 @@
-import { VStack } from "@chakra-ui-solid/components";
+import { VStack } from "chakra-ui-solid";
 import { DecorativeBox } from "../components/decorative-box";
 
 export default function StackWithVstack() {

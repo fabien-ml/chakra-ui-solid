@@ -1,4 +1,4 @@
-import { Stack, StackSeparator } from "@chakra-ui-solid/components";
+import { Stack, StackSeparator } from "chakra-ui-solid";
 import { DecorativeBox } from "../components/decorative-box";
 
 export default function StackWithSeparator() {

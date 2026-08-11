@@ -1,4 +1,4 @@
-import { Box, type BoxProps } from "@chakra-ui-solid/components";
+import { Box, type BoxProps } from "chakra-ui-solid";
 import { omit } from "solid-js";
 import { DocLink } from "~/components/doc-link";
 

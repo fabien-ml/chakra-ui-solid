@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { Box } from "chakra-ui-solid";
 
 /**
  * One cell of the hero's demo strip: a hairline frame, a centred live component, a mono caption.

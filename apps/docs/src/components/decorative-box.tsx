@@ -13,7 +13,7 @@
  * and a literal in the JSX is the form no extractor has to reason about.
  */
 
-import { Box, type BoxProps } from "@chakra-ui-solid/components";
+import { Box, type BoxProps } from "chakra-ui-solid";
 
 /**
  * The surface every layout example stands on: a hatched, bordered panel that centres whatever it is

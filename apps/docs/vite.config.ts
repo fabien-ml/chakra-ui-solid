@@ -53,19 +53,19 @@ export default defineConfig(({ command }) => ({
   // route dies at build time with a syntax error pointing inside *our* `dist` — which reads as a
   // broken package rather than as a missing line in this file.
   ssr: {
-    noExternal: [/^@chakra-ui-solid\//],
+    noExternal: [/^@chakra-ui-solid\//, /^chakra-ui-solid$/],
   },
 
   optimizeDeps: {
     // KNOB 2 — `optimizeDeps.exclude`.
     //
     // The client build's dependency pre-bundler compiles JSX **as React**. A pre-bundled
-    // `@chakra-ui-solid/components` therefore produces a runtime that is not Solid, and the
-    // symptom is a component that renders nothing at all — no error, no warning. Same fact as
-    // knob 1 seen from the client side: shipping source moves work into the consumer's build,
-    // which is `plan.md` §8's deliberate trade and this app is its first proof.
+    // `chakra-ui-solid` therefore produces a runtime that is not Solid, and the symptom is a
+    // component that renders nothing at all — no error, no warning. Same fact as knob 1 seen from
+    // the client side: shipping source moves work into the consumer's build, which is `plan.md`
+    // §8's deliberate trade and this app is its first proof.
     exclude: [
-      "@chakra-ui-solid/components",
+      "chakra-ui-solid",
       "@chakra-ui-solid/system",
       "@chakra-ui-solid/styled-system",
       "@chakra-ui-solid/zag-solid",

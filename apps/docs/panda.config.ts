@@ -24,7 +24,7 @@ export default defineChakraConfig({
     // `transform.jsx: "preserve"`: what we publish IS JSX-preserved source, so a consumer's
     // extractor can read it the same way it reads their own `src`. It matches nothing until the
     // package is built, and nothing in it needs a rule until a component calls `chakra()`.
-    "./node_modules/@chakra-ui-solid/components/dist/**/*.jsx",
+    "./node_modules/chakra-ui-solid/dist/**/*.jsx",
     // Our own source, which is what a consumer's glob is. `.mdx` is in the list because a fenced
     // code block is not the only thing a content file carries — an MDX page may write JSX
     // directly, and a style prop Panda never scanned renders nothing and raises no error.

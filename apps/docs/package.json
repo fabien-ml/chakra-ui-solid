@@ -14,11 +14,11 @@
     "cssgen": "panda cssgen --outfile styled-system/styles.css"
   },
   "dependencies": {
-    "@chakra-ui-solid/components": "workspace:*",
     "@chakra-ui-solid/styled-system": "workspace:*",
     "@solidjs/web": "catalog:",
     "@tanstack/solid-router": "catalog:",
     "@tanstack/solid-start": "catalog:",
+    "chakra-ui-solid": "workspace:*",
     "solid-js": "catalog:"
   },
   "devDependencies": {

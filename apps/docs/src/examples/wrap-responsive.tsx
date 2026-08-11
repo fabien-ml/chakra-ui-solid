@@ -1,4 +1,4 @@
-import { Wrap } from "@chakra-ui-solid/components";
+import { Wrap } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { DecorativeBox } from "../components/decorative-box";
 

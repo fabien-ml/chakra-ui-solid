@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
   "tasks": {
-    // The props-table generator reads `packages/components/src/**` — **another package's source**
+    // The props-table generator reads `packages/chakra-ui-solid/src/components/**` — **another package's source**
     // — and Turbo's default input set is the task's own package. That is exactly D-125's shape,
     // and it is silent in both directions: a component gaining a prop would be a cache hit, so the
     // table would keep its previous contents and a reader would conclude the prop does not exist;
@@ -13,13 +13,13 @@
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/scripts/generate-props-tables.mjs",
-        "$TURBO_ROOT$/packages/components/src/**"
+        "$TURBO_ROOT$/packages/chakra-ui-solid/src/components/**"
       ],
       "outputs": ["src/generated/**"]
     },
     // The same coupling, for the same reason, on the Panda run. `panda.config.ts#include` names
     // two things: this app's own source (covered by `$TURBO_DEFAULT$`) and
-    // `@chakra-ui-solid/components`' published **`dist/`**, which is another package's build
+    // `chakra-ui-solid`'s published **`dist/`**, which is another package's build
     // output. That glob is how values our components name — a style config handed to `chakra()`,
     // recipe variants — reach a consumer's extractor at all, so a stale cache here is a page
     // rendering unstyled with a green build.
@@ -27,7 +27,7 @@
       "dependsOn": ["codegen", "^build"],
       "inputs": [
         "$TURBO_DEFAULT$",
-        "$TURBO_ROOT$/packages/components/dist/**",
+        "$TURBO_ROOT$/packages/chakra-ui-solid/dist/**",
         "$TURBO_ROOT$/packages/panda-preset/dist/**"
       ],
       "outputs": ["styled-system/**"]

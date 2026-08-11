@@ -1,4 +1,4 @@
-import { Box, Center } from "@chakra-ui-solid/components";
+import { Box, Center } from "chakra-ui-solid";
 
 export default function CenterBasic() {
   return (

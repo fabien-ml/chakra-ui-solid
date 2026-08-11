@@ -1,5 +1,5 @@
-import { Box } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { Box } from "chakra-ui-solid";
 import { Container } from "~/components/container";
 import { DocLink } from "~/components/doc-link";
 import { DemoFrame, DemoStrip } from "~/components/site/demo-frame";
@@ -168,7 +168,7 @@ function InstallCommand() {
       borderRadius="l2"
     >
       <TerminalIcon />
-      <Box as="code">pnpm add @chakra-ui-solid/components</Box>
+      <Box as="code">pnpm add chakra-ui-solid</Box>
     </Box>
   );
 }

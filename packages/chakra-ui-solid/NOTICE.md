@@ -1,4 +1,4 @@
-# Third-party notices — `@chakra-ui-solid/components`
+# Third-party notices — `chakra-ui-solid`
 
 This package contains **no files derived from another project**. The table below is empty by fact
 rather than by omission, and it exists so that the first derivative lands into a shape that already

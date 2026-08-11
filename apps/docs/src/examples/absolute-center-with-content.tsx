@@ -1,4 +1,4 @@
-import { AbsoluteCenter, Box } from "@chakra-ui-solid/components";
+import { AbsoluteCenter, Box } from "chakra-ui-solid";
 
 const Dot = () => (
   <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">

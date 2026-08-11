@@ -1,5 +1,5 @@
-import { Box, Stack } from "@chakra-ui-solid/components";
 import type { JSX } from "@solidjs/web";
+import { Box, Stack } from "chakra-ui-solid";
 import { For, Show } from "solid-js";
 import type { PropRow } from "~/generated/props-tables";
 import { propsTables } from "~/generated/props-tables";
@@ -7,7 +7,7 @@ import { propsTables } from "~/generated/props-tables";
 /**
  * A generated props table (`docs-site.md` §4.2). **Never hand-written**: a hand-written table
  * omits a new prop silently and a reader concludes the prop does not exist — a failure with no
- * error and no test. This one is regenerated from `packages/components/src/<component>/**` by
+ * error and no test. This one is regenerated from `packages/chakra-ui-solid/src/components/<component>/**` by
  * `scripts/generate-props-tables.mjs` on every `codegen`.
  *
  * **Three columns, and they are chakra-ui.com's**: `Prop`, `Default`, `Type` — with the type and

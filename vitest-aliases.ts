@@ -6,7 +6,7 @@ import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import { join } from "node:path";
 
-// The `@chakra-ui-solid/*` → src and `solid-js`/`@solidjs/web` → server-build aliases, extracted
+// The workspace → src and `solid-js`/`@solidjs/web` → server-build aliases, extracted
 // into their own module so that `vitest.config.ts`'s three projects — and, from step 2, the
 // hydration-fixture bridge — are consumers of the *same* arrays rather than four copies that can
 // drift. `plan.md` §9's "always resolve to src, never a sibling's dist" invariant lives here, and
@@ -45,7 +45,7 @@ export function resolveServerEntry(packageName: string): string {
 /**
  * Workspace packages resolve to `src`, never to a sibling's `dist`.
  *
- * A package-resolved `@chakra-ui-solid/*` import reads the sibling's *built* output, so editing
+ * A package-resolved import of one of ours reads the sibling's *built* output, so editing
  * that sibling's source has no effect on its dependants' tests until it is rebuilt. hope-ui hit
  * this directly: a fix was edited, the owning package's own tests went green, and the dependant's
  * tests kept failing identically against the stale pre-fix `dist`.
@@ -69,8 +69,8 @@ export const chakraSolidAlias: { find: RegExp; replacement: string }[] = [
     replacement: join(import.meta.dirname, "packages/system/src/index.ts"),
   },
   {
-    find: /^@chakra-ui-solid\/components$/,
-    replacement: join(import.meta.dirname, "packages/components/src/index.ts"),
+    find: /^chakra-ui-solid$/,
+    replacement: join(import.meta.dirname, "packages/chakra-ui-solid/src/components/index.ts"),
   },
   {
     find: /^@chakra-ui-solid\/internal-test-utils$/,

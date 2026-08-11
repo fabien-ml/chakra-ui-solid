@@ -1,4 +1,4 @@
-import { Box, type BoxProps } from "@chakra-ui-solid/components";
+import { Box, type BoxProps } from "chakra-ui-solid";
 
 /**
  * The ambient wash chakra-ui.com floats behind its landing sections: a soft radial gradient,

@@ -1,4 +1,4 @@
-import { Box } from "@chakra-ui-solid/components";
+import { Box } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { Container } from "~/components/container";
 import { CodeTabs } from "~/components/site/code-tabs";
