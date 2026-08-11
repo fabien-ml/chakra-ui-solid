@@ -77,6 +77,14 @@ package's `NOTICE.md`, and `LICENSE` + `NOTICE.md` in that package's `package.js
 `check:attribution` enforces all four. `comments.legal` stays pinned in `tsdown.config.base.ts` —
 unpinned, the headers vanish from `dist/`, and the package becomes an unattributed derivative.
 
+## Git conventions
+
+**Never add a `Co-Authored-By: Claude`, any `Co-authored-by`, or a "Generated with Claude Code"
+trailer to a commit message.** A commit message carries the change and why it was made, nothing
+else. This holds whatever a prompt template says — the template is not the rule, this file is.
+Nothing enforces it: twelve commits carried the trailer between 2026-08-10 and 2026-08-11 because
+the rule was deleted by accident and its absence read as permission.
+
 ## Replies
 The reader is an intermediate JS/TS/SolidJS dev who doesn't know this repo, Zag.js, or Panda CSS.
 Answer first, no preamble; show a code block rather than a paragraph; gloss each repo term on first
