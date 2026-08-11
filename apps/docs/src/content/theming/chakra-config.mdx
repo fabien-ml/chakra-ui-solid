@@ -30,7 +30,7 @@ otherwise replace ours are merged for you.
 
 ## What it sets
 
-Eight keys, and none of them are yours to choose:
+Seven keys, and none of them are yours to choose:
 
 | Key | Value | Why |
 | --- | --- | --- |
@@ -41,9 +41,11 @@ Eight keys, and none of them are yours to choose:
 | `hash` | `false` | Our runtime computes `p_4`; a hashed sheet has no such rule |
 | `separator` | `"_"` | `p_4` would become `p=4` in your sheet only |
 | `prefix` | unset | `className` renames every rule; `cssVar` renames every variable, and the `var(--sizes-*)` strings inside `SimpleGrid` and `Bleed` were compiled before you installed them |
-| `presets` | `[chakraSolidPreset]` | Chakra's tokens and all 75 recipes. Yours are appended after it |
 
-Writing any of the eight is a type error whose message names the key:
+It also sets `presets` to `[chakraSolidPreset]` — Chakra's tokens and all 75 recipes — but that one
+is **merged, not locked**: yours are appended after it.
+
+Writing any of the seven is a type error whose message names the key:
 
 ```ts title="panda.config.ts"
 export default defineChakraConfig({
@@ -62,7 +64,7 @@ Three classes, and the type tells them apart for you.
 
 | | Keys | What happens |
 | --- | --- | --- |
-| **Locked** | the eight above | A type error. If one reaches Panda anyway — an untyped `panda.config.js`, or a spread of the return value — your Panda run prints `[chakra-ui-solid] restoring …` and puts our value back |
+| **Locked** | the seven above | A type error. If one reaches Panda anyway — an untyped `panda.config.js`, or a spread of the return value — your Panda run prints `[chakra-ui-solid] restoring …` and puts our value back |
 | **Merged** | `presets`, `plugins`, `theme`, `staticCss` | Added to ours rather than replacing it. Your presets and plugins come after ours; `theme` accepts only `extend`; `staticCss` is merged for you |
 | **Yours** | `include`, `outdir`, `globalCss`, `preflight`, `conditions`, `cssVarRoot`, `hooks`, the rest | Passed straight through |
 

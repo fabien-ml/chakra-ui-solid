@@ -216,9 +216,10 @@ rules our class names never match — an unstyled component, with nothing raised
 | `importMap` | Unregisters the `chakra` factory, and every `<chakra.button>` emits nothing |
 | `staticCss` | A `css` array of yours replaces the preset's outright — in `extend` too — taking `<Flex inline>`, `<Wrap>` and every `StackSeparator` with it |
 
-None of these is yours to get wrong, and none of them takes a documented warning. The first three,
-plus `jsxFramework`, `jsxFactory` and `eject`, are a **type error** to pass. The last three are
-**merged**: your presets come after ours, and your `staticCss` is unioned with the preset's. [defineChakraConfig](/docs/theming/chakra-config) is the full account.
+None of these is yours to get wrong, and none of them takes a documented warning. `hash`, `prefix`,
+`separator` and `importMap` — plus `jsxFramework`, `jsxFactory` and `eject` — are a **type error** to
+pass. The other two are **merged**: your presets come after ours, and your `staticCss` is unioned
+with the preset's. [defineChakraConfig](/docs/theming/chakra-config) is the full account.
 
 ## The system object
 

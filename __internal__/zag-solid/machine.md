@@ -26,9 +26,11 @@ changed. Do not refactor it toward house style, do not merge files, do not renam
 something here looks unidiomatic, the question to ask is "does upstream write it that way?" — if
 yes, it stays.
 
-The `@zag-js/core` / `@zag-js/types` / `@zag-js/utils` catalog entries are pinned to `1.42.0` in
-lockstep with the version this was forked from, for the same reason the solid trio is pinned
-together: the adapter and the core it adapts are one unit.
+The `@zag-js/core` / `@zag-js/types` / `@zag-js/utils` catalog entries are pinned in lockstep with
+the version the fork is *maintained against*, for the same reason the solid trio is pinned together:
+the adapter and the core it adapts are one unit. In this repo that is **`1.43.0`**, not the `1.42.0`
+this note carried over — `1.42.0` is the baseline the fork was taken from and the number a re-sync
+diffs against, which is why `NOTICE.md` records both.
 
 ### Deviations from upstream
 

@@ -46,7 +46,7 @@ Seven specs: **four page specs, two tier specs, and one template applied 113 tim
 | **§3** | Docs home | The parity sentence, verbatim: *"as close to Chakra v3 parity as is achievable without runtime CSS-in-JS"* | `plan.md` §0; `docs-site.md` §3.4; `decisions-ledger.md` D-01 |
 | **§4** | Install / setup, and the `get-started/` tier | Panda as a hard prerequisite — the non-optional `peerDependency`, and the README's first line above the install snippet | `plan.md` §4.4, §3.4, §8, §12 row 14 |
 | **§5** | Coming from Chakra UI (React) | The §0.4 delta table with its **Cause** column, plus the six per-component rows P6 corrected (`for`/`show` excluded, `portal`/`client-only`/`presence` shipped, `environment` relocated, charts excluded) | `plan.md` §0.4; `roadmap.md` §5, §13 row 1 |
-| **§6** | `chakraConfig` reference | The preset's function export and its knobs, `responsive` among them | `plan.md` §3.3, §3.4, §3.8 |
+| **§6** | `defineChakraConfig` reference | The preset's function export and its knobs, `responsive` among them | `plan.md` §3.3, §3.4, §3.8 |
 | **§7** | The styling and theming tiers | Tokens, recipes, override paths 1–4, and colour mode — **our API** from S3b, not a consumer snippet (**D-134**) | `plan.md` §3.6, §3.7, §7.1, §7.3 |
 | **§8** | **The component page** — one template, applied 111 times | Anatomy, props, `ids`, `render`, the provider surface, the CIJ note | `roadmap.md` §4, §10; `component-blueprint.md` §3.4, §3.5 |
 
@@ -63,7 +63,7 @@ There is no prose to argue with, which is the point of generating them.
 
 The responsive opt-in does **not** get its own page. `plan.md:603` puts it on the same page as the
 §0.2 warning — which is §1 — because a consumer who needs it has already hit the failure it fixes.
-§6 carries the option's **shape** (the three grains, the expansion, what `chakraConfig` does with
+§6 carries the option's **shape** (the three grains, the expansion, what `defineChakraConfig` does with
 it); §1 carries **the failure it fixes**. A reader arriving from a broken build lands on §1; a reader
 writing a config lands on §6.
 
@@ -141,7 +141,7 @@ responsive opt-in, written as a decision procedure rather than a list:
 | The value is one of a few things your own code chooses between | **Restructure to literals** — `<Show>`, or a data attribute the recipe styles against (§5) |
 | A known finite set your source never literally writes | **`staticCss`** (`plan.md` §3.5 route 2) |
 | Genuinely unbounded — a percentage, a user-picked color, a measured width | **A CSS custom property**: `style={{ "--w": w() }}` with `w="var(--w)"` (route 3) |
-| `<Button size={{ base: "sm", md: "lg" }}>` — a responsive **recipe variant**, not a style prop | **`chakraConfig({ responsive })`**, three grains (`plan.md` §3.8) |
+| `<Button size={{ base: "sm", md: "lg" }}>` — a responsive **recipe variant**, not a style prop | **`defineChakraConfig({ responsive })`**, three grains (`plan.md` §3.8) |
 
 Route 3 carries a Solid-specific note the Chakra page cannot make: it is **cheaper here than in
 React**. Solid writes a custom property straight onto the node when the value changes, so the
@@ -224,7 +224,7 @@ page promised would work. Prose cannot hold that claim across a Panda minor vers
 ### 1.5 D-1 answered — a dedicated minimal build, and the page is *generated from* it
 
 **The fixture runs against a dedicated minimal Panda build, not the docs app's own.** Concretely: a
-second Panda config living inside `apps/docs`, spreading **the same `chakraConfig()` call** the docs
+second Panda config living inside `apps/docs`, spreading **the same `defineChakraConfig()` call** the docs
 app spreads, with `include` narrowed to the fixture directory and its own `outdir`. The fixture
 directory is outside the docs app's own `include`.
 
@@ -240,13 +240,13 @@ whole reason §1.4 exists.
 
 Three secondary reasons, in order of weight:
 
-1. **It is what a consumer's config actually looks like** — `chakraConfig()` plus `include` and
+1. **It is what a consumer's config actually looks like** — `defineChakraConfig()` plus `include` and
    `outdir`, and nothing else (`plan.md` §3.4). The docs app's `include` also carries the buildinfo
    and 113 pages' worth of source; the fixture's carries one directory.
 2. **It is fast enough to run on every Panda and preset bump**, which is when the rows are most
    likely to change (`testing.md` §11). A full site build per fixture run would make the check something
    people batch, and a check that is batched is a check that is read late.
-3. **Reusing the same `chakraConfig()` call removes the drift the "dedicated build" objection is
+3. **Reusing the same `defineChakraConfig()` call removes the drift the "dedicated build" objection is
    about.** The honest worry with a separate build is that it stops resembling what ships; sharing
    the *function call* rather than copying the knobs means there is nothing to drift.
 
@@ -255,7 +255,7 @@ Three secondary reasons, in order of weight:
 | | Dedicated minimal build (**chosen**) | The docs app's own build |
 |---|---|---|
 | ❌ rows | **Sound** — only the fixture's own lines are scanned | **Unsound** — any other page can generate the class, and the row's failure mode is a false green |
-| Config fidelity | Same `chakraConfig()` call, narrowed `include`. `check:docs-consumer-config` covers the shared half (`docs-site.md` §6.1) | Exactly what ships, by construction |
+| Config fidelity | Same `defineChakraConfig()` call, narrowed `include`. `check:docs-consumer-config` covers the shared half (`docs-site.md` §6.1) | Exactly what ships, by construction |
 | Run cost | One extra `codegen` + `cssgen` task in the docs app's pipeline | A full site build per run |
 | New surface | A second Panda config file and a Turbo task. **No new workspace package**, so `plan.md` §5.1's graph is unchanged | None |
 | Residual risk | A ✅ row could pass here and differ in the docs app if the two configs ever diverge — bounded by the shared call and the check above | The ❌ half cannot be trusted at all |
@@ -276,7 +276,7 @@ the page in the literal sense — it is written first, and the page cannot rende
 
 | # | Question | Blocks | Resolved |
 |---|---|---|---|
-| **D-1** | Does the fixture in §1.4 run against the docs app's own Panda build, or a dedicated minimal one? A dedicated build is honest about what a consumer's config looks like; the docs app's is what actually ships | §1.4 | **P8 — §1.5.** A dedicated minimal build, sharing the docs app's `chakraConfig()` call with a narrowed `include`; the page is *generated from* it. The deciding reason is that ❌ rows are absence assertions and need a corpus we control |
+| **D-1** | Does the fixture in §1.4 run against the docs app's own Panda build, or a dedicated minimal one? A dedicated build is honest about what a consumer's config looks like; the docs app's is what actually ships | §1.4 | **P8 — §1.5.** A dedicated minimal build, sharing the docs app's `defineChakraConfig()` call with a narrowed `include`; the page is *generated from* it. The deciding reason is that ❌ rows are absence assertions and need a corpus we control |
 | **D-2** | Does the route-3 lint rule exist by the time this page ships? If not, §1.2 section 4 says so rather than implying it | §1.2 | **P7 — `testing.md` §6.5.** Yes, by five steps, with one qualification: the rule runs on **our** source, not the consumer's. Absorbed into §1.2 — section 4 lost its hedge and gained the scope sentence; section 6 carries the three consumer-reachable mechanisms. **Not re-answered here** |
 
 This section keeps its number because `testing.md` §6.5 and `definition-of-done.md` §10 row 2 cite
@@ -408,7 +408,7 @@ naked, and no tool anywhere says why.
 
 **2 — `panda.config.ts`.** `plan.md` §3.4's snippet, verbatim, including `importMap`, the buildinfo
 path in `include`, the consumer's own source glob, and `outdir`. Two things beside it and no more:
-the preset is not imported here because `chakraConfig()` already puts it in `presets`; and
+the preset is not imported here because `defineChakraConfig()` already puts it in `presets`; and
 **spreading is shallow**, so any key a consumer re-declares replaces ours wholesale.
 
 The second gets a **second snippet rather than a sentence**, because the correct form is a shape and
@@ -613,9 +613,9 @@ in the same row.
 ### 6.1 Section order
 
 **0 — What it is.** `@chakra-ui-solid/panda-preset`, one subpath `.`, two exports:
-`chakraSolidPreset` (default, the Panda preset) and `chakraConfig(options?)` (named, a function
+`chakraSolidPreset` (default, the Panda preset) and `defineChakraConfig(overrides)` (named, a function
 returning a `defineConfig`-shaped fragment). **A function even with no arguments** —
-`chakraConfig()` — so the responsive opt-in is a change of argument rather than a change of call
+`defineChakraConfig()` — so the responsive opt-in is a change of argument rather than a change of call
 shape (`plan.md` §3.3).
 
 **1 — The minimal config**, §4.1's snippet again. Repeated deliberately: a reference page a reader
@@ -624,7 +624,7 @@ answer.
 
 **2 — What it sets, and why none of it is yours to set.**
 
-| Key | Why `chakraConfig()` owns it |
+| Key | Why `defineChakraConfig()` owns it |
 |---|---|
 | `hash` | Our published runtime was generated with `hash: false` and emits `p_4`. A consumer sheet built with `hash: true` carries hashed rules, so **every class we compute is absent from their sheet** — `plan.md` §0.2 at total scale, with no error anywhere. This function exists to make that unconstructable (`plan.md` §3.4) |
 | `importMap` | Points Panda at our published `styled-system`, which is what makes the library and the app share one `css` runtime |

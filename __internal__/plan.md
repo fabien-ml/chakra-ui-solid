@@ -95,7 +95,7 @@ port.
 | `createSystem(defaultConfig, {…})` runtime theming | runtime | **Not supported.** Build-time `panda.config.ts` only | CSS-in-JS |
 | Arbitrary one-off values anywhere | runtime | Only if statically extractable, declared in `staticCss`, or routed through a CSS variable | CSS-in-JS |
 | `useRecipe({ key })` / `useSlotRecipe({ key })` | Both resolve through `useChakraContext()` — a runtime system object (measured: `styled-system/use-recipe.ts`, `use-slot-recipe.ts`) | **Replaced by a static import** from the generated `@chakra-ui-solid/styled-system/recipes`. Same variant API, no context, no runtime override | CSS-in-JS |
-| **Responsive recipe variants** — `<Button size={{ base: "sm", md: "lg" }}>` | runtime | **Supported, off by default** — the consumer opts in per recipe or per variant key with `chakraConfig({ responsive })` (§3.8) | CSS-in-JS |
+| **Responsive recipe variants** — `<Button size={{ base: "sm", md: "lg" }}>` | runtime | **Supported, off by default** — the consumer opts in per recipe or per variant key with `defineChakraConfig({ responsive })` (§3.8) | CSS-in-JS |
 | `useToken()` runtime token lookup | runtime dictionary | Supported, reimplemented as a read of the generated build-time token map | CSS-in-JS |
 | Token / recipe / variant styling | runtime | **Full parity** — the bulk of the surface | — |
 | `asChild` | React `cloneElement` | **`render` prop** (`brief-plan` §0, fixed) | React→Solid |
@@ -254,7 +254,7 @@ verbatim. The upstream issue now has a concrete defect to report rather than a s
 
 | Not covered | Why | What we do |
 |---|---|---|
-| **Responsive recipe variants** — `<Button size={{ base: "sm", md: "lg" }}>` | `staticCss: ["*"]` enumerates variant values at the base condition. Responsive expansion is a separate `responsive: true` flag, and turning it on multiplies 488 values by 6 conditions | **Off by default, with a first-class consumer opt-in: `chakraConfig({ responsive })`, three grains — §3.8.** Also a row in the §0.4 delta table. Emitting 6× the stylesheet for every recipe by default is the wrong trade for a library whose default sheet already carries 488 variant values |
+| **Responsive recipe variants** — `<Button size={{ base: "sm", md: "lg" }}>` | `staticCss: ["*"]` enumerates variant values at the base condition. Responsive expansion is a separate `responsive: true` flag, and turning it on multiplies 488 values by 6 conditions | **Off by default, with a first-class consumer opt-in: `defineChakraConfig({ responsive })`, three grains — §3.8.** Also a row in the §0.4 delta table. Emitting 6× the stylesheet for every recipe by default is the wrong trade for a library whose default sheet already carries 488 variant values |
 | **Arbitrary style-prop values** — `<Box w={someRuntimeNumber}>` | Not a recipe variant; unbounded by construction | §3.5's dynamic-value contract. Route 3 (CSS custom property) is the answer, and it is the loudest page in the docs |
 | **A consumer's own recipe overrides** | Their config, their `staticCss` | Documented; their `theme.extend` participates in their own codegen normally |
 | **Atomic values our components pick that we forget to declare** | Nothing enumerates them | The **generated-CSS coverage check** (§0.2) is the mechanical backstop, and it is why that check is a P7 requirement rather than a nicety |
@@ -268,7 +268,7 @@ ladder, in order, so a refutation costs a config line rather than a redesign:
 1. **Config-level `staticCss` in the preset** instead of per-recipe — if recipe-level `staticCss` does
    not survive `theme.extend`'s merge. Same package, same release, no consumer change.
 2. **Ship the declarations as a config fragment the consumer spreads** —
-   `import { chakraConfig } from "@chakra-ui-solid/panda-preset"`. If preset-level `staticCss`
+   `import { defineChakraConfig } from "@chakra-ui-solid/panda-preset"`. If preset-level `staticCss`
    does not reach a consumer's codegen at all, this bypasses preset merging entirely and costs the
    consumer one documented line. §3.4 ships this fragment **anyway**, for a different reason, so this
    rung is already built.
@@ -409,11 +409,17 @@ export default defineConfig({
   eject: true,
   presets: [chakraSolidPreset],
   jsxFramework: "solid",
+  jsxFactory: "chakra",
   hash: false,
+  separator: "_",
   preflight: true,
-  include: ["../{system,components}/src/**/*.{ts,tsx}"],
-  exclude: [],
+  include: ["../{core,chakra-ui-solid}/src/**/*.{ts,tsx}"],
+  exclude: ["../{core,chakra-ui-solid}/src/**/*.test.ts"],
   outdir: "styled-system",
+  importMap: [
+    "@chakra-ui-solid/styled-system",
+    { jsx: ["@chakra-ui-solid/core", "chakra-ui-solid"] },
+  ],
 })
 ```
 
@@ -424,10 +430,12 @@ export default defineConfig({
 | `jsxFramework: "solid"` | Three reasons in `prior-art.md` §2.3. The one that bites hardest: `is-valid-prop` is generated **into `jsx/`** — hope-ui's exports map resolves `./is-valid-prop` to `./styled-system/jsx/is-valid-prop.mjs`. Unset this and the module our factory imports does not exist |
 | `hash: false` | Determinism across the library/consumer boundary. §4.3's external-package model downgrades it from *required* to *kept*, because both halves now execute the same `css` module — but it stays, because it is what makes the SSR fixtures and the §0.2 coverage check readable. A hashed name turns a coverage failure into a hex string. **It is also a consumer-side knob that must match ours** (§3.4) |
 | `preflight: true` | Emits the reset the recipes assume, and it is where `prior-art.md` §5.1's open `[hidden]` question lands (§3.7) |
-| `include` | Covers **our own source only, for the dev stylesheet** Storybook and browser tests render against. It is *not* the consumer's extraction channel — that is the buildinfo (§4.1). Keeping the two straight is what stops a green local suite from hiding a broken consumer |
-| `exclude: []` | Set explicitly so an inherited default cannot quietly drop a directory |
+| `include` | Covers **our own source only, for the dev stylesheet** Storybook and browser tests render against. It is *not* the consumer's extraction channel — that is our published `dist/`, which the consumer adds to their own `include` as a `**/*.jsx` glob. The buildinfo this row named never shipped (§4.1). Keeping the two straight is what stops a green local suite from hiding a broken consumer |
+| `exclude` | Set explicitly so an inherited default cannot quietly drop a directory. It is **not** empty, as this row said: the one entry is the node-side `*.test.ts`, because Panda re-extracts a `flex.raw({ direction: "row" })` written there as both the pattern mapping and the raw props, emitting a `direction: row` declaration no browser parses |
 | `outdir: "styled-system"` | The generated artifacts land inside the published `@chakra-ui-solid/styled-system` package (§4.2) |
-| `importMap` | **Deliberately unset.** It is the *consumer's* knob; our config generates into its own package and imports by relative path |
+| `jsxFactory: "chakra"` | `chakra.button` is lowercase, so without it Panda's `isUpperCase` fallback declines the tag and every factory element in our own source emits zero rules with no error |
+| `separator: "_"` | Panda's own default, written out because a consumer who set `separator: "="` would get `p=4` in their sheet while our published runtime went on computing `p_4` — every component naked, no error |
+| `importMap` | **Set, and load-bearing** — this row was wrong to call it the consumer's knob alone. Panda registers `chakra` only when the module it was imported from is in `importMap.jsx`, and ours is imported from `@chakra-ui-solid/core`; left unset, `jsxFactory` above is inert. The default `<outdir>/…` matches our `css()` imports only by the substring accident `"@chakra-ui-solid/styled-system/css".includes("styled-system/css")` |
 
 ### 3.2 `eject` vs. an explicit `presets` array — decided, and the fix relocated
 
@@ -471,11 +479,22 @@ import half of what they need.
 | Export | What | Why |
 |---|---|---|
 | `chakraSolidPreset` (default) | The Panda preset — base declaration (§3.2), the per-recipe `staticCss` deltas and `jsx` hints (§1.3), the atomic `staticCss.css` block, the ≤95 alias utilities (§2.2), and any `globalCss` delta (§3.7) | Composing with another preset — override path 4 (§3.7) |
-| `chakraConfig(options?)` (named) | A **function** returning a `defineConfig`-shaped fragment carrying every knob that must match ours: `{ eject, presets, jsxFramework, hash, preflight, importMap }` — with `presets` already containing `chakraSolidPreset` | §3.4, and the responsive opt-in of §3.8 |
+| `defineChakraConfig(overrides)` (named) | A **function** returning a whole `Config` carrying every knob that must match ours — with `presets` already containing `chakraSolidPreset` | §3.4, and the responsive opt-in of §3.8 |
 
-`chakraConfig` is a function even when called with no arguments (`chakraConfig()`), so the responsive
-opt-in of §3.8 is a change of argument rather than a change of call shape. One documented form, no
-object-or-function ambiguity.
+> **Two things about that row are corrections, not just a rename** (`98b921c`, **D-177**; it was
+> `defineChakraConfig(overrides)` here and everywhere below). It returns the **whole `Config`**, so the
+> consumer calls it *instead of* `defineConfig` rather than spreading a fragment into one, and
+> `overrides` is required, because `include` is. The knobs that must match are **locked** — a type
+> error to pass, stripped at the boundary, re-imposed on the merged config by a plugin — and there
+> are seven: `eject`, `hash`, `prefix`, `separator`, `jsxFramework`, `jsxFactory`, `importMap`.
+> `presets` is merged rather than locked and `preflight` is an overridable default, so neither
+> belongs in that list. The package's full named surface is `chakraSolidPreset` (also the default),
+> `defineChakraConfig`, `recipeKeys`, `slotRecipeKeys`, `variantKeysFor`, and the types
+> `ChakraConfigOverrides` and `ResponsiveGrain`.
+
+`defineChakraConfig` takes one required argument, so the responsive
+opt-in of §3.8 is a key on an object the consumer is already passing rather than a change of call
+shape. One documented form, no object-or-function ambiguity.
 
 Everything the preset adds is a **key** on top of the official preset — never a recipe body, never a
 token table. That is the condition `decisions-ledger.md` §6 item 3 asked P3 to check, and it holds **for the
@@ -496,21 +515,28 @@ and it is exceptional because the preset is exactly one recipe short of Chakra's
 
 ```ts
 // the consumer's panda.config.ts
-import { defineConfig } from "@pandacss/dev"
-import { chakraConfig } from "@chakra-ui-solid/panda-preset"
+import { defineChakraConfig } from "@chakra-ui-solid/panda-preset"
 
-export default defineConfig({
-  ...chakraConfig(),
+export default defineChakraConfig({
   include: [
-    "./node_modules/chakra-ui-solid/dist/panda.buildinfo.json",
+    "./node_modules/chakra-ui-solid/dist/**/*.jsx",
     "./src/**/*.{ts,tsx}",
   ],
   outdir: "styled-system-app",
 })
 ```
 
-The preset is not imported here — `chakraConfig()` already puts it in `presets`. A consumer composing
-their own preset on top reaches for it explicitly (§3.7 path 4).
+> **Two things this section predicted are not what shipped, and both change the snippet above.**
+> The export is `defineChakraConfig(overrides)`, which *returns the whole `Config`* and is called
+> instead of `defineConfig` — not `defineChakraConfig()`, a fragment spread into one (**D-177**, and the
+> rename in `98b921c`). And the library extraction channel is a glob over the published
+> JSX-preserved `dist/`, not a `panda.buildinfo.json`: `tsdown` builds with
+> `transform.jsx: "preserve"`, so what we publish reads like a consumer's own `src`. No buildinfo
+> is produced by any build. The paragraphs below still describe the hazards correctly — they are
+> now handled *inside* the function rather than left to the consumer's spread.
+
+The preset is not imported here — `defineChakraConfig()` already puts it in `presets`. A consumer
+composing their own preset on top reaches for it explicitly (§3.7 path 4).
 
 **Spreading is shallow, so any key the consumer re-declares replaces ours wholesale.** That is fine
 for `include` and `outdir` — they are meant to be theirs. What it costs on the other three is
@@ -523,21 +549,19 @@ for `include` and `outdir` — they are meant to be theirs. What it costs on the
 | `theme: { extend: … }` | everything. `extend` merges, which is what it is for |
 | `theme: { … }` without `extend` | **about half the tokens** |
 
-The form is a named call and a spread of what it returned — no second import, no second install:
+The form is one call that owns the merge — no spread, no second import, no second install:
 
 ```ts
-const chakra = chakraConfig()
-
-export default defineConfig({
-  ...chakra,
-  presets: [...(chakra.presets ?? []), myPreset],
+export default defineChakraConfig({
+  presets: [myPreset],
   theme: { extend: { tokens: { colors: { brand: { value: "#5b8" } } } } },
+  include: [ … ],
 })
 ```
 
 **Not `mergeConfigs`.** `@pandacss/dev` does not export it — it lives in `@pandacss/config`, which
 §4.4's peer dependency does not put in a consumer's `node_modules` — and it returns `any`, discarding
-the `Config` type this fragment exists to supply.
+the `Config` type this function exists to supply.
 
 In Panda's external-package model the consumer **does not regenerate the runtime** — `css()` comes
 from our published `@chakra-ui-solid/styled-system`, and their Panda run produces the *stylesheet*.
@@ -546,7 +570,7 @@ That split creates a failure mode worth naming:
 **`hash` and `prefix` must agree across the boundary, or nothing is styled.** Our published `css()`
 was generated with `hash: false`, so it emits `p_4`. A consumer who sets `hash: true` gets a
 stylesheet whose rules are hashed. Every class our runtime computes is then absent from their sheet —
-§0.2 at total scale, with no error anywhere. `chakraConfig()` exists to make this unconstructable: the
+§0.2 at total scale, with no error anywhere. `defineChakraConfig()` exists to make this unconstructable: the
 consumer spreads it and there is no knob to get wrong.
 
 Two CI checks follow (P7 owns their wiring): assert our published `styled-system` was generated with
@@ -625,8 +649,8 @@ already own and we are only giving it a name.
 
 ```ts
 // the consumer's panda.config.ts
-export default defineConfig({
-  ...chakraConfig({ responsive: { button: ["size"] } }),
+export default defineChakraConfig({
+  responsive: { button: ["size"] },
   include: [ … ],
 })
 ```
@@ -640,7 +664,7 @@ Three grains above the default, so nobody pays for conditions they do not use:
 | `["button", "heading"]` | every variant key on those recipes | ~180 |
 | `true` | all 142 keys / 488 values across 74 recipes | ~2,900 |
 
-`chakraConfig` expands the shorthand into the form Panda already understands — nothing new is asked of
+`defineChakraConfig` expands the shorthand into the form Panda already understands — nothing new is asked of
 Panda:
 
 ```ts
@@ -751,7 +775,7 @@ the package manager rather than by a sentence someone skims:
 | Deliverable | Shape | Owner |
 |---|---|---|
 | **The Panda-prerequisite line**, wording unchanged: *"Requires Panda CSS in your build. Not optional — this library publishes no CSS."* **In three places**, not one — the README's first line above the install snippet and before the feature list; the docs home (`docs-plan.md` §3); and above the install snippet on the install page (`docs-plan.md` §4) | Prose. Writing the README **file** is the implementation pass's step 8, not the document pass | **P8** (specced), step 8 (written) |
-| **`@pandacss/dev` as a `peerDependency`** on `@chakra-ui-solid/panda-preset`, `styled-system` and `components` | `"@pandacss/dev": "^1.12.0"`, not a `dependency` — the consumer's Panda must be the one that runs. `peerDependenciesMeta.optional` is **not** set: the warning is the point | **P7** |
+| **`@pandacss/dev` as a `peerDependency`** on `@chakra-ui-solid/panda-preset`, `styled-system` and `chakra-ui-solid` | `"@pandacss/dev": "catalog:"` — the workspace catalog, which pins `1.12.0` exactly rather than the `^1.12.0` range this row predicted, because the same version is a devDependency here and a consumer resolving a different minor gets a `css()` our runtime's class names do not match. Not a `dependency`: the consumer's Panda must be the one that runs. `peerDependenciesMeta` is **not** set on any of the three, so the peer is non-optional and the warning is the point | **P7** |
 | **CI check: no published `package.json` lists a `.css` file** in `exports`, `files` or `style` | Runs beside the §4.2 `jsx/index` check, same pass | **P7** |
 
 Without the peer dependency this failure is §0.2 at project scale — `npm install`, run the app, every
@@ -771,7 +795,7 @@ generated-CSS coverage check assert against (§0.2, §9). That output is never p
                                    presets: ["@pandacss/preset-base", "@chakra-ui/panda-preset"]
                                    + staticCss deltas + jsx hints + alias utilities.
                                    One subpath "." → default chakraSolidPreset,
-                                   named chakraConfig(options?) (§3.3, §3.8).
+                                   named defineChakraConfig(overrides) (§3.3, §3.8).
 
 @chakra-ui-solid/styled-system     PUBLIC, generated by Panda. The importMap target.
                                    EXTERNAL in our build. jsxFramework "solid"; ./jsx never exported.
@@ -864,7 +888,7 @@ The named extension points, each one a place a later phase plugs in rather than 
 | The `render` prop | Consumers, for polymorphism |
 | A machine's `ids` prop | Consumers overriding a part's id — proven to work, and the retraction of the claim that it could not is `prior-art.md` §8.1 |
 | `@chakra-ui-solid/panda-preset` → `chakraSolidPreset` | Consumers, for theming (§3.7) |
-| `@chakra-ui-solid/panda-preset` → `chakraConfig(options?)` | Consumers, for Panda wiring (§3.4) and the responsive opt-in (§3.8) |
+| `@chakra-ui-solid/panda-preset` → `defineChakraConfig(overrides)` | Consumers, for Panda wiring (§3.4) and the responsive opt-in (§3.8) |
 
 ### 5.5 Subpath exports
 
@@ -1061,9 +1085,10 @@ reads it — including type-checking, which fails with hundreds of unrelated err
 | Task | `dependsOn` | Why |
 |---|---|---|
 | `codegen` (in `styled-system`) | `^build` for `preset` only | Panda reads the preset; in dev it resolves from source through the tsconfig path, but the published shape must be buildable |
-| `build`, `typecheck`, `test:*` | `codegen` | Nothing may read the artifacts before they exist |
-| `cssgen` | `codegen` | Produces the dev stylesheet the browser tests and the coverage check assert against |
-| the generated-CSS coverage check (§0.2) | `cssgen` | It diffs emitted rules against the variants components can emit |
+| `build` | `codegen`, `^codegen`, `^build` | Nothing may read the artifacts before they exist. `^codegen` is what makes `core` and `chakra-ui-solid` wait for `styled-system`, which has no `build` of its own — its build *is* its codegen |
+| `typecheck` | `codegen`, `^codegen` | Same, minus the sibling build it does not need |
+| `test:unit`, `test:ssr`, `test:browser` | `cssgen`, not `codegen` | Stricter than this row predicted: the browser project asserts computed styles, so it needs the emitted sheet and not only the generated runtime |
+| `cssgen` | `codegen`, `^codegen` | Produces the dev stylesheet the browser tests assert against, plus the consumer fixture's sheet. Its `inputs` name `packages/{core,chakra-ui-solid}/src/**` explicitly, because Turbo's default input set is the task's own package and Panda scans two others |
 
 Plus a `postinstall` running `codegen`, so a fresh clone type-checks.
 
@@ -1150,8 +1175,8 @@ Each is unverifiable from this machine for the same reason: **Panda is installed
 | 2 | §2.2 / §2.11: `panda.config.ts` copied with `eject: true` + `presets: [chakraPreset]`; `prior-art.md` §10.2 row 1 fixes it in the config | **The fix moves into `@chakra-ui-solid/panda-preset`**, which self-declares `@pandacss/preset-base`. The config keeps `eject: true` and one preset entry, and so does the consumer's (§3.2) | P9 (`decisions-ledger.md`) |
 | 3 | §2.1 / §9 Q2: *"`staticCss` shipped in the preset"* | **Per-recipe** via `theme.extend`, not a config-level block, plus an atomic `staticCss.css` block and 10 `colorPalette` values — with a **two-rung** fallback ladder (§1.5). *(This row read "three-rung" until P9. §4.4 removed the prebuilt-stylesheet floor and §1.5 was rewritten to two; `roadmap.md` §13 row 10 and `definition-of-done.md` §10 row 9 flagged the stale wording and carried it forward deliberately.)* | P5, P7 |
 | 4 | §9 Q2 assumes only *dynamic* variant arguments fail to extract | **No consumer-written recipe variant extracts at all** — the preset declares no `jsx` hints (measured). The problem is wider and the answer is the same (§1.1) | P5, P7 |
-| 5 | §2.5: `@<scope>/preset` is *"config-only"* | It also exports **`chakraConfig(options?)`**, a function returning a `defineConfig` fragment carrying the knobs that must match across the boundary. **One subpath `.`, no `./config`** — same consumer needs both exports. New (§3.3, §3.4) | P7, P8, P9 |
-| 13 | §1.4 leaves the responsive opt-in as a raw `staticCss` line the consumer hand-writes | **`chakraConfig({ responsive })`, three grains** (`{ button: ["size"] }` / `["button"]` / `true`), expanding to the `staticCss` form Panda already understands. The toggle is the consumer's because the stylesheet is their build's (§3.8) | P7 (preset + CI), P8 (docs) |
+| 5 | §2.5: `@<scope>/preset` is *"config-only"* | It also exports **`defineChakraConfig(overrides)`**, a function returning a `defineConfig` fragment carrying the knobs that must match across the boundary. **One subpath `.`, no `./config`** — same consumer needs both exports. New (§3.3, §3.4) | P7, P8, P9 |
+| 13 | §1.4 leaves the responsive opt-in as a raw `staticCss` line the consumer hand-writes | **`defineChakraConfig({ responsive })`, three grains** (`{ button: ["size"] }` / `["button"]` / `true`), expanding to the `staticCss` form Panda already understands. The toggle is the consumer's because the stylesheet is their build's (§3.8) | P7 (preset + CI), P8 (docs) |
 | 14 | Nothing states how the Panda prerequisite is enforced | **`@pandacss/dev` as a non-optional `peerDependency`** on three packages, a README first line, and a CI check that no published `package.json` exposes a `.css` file (§4.4) | P7, P8 |
 | 6 | §2.5: `@<scope>/system` owns *"…color mode, direction"* | **Color mode: nothing** — Chakra has none in-library (measured, zero occurrences). Direction/locale/environment: two contexts, Ark's shape. And `system` **depends on `zag-solid`**, because presence lives there (§5.3, §6, §7) | P5, P6 |
 | 7 | §2.9: Workstream B is layout/typography | It also carries **all 18 atomic recipes**. Same position in the build order, materially more weight (§10) | P6 |

@@ -73,7 +73,7 @@ finding; the package graph entry is `plan.md` §5.1). It is the one line that ru
 `solid-js@2.0.0-beta.32` at all, and `../hope-ui/apps/docs` runs it today.
 
 **The docs app is a consumer, and that is load-bearing rather than incidental.** It installs our
-published packages, writes its own `panda.config.ts` from `chakraConfig()`, and runs its own Panda
+published packages, writes its own `panda.config.ts` from `defineChakraConfig()`, and runs its own Panda
 build — the shape `plan.md` §3.4 documents, not a privileged in-repo shortcut. Three consequences,
 all of which cost something if forgotten:
 
@@ -86,7 +86,7 @@ all of which cost something if forgotten:
    (§1.3). The docs' examples are the largest body of consumer-shaped code this repo will ever have.
 3. **If the docs app takes a shortcut, the docs prove nothing.** Importing the repo's dev stylesheet,
    aliasing `@chakra-ui-solid/*` to `src` in the production build, or hand-writing the Panda knobs
-   `chakraConfig()` owns each turn the site from evidence into decoration. `check:docs-consumer-config`
+   `defineChakraConfig()` owns each turn the site from evidence into decoration. `check:docs-consumer-config`
    (§6.1) is what keeps that from happening quietly.
 
 ### 1.2 The config, and the four knobs that are not preferences
@@ -96,7 +96,7 @@ here because getting it wrong produces a failure whose message names the wrong c
 
 | Knob | Value | Why it is not optional |
 |---|---|---|
-| `ssr.noExternal` | `[/^@chakra-ui-solid\//]` | We ship **JSX-preserved `.jsx`** under the `"solid"` export condition, with no `"import"`/`"default"` fallback (`plan.md` §8). Node cannot import raw JSX, so the prerender pass must inline and compile our packages rather than externalize them. Externalized, every route fails at build with a syntax error pointing at *our* `dist`, which reads as a broken package rather than a missing config line |
+| `ssr.noExternal` | `[/^@chakra-ui-solid\//, /^chakra-ui-solid$/]` — the second pattern is not optional, since the main package is the unscoped one | We ship **JSX-preserved `.jsx`** under the `"solid"` export condition, with no `"import"`/`"default"` fallback (`plan.md` §8). Node cannot import raw JSX, so the prerender pass must inline and compile our packages rather than externalize them. Externalized, every route fails at build with a syntax error pointing at *our* `dist`, which reads as a broken package rather than a missing config line |
 | `optimizeDeps.exclude` | our packages | The client build's dependency pre-bundler compiles JSX **as React**. A pre-bundled `chakra-ui-solid` produces a runtime that is not Solid, and the symptom is a component that renders nothing |
 | `plugins` order | `mdx()` with `enforce: "pre"`, **before** `vite-plugin-solid` | MDX must emit JSX (`jsx: true`) for the Solid compiler to compile; compiled the other way round we get MDX's hyperscript shim and lose the real Solid runtime (§1.5) |
 | `tanstackStart({ prerender })` | enabled, `crawlLinks`, `failOnError` | §1.6. `failOnError` is the difference between a broken route and a silently missing page |
@@ -279,7 +279,7 @@ step that gives them content.
 | `/docs/theming/{recipes,slot-recipes}` | The variant API is Chakra's; the resolution is a static import | `plan.md` §3.6 | `docs-plan.md` §7.3 | step 4 |
 | `/docs/theming/customization/*` — 11 pages | The four override paths, one worked example each | `plan.md` §3.7 | `docs-plan.md` §7.4 | step 4 |
 | `/docs/theming/customization/recipes` | Also: the two preset deltas we add | `definition-of-done.md` §6 | `docs-plan.md` §7.4 | step 6a |
-| `/docs/theming/chakra-config` | Every knob `chakraConfig()` owns, and `responsive`'s three grains. **Moved from `/docs/reference/` at S3b part 3** (**D-155**) | `plan.md` §3.3, §3.4, §3.8 | `docs-plan.md` §6 | step 4 |
+| `/docs/theming/chakra-config` | Every knob `defineChakraConfig()` owns, and `responsive`'s three grains. **Moved from `/docs/reference/` at S3b part 3** (**D-155**) | `plan.md` §3.3, §3.4, §3.8 | `docs-plan.md` §6 | step 4 |
 | `/docs/components/<name>` — **111 pages** | One per shipping row that is not a relocation (§2.4) | `roadmap.md` §4 | `docs-plan.md` §8 (template) | per batch |
 
 **The nav order is this table's order at the section level and the register's within a section.**
@@ -726,7 +726,7 @@ arrive with the machinery they check, and a check with nothing to check is not w
 | `check:props-tables` | §4.2: an entry for every part component `check:anatomy-parts` knows about | A missing table renders as an empty box, and an empty box looks intentional | step 4, with `check:anatomy-parts` |
 | `check:playground-values` | §4.4: every control's value set is a subset of the recipe's variant map or a `staticCss`-declared set | The playground offers a value that renders nothing — `plan.md` §0.2 shipped as a feature | step 4, with the first playground |
 | ~~`check:llms-fresh`~~ | **Not written** — deferred with the AI tier (§4.6, **D-138**) | — | before first public release |
-| `check:docs-consumer-config` | The docs app's `panda.config.ts` is `chakraConfig()` plus `include`/`outdir` only, its production build carries no `src` alias for our packages and its dev build does, and nothing under `apps/docs/src` imports the repo's own dev stylesheet | §1.1. The site stops being evidence the moment it is built differently from a consumer's app | **S3b** |
+| `check:docs-consumer-config` | The docs app's `panda.config.ts` is `defineChakraConfig()` plus `include`/`outdir` only, its production build carries no `src` alias for our packages and its dev build does, and nothing under `apps/docs/src` imports the repo's own dev stylesheet | §1.1. The site stops being evidence the moment it is built differently from a consumer's app | **S3b** |
 | `check:docs-no-server-fns` | No server function, server route, or Start-only data API in the content tier | §1.7's exit stops being cheap, and nobody notices until B1–B3 fires | step 4 |
 | `check:docs-forbidden-claims` | §5's string forms, with two path allow-list entries | Catches strings, not claims — a tripwire under a review contract | step 4 |
 | **reused** — `check:css-coverage` | Runs a second time against the **docs app's own generated sheet** | The permanent instance of the step-4 gate (§1.1). A variant the docs emit that the docs' own Panda run never generated is the whole hazard, reproduced in the one place a reader will see it | **step 4** (**D-139**) |
@@ -865,7 +865,7 @@ here with their gate and carried to P9 as §8 row 3.
   trigger is noted where it fires (§1.6 step 5) but is D-168's to close.
 - `plan.md` §12 — row **13** (the responsive opt-in's docs home is `docs-plan.md` §6, with the
   failure it fixes staying on `docs-plan.md` §1), row **14** (the README first line, §8 row 5),
-  row **5** (`chakraConfig` gets its own reference page, §2.1), row **9** (the Cause column, carried
+  row **5** (`defineChakraConfig` gets its own reference page, §2.1), row **9** (the Cause column, carried
   intact into `docs-plan.md` §5).
 
 ---

@@ -92,8 +92,9 @@ the subject rather than a proxy for styling (§2.3).
 This is the row that makes the split structural. `solid-js` and `@solidjs/web` each ship a server
 build; **aliasing one alone gives two disagreeing instances** — the renderer walking a client-shaped
 reactive graph — and the symptom is a hydration mismatch three layers away from the cause. Both
-aliases live in the shared `vitest-aliases.ts`, so they cannot drift apart, and `hydratable: true` is
-set here and nowhere else.
+aliases live in the shared `vitest-aliases.ts`, so they cannot drift apart. `hydratable: true` is set
+here **and on the `browser` project**, which needs it so `hydrate()` can claim the server-rendered
+markup the hydration fixtures feed it; it is off only in Storybook (§7.4).
 
 What runs here: `renderToStringAsync` output shape, `createUniqueId` id allocation, the machine
 rendering its initial state **without starting** (`zag-solid-adapter.md` §6.2), Portal's `isServer`
@@ -389,7 +390,7 @@ On abort the check exits with a distinct code and one paragraph, not a diff:
 
   Every class this library computes is absent from that stylesheet. This is not a coverage
   failure — it is plan.md §3.4's boundary mismatch, and no per-recipe diff below it would be
-  meaningful. Fix: spread chakraConfig() rather than re-declaring `hash`/`prefix`.
+  meaningful. Fix: spread defineChakraConfig() rather than re-declaring `hash`/`prefix`.
 ```
 
 `check:hash-config` is the companion on our side of the boundary (§8), asserting our published
@@ -861,7 +862,7 @@ so. Each failure line below is what the failure *would mean*, not what it prints
 | `check:data-attr-vocab` | Every `data-*` attribute/value pair the preset's conditions select on is emitted by some consumed machine's `connect()` | Assumption 9's downside, priced in `definition-of-done.md` §8.1. Two tiers: at step 4 the emitting side is read from each machine's `.connect.ts` sources; per batch it is read from a real machine driven through its states |
 | `check:preset-token-resolution` | Building the preset with and without the `theme.extend.tokens.cursor.switch` delta changes the emitted `cursor` declaration — and the build **without** it does not error | **P6-F.** Either Panda drops the declaration silently — in which case our one-key delta restores Chakra's behavior — or it errors, which is a much larger finding (`roadmap.md` §1.3c; `definition-of-done.md` §8.3) |
 | `check:alias-coverage` | Every one of Chakra's 95 shorthands satisfies the generated `isCssProperty` | **P3-D** made runnable: the failing set *is* the alias list our preset must declare, so the check both verifies and produces it |
-| `check:responsive-grain` | `chakraConfig({ responsive })` at each of its three grains emits the expected number of `@media` rules, and the default emits none | **P3-B**, and the guard on `plan.md` §3.8's opt-in — the one place where types cannot follow the flag, so forgetting the opt-in is a silent unstyling with no type error |
+| `check:responsive-grain` | `defineChakraConfig({ responsive })` at each of its three grains emits the expected number of `@media` rules, and the default emits none | **P3-B**, and the guard on `plan.md` §3.8's opt-in — the one place where types cannot follow the flag, so forgetting the opt-in is a silent unstyling with no type error |
 | `check:dark-selector` | The generated `_dark` condition matches the selector the docs tell consumers to put on `<html>`, verified by a computed-colour assertion under that attribute | **P3-F**. Chakra ships color mode as a consumer snippet, not library API (`plan.md` §7.1), so the selector *is* our whole contract |
 | `check:anatomy-parts` | For every shipping component: **one part component per machine anatomy key, and one per unique recipe slot** — plus the `RootProvider` / `PropsProvider` / `Context` exports its `roadmap.md` §10 row declares | The two lists are not the same set and neither contains the other (`component-blueprint.md` §3.1). A missing machine part is an ARIA relationship the machine emits and nothing consumes; a missing slot component is a style block nothing wears. Both are silent. It reads the anatomy from the machine and the slot list from the generated recipe — **deduplicated first** (§3.3) — so it cannot be satisfied by a stale hand-written list |
 | `check:floating-zindex` | **A browser test, not a script.** The computed `z-index` / `--z-index` on a floating element survives interleaved reactive re-renders and `raf` writes, with the measured value recorded | `@zag-js/popper` writes `--z-index` **imperatively** into the floating element's `style` attribute inside a `raf`, while Solid binds that same attribute reactively, with a `MutationObserver` watching it — two writers on one attribute, one watching the other (`roadmap.md` §8.1). **Nine Chakra components inherit whatever it costs**, and nobody has measured it. Introduced at step 5b as the floating probe's whole deliverable: a number, and either a sentence in the blueprint or a rule (**P6-A**) |
