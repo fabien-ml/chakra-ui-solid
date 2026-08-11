@@ -1,11 +1,6 @@
 import type { JSX } from "@solidjs/web";
 import { Box, Center } from "chakra-ui-solid";
-
-const Arrow = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-    <path d="M8 4l10 8-10 8z" fill="currentColor" />
-  </svg>
-);
+import { ArrowRightIcon } from "../components/site/icons";
 
 export default function CenterWithInline() {
   return (
@@ -19,7 +14,7 @@ export default function CenterWithInline() {
     >
       <Center inline gap="4">
         <Box>Visit chakra-ui-solid</Box>
-        <Arrow />
+        <ArrowRightIcon />
       </Center>
     </Box>
   );

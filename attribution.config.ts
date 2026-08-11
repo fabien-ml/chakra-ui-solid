@@ -28,7 +28,7 @@ export interface AttributionEntry {
   upstreamProject: string;
   /** The upstream file this one is derived from — a reader auditing the claim has to open it. */
   upstreamFile: string;
-  license: "MIT" | "Apache-2.0";
+  license: "MIT" | "Apache-2.0" | "ISC";
   /**
    * The owning package's directory name under `packages/`, or `null` when no package publishes the
    * file — today that means the docs app.
@@ -102,10 +102,26 @@ const chakraReact: AttributionEntry[] = [
 
 const docsApp: AttributionEntry[] = [
   {
-    file: "apps/docs/src/components/site/icons.tsx",
+    // The brand marks — the bolt and the logotype glyph. They were `site/icons.tsx` until the
+    // Lucide set arrived and each file was made to owe exactly one upstream.
+    file: "apps/docs/src/components/site/logo.tsx",
     upstreamProject: "chakra-ui/chakra-ui",
     upstreamFile: "apps/www/components/site/icons.tsx",
     license: "MIT",
+    package: null,
+  },
+  {
+    // One entry for twenty glyphs, on the reasoning that makes `apps/docs/src/content` one row
+    // rather than 111: the icon set is a single derivative of one upstream directory. `upstreamFile`
+    // is that directory, and the module names the individual `icons/*.svg` above each component —
+    // which is what a reader auditing the claim actually opens.
+    //
+    // The only ISC entry, and the only one owing a *second* upstream: thirteen of the twenty are
+    // Lucide's own derivatives of Feather, MIT. Both notices are in the root `NOTICE.md`.
+    file: "apps/docs/src/components/site/icons.tsx",
+    upstreamProject: "lucide-icons/lucide",
+    upstreamFile: "icons/",
+    license: "ISC",
     package: null,
   },
   {

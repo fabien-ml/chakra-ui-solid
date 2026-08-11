@@ -4,7 +4,7 @@ import { For, Show } from "solid-js";
 import { Container } from "~/components/container";
 import { DocLink } from "~/components/doc-link";
 import { Blob } from "~/components/site/blob";
-import { BlitzIcon } from "~/components/site/icons";
+import { BlitzIcon } from "~/components/site/logo";
 import { HighlightHeading, Subheading } from "~/components/site/typography";
 
 /**

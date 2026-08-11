@@ -1,7 +1,9 @@
+import { Dynamic } from "@solidjs/web";
 import { Box } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { Container } from "~/components/container";
 import { CodeTabs } from "~/components/site/code-tabs";
+import { BoxIcon, PaintBucketIcon, TypeIcon } from "~/components/site/icons";
 import { Eyebrow, HighlightHeading, Subheading } from "~/components/site/typography";
 
 // Highlighted at build time by the `?highlight` plugin, the same way an example's source pane is —
@@ -22,21 +24,26 @@ const highlighted = (name: string): string =>
   snippetHtml[`../../snippets/${name}.tsx`] ??
   `<pre>No snippet named “${name}” under src/snippets/.</pre>`;
 
+// Each `icon` is the component, never `<BoxIcon />`: a JSX element at module scope is evaluated on
+// import and 500s the route under SSR.
 const items = [
   {
     id: "design-tokens",
+    icon: BoxIcon,
     label: "Tokens",
     lead: "Tokens.",
     description: "Streamline design decisions with semantic tokens",
   },
   {
     id: "text-styles",
+    icon: TypeIcon,
     label: "Typography",
     lead: "Typography.",
     description: "Set your font properties once and use them everywhere",
   },
   {
     id: "recipes",
+    icon: PaintBucketIcon,
     label: "Recipes",
     lead: "Recipes.",
     description: "Design component variants with ease",
@@ -86,16 +93,19 @@ export function DesignSystemSection() {
             <For each={items}>
               {(item) => (
                 <Box as="li" display="flex" alignItems="flex-start" gap="3">
+                  {/* Chakra marks each item with the section's own icon rather than a bullet — it
+                    is their `List.Indicator`, which is why it takes the accent colour and not the
+                    text colour. `mt` is optical alignment to the first line, not the box. */}
                   <Box
                     as="span"
-                    aria-hidden="true"
-                    width="1.5"
-                    height="1.5"
-                    mt="2.5"
-                    borderRadius="full"
-                    bg="colorPalette.solid"
+                    display="inline-flex"
+                    color="colorPalette.fg"
+                    fontSize="lg"
+                    mt="0.5"
                     flexShrink="0"
-                  />
+                  >
+                    <Dynamic component={item.icon} />
+                  </Box>
                   <Box as="p" color="fg.muted">
                     <Box as="span" color="fg" fontWeight="medium">
                       {item.lead}
@@ -113,6 +123,7 @@ export function DesignSystemSection() {
             label="Design system examples"
             items={items.map((item) => ({
               id: item.id,
+              icon: item.icon,
               label: item.label,
               html: highlighted(item.id),
             }))}

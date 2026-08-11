@@ -2,8 +2,8 @@
 
 > **The sections outnumber the tables that have rows, and that is the design.** A section exists per
 > upstream we read, whether or not anything is derived from it, so an empty table is a statement
-> rather than an absence. Three carry rows today — Zag.js, Chakra UI, Framework logos. The rest are
-> guards.
+> rather than an absence. Four carry rows today — Zag.js, Chakra UI, Framework logos, Lucide. The
+> rest are guards.
 >
 > **What fills a row in** is the five obligations in [`CLAUDE.md`](CLAUDE.md), and
 > [`attribution.config.ts`](attribution.config.ts) is where a derivative is declared. Every row below
@@ -18,9 +18,12 @@ chakra-ui-solid is released under the MIT License (see [`LICENSE`](LICENSE)). Po
 software are derived from the projects listed below and remain subject to their original licenses.
 Nothing here relicenses those portions; the MIT grant in `LICENSE` covers chakra-ui-solid's own code.
 
-Every project listed below is **MIT**. Should a file ever be derived from an Apache-2.0 work, it
-carries an attribution header naming the upstream and stating that it has been modified — see
-**Adobe React Spectrum**, which is retained empty for exactly that case.
+Every project listed below is **MIT** but one: **Lucide** is ISC, and fourteen of the glyphs taken
+from it are Lucide's own derivatives of Feather and carry a second notice, MIT. Both licences ask
+the same single thing MIT asks — that the notice travel with the copy — which is what this file is.
+Should a file ever be derived from an Apache-2.0 work, it carries an attribution header naming the
+upstream and stating that it has been modified — see **Adobe React Spectrum**, which is retained
+empty for exactly that case.
 
 Reading a reference for its reasoning, its public API shape, or an ARIA pattern owes nothing and
 does not appear here. Only files that reproduce an upstream's **expression** get a row.
@@ -119,13 +122,50 @@ fold on the docs home and in every page's footer.
 | `packages/core/src/factory/factory.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/styled-system/factory.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
-| `apps/docs/src/components/site/icons.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
+| `apps/docs/src/components/site/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
 | `apps/docs/src/components/decorative-box.tsx` | `chakra-ui/chakra-ui` — `apps/compositions/src/lib/decorative-box.tsx` |
 | `apps/docs/public/favicon.ico` | `chakra-ui/chakra-ui` — `apps/www/app/favicon.ico` |
 | `apps/docs/public/icon.svg` | `chakra-ui/chakra-ui` — `apps/www/components/logo.tsx` |
 | `apps/docs/public/apple-touch-icon.png` | `apps/docs/public/icon.svg`, rasterized |
 | `apps/docs/public/icon-192.png` | `apps/docs/public/icon.svg`, rasterized |
 | `apps/docs/public/icon-512.png` | `apps/docs/public/icon.svg`, rasterized |
+
+## Lucide
+
+- **Project:** https://github.com/lucide-icons/lucide
+- **License:** ISC License
+- **Copyright:** Copyright (c) 2026 Lucide Icons and Contributors
+
+The docs site's UI icons are Lucide's, copied as path data from **`lucide-static@1.31.0`** (`icons/`,
+one `.svg` per glyph). This is what the React docs use too — their examples and landing page import
+`react-icons/lu`, which is Lucide — so the twenty-four glyphs below are what a 1:1 port of those
+pages requires rather than a set we chose. Lucide is not a dependency and has no SolidJS 2.0 build;
+the alternative to copying the paths is not importing them.
+
+**One row for twenty-four glyphs**, directory-scoped for the same reason `apps/docs/src/content` is
+one row rather than 111. Which upstream file each glyph came from is named in the comment above its
+component, and that is what an audit opens.
+
+| File | Derived from |
+| ---- | ------------ |
+| `apps/docs/src/components/site/icons.tsx` | `lucide-icons/lucide` — `icons/` |
+
+### Feather
+
+- **Project:** https://github.com/feathericons/feather
+- **License:** MIT License
+- **Copyright:** Copyright (c) 2013-present Cole Bemis
+
+Lucide began as a fork of Feather and carries Feather's MIT notice forward for the icons that
+descend from it. **Fourteen of our twenty-four are on that list**, and so owe this second notice as
+well as the ISC one above:
+
+`arrow-left`, `arrow-right`, `arrow-up-right`, `check`, `chevron-down`, `chevron-left`,
+`chevron-right`, `external-link`, `moon`, `plus`, `search`, `terminal`, `type`, `x`
+
+The other ten — `bell`, `box`, `copy`, `heart`, `menu`, `paint-bucket`, `party-popper`, `phone`,
+`phone-forwarded`, `sun` — are Lucide's own and are covered by the ISC grant alone. No separate row: they are the same file, and
+`attribution.config.ts` keys one entry per file.
 
 ## Framework logos
 

@@ -4,7 +4,7 @@ import { For } from "solid-js";
 import { ColorModeToggle } from "~/components/color-mode-toggle";
 import { Container } from "~/components/container";
 import { DocLink } from "~/components/doc-link";
-import { LogoIcon } from "~/components/site/icons";
+import { LogoIcon } from "~/components/site/logo";
 import { SITE_NAME } from "~/config";
 import { firstPageOf, liveSections } from "~/lib/site-map";
 
@@ -24,7 +24,7 @@ import { firstPageOf, liveSections } from "~/lib/site-map";
  *
  * The mark is Chakra's bolt glyph beside **our** wordmark: the logotype next to it reads
  * `chakra-ui-solid`, never `chakra`. The glyph is MIT like the rest of their source and is
- * attributed in `~/components/site/icons` and the root `NOTICE.md`.
+ * attributed in `~/components/site/logo` and the root `NOTICE.md`.
  */
 export function SiteHeader() {
   const location = useLocation();

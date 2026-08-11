@@ -1,153 +1,305 @@
 /**
  * @license
- * Derived from chakra-ui/chakra-ui — `apps/www/components/site/icons.tsx` (`BlitzIcon`,
- * `BlitzFillIcon`) and `apps/www/components/logo.tsx` (`LogoIcon`).
- * Copyright (c) 2019 Chakra Systems Inc.
+ * The path data below is copied from lucide-icons/lucide — the SVG sources in `icons/`, one file
+ * per glyph, named in the comment above each component. Taken from `lucide-static@1.31.0`.
+ * Copyright (c) 2026 Lucide Icons and Contributors. Licensed under the ISC License.
  *
- * Licensed under the MIT License. A copy of the license is at the repository root as LICENSE,
- * and is available at https://opensource.org/licenses/MIT
+ * Fourteen of these are Lucide's own derivatives of Feather, and carry a second notice:
+ * Copyright (c) 2013-present Cole Bemis, MIT License. Both licences are reproduced in full, and the
+ * thirteen named, in the LICENSE and NOTICE.md at the repository root.
  *
  * This file has been modified from the original.
  *
- * Ported to Solid, with two changes that are not stylistic:
+ * Three changes, none stylistic. **Each glyph is a Solid component wrapping a leaf `<svg>`**, where
+ * upstream ships one `.svg` file per glyph. **The framing moves into {@link base}** so a glyph
+ * carries only its own paths. And **the 24×24 default becomes `1em`** — `react-icons` sizes at `1em`
+ * too, and Chakra's own examples depend on it: `absolute-center-with-content` sets `fontSize="xl"`
+ * on the *parent* and expects the icon to follow.
  *
- * **The gradients are defined once, in {@link SiteGradientDefs}, instead of per instance.** Chakra
- * gives each instance a `useId()`-scoped `<defs>`; that shape does not survive here. Solid 2.0 has
- * no `createUniqueId`, a generated id would have to agree between the prerendered HTML and the
- * hydrated client, and — the reason that decides it — `fill={`url(#${id})`}` is a template with an
- * expression in an attribute named after a CSS property, which `check:style-contract` rule 1
- * rejects on sight. Literal ids in one sprite make every attribute here static.
+ * **Why these are plain `<svg>` and not `chakra.svg`.** `svg` is not in the factory's
+ * `exceptionPropMap` (`packages/core/src/factory/factory.tsx`), so `fill` and `stroke` are style
+ * props there — they become a Panda class instead of an attribute. A class Panda never generated
+ * renders nothing and raises nothing, and the framing below sits in a shared constant the extractor
+ * cannot see, so every icon would come out silently filled black. Literal attributes on a leaf
+ * `<svg>` have no such failure mode.
  *
- * **That hoist costs `currentColor`, so the token is named instead.** A `stop-color: currentColor`
- * resolves against the element the `<stop>` lives on — not the element referencing the gradient —
- * so once the `<defs>` moved out of the icon, Chakra's two `currentColor` stops started reading the
- * body's colour and the bolt came out the wrong shade in both modes. `var(--colors-fg-inverted)` is
- * the same value their `color="fg.inverted"` supplies, and it is a custom property declared inside
- * `.light` and `.dark`, so it still switches with the colour mode from anywhere in the document.
- *
- * **The camel-cased SVG attributes are rewritten to their DOM names** (`stop-color`,
- * `stop-opacity`, `gradient-units`): Solid's compiler emits attribute names verbatim, where React
- * translates them.
+ * Add a glyph by pasting its paths from `lucide-static`'s `icons/` — never by inlining an `<svg>`
+ * somewhere else. The brand marks are the other file, `~/components/site/logo`.
  */
 
 import type { JSX } from "@solidjs/web";
 
 /**
- * The three gradients every bolt on the site references, in one zero-sized `<svg>`.
+ * Lucide's shared framing: a 24×24 viewBox drawn as 2px round-joined strokes, no fill.
  *
- * Rendered once, from the root layout, because `url(#…)` resolves document-wide — this is the
- * ordinary SVG-sprite arrangement. **Delete it and every bolt loses its fill silently**, which is
- * why it lives beside the icons that need it rather than in the layout that mounts it.
+ * `1em` and `currentColor` are what let a caller size and colour a glyph with the `fontSize` and
+ * `color` style props on any ancestor, which is why no icon here needs a Box wrapper.
+ *
+ * `aria-hidden` is deliberately *not* in here. It stays a literal attribute on each `<svg>` so the
+ * a11y lint can see these are decorative, and so a caller who needs a labelled icon can override it.
  */
-export function SiteGradientDefs() {
+const base = {
+  xmlns: "http://www.w3.org/2000/svg",
+  viewBox: "0 0 24 24",
+  width: "1em",
+  height: "1em",
+  fill: "none",
+  stroke: "currentColor",
+  "stroke-width": "2",
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round",
+} as const;
+
+/** lucide `arrow-left` — `icons/arrow-left.svg` */
+export function ArrowLeftIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   return (
-    <svg width="0" height="0" aria-hidden="true" style={{ position: "absolute" }}>
-      <defs>
-        <linearGradient
-          id="blitz-outline"
-          x1="122.5"
-          y1="0"
-          x2="122.5"
-          y2="342"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stop-color="var(--colors-fg-inverted)" stop-opacity="0.5" />
-          <stop offset="0.505" stop-color="#137773" stop-opacity="0.6" />
-          <stop offset="1" stop-color="var(--colors-fg-inverted)" stop-opacity="0.5" />
-        </linearGradient>
-
-        <linearGradient
-          id="logo-lower"
-          x1="28.9534"
-          y1="18.645"
-          x2="0.786272"
-          y2="18.9059"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stop-color="#3585A3" />
-          <stop offset="1" stop-color="#00DEAE" />
-        </linearGradient>
-
-        <linearGradient
-          id="logo-upper"
-          x1="1.67767"
-          y1="7.45445"
-          x2="26.7007"
-          y2="6.80208"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stop-color="#3585A3" />
-          <stop offset="1" stop-color="#00DEAE" />
-        </linearGradient>
-      </defs>
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="m12 19-7-7 7-7" />
+      <path d="M19 12H5" />
     </svg>
   );
 }
 
-/**
- * The large outline bolt behind the hero and the framework grid. It carries its own colour through
- * `blitz-outline` — placing it needs position and nothing else.
- */
-export function BlitzIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+/** lucide `arrow-right` — `icons/arrow-right.svg` */
+export function ArrowRightIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   return (
-    <svg
-      width="245"
-      height="342"
-      viewBox="0 0 245 342"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      {...props}
-    >
-      <path
-        opacity="0.4"
-        d="M1.22588 185.078L181.791 1.26669C185.164 -2.1672 190.594 2.01153 188.316 6.28938L121.111 132.548C119.61 135.362 121.599 138.798 124.729 138.798H240.87C244.611 138.798 246.417 143.495 243.682 146.113L40.1606 340.813C36.5115 344.304 31.0798 339.384 34.0095 335.243L130.352 199.009C132.327 196.216 130.381 192.302 127.015 192.302H4.13106C0.451191 192.302 -1.38514 187.736 1.22588 185.078Z"
-        fill="url(#blitz-outline)"
-      />
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
     </svg>
   );
 }
 
-/** The small solid bolt, marking a section's eyebrow label. Takes its colour from `currentColor`. */
-export function BlitzFillIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+/** lucide `arrow-up-right` — `icons/arrow-up-right.svg` */
+export function ArrowUpRightIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   return (
-    <svg
-      width="14"
-      height="19"
-      viewBox="0 0 18 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      {...props}
-    >
-      <path
-        d="M0.470859 12.9879L13.17 0.0888906C13.4071 -0.152085 13.789 0.14116 13.6288 0.44136L8.90232 9.3016C8.79678 9.49911 8.93668 9.74022 9.15676 9.74022H17.3249C17.5881 9.74022 17.7151 10.0699 17.5227 10.2536L3.20913 23.9167C2.95248 24.1617 2.57048 23.8165 2.77652 23.5258L9.55227 13.9656C9.69116 13.7695 9.5543 13.4949 9.31755 13.4949H0.67518C0.416376 13.4949 0.287227 13.1745 0.470859 12.9879Z"
-        fill="currentColor"
-      />
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M7 7h10v10" />
+      <path d="M7 17 17 7" />
     </svg>
   );
 }
 
-/** The filled bolt glyph, in the header beside the `chakra-ui-solid` wordmark. */
-export function LogoIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+/** lucide `bell` — `icons/bell.svg` */
+export function BellIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   return (
-    <svg
-      width="24"
-      height="21"
-      viewBox="0 0 30 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      {...props}
-    >
-      <path
-        d="M29.5655 12.9244L23.0585 11.7206L22.3139 13.0099L20.4813 16.1828L15.7231 24.4212C15.5147 24.7819 14.9653 24.6335 14.9653 24.2166V17.2928V16.5412C14.9653 16.1509 14.6901 15.8153 14.3087 15.7404L6.89538 14.2841L0.259293 13.0708C0.269371 13.4155 0.350786 13.7586 0.505816 14.0761L5.98276 23.5803C6.74691 24.9063 8.15775 25.7221 9.68349 25.7201L20.1868 25.7061C21.7118 25.7041 23.1198 24.8854 23.8808 23.5585L29.2409 14.2113C29.4694 13.8138 29.5768 13.3679 29.5655 12.9244Z"
-        fill="url(#logo-lower)"
-      />
-      <path
-        d="M7.64197 12.9885L9.47736 9.80344L14.2073 1.59529C14.4154 1.2342 14.9653 1.38242 14.9653 1.79963V9.47096C14.9653 9.86168 15.2411 10.1976 15.6231 10.272L23.0585 11.7207L29.5655 12.9245C29.5572 12.5987 29.4841 12.2747 29.3464 11.9717C29.314 11.9004 29.2792 11.8299 29.2397 11.7613L23.8728 2.42387C23.1102 1.09724 21.7007 0.279938 20.1753 0.279938H9.63609C8.10822 0.279938 6.69683 1.09981 5.93521 2.42979L0.58357 11.7749C0.571248 11.7963 0.560556 11.8184 0.548935 11.8401C0.343478 12.2237 0.24692 12.6483 0.259294 13.0708L6.89539 14.2841L7.64197 12.9885Z"
-        fill="url(#logo-upper)"
-      />
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M10.268 21a2 2 0 0 0 3.464 0" />
+      <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
+    </svg>
+  );
+}
+
+/** lucide `box` — `icons/box.svg` */
+export function BoxIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+      <path d="m3.3 7 8.7 5 8.7-5" />
+      <path d="M12 22V12" />
+    </svg>
+  );
+}
+
+/** lucide `check` — `icons/check.svg` */
+export function CheckIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+/** lucide `chevron-down` — `icons/chevron-down.svg` */
+export function ChevronDownIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+/** lucide `chevron-left` — `icons/chevron-left.svg` */
+export function ChevronLeftIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  );
+}
+
+/** lucide `chevron-right` — `icons/chevron-right.svg` */
+export function ChevronRightIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+}
+
+/** lucide `copy` — `icons/copy.svg` */
+export function CopyIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+    </svg>
+  );
+}
+
+/** lucide `external-link` — `icons/external-link.svg` */
+export function ExternalLinkIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M15 3h6v6" />
+      <path d="M10 14 21 3" />
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    </svg>
+  );
+}
+
+/** lucide `heart` — `icons/heart.svg` */
+export function HeartIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+    </svg>
+  );
+}
+
+/** lucide `menu` — `icons/menu.svg` */
+export function MenuIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M4 5h16" />
+      <path d="M4 12h16" />
+      <path d="M4 19h16" />
+    </svg>
+  );
+}
+
+/** lucide `moon` — `icons/moon.svg` */
+export function MoonIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+    </svg>
+  );
+}
+
+/** lucide `paint-bucket` — `icons/paint-bucket.svg` */
+export function PaintBucketIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M11 7 6 2" />
+      <path d="M18.992 12H2.041" />
+      <path d="M21.145 18.38A3.34 3.34 0 0 1 20 16.5a3.3 3.3 0 0 1-1.145 1.88c-.575.46-.855 1.02-.855 1.595A2 2 0 0 0 20 22a2 2 0 0 0 2-2.025c0-.58-.285-1.13-.855-1.595" />
+      <path d="m8.5 4.5 2.148-2.148a1.205 1.205 0 0 1 1.704 0l7.296 7.296a1.205 1.205 0 0 1 0 1.704l-7.592 7.592a3.615 3.615 0 0 1-5.112 0l-3.888-3.888a3.615 3.615 0 0 1 0-5.112L5.67 7.33" />
+    </svg>
+  );
+}
+
+/** lucide `party-popper` — `icons/party-popper.svg` */
+export function PartyPopperIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M5.8 11.3 2 22l10.7-3.79" />
+      <path d="M4 3h.01" />
+      <path d="M22 8h.01" />
+      <path d="M15 2h.01" />
+      <path d="M22 20h.01" />
+      <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10" />
+      <path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17" />
+      <path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7" />
+      <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z" />
+    </svg>
+  );
+}
+
+/** lucide `phone` — `icons/phone.svg` */
+export function PhoneIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
+    </svg>
+  );
+}
+
+/** lucide `phone-forwarded` — `icons/phone-forwarded.svg` */
+export function PhoneForwardedIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M14 6h8" />
+      <path d="m18 2 4 4-4 4" />
+      <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
+    </svg>
+  );
+}
+
+/** lucide `plus` — `icons/plus.svg` */
+export function PlusIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M5 12h14" />
+      <path d="M12 5v14" />
+    </svg>
+  );
+}
+
+/** lucide `search` — `icons/search.svg` */
+export function SearchIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="m21 21-4.34-4.34" />
+      <circle cx="11" cy="11" r="8" />
+    </svg>
+  );
+}
+
+/** lucide `sun` — `icons/sun.svg` */
+export function SunIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  );
+}
+
+/** lucide `terminal` — `icons/terminal.svg` */
+export function TerminalIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M12 19h8" />
+      <path d="m4 17 6-6-6-6" />
+    </svg>
+  );
+}
+
+/** lucide `type` — `icons/type.svg` */
+export function TypeIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M12 4v16" />
+      <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
+      <path d="M9 20h6" />
+    </svg>
+  );
+}
+
+/** lucide `x` — `icons/x.svg` */
+export function XIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
     </svg>
   );
 }

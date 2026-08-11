@@ -4,7 +4,7 @@ import { Blob } from "~/components/site/blob";
 import { DesignSystemSection } from "~/components/site/design-system-section";
 import { FrameworkSection } from "~/components/site/framework-section";
 import { HeroSection } from "~/components/site/hero-section";
-import { BlitzIcon } from "~/components/site/icons";
+import { BlitzIcon } from "~/components/site/logo";
 import { NextStepsSection } from "~/components/site/next-steps-section";
 import { ParitySection } from "~/components/site/parity-section";
 
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({ component: DocsHome });
  *
  * **The bolt is Chakra's, used deliberately.** Their `BlitzIcon`, `BlitzFillIcon` and `LogoIcon`
  * come across under the same MIT grant as the rest of their source, attributed in
- * `~/components/site/icons` and in the root `NOTICE.md`. The wordmark still reads
+ * `~/components/site/logo` and in the root `NOTICE.md`. The wordmark still reads
  * `chakra-ui-solid`, and the disclaimer above the fold is what says whose project this is not.
  *
  * **Every element on it is `Box` and style props**, not `css()` beside a `<div>`. This site is the
@@ -35,7 +35,7 @@ function DocsHome() {
       <AmbientLights />
 
       {/* The bolt behind the hero, at chakra-ui.com's own offsets. It brings its own colour — the
-        gradient names `fg.inverted` itself (`~/components/site/icons`), so this Box only places it. */}
+        gradient names `fg.inverted` itself (`~/components/site/logo`), so this Box only places it. */}
       <Box position="absolute" top="58px" right="67px" hideBelow="md" pointerEvents="none">
         <BlitzIcon />
       </Box>

@@ -1,11 +1,18 @@
-import type { JSX } from "@solidjs/web";
+import { Dynamic, type JSX } from "@solidjs/web";
 import { Box } from "chakra-ui-solid";
-import { createSignal, For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 
 export interface CodeTab {
   /** Stable across renders — it is half of every `id` the ARIA wiring below needs. */
   id: string;
   label: string;
+  /**
+   * The glyph beside the label, as a *component* rather than an element. A JSX element built at
+   * module scope is evaluated on import and breaks SSR; holding the function defers it to render.
+   * Typed to match `~/components/site/icons` — every attribute there is optional, so `Dynamic`
+   * mounting it with no props is well-formed.
+   */
+  icon?: (props: JSX.SvgSVGAttributes<SVGSVGElement>) => JSX.Element;
   /** Shiki's `<pre class="shiki">…`, produced at build time by the `?highlight` plugin. */
   html: string;
 }
@@ -71,6 +78,9 @@ export function CodeTabs(props: { label: string; items: CodeTab[] }) {
                 aria-selected={isSelected() ? "true" : "false"}
                 tabindex={isSelected() ? 0 : -1}
                 onClick={() => setSelected(index())}
+                display="inline-flex"
+                alignItems="center"
+                gap="2"
                 px="3"
                 py="2"
                 fontSize="sm"
@@ -89,6 +99,7 @@ export function CodeTabs(props: { label: string; items: CodeTab[] }) {
                   </button>
                 )}
               >
+                <Show when={item.icon}>{(icon) => <Dynamic component={icon()} />}</Show>
                 {item.label}
               </Box>
             );

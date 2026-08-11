@@ -5,7 +5,7 @@ import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/solid-r
 import { Box } from "chakra-ui-solid";
 import { shellClass } from "~/components/layout";
 import { NotFound } from "~/components/not-found";
-import { SiteGradientDefs } from "~/components/site/icons";
+import { SiteGradientDefs } from "~/components/site/logo";
 import { SiteFooter } from "~/components/site-footer";
 import { SiteHeader } from "~/components/site-header";
 import { SITE_DESCRIPTION, SITE_NAME } from "~/config";
@@ -79,7 +79,7 @@ function RootLayout(props: { children: JSX.Element }) {
         <script innerHTML={colorModePrePaintScript} />
       </head>
       <body class={shellClass}>
-        {/* Every bolt on the site fills from one of these three gradients (`~/components/site/icons`). */}
+        {/* Every bolt on the site fills from one of these three gradients (`~/components/site/logo`). */}
         <SiteGradientDefs />
         <SiteHeader />
         <Box as="main" flex="1">

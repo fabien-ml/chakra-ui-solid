@@ -3,6 +3,7 @@ import { Box } from "chakra-ui-solid";
 import { Container } from "~/components/container";
 import { DocLink } from "~/components/doc-link";
 import { DemoFrame, DemoStrip } from "~/components/site/demo-frame";
+import { ArrowRightIcon, PartyPopperIcon, TerminalIcon } from "~/components/site/icons";
 import { DocLinkButton } from "~/components/site/link-button";
 import { HighlightHeading, Subheading } from "~/components/site/typography";
 import { DISCLAIMER } from "~/config";
@@ -84,9 +85,16 @@ function AnnouncementPill() {
         </DocLink>
       )}
     >
-      Early — Box is the first component shipped{" "}
-      <Box as="span" aria-hidden="true">
-        →
+      {/* Chakra's pill is `popper · text · arrow`. Their arrow is Heroicons' where every other
+        glyph on the site is Lucide's; ours is Lucide's `arrow-right`, so the icon set owes one
+        upstream instead of two for a glyph the two libraries draw the same way. The pill is
+        already `inline-flex` with a `gap`, so neither span needs spacing of its own. */}
+      <Box as="span" display="inline-flex" flexShrink="0">
+        <PartyPopperIcon />
+      </Box>
+      Early — Box is the first component shipped
+      <Box as="span" display="inline-flex" flexShrink="0">
+        <ArrowRightIcon />
       </Box>
     </Box>
   );
@@ -167,33 +175,12 @@ function InstallCommand() {
       fontWeight="semibold"
       borderRadius="l2"
     >
-      <TerminalIcon />
+      {/* The glyph is `1em`, so it tracks the `fontSize="sm"` above. The span carries the one thing
+        that is a style prop and must not reach the `<svg>`. */}
+      <Box as="span" display="inline-flex" flexShrink="0">
+        <TerminalIcon />
+      </Box>
       <Box as="code">pnpm add chakra-ui-solid</Box>
-    </Box>
-  );
-}
-
-/**
- * An `<svg>` stays an `<svg>`: its geometry attributes are not style props, and Box types its
- * element as `HTMLElement`. The sizing that *is* a style prop goes on the span around it.
- */
-function TerminalIcon() {
-  return (
-    <Box as="span" display="inline-flex" flexShrink="0" aria-hidden="true">
-      <svg
-        viewBox="0 0 24 24"
-        width="16"
-        height="16"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-      >
-        <polyline points="4 17 10 11 4 5" />
-        <line x1="12" y1="19" x2="20" y2="19" />
-      </svg>
     </Box>
   );
 }
