@@ -19,7 +19,7 @@ describe("EnvironmentProvider on the server", () => {
     // *Calling* `getRootNode()` on the server is a different matter: its fallback is a bare
     // `document`, so it throws `ReferenceError: document is not defined` in Node. Nothing does
     // today — a machine does not start on the server — and the behaviour is inherited from Ark
-    // rather than ours, so it is recorded in `decisions.md` D-126 and deliberately not asserted
+    // rather than ours, so it is recorded in `decisions-ledger.md` D-126 and deliberately not asserted
     // here: pinning a defect as a contract is how it becomes intentional.
     const html = await renderToStream(() => (
       <EnvironmentProvider value={undefined}>

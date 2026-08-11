@@ -67,7 +67,7 @@ describe("Stack", () => {
     // Chakra's Stack writes `flexDirection={direction}` and then spreads `{...rest}` after it, so
     // the caller's own `flexDirection` overwrites the shorthand in plain JSX order. Ours reaches
     // the same answer by a different route — the shorthand rides `css`, and style props outrank
-    // `css` (`DECISIONS.md`, *Style props outrank the `css` prop*).
+    // `css` (`__internal__/decisions.md`, *Style props outrank the `css` prop*).
     mounted = mountElement(() => <Stack direction="row" flexDirection="column" />);
 
     expect(getComputedStyle(mounted.element).flexDirection).toBe("column");

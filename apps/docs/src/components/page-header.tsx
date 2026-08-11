@@ -26,7 +26,7 @@ const LINK_LABELS: Record<string, string> = {
  * A link value that is a URL renders as an anchor; anything else renders as text.
  *
  * The one that is not a URL today is `source`. chakra-ui.com builds it into a `tree/main/...` link
- * on its own repository; ours is private (`decisions.md` D-02), so a link would 404 for every reader.
+ * on its own repository; ours is private (`decisions-ledger.md` D-02), so a link would 404 for every reader.
  * The path still tells you where the code lives, and the day the repository is public the
  * frontmatter value becomes a URL and this renders a link with nothing else changing.
  */

@@ -159,7 +159,7 @@ const ALWAYS_FORWARDED = new Set(["children", "ref"]);
  * round until 2026-08-10 on the belief that a documented escape hatch outranks a prop; Chakra
  * documents no such thing, and `css` is where a component parks *its own* shorthand mapping
  * ({@link composeCss}), so the inverted order made `<Flex direction="column" flexDirection="row">`
- * answer `column` where Chakra answers `row` (`DECISIONS.md`, *Style props outrank the `css` prop*).
+ * answer `column` where Chakra answers `row` (`__internal__/decisions.md`, *Style props outrank the `css` prop*).
  *
  * SSR-safe by construction: the `class` getter is pure render-time computation — no DOM access, no
  * effects, no generated ids — and `css()` emits stable unhashed names, so server and client agree.

@@ -1,7 +1,5 @@
 name: CI
 
-# Three jobs. A fourth needs one of these to go — `scripts/repo-shape.test.mjs`.
-
 on:
   push:
     branches: [main]

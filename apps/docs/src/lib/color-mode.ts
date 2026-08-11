@@ -16,7 +16,7 @@ import { createSignal } from "solid-js";
  *    `.dark { … }` — so a page carrying neither class resolves every one of them to an undefined
  *    custom property and computes `transparent`. Without a blocking script that writes the class
  *    before first paint, the prerendered page has **no colours at all**, not merely the wrong
- *    ones. (`decisions.md` D-113.)
+ *    ones. (`decisions-ledger.md` D-113.)
  * 2. **Class strategy only**, because that is what `_dark` compiles to (`.dark &`), measured.
  *    `color-scheme` rides along as an inline `style` attribute on the root — explicitly allowed,
  *    and the reason native controls and scrollbars follow the page instead of staying light

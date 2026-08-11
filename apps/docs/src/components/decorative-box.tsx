@@ -22,7 +22,7 @@ import { Box, type BoxProps } from "chakra-ui-solid";
  * background is the same family of greys.
  *
  * `width`/`height` are defaults an example overrides per property — `<DecorativeBox height="10" />`
- * is 40px tall and still full width — because a style prop outranks `css` (`DECISIONS.md`, *Style
+ * is 40px tall and still full width — because a style prop outranks `css` (`__internal__/decisions.md`, *Style
  * props outrank the `css` prop*).
  *
  * It is documentation furniture, not a component: nothing under `packages/` knows it exists, and it

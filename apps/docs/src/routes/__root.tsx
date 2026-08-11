@@ -54,7 +54,7 @@ function RootLayout(props: { children: JSX.Element }) {
           `.dark { … }` — so a prerendered page that reaches the browser with neither class
           resolves every one of them to an undefined custom property and computes `transparent`.
           Without this script the page has **no colours at all** until JavaScript runs
-          (`decisions.md` D-113).
+          (`decisions-ledger.md` D-113).
 
           `innerHTML` rather than a text child because Solid escapes text in the SSR output, and an
           escaped script is a syntax error rather than a colour mode.

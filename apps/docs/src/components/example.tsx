@@ -15,7 +15,7 @@ import { Show } from "solid-js";
  * typechecks it, asserts it imports only subpaths that exist, **mounts** it with no console error
  * and a non-empty root, and runs axe over it. That job used to belong to a story canary; it is
  * here because a story renders a component in a harness we control and an example renders it the
- * way a consumer gets it (`decisions.md` D-133).
+ * way a consumer gets it (`decisions-ledger.md` D-133).
  */
 const exampleModules = import.meta.glob<{ default: Component }>("../examples/*.tsx", {
   eager: true,

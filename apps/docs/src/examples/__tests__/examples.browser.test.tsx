@@ -12,7 +12,7 @@ import "../../../styled-system/styles.css";
  * This is the test that inherited `prior-art.md` §8.1's fourth rule — *a deliverable verified by a
  * file-existence check is verified in name only*. Its origin is ZagListbox: stories that were
  * written, typechecked, linted and committed, every one of which crashed, because nobody opened
- * them. **The rule stands and its subject moved** (`decisions.md` D-133): a story renders a
+ * them. **The rule stands and its subject moved** (`decisions-ledger.md` D-133): a story renders a
  * component in a harness we control, and an example renders it the way a consumer writes it.
  *
  * Four assertions per example, and the middle two are the ones a typecheck cannot make:

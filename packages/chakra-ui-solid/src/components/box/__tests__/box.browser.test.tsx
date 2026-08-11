@@ -82,7 +82,7 @@ describe("Box — precedence", () => {
   it("lets a style prop beat the `css` prop", () => {
     // Chakra's order, read off `useResolvedProps`: `css(cvaStyles, ...cssStyles, propStyles)`, and
     // its `mergeWith` gives the last argument the property. So `css` is a default a caller can
-    // still override, not a trump card (`DECISIONS.md`, *Style props outrank the `css` prop*).
+    // still override, not a trump card (`__internal__/decisions.md`, *Style props outrank the `css` prop*).
     const element = render(() => <Box p="8" css={{ padding: "2" }} />);
     expect(getComputedStyle(element).padding).toBe("32px");
   });

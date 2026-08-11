@@ -4,7 +4,7 @@
  * is ours to edit here.
  */
 
-/** The docs-home descriptor, leading positive — the form settled at the P1 gate (`decisions.md` D-01). */
+/** The docs-home descriptor, leading positive — the form settled at the P1 gate (`decisions-ledger.md` D-01). */
 export const SITE_NAME = "chakra-ui-solid";
 
 export const SITE_DESCRIPTION =

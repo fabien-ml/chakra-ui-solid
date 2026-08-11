@@ -90,7 +90,7 @@ describe("renderStyled — class precedence", () => {
   it("lets a style prop beat the `css` escape hatch, as Chakra does", () => {
     // Chakra's `useResolvedProps` ends its merge with the style props —
     // `css(cvaStyles, ...cssStyles, propStyles)` — so the escape hatch is a *default* a caller can
-    // still override per property, not a trump card (`DECISIONS.md`, *Style props outrank the `css` prop*).
+    // still override per property, not a trump card (`__internal__/decisions.md`, *Style props outrank the `css` prop*).
     expect(
       computedClass({ as: "div", props: { m: "2", css: { margin: "6" } } as StyledProps }),
     ).toBe(css({ margin: "2" }));

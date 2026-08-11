@@ -9,7 +9,7 @@ import { type NavPage, sidebarGroups } from "~/lib/site-map";
  * That scoping is the structural thing chakra-ui.com does and this site did not: their sidebar
  * shows the groups of whichever top-level section you are in, and the section tabs above it are
  * how you change sections. Rendering every section at once put *Components* under *Get Started*,
- * so the sidebar contradicted the bar above it (`decisions.md` **D-147** failure 1).
+ * so the sidebar contradicted the bar above it (`decisions-ledger.md` **D-147** failure 1).
  *
  * Groups and their order come from `~/lib/docs-config`, which is a decision. Which of their
  * entries render comes from the content tree, which is a fact.

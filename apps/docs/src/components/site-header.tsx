@@ -20,7 +20,7 @@ import { firstPageOf, liveSections } from "~/lib/site-map";
  *
  * A section appears once it has a page. The site is built incrementally and is meant to be
  * readable as a site at every gate (`definition-of-done.md` rule 2.15), and a nav item pointing
- * at an empty tier is a 404 with a promise attached (`decisions.md` **D-141**).
+ * at an empty tier is a 404 with a promise attached (`decisions-ledger.md` **D-141**).
  *
  * The mark is Chakra's bolt glyph beside **our** wordmark: the logotype next to it reads
  * `chakra-ui-solid`, never `chakra`. The glyph is MIT like the rest of their source and is

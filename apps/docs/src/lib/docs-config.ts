@@ -9,7 +9,7 @@
  *
  * **What this file does not do is assert that a page exists.** Existence is the content tree —
  * one `.mdx` under `src/content/<section>/[<group>/]<name>.mdx` — and an entry with no file does
- * not render (`decisions.md` **D-141**). That split is deliberate: the site is built one batch at
+ * not render (`decisions-ledger.md` **D-141**). That split is deliberate: the site is built one batch at
  * a time, so the settled IA can be written down in full now while the sidebar still shows only
  * what a reader can actually open. It also keeps this file from becoming a second inventory —
  * which component owes a page is `roadmap.md` §4, read mechanically by `check:docs-inventory`

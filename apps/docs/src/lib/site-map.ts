@@ -7,7 +7,7 @@ import { docsNav, type NavItem } from "~/lib/docs-config";
  * Two sources, on purpose. **`docs-config.ts` decides order and grouping** — which section a page
  * belongs to, which group inside it, and where in that group. **The content glob decides
  * existence** — a register entry with no `.mdx` file does not render, so the settled IA can be
- * written down in full while the sidebar shows only pages a reader can open (`decisions.md`
+ * written down in full while the sidebar shows only pages a reader can open (`decisions-ledger.md`
  * **D-141**).
  *
  * Neither is an inventory of what *owes* a page: that is `roadmap.md` §4, read by
@@ -135,7 +135,7 @@ function pagesOf(section: NavItem, group: NavItem): NavPage[] {
 
 /**
  * The current section's groups — **the sidebar is scoped to one section**, which is the single
- * structural thing chakra-ui.com does that this site did not (`decisions.md` **D-147** failure 1).
+ * structural thing chakra-ui.com does that this site did not (`decisions-ledger.md` **D-147** failure 1).
  * Rendering every section at once put *Components* under *Get Started*.
  *
  * A page with a content file and no register entry lands in a trailing **Ungrouped** heading
