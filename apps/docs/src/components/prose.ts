@@ -1,7 +1,8 @@
 import { css } from "@chakra-ui-solid/styled-system/css";
 
 /**
- * Typography for MDX-authored prose, as one Panda class with descendant selectors.
+ * Typography for MDX-authored prose — one class per tag, worn by the element `~/mdx-components`
+ * renders for that tag.
  *
  * The scale is chakra-ui.com's, read off `apps/www/components/mdx/*` and expressed in the same
  * **em-relative** units they use, so a heading tracks the surrounding text rather than a fixed
@@ -16,15 +17,30 @@ import { css } from "@chakra-ui-solid/styled-system/css";
  * source. That is the same path a reader's app takes, which is the point of the docs app existing
  * at all (`docs-site.md` §1.1).
  *
- * No `& h1`: a page's title is frontmatter, rendered by the page header, so an `# H1` never
- * reaches the body (`docs-plan.md` §8.1).
+ * ## Why these are not descendant selectors on the wrapper
+ *
+ * As `& p` and `& h2` on {@link proseClass} these rules reached **everything inside an article**,
+ * and an article contains more than prose: `<Example>` renders its live preview inside the same
+ * wrapper, so a docs example's `<Text>` was painted `fg.muted` over its own `color` prop and its
+ * `<Heading>` was resized to `1.3em` over the recipe's step. Both directions are lost causes for
+ * the component:
+ *
+ * - against a style prop, `.\[\&_p\]\:c_fg\.muted p` is (0,1,1) and the atomic class is (0,1,0),
+ *   and both sit in `@layer utilities`
+ * - against a recipe, `@layer utilities` is above `@layer recipes` and layer order ignores
+ *   specificity entirely
+ *
+ * The same collision hit the props table and the framework cards, which also render inside the
+ * article. Styling the element the provider renders is the fix that was already applied to `a` and
+ * `table` for the smaller version of this — see {@link mdxTableClass}.
+ *
+ * No `h1`: a page's title is frontmatter, rendered by the page header, so an `# H1` never reaches
+ * the body (`docs-plan.md` §8.1).
  */
 const headingScrollMargin = "calc(var(--header-height) + 1.5em)";
 
-export const proseClass = css({
-  color: "fg",
-
-  "& h2": {
+export const proseTagClasses: Record<string, string | undefined> = {
+  h2: css({
     color: "fg",
     fontSize: "1.3em",
     fontWeight: "semibold",
@@ -35,8 +51,8 @@ export const proseClass = css({
     scrollMarginTop: headingScrollMargin,
     "& code": { fontSize: "0.9em" },
     "& + *": { marginTop: "0" },
-  },
-  "& h3": {
+  }),
+  h3: css({
     color: "fg",
     fontSize: "1.2em",
     fontWeight: "semibold",
@@ -47,8 +63,8 @@ export const proseClass = css({
     scrollMarginTop: headingScrollMargin,
     "& code": { fontSize: "0.9em" },
     "& + *": { marginTop: "0" },
-  },
-  "& h4": {
+  }),
+  h4: css({
     color: "fg",
     fontWeight: "semibold",
     letterSpacing: "-0.01em",
@@ -57,59 +73,81 @@ export const proseClass = css({
     mb: "0.8em",
     scrollMarginTop: headingScrollMargin,
     "& + *": { marginTop: "0" },
-  },
+  }),
 
-  "& p": {
+  p: css({
     color: "fg.muted",
     lineHeight: "1.75",
     my: "1em",
     _first: { marginTop: "0" },
     _last: { marginBottom: "0" },
-  },
-  "& strong": { fontWeight: "semibold", color: "fg" },
+  }),
+  strong: css({ fontWeight: "semibold", color: "fg" }),
 
-  "& ul, & ol": {
+  // `& > li` rather than a class on `li`, because the marker is the one thing an `li` cannot know
+  // on its own — it is disc or decimal according to which list it sits in.
+  ul: css({
     my: "1em",
     ps: "1.5em",
     color: "fg.muted",
     "& ol, & ul": { my: "0.5em" },
-  },
-  "& ul > li": { listStyleType: "disc", ps: "0.4em" },
-  "& ol > li": { listStyleType: "decimal", ps: "0.4em" },
-  "& li": { my: "0.8em", _marker: { color: "fg.subtle" } },
+    "& > li": { listStyleType: "disc", ps: "0.4em" },
+  }),
+  ol: css({
+    my: "1em",
+    ps: "1.5em",
+    color: "fg.muted",
+    "& ol, & ul": { my: "0.5em" },
+    "& > li": { listStyleType: "decimal", ps: "0.4em" },
+  }),
+  li: css({ my: "0.8em", _marker: { color: "fg.subtle" } }),
 
-  // No `& a` here. An anchor is styled by the `a` component in `~/mdx-components`, the way
-  // chakra-ui.com styles its own — a descendant selector would also win against the cards and the
-  // pagination, which render their own anchors inside this class.
-
-  // `:not(pre code)` so an inline `code` gets the chip treatment and a fenced block does not —
-  // the fence is styled by the code pane, and doubling the two produces a box inside a box.
-  "& :not(pre) > code": {
-    bg: "bg.muted",
-    borderRadius: "l1",
-    px: "1",
-    py: "0.5",
-    fontSize: "0.875em",
-    fontFamily: "mono",
-    color: "fg",
-  },
-
-  "& blockquote": {
+  blockquote: css({
     borderInlineStartWidth: "3px",
     borderColor: "border.emphasized",
     ps: "4",
     my: "1.285em",
     color: "fg.muted",
     "& p": { color: "fg.muted" },
-  },
+  }),
 
-  // No `& table`, `& th` or `& td` — see `mdxTableClass`.
+  hr: css({ borderColor: "border", my: "10" }),
+};
 
-  "& hr": { borderColor: "border", my: "10" },
+/**
+ * An inline `code`'s chip, worn by the `code` component in `~/mdx-components`.
+ *
+ * Kept out of {@link proseTagClasses} because it is the one tag whose styling depends on where it
+ * sits: a fence renders `pre > code` too, and giving that one the chip puts a box inside the code
+ * pane's box. The provider tells them apart by the `data-language` `rehype-pretty-code` writes on
+ * the fenced one — a runtime test rather than a `:not(pre > code)` selector, which would raise the
+ * chip to (0,1,2) and beat the `& code` font-size a heading sets on its own inline code.
+ */
+export const mdxInlineCodeClass = css({
+  bg: "bg.muted",
+  borderRadius: "l1",
+  px: "1",
+  py: "0.5",
+  fontSize: "0.875em",
+  fontFamily: "mono",
+  color: "fg",
+});
 
-  // `rehype-pretty-code` wraps a fence in a `<figure>` and lifts ```` ```ts title="…" ```` into a
-  // `<figcaption>`. Unstyled, the title reads as a stray line of prose above the block; joined to
-  // it, it reads as the filename the snippet belongs in, which is the whole reason to write one.
+/**
+ * What is left on the article wrapper: an inherited base colour, and the parts of a highlighted
+ * fence that only `rehype-pretty-code` ever emits.
+ *
+ * Those three selectors are keyed on `data-rehype-pretty-code-*`, so unlike a bare `& figure` they
+ * cannot reach anything an example or the site's own chrome renders — which is the property the
+ * tag classes above had to be rewritten to get.
+ *
+ * `rehype-pretty-code` wraps a fence in a `<figure>` and lifts ```` ```ts title="…" ```` into a
+ * `<figcaption>`. Unstyled, the title reads as a stray line of prose above the block; joined to it,
+ * it reads as the filename the snippet belongs in, which is the whole reason to write one.
+ */
+export const proseClass = css({
+  color: "fg",
+
   "& figure[data-rehype-pretty-code-figure]": { my: "1em" },
   "& [data-rehype-pretty-code-title]": {
     borderWidth: "1px",

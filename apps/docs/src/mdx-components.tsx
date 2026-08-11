@@ -7,13 +7,18 @@ import { Example } from "~/components/example";
 import { Card, CardGroup } from "~/components/mdx/card";
 import { Step, Steps } from "~/components/mdx/steps";
 import { PropsTable } from "~/components/props-table";
-import { mdxTableClass } from "~/components/prose";
+import { mdxInlineCodeClass, mdxTableClass, proseTagClasses } from "~/components/prose";
 
 /**
  * MDX funnels every intrinsic element through `_components.<tag>` and **calls it as a component**.
  * Its built-in defaults map each tag to a string (`h1: "h1"`), which a React-style `jsx()` runtime
  * can handle and Solid's compiler cannot — it calls the value as a function, so `"h1"` renders
  * nothing. This provider replaces those defaults with real Solid components.
+ *
+ * It is also where an article's typography lands. Every rule that used to be a descendant selector
+ * on the prose wrapper is now a class on the element rendered here, because the wrapper contains
+ * more than prose — an `<Example>`'s live preview and the props table sit inside it, and a
+ * descendant selector beat both (`~/components/prose`).
  */
 type AnyProps = Record<string, unknown>;
 
@@ -52,7 +57,16 @@ const HTML_TAGS = [
 
 const hostComponents: Record<string, Component<AnyProps>> = {};
 for (const tag of HTML_TAGS) {
-  hostComponents[tag] = (props) => <Dynamic component={tag} {...props} />;
+  const tagClass = proseTagClasses[tag];
+  hostComponents[tag] = tagClass
+    ? (props) => (
+        <Dynamic
+          component={tag}
+          {...props}
+          class={cx(tagClass, props.class as string | undefined)}
+        />
+      )
+    : (props) => <Dynamic component={tag} {...props} />;
 }
 
 // A link written in prose. Styled here rather than through a descendant selector in `proseClass`,
@@ -93,6 +107,20 @@ hostComponents.pre = (props) => (
     component="pre"
     {...props}
     class={cx(codePaneClass, props.class as string | undefined)}
+  />
+);
+
+// Only *inline* code gets the chip. A fence renders `pre > code` as well, and chipping that one
+// draws a box inside the code pane's box — `rehype-pretty-code` is what tells them apart, by
+// writing `data-language` on the fenced one and nothing on an inline backtick.
+hostComponents.code = (props) => (
+  <Dynamic
+    component="code"
+    {...props}
+    class={cx(
+      props["data-language"] === undefined ? mdxInlineCodeClass : undefined,
+      props.class as string | undefined,
+    )}
   />
 );
 
