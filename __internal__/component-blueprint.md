@@ -727,10 +727,14 @@ transition-based kernel was never the right shape here. **Do not re-open it.**
 ### 7.2 The render strategy, in full
 
 ```tsx
-// @chakra-ui-solid/core/presence
+// packages/core/src/presence/presence.ts — inside `core`, so the adapter is reached relatively.
+// A file in `core` importing `@chakra-ui-solid/core` is the self-reference `decisions.md` measures:
+// it extracts fine and publishes `declare const …: any`.
 import * as presence from "@zag-js/presence"
-import { normalizeProps, useMachine, type MaybeAccessor } from "@chakra-ui-solid/core"
 import { type Accessor, createMemo } from "solid-js"
+import { useMachine } from "../zag/machine"
+import type { MaybeAccessor } from "../zag/merge-props"
+import { normalizeProps } from "../zag/normalize-props"
 
 export interface RenderStrategyProps {
   /** Delay the first mount until the node is first present. Default `false`. */
@@ -1064,7 +1068,18 @@ inherited.
 ## 11. Dialog, worked fully through
 
 Against the adapter's public surface as `zag-solid-adapter.md` §3.1 states it — `useMachine`,
-`normalizeProps`, `mergeProps`, `PropTypes`, and `MaybeAccessor` alongside them — **and nothing else.**
+`normalizeProps`, `mergeProps` and `PropTypes`, the four exports — **and nothing else.**
+`MaybeAccessor` is **not** among them: §3.1 says it "ships alongside `mergeProps` as its parameter
+type", and that is all it does — it reaches `dist/index.d.ts` as a local type in `mergeProps`'s
+signature, never as an export. Upstream's barrel is a named `export { mergeProps }` too. Measured
+against the built package, a part component that writes `import { type MaybeAccessor }` gets
+
+```
+error TS2459: Module '"@chakra-ui-solid/core"' declares 'MaybeAccessor' locally, but it is not exported.
+```
+
+`createPresence` takes it as a parameter type, but `createPresence` lives *in* `core` and reaches it
+relatively (§7.2). Nothing outside `core` needs the name.
 
 ### 11.1 File layout
 
@@ -1576,7 +1591,7 @@ namespace, so P6 records them as *planned*, not *excluded*.
 
 | From | Symbols |
 |---|---|
-| `@chakra-ui-solid/core` — the adapter surface, **and nothing else of it** (`zag-solid-adapter.md` §3.1) | `useMachine`, `normalizeProps`, `mergeProps`, `PropTypes`, `MaybeAccessor` |
+| `@chakra-ui-solid/core` — the adapter surface, **and nothing else of it** (`zag-solid-adapter.md` §3.1) | `useMachine`, `normalizeProps`, `mergeProps`, `PropTypes` |
 | `@chakra-ui-solid/core` — the styling and rendering kernel | `renderStyled`, `RenderProp`, `createSlotClasses`, `createPresence`, `RenderStrategyProps`, `PresenceApi`, `useLocaleContext`, `useEnvironmentContext`, `withDefaults`, `composeEventHandlers`, `createComponentContext` |
 | `@chakra-ui-solid/styled-system/recipes` | `dialogSlotRecipe` |
 | `@zag-js/dialog` | `machine`, `connect`, `Api`, `Props`, `OpenChangeDetails`, `ElementIds` |
