@@ -1,5 +1,5 @@
+import { chakra, composeStyle, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
-import { chakra, composeStyle, type HTMLChakraProps } from "@chakra-ui-solid/system";
 import type { JSX } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 

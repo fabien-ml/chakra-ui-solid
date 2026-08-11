@@ -83,7 +83,7 @@ naming a file (`blueprint §1.2`) points there instead.
 - [ ] popover — S:popover · 10/13 · Z ⚠
       `+header/body/footer`. **The floating probe** (§8). Presence-gated `aria-controls`
 - [ ] presence — Z
-      Headless machine, no anatomy. `chakra(ArkPresence)`; our `createPresence` already lives in `system` (`plan.md` §6)
+      Headless machine, no anatomy. `chakra(ArkPresence)`; our `createPresence` already lives in `core` (`plan.md` §6)
 - [ ] progress — S:progress · 9/9
       Machine-emitted inline `style` for the fill — legal, not a CIJ mark
 - [ ] progress-circle — progress · S:progressCircle · 9/9
@@ -245,7 +245,7 @@ naming a file (`blueprint §1.2`) points there instead.
 - color-mode — relocated
       **A divergence, flagged rather than absorbed** (`decisions-ledger.md` **D-134**, reversing D-38). Chakra ships colour mode as a CLI snippet over `next-themes`, which has no SolidJS equivalent — porting that faithfully ships a wrapper around nothing. **No provider**: a pre-paint script, a module-level signal, `.light`/`.dark` plus `color-scheme` on the root. Documented on `/docs/styling/dark-mode`, not in the component tier
 - environment — relocated
-      The context lives in `@chakra-ui-solid/system` and is re-exported from `components/environment` so Chakra's import path resolves. Not a component
+      The context lives in `@chakra-ui-solid/core` and is re-exported from `components/environment` so Chakra's import path resolves. Not a component
 - locale — relocated
       Same. Plus `useFilter`, which is `createFilter` from `@zag-js/i18n-utils` — the same MIT package we already take `isRTL` from. No machine
 - for / show — excluded

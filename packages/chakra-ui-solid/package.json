@@ -61,8 +61,8 @@
     "solid-js": "catalog:"
   },
   "dependencies": {
-    "@chakra-ui-solid/styled-system": "workspace:*",
-    "@chakra-ui-solid/system": "workspace:*"
+    "@chakra-ui-solid/core": "workspace:*",
+    "@chakra-ui-solid/styled-system": "workspace:*"
   },
   "devDependencies": {
     "@chakra-ui-solid/internal-test-utils": "workspace:*",

@@ -1,4 +1,4 @@
-import { chakra } from "@chakra-ui-solid/system";
+import { chakra } from "@chakra-ui-solid/core";
 import type { ComponentProps } from "@solidjs/web";
 
 /** Quote — a short inline quotation. `<q>` is the element that supplies the quotation marks. */

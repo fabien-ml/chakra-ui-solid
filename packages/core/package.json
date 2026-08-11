@@ -1,5 +1,5 @@
 {
-  "name": "@chakra-ui-solid/system",
+  "name": "@chakra-ui-solid/core",
   "version": "0.0.0",
   "description": "The styling and rendering kernel — renderStyled, the render prop and `as` polymorphism, the recipe layer, and the locale and environment contexts",
   "license": "MIT",

@@ -1,10 +1,10 @@
-import type { CssProperties } from "@chakra-ui-solid/styled-system/types";
 import {
   chakra,
   composeStyle,
   type HTMLChakraProps,
   type PlainCssValue,
-} from "@chakra-ui-solid/system";
+} from "@chakra-ui-solid/core";
+import type { CssProperties } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 

@@ -49,7 +49,7 @@ catalog:
   "@zag-js/core": 1.43.0
   "@zag-js/types": 1.43.0
   "@zag-js/utils": 1.43.0
-  # Two more Zag utilities, on the same pin and for the same reason. `@chakra-ui-solid/system`'s
+  # Two more Zag utilities, on the same pin and for the same reason. `@chakra-ui-solid/core`'s
   # locale context takes `isRTL`/`createFilter` from `i18n-utils` and its environment context takes
   # `getDocument`/`getWindow` from `dom-query` — the same MIT packages Chakra reaches for through
   # Ark, rather than reimplementations (`plan.md` §7.2).

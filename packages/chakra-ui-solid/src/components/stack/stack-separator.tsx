@@ -1,5 +1,5 @@
+import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import type { ConditionalValue, SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/system";
 import { type Component, merge, omit, useContext } from "solid-js";
 import { type StackDirection, StackDirectionContext } from "./stack";
 

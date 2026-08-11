@@ -41,7 +41,7 @@
     // the preset's build through them.
     //
     // `inputs` has to name the source Panda *scans*, which is not the package the task runs in:
-    // `packages/styled-system/panda.config.ts#include` reads `../{system,chakra-ui-solid}/src`, and
+    // `packages/styled-system/panda.config.ts#include` reads `../{core,chakra-ui-solid}/src`, and
     // Turbo's default input set is the task's own package. Without these two lines a style prop
     // added anywhere in the library is a cache hit — `pnpm cssgen` prints FULL TURBO, the dev
     // stylesheet keeps its previous contents, and the new class has no rule. Both directions are
@@ -51,12 +51,12 @@
       "dependsOn": ["codegen", "^codegen"],
       "inputs": [
         "$TURBO_DEFAULT$",
-        "$TURBO_ROOT$/packages/system/src/**",
+        "$TURBO_ROOT$/packages/core/src/**",
         "$TURBO_ROOT$/packages/chakra-ui-solid/src/**"
       ],
       "outputs": ["styled-system/styles.css", "src/**/__fixtures__/**/consumer.css"]
     },
-    // `^codegen` is what makes `system` and `chakra-ui-solid` wait for `styled-system`. Their own
+    // `^codegen` is what makes `core` and `chakra-ui-solid` wait for `styled-system`. Their own
     // `codegen` does not exist, and `^build` does not reach it either, because `styled-system` has
     // no `build` — its build IS its codegen. Without this edge a fresh `turbo run build` compiles
     // against generated files that are not there yet.

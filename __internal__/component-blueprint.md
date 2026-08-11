@@ -10,7 +10,7 @@
 > **The parts that are not P**, because their subject shipped at steps 1–3b:
 > §1.3 (`@zag-js/focus-visible`, measured — `f57403b`), §2.1–§2.2 (`useMachine` and the
 > `[STRICT_READ_UNTRACKED]` rule, exercised by `machine.browser.test.tsx`), §3.4's precedence and
-> §3.5's `render` prop (**I** — `packages/system/src/render-styled/`, with tests), §9's a11y baseline
+> §3.5's `render` prop (**I** — `packages/core/src/render-styled/`, with tests), §9's a11y baseline
 > (**M** for the retired allowances, **P** for the three predicted ones — `definition-of-done.md` §5
 > marks each row itself), and §10's `_hk` hazard (**M** — the hydrate fixture is
 > `packages/internal-test-utils/src/hydrate-fixture/`).
@@ -535,7 +535,7 @@ Two properties the Root's resolution must have:
 - **Resolved once per Root, not per part.** N parts × one `sva()` call each is N× the work for one
   answer, and it puts N copies of the variant-reading logic in the tree.
 
-The `@chakra-ui-solid/system` helper (`plan.md` §5.3 row 3, *build*):
+The `@chakra-ui-solid/core` helper (`plan.md` §5.3 row 3, *build*):
 
 ```ts
 export function createSlotClasses<Slot extends string, Variants>(
@@ -727,7 +727,7 @@ transition-based kernel was never the right shape here. **Do not re-open it.**
 ### 7.2 The render strategy, in full
 
 ```tsx
-// @chakra-ui-solid/system/presence
+// @chakra-ui-solid/core/presence
 import * as presence from "@zag-js/presence"
 import { normalizeProps, useMachine, type MaybeAccessor } from "@chakra-ui-solid/zag-solid"
 import { type Accessor, createMemo } from "solid-js"
@@ -854,7 +854,7 @@ That is the split Ark makes on both of its packages, and hope-ui reached it inde
 `unmountOnExit` on the Root reaches both.
 
 **Cost, stated:** each presence is a machine instance. A Dialog runs three — dialog, content presence,
-backdrop presence. `plan.md` §5.2's package table gains `@zag-js/presence` on `system`; the per-graph
+backdrop presence. `plan.md` §5.2's package table gains `@zag-js/presence` on `core`; the per-graph
 bundle toll gets re-measured at milestone 5 (`zag-solid-adapter.md` §9.2).
 
 ---
@@ -1093,10 +1093,10 @@ packages/components/src/dialog/
 
 ```tsx
 import type { PropTypes } from "@chakra-ui-solid/zag-solid"
-import { createComponentContext, type RenderStrategyProps } from "@chakra-ui-solid/system"
+import { createComponentContext, type RenderStrategyProps } from "@chakra-ui-solid/core"
 import type { Api } from "@zag-js/dialog"
 import type { Accessor } from "solid-js"
-import type { PresenceApi } from "@chakra-ui-solid/system"
+import type { PresenceApi } from "@chakra-ui-solid/core"
 
 export type DialogSlot =
   | "trigger" | "backdrop" | "positioner" | "content"
@@ -1129,7 +1129,7 @@ import { normalizeProps, useMachine } from "@chakra-ui-solid/zag-solid"
 import {
   createPresence, createSlotClasses, type RenderStrategyProps,
   useEnvironmentContext, useLocaleContext, withDefaults,
-} from "@chakra-ui-solid/system"
+} from "@chakra-ui-solid/core"
 import { dialogSlotRecipe } from "@chakra-ui-solid/styled-system/recipes"
 import { type Component, createMemo, createUniqueId } from "solid-js"
 import { DialogContext } from "./dialog-context"
@@ -1240,7 +1240,7 @@ export const DialogRoot: Component<DialogRootProps> = (props) => {
 
 ```tsx
 import { mergeProps } from "@chakra-ui-solid/zag-solid"
-import { renderStyled } from "@chakra-ui-solid/system"
+import { renderStyled } from "@chakra-ui-solid/core"
 import type { JSX } from "@solidjs/web"
 import { type Component, omit } from "solid-js"
 import { useDialogContext } from "./dialog-context"
@@ -1280,7 +1280,7 @@ export const DialogTrigger: Component<DialogTriggerProps> = (props) => {
 
 ```tsx
 import { mergeProps } from "@chakra-ui-solid/zag-solid"
-import { createPresence, renderStyled } from "@chakra-ui-solid/system"
+import { createPresence, renderStyled } from "@chakra-ui-solid/core"
 import type { JSX } from "@solidjs/web"
 import { type Component, Show } from "solid-js"
 import { useDialogContext } from "./dialog-context"
@@ -1354,7 +1354,7 @@ part. Its `style: { pointerEvents }` is the machine's and is forwarded untouched
 
 ```tsx
 import { mergeProps } from "@chakra-ui-solid/zag-solid"
-import { renderStyled } from "@chakra-ui-solid/system"
+import { renderStyled } from "@chakra-ui-solid/core"
 import type { JSX } from "@solidjs/web"
 import { type Component, Show } from "solid-js"
 import { useDialogContext } from "./dialog-context"
@@ -1464,7 +1464,7 @@ export const DialogFooter = createSlotPart("footer")
 ### 11.11 `dialog-action-trigger.tsx` — shape D, and the only `composeEventHandlers` in the family
 
 ```tsx
-import { composeEventHandlers, renderStyled, withDefaults } from "@chakra-ui-solid/system"
+import { composeEventHandlers, renderStyled, withDefaults } from "@chakra-ui-solid/core"
 import { merge } from "solid-js"
 
 /**
@@ -1501,7 +1501,7 @@ export const DialogActionTrigger: Component<DialogActionTriggerProps> = (props) 
 
 ```tsx
 // packages/components/src/portal/portal.tsx
-import { useEnvironmentContext } from "@chakra-ui-solid/system"
+import { useEnvironmentContext } from "@chakra-ui-solid/core"
 import { isServer, Portal as SolidPortal } from "@solidjs/web"
 import type { Component, JSX } from "solid-js"
 
@@ -1581,7 +1581,7 @@ namespace, so P6 records them as *planned*, not *excluded*.
 | From | Symbols |
 |---|---|
 | `@chakra-ui-solid/zag-solid` | `useMachine`, `normalizeProps`, `mergeProps`, `PropTypes`, `MaybeAccessor` — **and nothing else** (`zag-solid-adapter.md` §3.1) |
-| `@chakra-ui-solid/system` | `renderStyled`, `RenderProp`, `createSlotClasses`, `createPresence`, `RenderStrategyProps`, `PresenceApi`, `useLocaleContext`, `useEnvironmentContext`, `withDefaults`, `composeEventHandlers`, `createComponentContext` |
+| `@chakra-ui-solid/core` | `renderStyled`, `RenderProp`, `createSlotClasses`, `createPresence`, `RenderStrategyProps`, `PresenceApi`, `useLocaleContext`, `useEnvironmentContext`, `withDefaults`, `composeEventHandlers`, `createComponentContext` |
 | `@chakra-ui-solid/styled-system/recipes` | `dialogSlotRecipe` |
 | `@zag-js/dialog` | `machine`, `connect`, `Api`, `Props`, `OpenChangeDetails`, `ElementIds` |
 | `solid-js` | `Component`, `Show`, `createMemo`, `createUniqueId`, `merge`, `omit` |
@@ -1634,7 +1634,7 @@ adapter; a machine reaches them through the service object `useMachine` construc
 | **3** | `brief-plan` §3.5 row B5 + §4.1 doc 4: document *"the `untrack`-around-`useMachine` seed idiom"* | **Deleted, not documented.** One line replaces the section: a Root calls `useMachine` bare, and a diagnostic there is a real bug (§2.1, §2.2). Restates `zag-solid-adapter.md` §10 row 1 | — (acted on here) |
 | **4** | `brief-plan` §2.11 / §7 concern 3: *"drop by default, **adopt by exception**"*, with a per-component retained-primitive column in the roadmap | **The column is deleted.** The port rule removed the exception mechanism (§8). Restates `prior-art.md` §10.1 row D | **P6** — deletes a planned column |
 | **5** | `brief-plan` §4.1 doc 5 lists `portal` among the *"React-idiom or Solid-native"* exclusions | **`Portal` must ship.** It is in Chakra's public API and is the canonical way to render Dialog's Content, and Solid's `Portal` has different prop names and throws server-side (§11.12). P6 records it as a component with three `React→Solid` deltas, not an exclusion — and **decides the third**, a non-reactive `disabled` | **P6** |
-| **6** | `plan.md` §5.3's list of what `@chakra-ui-solid/system` owns | **Two additions:** `createComponentContext` (row 6), and `RenderStrategyProps` / `PresenceApi` as public types (row 4). Also: `system` gains a direct `@zag-js/presence` dependency, and `components` gains one `@zag-js/<machine>` per component — neither appears in `plan.md` §5.2's table | **P6, P9** |
+| **6** | `plan.md` §5.3's list of what `@chakra-ui-solid/core` owns | **Two additions:** `createComponentContext` (row 6), and `RenderStrategyProps` / `PresenceApi` as public types (row 4). Also: `core` gains a direct `@zag-js/presence` dependency, and `components` gains one `@zag-js/<machine>` per component — neither appears in `plan.md` §5.2's table | **P6, P9** |
 | **7** | `plan.md` §5.5: `@chakra-ui-solid/components` mirrors Chakra's subpaths one-to-one | Chakra's namespace carries **`RootProvider`** and **`PropsProvider`** on every machine component. Deferred, not excluded — `RootProvider` needs the `./hooks` subpath's `useDialog` (§11.13) | **P6** |
 | **8** | `prior-art.md` §3.4: a *"~15-line, three-row recurring floor"* per component | **hope-ui's number, against hope-ui's stack.** Re-measured against Chakra it is two named arguments per part plus one line on presence-gated triggers (§1.4). The warning that the floor **grows by category** stands, and a floating component is still untested by anyone | **P6** (build-order risk), **P7** |
 | **9** | `brief-plan` §2.11: `composeEventHandlers` is *"needed the moment a part composes a consumer handler with a machine handler"* | **A machine part never calls it** — the adapter's `mergeProps` chains `on*` across sources. It is needed for shapes C and D only (§3.4). The carry-over stands; its justification changes | **P9** |

@@ -1,6 +1,6 @@
+import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import type { FlexProperties } from "@chakra-ui-solid/styled-system/patterns";
 import { flex } from "@chakra-ui-solid/styled-system/patterns";
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/system";
 import { type Component, merge, omit } from "solid-js";
 
 export interface FlexOptions extends FlexProperties {

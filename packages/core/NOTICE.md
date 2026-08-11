@@ -1,4 +1,4 @@
-# Third-party notices — `@chakra-ui-solid/system`
+# Third-party notices — `@chakra-ui-solid/core`
 
 chakra-ui-solid is released under the MIT License (see [`LICENSE`](LICENSE)). The file listed below
 is derived from **Chakra UI** and remains subject to its original license; nothing here relicenses

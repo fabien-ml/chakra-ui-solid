@@ -66,7 +66,7 @@ export default defineConfig(({ command }) => ({
     // §8's deliberate trade and this app is its first proof.
     exclude: [
       "chakra-ui-solid",
-      "@chakra-ui-solid/system",
+      "@chakra-ui-solid/core",
       "@chakra-ui-solid/styled-system",
       "@chakra-ui-solid/zag-solid",
     ],

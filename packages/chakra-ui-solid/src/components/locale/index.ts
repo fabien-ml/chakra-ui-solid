@@ -8,5 +8,5 @@ export type {
   LocaleProviderProps,
   UseFilterProps,
   UseFilterReturn,
-} from "@chakra-ui-solid/system";
-export { LocaleProvider, useFilter, useLocaleContext } from "@chakra-ui-solid/system";
+} from "@chakra-ui-solid/core";
+export { LocaleProvider, useFilter, useLocaleContext } from "@chakra-ui-solid/core";

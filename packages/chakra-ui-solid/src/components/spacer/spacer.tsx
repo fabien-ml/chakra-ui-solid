@@ -1,4 +1,4 @@
-import { chakra } from "@chakra-ui-solid/system";
+import { chakra } from "@chakra-ui-solid/core";
 import type { ComponentProps } from "@solidjs/web";
 
 /**

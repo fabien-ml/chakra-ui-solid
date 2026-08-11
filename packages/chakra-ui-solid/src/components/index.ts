@@ -11,8 +11,8 @@ export type {
   ChakraFactoryOptions,
   ChakraStylingProps,
   HTMLChakraProps,
-} from "@chakra-ui-solid/system";
-export { chakra } from "@chakra-ui-solid/system";
+} from "@chakra-ui-solid/core";
+export { chakra } from "@chakra-ui-solid/core";
 export * from "./absolute-center";
 export * from "./aspect-ratio";
 export * from "./bleed";

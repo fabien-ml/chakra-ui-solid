@@ -1,4 +1,4 @@
-import { chakra } from "@chakra-ui-solid/system";
+import { chakra } from "@chakra-ui-solid/core";
 import type { ComponentProps } from "@solidjs/web";
 
 /** Span — Box's inline twin. No styles of its own; every style prop, on a `<span>`. */

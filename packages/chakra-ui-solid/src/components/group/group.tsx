@@ -1,6 +1,6 @@
+import { chakra, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
-import { chakra, type HTMLChakraProps } from "@chakra-ui-solid/system";
 import { type ComponentProps, isServer } from "@solidjs/web";
 import { type Component, children, createRenderEffect, merge, omit } from "solid-js";
 

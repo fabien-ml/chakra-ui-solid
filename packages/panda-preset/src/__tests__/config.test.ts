@@ -73,7 +73,7 @@ describe("defineChakraConfig — the knobs that must match ours", () => {
     // accident and which the factory does not match at all.
     expect(defineChakraConfig(MINIMAL).importMap).toEqual([
       "@chakra-ui-solid/styled-system",
-      { jsx: ["@chakra-ui-solid/system", "chakra-ui-solid"] },
+      { jsx: ["@chakra-ui-solid/core", "chakra-ui-solid"] },
     ]);
     expect(ourConfigSource).toMatch(/^\s*importMap: \[\s*"@chakra-ui-solid\/styled-system",/m);
   });
@@ -84,8 +84,8 @@ describe("defineChakraConfig — the knobs that must match ours", () => {
     // and a consumer who imported from it gets zero rules and no error — so the list is asserted
     // against the packages that actually export `chakra`, not against itself.
     const [, jsxEntry] = defineChakraConfig(MINIMAL).importMap as [string, { jsx: string[] }];
-    expect(jsxEntry.jsx).toEqual(["@chakra-ui-solid/system", "chakra-ui-solid"]);
-    expect(ourConfigSource).toMatch(/jsx: \["@chakra-ui-solid\/system", "chakra-ui-solid"\]/);
+    expect(jsxEntry.jsx).toEqual(["@chakra-ui-solid/core", "chakra-ui-solid"]);
+    expect(ourConfigSource).toMatch(/jsx: \["@chakra-ui-solid\/core", "chakra-ui-solid"\]/);
   });
 
   it("is a type error to pass one, which is the whole point of the wrapper", () => {

@@ -113,7 +113,7 @@ fold on the docs home and in every page's footer.
 
 | File | Derived from |
 | ---- | ------------ |
-| `packages/system/src/factory/factory.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/styled-system/factory.tsx` |
+| `packages/core/src/factory/factory.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/styled-system/factory.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/site/icons.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |

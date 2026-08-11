@@ -1,8 +1,8 @@
+import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import { css, cx } from "@chakra-ui-solid/styled-system/css";
 import type { WrapProperties } from "@chakra-ui-solid/styled-system/patterns";
 import { wrap } from "@chakra-ui-solid/styled-system/patterns";
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/system";
 import { type Component, merge, omit } from "solid-js";
 
 export interface WrapOptions extends WrapProperties {

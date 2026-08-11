@@ -232,7 +232,7 @@ for (const component of componentDirs) {
     jsx: ts.JsxEmit.Preserve,
     noEmit: true,
     // The interfaces are read syntactically, so nothing here needs to resolve — but a program
-    // that cannot find `@chakra-ui-solid/system` still parses every file it was given, which is
+    // that cannot find `@chakra-ui-solid/core` still parses every file it was given, which is
     // all `interfacesIn` reads.
     skipLibCheck: true,
   });

@@ -65,8 +65,8 @@ export const chakraSolidAlias: { find: RegExp; replacement: string }[] = [
     replacement: join(import.meta.dirname, "packages/zag-solid/src/index.ts"),
   },
   {
-    find: /^@chakra-ui-solid\/system$/,
-    replacement: join(import.meta.dirname, "packages/system/src/index.ts"),
+    find: /^@chakra-ui-solid\/core$/,
+    replacement: join(import.meta.dirname, "packages/core/src/index.ts"),
   },
   {
     find: /^chakra-ui-solid$/,

@@ -98,7 +98,7 @@ This is why Popover comes immediately after Dialog and before volume.
 ## Presence
 
 - **Presence is a build over the `@zag-js/presence` machine**, consumed through our own adapter. Not
-  a hand-written `createPresence`. It lives in `@chakra-ui-solid/system`, so `system` gains a
+  a hand-written `createPresence`. It lives in `@chakra-ui-solid/core`, so `core` gains a
   dependency on `zag-solid` — that edge arrives with presence, at step 5.
 - **Two families, and the render strategy must be source-agnostic.** Family `Z` takes `present` from
   a `@zag-js/presence` instance. Family `M` — `collapsible` and `accordion` — takes it from the
@@ -119,7 +119,7 @@ This is why Popover comes immediately after Dialog and before volume.
   guarding a re-render — a plain closure variable here; `useEvent(props.onExitComplete)` is a
   stale-closure workaround that deletes outright, because Solid props are already live.
 - `lazyMount`, `unmountOnExit`, `skipAnimationOnMount`, the `data-state` + `hidden` prop getter, and
-  the gate that renders `null` all live in `system`, not beside the first component that needs them.
+  the gate that renders `null` all live in `core`, not beside the first component that needs them.
 
 ## `hidden` vs a recipe's `display`
 
@@ -258,7 +258,7 @@ nothing.
 **Build what `next-themes` would have given you, without the provider**: a blocking pre-paint
 `<head>` script, a module-level signal, `.light`/`.dark` on the root, `color-scheme` beside it. The
 source of truth is the DOM class plus storage, so a provider would only re-publish what the document
-already says. Lives in `system`, re-exported from `components/color-mode`.
+already says. Lives in `core`, re-exported from `components/color-mode`.
 
 Four requirements, each from measuring hope-ui's version fail:
 
@@ -329,7 +329,7 @@ Ours put components at the src root of their own package, which spent the level 
 
 ```
 packages/chakra-ui-solid/src/{components/<name>,hooks,utils}
-packages/{system,styled-system,panda-preset,zag-solid,internal-test-utils}
+packages/{core,styled-system,panda-preset,zag-solid,internal-test-utils}
 ```
 
 **The main package is the unscoped `chakra-ui-solid`**, reserved on npm 2026-08-11; the satellites
@@ -342,21 +342,21 @@ paragraph exists to close. `@chakra-ui-solid/styled-system` is Panda's generated
 Panda's own `outdir` convention, which is why it keeps the name. **There is no second thing called
 styled-system in this repository and there must not be one** — upstream's `src/styled-system/` is
 their Emotion serializer, none of which is ported (`NOTICE.md`); what survives it, the factory,
-`renderStyled` and the recipe seams, is `src/system/`. `src/theme/` is their token and recipe
+`renderStyled` and the recipe seams, is `packages/core`. `src/theme/` is their token and recipe
 tables, which we depend on rather than vendor (`CLAUDE.md`), so our deltas stay in
 `packages/panda-preset`. Mirroring either name would advertise a parity that does not exist.
 
 **Three packages cannot fold in**, mechanically: `@chakra-ui-solid/styled-system` is generated and
 must be published separately or library and consumer hold two `css()` instances; `panda-preset` is
 read by Panda's config loader under Node's `import` condition, not a `solid`-condition package; and
-`system` for the reason the paragraph below measures.
+`core` for the reason the paragraph below measures.
 
 **The reshape:** `packages/components` → `packages/chakra-ui-solid`, components
 under `src/components/<name>`; `src/{hooks,utils}` gain the home `create-context`, `merge-props` and
 `merge-refs` need before the first machine component. `src/index.ts` arrives with the first of them
 — until then the `.` entry is `src/components/index.ts` and a second barrel would hold one line.
 
-**`system` stays a package of its own, and this is settled rather than pending.** Absorbing it was
+**`core` stays a package of its own, and this is settled rather than pending.** Absorbing it was
 tried on 2026-08-11 and reverted; the constraint is Panda's extraction model, not tidiness. Panda
 registers the `chakra` factory only from an import whose module string is in `importMap.jsx`, so a
 relative `../../system` matches nothing and every `chakra()` call in our own source extracts **zero

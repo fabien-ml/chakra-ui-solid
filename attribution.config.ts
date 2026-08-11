@@ -89,11 +89,11 @@ const chakraReact: AttributionEntry[] = [
     // One table — `exceptionPropMap`, the seven SVG tags whose geometry attributes must reach the
     // DOM rather than become a class. A verbatim data table is expression, where the factory's
     // API shape around it is not.
-    file: "packages/system/src/factory/factory.tsx",
+    file: "packages/core/src/factory/factory.tsx",
     upstreamProject: "chakra-ui/chakra-ui",
     upstreamFile: "packages/react/src/styled-system/factory.tsx",
     license: "MIT",
-    package: "system",
+    package: "core",
   },
 ];
 

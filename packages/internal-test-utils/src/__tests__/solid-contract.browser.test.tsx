@@ -17,7 +17,7 @@ import { describe, expect, it, vi } from "vitest";
 
 describe("@solidjs/web client-build contract", () => {
   describe("applyRef flattens a ref array and skips falsy entries", () => {
-    // Depended on by `renderElement` in `@chakra-ui-solid/system` (step 3; `plan.md` §5.3 row 2,
+    // Depended on by `renderElement` in `@chakra-ui-solid/core` (step 3; `plan.md` §5.3 row 2,
     // which names it "already the ref-merging owner"): it merges a component's internal ref setter
     // with the consumer's into a single function ref that calls
     // `applyRef([internalRef, consumerRef], element)`. Because `applyRef` does

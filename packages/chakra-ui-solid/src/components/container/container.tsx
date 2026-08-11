@@ -1,6 +1,6 @@
+import { createRecipeClass, type HTMLChakraProps, renderStyled } from "@chakra-ui-solid/core";
 import { container } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
-import { createRecipeClass, type HTMLChakraProps, renderStyled } from "@chakra-ui-solid/system";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, omit } from "solid-js";
 

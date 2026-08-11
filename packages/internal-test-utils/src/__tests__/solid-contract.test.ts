@@ -36,7 +36,7 @@ describe("solid-js contract", () => {
     // Depended on by two things here. First, **every `merge` call site in the `zag-solid` fork's
     // `machine.ts`** (`zag-solid-adapter.md` §3.4): the Solid 2.0 migration replaced upstream's
     // value-based `mergeProps` with this presence-based one, and the whole prop-bag precedence
-    // order rests on it. Second, `withDefaults` in `@chakra-ui-solid/system` (step 3), which
+    // order rests on it. Second, `withDefaults` in `@chakra-ui-solid/core` (step 3), which
     // exists *only* because of this — without it, `<Dialog.Root modal={props.modal}>` with `modal`
     // unset silently yields a non-modal dialog (`prior-art.md` §9).
     //
@@ -77,7 +77,7 @@ describe("solid-js contract", () => {
   });
 
   describe("useContext throws when no Provider is mounted", () => {
-    // Depended on by `createComponentContext` in `@chakra-ui-solid/system` (step 3;
+    // Depended on by `createComponentContext` in `@chakra-ui-solid/core` (step 3;
     // `component-blueprint.md` §3.3), whose `try/catch` relies on the throw to reword it as
     // "Dialog sub-components must be rendered inside a Dialog root component." If stable returns
     // `undefined` instead, that friendly error stops firing and every part component fails later

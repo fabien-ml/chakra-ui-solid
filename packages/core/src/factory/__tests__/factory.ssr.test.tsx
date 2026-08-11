@@ -1,5 +1,5 @@
+import { chakra } from "@chakra-ui-solid/core";
 import { declarationsForClassList } from "@chakra-ui-solid/internal-test-utils/stylesheet";
-import { chakra } from "@chakra-ui-solid/system";
 import { renderToStream } from "@solidjs/web";
 import { describe, expect, it } from "vitest";
 

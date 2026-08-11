@@ -109,11 +109,11 @@ const LOCKED = {
   //
   // The `jsx` half is the other half of `jsxFactory` above, and it is just as load-bearing: Panda
   // registers a factory only from an import whose NAME is the `jsxFactory` **and** whose MODULE is
-  // listed here. `chakra` ships from `@chakra-ui-solid/system` and is re-exported by
+  // listed here. `chakra` ships from `@chakra-ui-solid/core` and is re-exported by
   // `chakra-ui-solid`, so a consumer writes either import and both register.
   importMap: [
     "@chakra-ui-solid/styled-system",
-    { jsx: ["@chakra-ui-solid/system", "chakra-ui-solid"] },
+    { jsx: ["@chakra-ui-solid/core", "chakra-ui-solid"] },
   ],
 } as const satisfies Config;
 

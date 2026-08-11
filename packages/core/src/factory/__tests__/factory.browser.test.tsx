@@ -1,5 +1,5 @@
+import { chakra } from "@chakra-ui-solid/core";
 import { expectNoA11yViolations, mount } from "@chakra-ui-solid/internal-test-utils";
-import { chakra } from "@chakra-ui-solid/system";
 import type { JSX } from "@solidjs/web";
 import { afterEach, describe, expect, it } from "vitest";
 

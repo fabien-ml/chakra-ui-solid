@@ -1,7 +1,7 @@
+import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import { flex } from "@chakra-ui-solid/styled-system/patterns";
 import type { ConditionalValue, SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/system";
 import { Dynamic } from "@solidjs/web";
 import { type Accessor, type Component, children, createContext, merge, omit } from "solid-js";
 

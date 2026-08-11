@@ -1,6 +1,6 @@
+import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import { square } from "@chakra-ui-solid/styled-system/patterns";
 import type { SystemProperties } from "@chakra-ui-solid/styled-system/types";
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/system";
 import { type Component, merge, omit } from "solid-js";
 
 export interface SquareProps extends Omit<HTMLChakraProps<"div">, "size"> {

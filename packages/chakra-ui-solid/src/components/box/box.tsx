@@ -1,8 +1,8 @@
 // Adapted from hope-ui `e9c2f81`, `packages/components/src/box/box.tsx` (34 lines), re-pointed at
 // the official Chakra preset. Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
+import { type PatchHtmlProps, type RenderProp, renderStyled } from "@chakra-ui-solid/core";
 import type { JsxStyleProps } from "@chakra-ui-solid/styled-system/types";
-import { type PatchHtmlProps, type RenderProp, renderStyled } from "@chakra-ui-solid/system";
 import type { JSX, ValidComponent } from "@solidjs/web";
 import type { Component } from "solid-js";
 

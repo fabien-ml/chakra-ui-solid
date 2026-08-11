@@ -16,7 +16,7 @@ import { describe, expect, it } from "vitest";
 
 describe("@solidjs/web server-build contract", () => {
   it("renders a host element through Dynamic, with a hydration key", async () => {
-    // Depended on by `renderElement` in `@chakra-ui-solid/system` (step 3; `plan.md` §5.3 row 2):
+    // Depended on by `renderElement` in `@chakra-ui-solid/core` (step 3; `plan.md` §5.3 row 2):
     // everything it renders goes through `<Dynamic>`, and server-side `dynamic()` calls
     // `ssrElement(component, props, undefined, true)` — that trailing `true` is what emits the
     // `_hk` hydration key, the positional marker Solid matches server and client nodes by. If

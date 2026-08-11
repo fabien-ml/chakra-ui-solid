@@ -1,12 +1,12 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
-import { token } from "@chakra-ui-solid/styled-system/tokens";
 import {
   type CssProp,
   chakra,
   composeCss,
   composeStyle,
   type HTMLChakraProps,
-} from "@chakra-ui-solid/system";
+} from "@chakra-ui-solid/core";
+import { css } from "@chakra-ui-solid/styled-system/css";
+import { token } from "@chakra-ui-solid/styled-system/tokens";
 import type { JSX } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 
