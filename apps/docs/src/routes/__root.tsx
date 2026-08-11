@@ -24,9 +24,26 @@ export const Route = createRootRoute({
       { title: SITE_NAME },
       { name: "description", content: SITE_DESCRIPTION },
     ],
+    // The four-file icon set, and each of the four is a different consumer.
+    //
+    // `favicon.ico` is the legacy one and `sizes="any"` is what demotes it: a browser that
+    // understands SVG then prefers `icon.svg`, and one that does not falls back to the `.ico`
+    // instead of preferring it for having a declared size. Safari on iOS reads neither and uses
+    // `apple-touch-icon` alone, which is why that file is a PNG on an opaque background — iOS
+    // composites transparency against black rather than against the home screen.
+    //
+    // Android takes its home-screen icon from the manifest, so the two PNGs there are not
+    // duplicates of the `.ico`; nothing else on the page can supply them.
+    //
+    // No `theme-color` pair sits above, and it is not an oversight: the head manager keys `meta` by
+    // `name`, so the usual light/dark pair collapses to whichever is written last and the survivor
+    // paints the wrong toolbar in the other mode. The manifest carries the one value instead.
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "icon", href: "/icon.svg", type: "image/svg+xml" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png", sizes: "180x180" },
+      { rel: "manifest", href: "/site.webmanifest" },
     ],
   }),
   notFoundComponent: () => (

@@ -502,7 +502,7 @@ closing does not close this one, and four things do:
 |---|---|---|
 | 1 | The logotype reads **`chakra-ui-solid`**, never `chakra` alone | `site-header.tsx`, beside `LogoIcon` |
 | 2 | **None of Chakra's wordmark lettering is reproduced** — the glyph travels, the set type does not | The header pairs their glyph with our name in our type |
-| 3 | **No social card and no combined mark exists** — no asset anywhere pairs their mark with ours as one lockup | `apps/docs/public/` holds the favicon and four framework logos, and nothing else |
+| 3 | **No social card and no combined mark exists** — no asset anywhere pairs their mark with ours as one lockup | `apps/docs/public/` holds the icon set — `favicon.ico`, `icon.svg` and its three PNG renders, all the same glyph — the manifest, and four framework logos. Nothing else, and nothing in it sets their mark beside our name |
 | 4 | The **disclaimer is verbatim** above the fold and in every footer, naming chakra-ui.com as a live link | `hero-section.tsx`; `site-footer.tsx`; the wording in `apps/docs/src/config.ts` |
 
 **Row 4 is the one carrying the weight, and it is why it is above the fold rather than beside it.**

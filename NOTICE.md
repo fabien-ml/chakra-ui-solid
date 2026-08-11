@@ -106,6 +106,9 @@ row per page, because the content tier is one derivative rather than 111
 **The brand assets are used, and they are used knowingly.** The docs site carries Chakra's bolt —
 `BlitzIcon`, `BlitzFillIcon` and the `LogoIcon` glyph — and their `favicon.ico`. All four are files
 in the same MIT-licensed repository, so the copy is permitted and the rows below are the condition.
+The four icon files beside the favicon are that same `LogoIcon` glyph again, at the sizes a tab, an
+iOS home screen and an Android manifest each ask for; a render of a derivative is one too, and they
+are listed for that reason rather than for adding a fifth thing we took.
 **Trademark is a separate right that no licence moves**, and the mitigations are load-bearing: the
 site's logotype reads `chakra-ui-solid` and never `chakra`, none of Chakra's wordmark lettering is
 reproduced, no social card or combined mark exists, and the disclaimer appears verbatim above the
@@ -119,19 +122,32 @@ fold on the docs home and in every page's footer.
 | `apps/docs/src/components/site/icons.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
 | `apps/docs/src/components/decorative-box.tsx` | `chakra-ui/chakra-ui` — `apps/compositions/src/lib/decorative-box.tsx` |
 | `apps/docs/public/favicon.ico` | `chakra-ui/chakra-ui` — `apps/www/app/favicon.ico` |
+| `apps/docs/public/icon.svg` | `chakra-ui/chakra-ui` — `apps/www/components/logo.tsx` |
+| `apps/docs/public/apple-touch-icon.png` | `apps/docs/public/icon.svg`, rasterized |
+| `apps/docs/public/icon-192.png` | `apps/docs/public/icon.svg`, rasterized |
+| `apps/docs/public/icon-512.png` | `apps/docs/public/icon.svg`, rasterized |
 
 ## Framework logos
 
-The docs site's framework grid shows each project's own logo, unmodified, to name the framework
-that cell links to. **Nominative use** — identifying a thing by its name and mark — and none of the
-three implies endorsement, sponsorship or affiliation.
+The docs site's framework grid shows each project's own logo to name the framework that cell links
+to. **Nominative use** — identifying a thing by its name and mark — and none of the three implies
+endorsement, sponsorship or affiliation.
+
+Every file below is the mark as its project publishes it, with **one exception**, recorded here
+because "unmodified" is otherwise the claim this section makes. `vite-light.svg` is Vite's
+`logo.svg` with the two parenthesis strokes recoloured from white to `#08060D`: white parentheses
+are invisible against a white page, and Vite publishes a dark-ink version of the lockup
+(`vite-dark.svg`, which carries their wordmark) but none of the bare mark. **The colour is theirs,
+not ours** — `#08060D` is what that lockup uses on a light background. No path, proportion or other
+colour is touched, and `vite-dark.svg` here is their `logo.svg` byte for byte.
 
 | File | Source | Mark held by |
 | ---- | ------ | ------------ |
-| `apps/docs/public/logos/vite.svg` | `vitejs/vite` — `docs/public/logo.svg` | The Vite project |
+| `apps/docs/public/logos/vite-dark.svg` | `vitejs/vite` — `docs/public/logo.svg` | The Vite project |
+| `apps/docs/public/logos/vite-light.svg` | `vitejs/vite` — `docs/public/logo.svg`, parentheses recoloured | The Vite project |
 | `apps/docs/public/logos/solid-start.svg` | `solidjs/solid-docs` — `public/solid-start.svg` | The SolidJS project |
-| `apps/docs/public/logos/tanstack-light.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-stacked-charcoal.svg` | Tanner Linsley / TanStack |
-| `apps/docs/public/logos/tanstack-dark.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-stacked-white.svg` | Tanner Linsley / TanStack |
+| `apps/docs/public/logos/tanstack-light.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-emblem-charcoal.svg` | Tanner Linsley / TanStack |
+| `apps/docs/public/logos/tanstack-dark.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-emblem-white.svg` | Tanner Linsley / TanStack |
 
 ## Ark UI
 

@@ -15,20 +15,30 @@ import { HighlightHeading, Subheading } from "~/components/site/typography";
  * attribute — the same grid, doing something when you click it.
  *
  * The logos are each project's own SVG, served from `public/logos/` rather than inlined. Two
- * reasons, both practical: they carry `<mask>`, `<filter>` and `<clipPath>` ids that would collide
- * across a page once inlined, and an `<img>` keeps ~22 KB of path data out of every HTML document
- * the prerender writes.
+ * reasons, both practical: Vite's and SolidStart's carry `<mask>`, `<filter>` and `<clipPath>` ids
+ * that would collide across a page once inlined, and an `<img>` keeps ~31 KB of path data out of
+ * every HTML document the prerender writes.
+ *
+ * **Each is the mark alone, never a lockup carrying the project's name.** The cell prints that name
+ * underneath as text, so a wordmark in the image says it twice — which is why TanStack's emblem is
+ * here rather than their stacked logo, and why Vite's bare `logo.svg` is here rather than the
+ * `VITE(⚡)` lockup that is the only form they publish a dark-ink version of.
  */
 interface Framework {
   title: string;
   slug: string;
   logo: string;
-  /** Only where the mark is single-tone and would vanish against one of the two backgrounds. */
+  /** Only where the mark, or a part of it, would vanish against one of the two backgrounds. */
   logoDark?: string;
 }
 
 const frameworks: Framework[] = [
-  { title: "Vite", slug: "get-started/frameworks/vite", logo: "/logos/vite.svg" },
+  {
+    title: "Vite",
+    slug: "get-started/frameworks/vite",
+    logo: "/logos/vite-light.svg",
+    logoDark: "/logos/vite-dark.svg",
+  },
   {
     title: "SolidStart",
     slug: "get-started/frameworks/solid-start",
@@ -123,8 +133,10 @@ export function FrameworkSection() {
  * `alt=""` on every one of these, deliberately: the cell already carries the framework's name as
  * visible text, so alt text would make a screen reader announce it twice.
  *
- * A single-tone mark gets a **second `<img>`** rather than a CSS filter. Both are in the
- * prerendered HTML and the colour mode picks one with `display`, so the swap needs no JavaScript.
+ * A mark that would disappear against one of the two backgrounds gets a **second `<img>`** rather
+ * than a CSS filter. Both are in the prerendered HTML and the colour mode picks one with `display`,
+ * so the swap needs no JavaScript — and a filter could not do this job anyway: Vite's is two-tone,
+ * and only its parentheses change between the pair.
  *
  * The height is a literal on every branch rather than a field on `Framework`: a style prop read out
  * of an object computes a class name Panda never generated, which renders unstyled and raises

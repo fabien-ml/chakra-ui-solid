@@ -109,6 +109,15 @@ const docsApp: AttributionEntry[] = [
     package: null,
   },
   {
+    // The same glyph as `LogoIcon` above, as a standalone document a browser can use as the tab
+    // icon. An `.svg` is text and carries a header, which is what keeps it out of the list below.
+    file: "apps/docs/public/icon.svg",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "apps/www/components/logo.tsx",
+    license: "MIT",
+    package: null,
+  },
+  {
     // The hatched surface every layout example stands on. Its declarations are ordinary and its
     // data-URI pattern is not — a copied SVG path is expression however few bytes it takes.
     file: "apps/docs/src/components/decorative-box.tsx",
@@ -133,21 +142,42 @@ export const noticeOnlyPaths: NoticeOnlyPath[] = [
     reason: "A binary. There is nowhere in an `.ico` to put a comment.",
   },
   {
-    path: "apps/docs/public/logos/vite.svg",
+    path: "apps/docs/public/apple-touch-icon.png",
     reason:
-      "Not our derivative. Another project's mark, shown unmodified to name the framework its " +
-      "cell links to — nominative use, which owes a row and no header.",
+      "`icon.svg` rasterized for iOS, which reads no SVG icon. A render of a derivative is one " +
+      "too, and a PNG has nowhere to put the header the `.svg` carries.",
+  },
+  {
+    path: "apps/docs/public/icon-192.png",
+    reason: "The manifest's icon for Android home screens. A binary, as `apple-touch-icon.png`.",
+  },
+  {
+    path: "apps/docs/public/icon-512.png",
+    reason: "As `icon-192.png`, at the size an install prompt uses.",
+  },
+  {
+    path: "apps/docs/public/logos/vite-dark.svg",
+    reason:
+      "Not our derivative. Another project's mark, shown to name the framework its cell links " +
+      "to — nominative use, which owes a row and no header. Vite's own `logo.svg`, byte for byte.",
+  },
+  {
+    path: "apps/docs/public/logos/vite-light.svg",
+    reason:
+      "The same file with its two parenthesis strokes recoloured, because white ones are " +
+      "invisible on a white page and Vite publishes no dark-ink version of the bare mark. The " +
+      "colour is `#08060D`, taken from their own light-background lockup rather than chosen here.",
   },
   {
     path: "apps/docs/public/logos/solid-start.svg",
-    reason: "Nominative use, as `vite.svg`.",
+    reason: "Nominative use, as `vite-dark.svg`.",
   },
   {
     path: "apps/docs/public/logos/tanstack-light.svg",
-    reason: "Nominative use, as `vite.svg`.",
+    reason: "Nominative use, as `vite-dark.svg`.",
   },
   {
     path: "apps/docs/public/logos/tanstack-dark.svg",
-    reason: "Nominative use, as `vite.svg`.",
+    reason: "Nominative use, as `vite-dark.svg`.",
   },
 ];
