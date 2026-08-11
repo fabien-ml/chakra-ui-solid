@@ -162,7 +162,7 @@ naming a file (`blueprint §1.2`) points there instead.
       **The one recipe the preset is missing** (§1.3a). One preset delta, expression-tier, `@license` + `NOTICE` rows
 - [ ] download-trigger — ✗downloadTrigger · —/1
       Key resolves to nothing in Chakra too
-- [ ] heading — A:heading · —/1
+- [x] heading — A:heading · —/1
 - [ ] icon — A:icon · —/1
       Plus `createIcon`; the internal chevron/check/close set (`brief-plan` §2.10)
 - [ ] input — A:input · —/1
@@ -179,8 +179,8 @@ naming a file (`blueprint §1.2`) points there instead.
       Plus `SkeletonCircle`, `SkeletonText`
 - [ ] skip-nav — A:skipNavLink · —/1
       `SkipNavLink` + `SkipNavContent`
-- [ ] spinner — A:spinner · —/1
-- [ ] text — ✗text · —/1
+- [x] spinner — A:spinner · —/1
+- [x] text — ✗text · —/1
       Key resolves to nothing in Chakra too; styled by `textStyles` + style props
 - [ ] textarea — A:textarea · —/1
       Styles Ark's `Field.Textarea`

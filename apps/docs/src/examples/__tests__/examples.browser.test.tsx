@@ -32,8 +32,8 @@ const exampleModules = import.meta.glob<{ default: Component }>("../*.tsx", { ea
  * per example, with the reason, which is what `expectNoA11yViolations` asks for instead of
  * silencing a category. A violation is never allowed here; only an `incomplete`.
  *
- * - `color-contrast` on the overlay example: its subject is content deliberately covered by a
- *   translucent layer, so axe reports `bgOverlap` and cannot compute a ratio at all.
+ * - `color-contrast` on the two overlay examples: their subject is content deliberately covered by
+ *   a translucent layer, so axe reports `bgOverlap` and cannot compute a ratio at all.
  * - `frame-tested` on the two embeds: axe cannot enter a cross-origin frame, and what is inside
  *   YouTube's and Google's iframes is not ours to fix.
  * - `color-contrast` on every {@link LABELLED_DECORATIVE_BOXES} example — see below.
@@ -70,6 +70,7 @@ const ALLOWED_INCOMPLETE: Record<string, readonly string[]> = {
   "absolute-center-with-overlay": ["color-contrast"],
   "aspect-ratio-with-video": ["frame-tested"],
   "aspect-ratio-with-map": ["frame-tested"],
+  "spinner-with-overlay": ["color-contrast"],
   ...Object.fromEntries(LABELLED_DECORATIVE_BOXES.map((name) => [name, ["color-contrast"]])),
 };
 
