@@ -4,8 +4,15 @@
 the three-project split, the harness, the coverage check, the axe runner, the lint rules, the
 distribution and attribution checks, the Storybook canary, and the bundle measurement.
 
-**What this document is.** The *how*. Every enforcing artefact in this repo is **defined exactly
+**What this document is.** The *how*. Every enforcing artefact is **specified exactly
 once, here** — its name, its input, its algorithm, its failure output, and what it cannot see.
+
+> **Almost none of it is built.** This file names 45 distinct `check:*` scripts; the repo has three
+> — `check:no-runtime-css`, `check:attribution` and `check:declaration-support`, and only the last
+> is specified here. Everything else below is written in the present tense and is a specification,
+> not a description: no CI job runs it, no failure it describes can occur. **Never write one because
+> this document specifies it** (`CLAUDE.md`). Each `check:` name is left as written rather than
+> hedged in place, because the name is how `definition-of-done.md`'s rule rows cite the spec.
 
 **What it is not.** The bar. When each artefact must be green, what a file/component/batch owes, and
 which assumption each one closes is `definition-of-done.md` §0's split, restated in §0 below so the
@@ -831,8 +838,14 @@ compile shows it, the docs app will not see it either, and B5 owns saying so.
 
 ## 8. The distribution, styling-config and structural checks
 
-Each one is a script — except `check:floating-zindex`, which is a browser test and says so. Each
-failure line below is what the failure *means*, not what it prints.
+> **This table specifies gates; it does not describe running ones.** Of every `check:*` named below,
+> exactly one is written — `check:declaration-support`. The other two that exist,
+> `check:no-runtime-css` and `check:attribution`, are not in this table at all. Everything else
+> names a script nobody has written, so read a row as *what this would assert*, and **never
+> implement one because this document specifies it** (`CLAUDE.md`).
+
+Each one is specified as a script — except `check:floating-zindex`, which is a browser test and says
+so. Each failure line below is what the failure *would mean*, not what it prints.
 
 | Script | Asserts | A failure means |
 |---|---|---|
@@ -990,9 +1003,19 @@ as the PR's job summary. **What fires them and who is expected to read that summ
 
 ## 12. The CI job map
 
-**Seven** jobs. Grouped so that a red build names a category before anyone opens a log. It was eight
-until S3b deleted `stories` (**D-133**) — deleted rather than stubbed, because a job with nothing to
-run is a green tick for work no machine performs.
+> **What `.github/workflows/` actually holds is four jobs, and the table below is not a reading of
+> it.** `ci.yml` has `verify` (`lint`, `typecheck`, `check:no-runtime-css`, `check:attribution`),
+> `test` (one `pnpm test` over all three projects, then `check:declaration-support`), and `docs`
+> (`build:docs`, no check). `release.yml` has `publish` (`check:attribution --dist`,
+> `check:no-runtime-css`, a changeset-policy step, and a placeholder that echoes that nothing is
+> publishable at `0.0.0`). `constraint`, `styling`, `dist` and `upstream` do not exist, `test` has
+> no matrix, and `docs` has no deploy step. Read the table as the designed grouping, not as a
+> description of a pipeline — and note that the two gates CI does run on every push, `check:attribution`
+> and `check:no-runtime-css`, appear nowhere in it.
+
+**Seven** jobs as designed. Grouped so that a red build names a category before anyone opens a log.
+It was eight until S3b deleted `stories` (**D-133**) — deleted rather than stubbed, because a job
+with nothing to run is a green tick for work no machine performs.
 
 | Job | Runs | Contains |
 |---|---|---|

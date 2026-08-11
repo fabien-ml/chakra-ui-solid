@@ -4,10 +4,17 @@
 per release — with **the enforcing artefact named beside every rule**. Plus the two live registers,
 the assumption gates, the scheduled checks' ownership, and the rules that have no script and say so.
 
-**What this document is.** The *when* and the *what it means*. Every artefact named here is defined —
+**What this document is.** The *when* and the *what it means*. Every artefact named here is specified —
 name, input, algorithm, failure output, blind spots — exactly once, in `testing.md`. Nothing is
 explained twice; a row that needs to know how a check works links to its section rather than
 paraphrasing it.
+
+> **The *Enforced by* column names 38 distinct `check:*` scripts. Three exist**, and only one of
+> them — `check:declaration-support` — appears in a rule row; the other two, `check:no-runtime-css`
+> and `check:attribution`, are the ones CI actually runs and are named almost nowhere below. So a
+> filled *Enforced by* cell means *the artefact this rule would be held by*, not *the artefact
+> holding it*. §7b is this document's own account of the gap and was accurate when written; its
+> figures are re-run below. **Never write a script because a cell names it** (`CLAUDE.md`).
 
 **What it is not.** The apparatus (`testing.md`), the evidence (`prior-art.md`), the architecture
 (`plan.md`), the adapter spec (`zag-solid-adapter.md`), the component pattern
@@ -43,9 +50,12 @@ failure mean for the change in front of me*. The only deliberate seam is the two
 ## 1. Per file
 
 Applies to every file under `packages/*/src/` — and, for the four rules whose subject is the change
-rather than the code (1.10, 1.11, 1.12, 1.13), to every commit. Enforced by the `verify` and
-`constraint` jobs, which run on every push — **except rule 1.14, whose subject is the stylesheet the
-file causes Panda to emit**, so it runs in `styling` after `cssgen` and not before it.
+rather than the code (1.10, 1.11, 1.12, 1.13), to every commit. Designed to be enforced by the
+`verify` and `constraint` jobs, which would run on every push — **except rule 1.14, whose subject is
+the stylesheet the file causes Panda to emit**, so it would run in `styling` after `cssgen` and not
+before it. Of those three jobs `.github/workflows/ci.yml` has only `verify`, and it runs `lint`,
+`typecheck`, `check:no-runtime-css` and `check:attribution` — none of the scripts this section names
+(`testing.md` §12).
 
 | # | Rule | Enforced by |
 |---|---|---|
@@ -257,7 +267,7 @@ that is a *gate* rather than a coding rule; 7.7 came with the ledger shard, 7.8 
 | 7.6 | **The author looks at the running docs site before a phase closes**, from step 3b onward — the phase gate is not only a green suite (**D-98**, **D-99**). The docs site, specifically: it is the surface where the components are used the way a consumer uses them (**D-133**). Storybook is available for the same look and is nobody's obligation | *Is this what I wanted?* has one competent judge and no predicate. Every other rule in this document is a machine verification; none of them can answer it, and the approved order produced no rendered output at all until 115 components existed | `check:docs-examples` proves the example **mounts** and does not crash or render empty; `check:docs-inventory` proves the page **exists**. Neither can say the thing looks right — that is the part being trusted, and it is why the phase prompt names what to open |
 | 7.7 | **A sharded file's name matches the `###` heading inside it** — `§3.13` is `decisions/3.13-…md` and `§8.2` is `testing/8.02-…md`, zero-padded (**D-163**, extended by **D-165**). It is how a citation resolves to a file without opening the parent's table | It could be scripted, but naming the script is how §7b's census grows: a twenty-sixth unwritten name, for a rule that one `ls` of the directory disproves | `check:doc-index` renders the heading and the path in the same row, so a mismatch is visible in `INDEX.md` rather than only in the directory |
 | 7.8 | **A skill's pointer line names where to read and not what will be there** — the residue `check:skill-pointers` cannot reach, because a rule restated *tersely* fits beside a citation (**D-164**). *"Tests assert computed styles, never class names"* is seven words | It is the same shape as 7.1: distinguishing a pointer from a summary is a reading. No predicate separates *"§2 — computed-style assertions"* from the rule those three words are | The proxy is real and it is structural, not semantic: **every non-blank, non-heading line carries a citation, at most 14 words sit outside it, and a skill is at most 40 lines** (`testing.md` §8.2). A paragraph of rule text has nowhere to go; a clause of it does |
-| 7.9 | **The governance-read bill is re-measured from the session transcripts rather than assumed** — `pnpm check:context-budget --sessions` prints the median bytes of governance documents a task read before its first edit, **with its n** (**D-165**). Target ≤ 60 KB | The input is machine-local: `~/.claude/projects/*.jsonl` is not in the repo and no CI runner has it. Naming a script CI never runs as though it were enforcement is the failure §7b exists to stop | Two things, and neither is this half. The **static** ceilings are rule 1.13, enforced on every push. And the aid is a **flag on that same script**, so nothing here adds a `check:*` name — the count in §7b does not move for it |
+| 7.9 | **The governance-read bill is re-measured from the session transcripts rather than assumed** — `pnpm check:context-budget --sessions` prints the median bytes of governance documents a task read before its first edit, **with its n** (**D-165**). Target ≤ 60 KB | The input is machine-local: `~/.claude/projects/*.jsonl` is not in the repo and no CI runner has it. Naming a script CI never runs as though it were enforcement is the failure §7b exists to stop | Two things, and neither is this half. The **static** ceilings are rule 1.13, designed to run on every push. And the aid is a **flag on that same script**, so nothing here adds a `check:*` name — the count in §7b does not move for it. Both halves are moot today: `check:context-budget` was deleted with the rest of the apparatus and `pnpm check:context-budget` is not a command (§7b) |
 
 ---
 
@@ -269,11 +279,20 @@ two shards means the seventeen `decisions/` entries and the four `testing/` defi
 diffed against `scripts/check-*.mjs`:
 
 ```
-named across the documents   48
-written and runnable         23
-named but not written        25
+named across the documents   50
+written and runnable          3
+named but not written        47
 written but never named       0
 ```
+
+**Those are the figures the block below returns today, and they are not the S6 figures.** S6 read
+48/23/25/0 and reproduced. The apparatus cut (`76382c5`, 2026-08-10) deleted **22 of those 23** and
+added two that fold several of them together — `check:no-runtime-css` for `no-cij-manifest` +
+`no-runtime-sheet`, `check:attribution` for `license-headers` + `notice-rows` + `package-files` —
+leaving three with `check:declaration-support`. The corpus came back on 2026-08-11 unedited, so the
+*"twenty-five unwritten"* this section is built around is now **forty-seven**, and every paragraph
+below that says twenty-five is counting the S6 subset rather than what is unwritten now. Nothing
+here is a work list: **never write one of the forty-seven because this document names it.**
 
 **Two names are excluded, and they are excluded as a class rather than one literal at a time.** The
 census counts artefacts a reader could mistake for enforcement, and **a name introduced in order to

@@ -702,12 +702,19 @@ allow-listed by path, and the allow-list has two entries.
 
 ### 6.1 What CI asserts
 
-One new job, `docs`, and the checks it contains. Each is a script defined here and nowhere else,
+One new job, `docs`, and the checks it contains. Each is a script specified here and nowhere else,
 except the three marked *reused*, which are existing artefacts pointed at a second input.
 
 **`Live`** is the step each check starts running at. Three landed at **S3b** with the app; the rest
 arrive with the machinery they check, and a check with nothing to check is not written early
 (`definition-of-done.md` §0).
+
+> **None of the 25 `check:*` scripts this document names exists**, including the three the `Live`
+> column marks **S3b** — they were deleted in the 2026-08-10 apparatus cut and the document was
+> restored without them (`CLAUDE.md`). The real `docs` job in `.github/workflows/ci.yml` runs
+> `pnpm build:docs` and nothing else, and it has no deploy step. So **S3b** in the column below
+> means *the step this was designed to start at*, not *running since*. **Never write one because
+> this table names it.**
 
 | Check | Asserts | A failure means | Live |
 |---|---|---|---|

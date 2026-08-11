@@ -33,7 +33,9 @@ and this file is the only one read on every task.
    is full of them.
 3. Status and batch cells (`ships`, `B7`, *"one shipping row exists today — Box"*) are intentions
    from before 22 components shipped.
-4. `brief-plan`, cited 22 times, was never a file in this repo or in hope-ui.
+4. `brief-plan`, cited **106 times across 20 files**, was never a file in this repo or in hope-ui.
+   It is the approved brief plan, named that way on purpose so a `§5 step 2` is not read as
+   `plan.md`'s (`decisions-ledger.md` §0.1). Nothing resolves it; do not go looking.
 
 ## The one rule: no CSS at runtime, no CSS in the package
 
