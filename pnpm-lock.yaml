@@ -431,10 +431,19 @@ importers:
       '@chakra-ui-solid/styled-system':
         specifier: workspace:*
         version: link:../styled-system
+      '@zag-js/core':
+        specifier: 'catalog:'
+        version: 1.43.0
       '@zag-js/dom-query':
         specifier: 'catalog:'
         version: 1.43.0
       '@zag-js/i18n-utils':
+        specifier: 'catalog:'
+        version: 1.43.0
+      '@zag-js/types':
+        specifier: 'catalog:'
+        version: 1.43.0
+      '@zag-js/utils':
         specifier: 'catalog:'
         version: 1.43.0
     devDependencies:
@@ -494,31 +503,6 @@ importers:
       '@pandacss/dev':
         specifier: 'catalog:'
         version: 1.12.0(typescript@6.0.3)
-
-  packages/zag-solid:
-    dependencies:
-      '@zag-js/core':
-        specifier: 'catalog:'
-        version: 1.43.0
-      '@zag-js/types':
-        specifier: 'catalog:'
-        version: 1.43.0
-      '@zag-js/utils':
-        specifier: 'catalog:'
-        version: 1.43.0
-    devDependencies:
-      '@chakra-ui-solid/internal-test-utils':
-        specifier: workspace:*
-        version: link:../internal-test-utils
-      '@solidjs/web':
-        specifier: 'catalog:'
-        version: 2.0.0-beta.32(solid-js@2.0.0-beta.32)
-      solid-js:
-        specifier: 'catalog:'
-        version: 2.0.0-beta.32
-      tsdown:
-        specifier: ^0.22.14
-        version: 0.22.14(@volar/typescript@2.4.28)(oxc-resolver@11.24.2)(typescript@6.0.3)
 
 packages:
 

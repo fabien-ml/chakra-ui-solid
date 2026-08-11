@@ -51,7 +51,6 @@
     //   deliberate rather than an oversight: Turbo orders `codegen` behind `^build` precisely so
     //   the shape Panda reads is the shape a consumer would get.
     "paths": {
-      "@chakra-ui-solid/zag-solid": ["./packages/zag-solid/src/index.ts"],
       "@chakra-ui-solid/core": ["./packages/core/src/index.ts"],
       "chakra-ui-solid": ["./packages/chakra-ui-solid/src/components/index.ts"],
       "@chakra-ui-solid/internal-test-utils": ["./packages/internal-test-utils/src/index.ts"],

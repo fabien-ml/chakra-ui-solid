@@ -729,7 +729,7 @@ transition-based kernel was never the right shape here. **Do not re-open it.**
 ```tsx
 // @chakra-ui-solid/core/presence
 import * as presence from "@zag-js/presence"
-import { normalizeProps, useMachine, type MaybeAccessor } from "@chakra-ui-solid/zag-solid"
+import { normalizeProps, useMachine, type MaybeAccessor } from "@chakra-ui-solid/core"
 import { type Accessor, createMemo } from "solid-js"
 
 export interface RenderStrategyProps {
@@ -1092,11 +1092,11 @@ packages/components/src/dialog/
 ### 11.2 `dialog-context.ts`
 
 ```tsx
-import type { PropTypes } from "@chakra-ui-solid/zag-solid"
-import { createComponentContext, type RenderStrategyProps } from "@chakra-ui-solid/core"
+import {
+  createComponentContext, type PresenceApi, type PropTypes, type RenderStrategyProps,
+} from "@chakra-ui-solid/core"
 import type { Api } from "@zag-js/dialog"
 import type { Accessor } from "solid-js"
-import type { PresenceApi } from "@chakra-ui-solid/core"
 
 export type DialogSlot =
   | "trigger" | "backdrop" | "positioner" | "content"
@@ -1125,10 +1125,9 @@ export const [DialogContext, useDialogContext] =
 
 ```tsx
 import * as dialog from "@zag-js/dialog"
-import { normalizeProps, useMachine } from "@chakra-ui-solid/zag-solid"
 import {
-  createPresence, createSlotClasses, type RenderStrategyProps,
-  useEnvironmentContext, useLocaleContext, withDefaults,
+  createPresence, createSlotClasses, normalizeProps, type RenderStrategyProps,
+  useEnvironmentContext, useLocaleContext, useMachine, withDefaults,
 } from "@chakra-ui-solid/core"
 import { dialogSlotRecipe } from "@chakra-ui-solid/styled-system/recipes"
 import { type Component, createMemo, createUniqueId } from "solid-js"
@@ -1239,8 +1238,7 @@ export const DialogRoot: Component<DialogRootProps> = (props) => {
 ### 11.4 `dialog-trigger.tsx` — shape A, plus the one line §1.2 buys
 
 ```tsx
-import { mergeProps } from "@chakra-ui-solid/zag-solid"
-import { renderStyled } from "@chakra-ui-solid/core"
+import { mergeProps, renderStyled } from "@chakra-ui-solid/core"
 import type { JSX } from "@solidjs/web"
 import { type Component, omit } from "solid-js"
 import { useDialogContext } from "./dialog-context"
@@ -1279,8 +1277,7 @@ export const DialogTrigger: Component<DialogTriggerProps> = (props) => {
 ### 11.5 `dialog-backdrop.tsx` — shape B, owning its own presence
 
 ```tsx
-import { mergeProps } from "@chakra-ui-solid/zag-solid"
-import { createPresence, renderStyled } from "@chakra-ui-solid/core"
+import { createPresence, mergeProps, renderStyled } from "@chakra-ui-solid/core"
 import type { JSX } from "@solidjs/web"
 import { type Component, Show } from "solid-js"
 import { useDialogContext } from "./dialog-context"
@@ -1353,8 +1350,7 @@ part. Its `style: { pointerEvents }` is the machine's and is forwarded untouched
 ### 11.7 `dialog-content.tsx` — shape B, sharing the Root's presence
 
 ```tsx
-import { mergeProps } from "@chakra-ui-solid/zag-solid"
-import { renderStyled } from "@chakra-ui-solid/core"
+import { mergeProps, renderStyled } from "@chakra-ui-solid/core"
 import type { JSX } from "@solidjs/web"
 import { type Component, Show } from "solid-js"
 import { useDialogContext } from "./dialog-context"
@@ -1580,8 +1576,8 @@ namespace, so P6 records them as *planned*, not *excluded*.
 
 | From | Symbols |
 |---|---|
-| `@chakra-ui-solid/zag-solid` | `useMachine`, `normalizeProps`, `mergeProps`, `PropTypes`, `MaybeAccessor` — **and nothing else** (`zag-solid-adapter.md` §3.1) |
-| `@chakra-ui-solid/core` | `renderStyled`, `RenderProp`, `createSlotClasses`, `createPresence`, `RenderStrategyProps`, `PresenceApi`, `useLocaleContext`, `useEnvironmentContext`, `withDefaults`, `composeEventHandlers`, `createComponentContext` |
+| `@chakra-ui-solid/core` — the adapter surface, **and nothing else of it** (`zag-solid-adapter.md` §3.1) | `useMachine`, `normalizeProps`, `mergeProps`, `PropTypes`, `MaybeAccessor` |
+| `@chakra-ui-solid/core` — the styling and rendering kernel | `renderStyled`, `RenderProp`, `createSlotClasses`, `createPresence`, `RenderStrategyProps`, `PresenceApi`, `useLocaleContext`, `useEnvironmentContext`, `withDefaults`, `composeEventHandlers`, `createComponentContext` |
 | `@chakra-ui-solid/styled-system/recipes` | `dialogSlotRecipe` |
 | `@zag-js/dialog` | `machine`, `connect`, `Api`, `Props`, `OpenChangeDetails`, `ElementIds` |
 | `solid-js` | `Component`, `Show`, `createMemo`, `createUniqueId`, `merge`, `omit` |

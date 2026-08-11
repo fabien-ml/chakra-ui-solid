@@ -36,7 +36,7 @@ catalog:
   vite-plugin-solid: 3.0.0-next.23
   babel-preset-solid: 2.0.0-beta.32
 
-  # The three Zag packages `@chakra-ui-solid/zag-solid` binds to Solid. Pinned exactly and moved
+  # The three Zag packages `@chakra-ui-solid/core`'s `src/zag/` adapter binds to Solid. Pinned and moved
   # together: `@zag-js/core` owns `mergeProps` (which our own `mergeProps` delegates to for the
   # composing keys) and the `Bindable`/`Machine`/`Service` contracts the adapter implements, so a
   # skew between core and the machine packages is a behavior change with no type error to announce

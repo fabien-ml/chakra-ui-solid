@@ -57,7 +57,7 @@ describe("check:no-runtime-css", () => {
     it("scans a non-empty set — an empty scan is a broken check reporting success", () => {
       const files = listOurSourceFiles(repoRoot);
       expect(files.length).toBeGreaterThan(0);
-      expect(files).toContain("packages/zag-solid/src/merge-props.ts");
+      expect(files).toContain("packages/core/src/zag/merge-props.ts");
     });
   });
 });

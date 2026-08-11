@@ -64,12 +64,7 @@ export default defineConfig(({ command }) => ({
     // component that renders nothing at all — no error, no warning. Same fact as knob 1 seen from
     // the client side: shipping source moves work into the consumer's build, which is `plan.md`
     // §8's deliberate trade and this app is its first proof.
-    exclude: [
-      "chakra-ui-solid",
-      "@chakra-ui-solid/core",
-      "@chakra-ui-solid/styled-system",
-      "@chakra-ui-solid/zag-solid",
-    ],
+    exclude: ["chakra-ui-solid", "@chakra-ui-solid/core", "@chakra-ui-solid/styled-system"],
     // Carried from hope-ui, where it was diagnosed rather than guessed: Vite 8's rolldown
     // dependency **scanner** runs with JSX disabled, so it throws `Unexpected JSX expression` the
     // moment it walks into any first-party `.tsx`/`.mdx` source. At startup Vite catches that and

@@ -53,17 +53,13 @@ export function resolveServerEntry(packageName: string): string {
  * Every entry here owes a matching `tsconfig.base.json#paths` entry **in the same commit**;
  * `check:resolution-sync` is what says so. Every package here has a root barrel and no subpaths, so
  * these are exact-anchored matches rather than wildcards — an unanchored `find` would also capture
- * `@chakra-ui-solid/zag-solid-something`, and the check rejects one.
+ * `@chakra-ui-solid/core-something`, and the check rejects one.
  *
  * `@chakra-ui-solid/styled-system` and `@chakra-ui-solid/panda-preset` are absent on purpose:
  * neither has a `src` to point at. The long form of both reasons is in `tsconfig.base.json`,
  * beside the paths this list has to agree with.
  */
 export const chakraSolidAlias: { find: RegExp; replacement: string }[] = [
-  {
-    find: /^@chakra-ui-solid\/zag-solid$/,
-    replacement: join(import.meta.dirname, "packages/zag-solid/src/index.ts"),
-  },
   {
     find: /^@chakra-ui-solid\/core$/,
     replacement: join(import.meta.dirname, "packages/core/src/index.ts"),

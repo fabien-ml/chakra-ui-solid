@@ -60,20 +60,23 @@ export interface NoticeOnlyPath {
 }
 
 const zagSolidFork: AttributionEntry[] = [
-  "machine",
-  "bindable",
-  "merge-props",
-  "normalize-props",
-  "refs",
-  "track",
-  "index",
-].map((name) => ({
-  file: `packages/zag-solid/src/${name}.ts`,
-  upstreamProject: "chakra-ui/zag",
-  upstreamFile: `packages/frameworks/solid/src/${name}.ts`,
-  license: "MIT" as const,
-  package: "zag-solid",
-}));
+  ...["machine", "bindable", "merge-props", "normalize-props", "refs", "track"].map((name) => ({
+    file: `packages/core/src/zag/${name}.ts`,
+    upstreamProject: "chakra-ui/zag",
+    upstreamFile: `packages/frameworks/solid/src/${name}.ts`,
+    license: "MIT" as const,
+    package: "core",
+  })),
+  {
+    // The fork's barrel, which is the package's barrel: a `src/zag/index.ts` that only re-exports
+    // is erased at bundle time, and `--dist` catches the `@license` header going with it.
+    file: "packages/core/src/index.ts",
+    upstreamProject: "chakra-ui/zag",
+    upstreamFile: "packages/frameworks/solid/src/index.ts",
+    license: "MIT" as const,
+    package: "core",
+  },
+];
 
 const chakraReact: AttributionEntry[] = [
   {

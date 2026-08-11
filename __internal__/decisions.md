@@ -98,8 +98,8 @@ This is why Popover comes immediately after Dialog and before volume.
 ## Presence
 
 - **Presence is a build over the `@zag-js/presence` machine**, consumed through our own adapter. Not
-  a hand-written `createPresence`. It lives in `@chakra-ui-solid/core`, so `core` gains a
-  dependency on `zag-solid` — that edge arrives with presence, at step 5.
+  a hand-written `createPresence`. It lives in `@chakra-ui-solid/core`, alongside the adapter it
+  consumes — `core` gains a direct `@zag-js/presence` dependency at step 5.
 - **Two families, and the render strategy must be source-agnostic.** Family `Z` takes `present` from
   a `@zag-js/presence` instance. Family `M` — `collapsible` and `accordion` — takes it from the
   collapsible machine's own `visible`. Writing B2 as if presence always comes from an instance is
@@ -329,7 +329,7 @@ Ours put components at the src root of their own package, which spent the level 
 
 ```
 packages/chakra-ui-solid/src/{components/<name>,hooks,utils}
-packages/{core,styled-system,panda-preset,zag-solid,internal-test-utils}
+packages/{core,styled-system,panda-preset,internal-test-utils}
 ```
 
 **The main package is the unscoped `chakra-ui-solid`**, reserved on npm 2026-08-11; the satellites

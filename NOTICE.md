@@ -46,13 +46,13 @@ direction and mistake upstream's three changes for ours.
 
 | File | Derived from |
 | ---- | ------------ |
-| `packages/zag-solid/src/machine.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/machine.ts` |
-| `packages/zag-solid/src/bindable.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/bindable.ts` |
-| `packages/zag-solid/src/merge-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/merge-props.ts` |
-| `packages/zag-solid/src/normalize-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/normalize-props.ts` |
-| `packages/zag-solid/src/refs.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/refs.ts` |
-| `packages/zag-solid/src/track.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/track.ts` |
-| `packages/zag-solid/src/index.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/index.ts` |
+| `packages/core/src/zag/machine.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/machine.ts` |
+| `packages/core/src/zag/bindable.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/bindable.ts` |
+| `packages/core/src/zag/merge-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/merge-props.ts` |
+| `packages/core/src/zag/normalize-props.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/normalize-props.ts` |
+| `packages/core/src/zag/refs.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/refs.ts` |
+| `packages/core/src/zag/track.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/track.ts` |
+| `packages/core/src/index.ts` | `chakra-ui/zag` — `packages/frameworks/solid/src/index.ts` |
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
