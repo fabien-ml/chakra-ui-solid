@@ -7,7 +7,7 @@
   "type": "module",
   "packageManager": "pnpm@11.10.0",
   "scripts": {
-    "postinstall": "turbo run codegen",
+    "postinstall": "git config core.hooksPath .githooks || true; turbo run codegen",
     "build": "turbo run build",
     "codegen": "turbo run codegen",
     "cssgen": "turbo run cssgen",

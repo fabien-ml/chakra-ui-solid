@@ -1,0 +1,10 @@
+#!/bin/sh
+# CLAUDE.md, *Git conventions*: a commit message carries the change and why it was made.
+# Tracked rather than left in `.git/hooks` so a fresh clone gets it — `core.hooksPath` is
+# pointed here by the root `postinstall`.
+if grep -qiE '^(co-authored-by:|generated with )' "$1"; then
+  echo "commit-msg: CLAUDE.md forbids Co-Authored-By and \"Generated with\" trailers." >&2
+  echo "            A commit message carries the change and why it was made, nothing else." >&2
+  exit 1
+fi
+exit 0
