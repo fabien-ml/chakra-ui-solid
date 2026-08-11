@@ -9,7 +9,7 @@ missing line.
 ```ts title="app.config.ts"
 export default {
   ssr: {
-    noExternal: [/^@chakra-ui-solid\//],
+    noExternal: [/^@chakra-ui-solid\//, /^chakra-ui-solid$/],
   },
   optimizeDeps: {
     exclude: [
