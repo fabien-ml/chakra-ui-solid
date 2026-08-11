@@ -1,0 +1,56 @@
+---
+title: Text
+description: Used to render text and paragraphs within an interface.
+links:
+  source: packages/chakra-ui-solid/src/components/text
+  chakra: https://chakra-ui.com/docs/components/text
+---
+
+<Example name="text-basic" />
+
+## Usage
+
+```tsx
+import { Text } from "chakra-ui-solid";
+```
+
+```tsx
+<Text>This is the text component</Text>
+```
+
+## Examples
+
+### Sizes
+
+Use the `fontSize` or `textStyle` prop to change the size of the text.
+
+<Example name="text-with-sizes" />
+
+### Weights
+
+Use the `fontWeight` prop to change the weight of the text.
+
+<Example name="text-with-weights" />
+
+### Truncation
+
+Use the `truncate` prop to truncate the text after a single line.
+
+<Example name="text-with-truncate" />
+
+### Line Clamp
+
+Use the `lineClamp` prop to truncate the text after a certain number of lines.
+
+<Example name="text-with-line-clamp" />
+
+### Ref
+
+Here's how to access the underlying element reference
+
+```tsx
+function Demo() {
+  let ref: HTMLParagraphElement | undefined;
+  return <Text ref={ref}>This is the text component</Text>;
+}
+```

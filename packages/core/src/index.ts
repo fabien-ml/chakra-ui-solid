@@ -71,6 +71,12 @@ export type { Locale, LocaleProviderProps, UseFilterProps, UseFilterReturn } fro
 export { LocaleProvider, useFilter, useLocaleContext } from "./locale/locale";
 export type { RecipeClassOptions, RecipeFn, SlotRecipeFn } from "./recipe/recipe";
 export { createRecipeClass, createSlotClasses } from "./recipe/recipe";
+export type {
+  PropsProviderProps,
+  RecipeContext,
+  RecipeContextOptions,
+} from "./recipe/recipe-context";
+export { createRecipeContext } from "./recipe/recipe-context";
 export type { RenderElementOptions, RenderProp } from "./render/render";
 export { renderElement } from "./render/render";
 export type { DisplacedHtmlProp, HtmlProps, PatchHtmlProps } from "./render-styled/html-props";

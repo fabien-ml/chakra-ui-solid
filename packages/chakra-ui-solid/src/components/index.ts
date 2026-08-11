@@ -35,5 +35,6 @@ export * from "./square";
 export * from "./stack";
 export * from "./sticky";
 export * from "./strong";
+export * from "./text";
 export * from "./visually-hidden";
 export * from "./wrap";

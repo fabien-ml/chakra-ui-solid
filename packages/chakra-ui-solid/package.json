@@ -35,6 +35,7 @@
       "stack": "src/components/stack/index.ts",
       "sticky": "src/components/sticky/index.ts",
       "strong": "src/components/strong/index.ts",
+      "text": "src/components/text/index.ts",
       "visually-hidden": "src/components/visually-hidden/index.ts",
       "wrap": "src/components/wrap/index.ts"
     }

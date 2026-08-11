@@ -1,0 +1,145 @@
+import type { JSX, ValidComponent } from "@solidjs/web";
+import { type Component, createContext, merge, omit, untrack, useContext } from "solid-js";
+import type { RenderProp } from "../render/render";
+import { renderStyled } from "../render-styled/render-styled";
+import { createRecipeClass, type RecipeFn } from "./recipe";
+
+/** What `renderStyled` is handed once the variants are split off — keys in, no element type out. */
+type ElementPropsBag = Record<string, unknown> & { class?: unknown };
+
+export interface RecipeContextOptions<Props extends object, Variants extends object> {
+  /**
+   * The generated recipe this component is styled by.
+   *
+   * **Optional, because a component can have no recipe at all** — `Text`'s key resolves to nothing
+   * in Chakra either, and four more (`Clipboard`, `Pagination`, `Toggle`, `DownloadTrigger`) are
+   * unstyled-by-key upstream on purpose (`parity-matrix.md` §2.5). With no recipe the returned
+   * component is still the props context plus the style-prop pipeline, which is the whole of what
+   * those components are.
+   */
+  recipe?: RecipeFn<Variants>;
+  /**
+   * The recipe's own inputs, as **literal** keys rather than `recipe.variantKeys` — `omit` narrows
+   * the returned props by the keys it is given, and a `string[]` narrows nothing. The two lists are
+   * the same list, and the owning component's test asserts it against `recipe.variantKeys`.
+   *
+   * Never Panda's generated `splitVariantProps`: it destructures the props object eagerly, which in
+   * Solid snapshots every value it reads, so a changed `size` stops re-resolving and every style
+   * prop passed alongside stops reacting. A fixed key tuple reads nothing at partition time.
+   */
+  variantKeys?: readonly (keyof Variants & keyof Props & string)[];
+}
+
+export interface PropsProviderProps<Props extends object> {
+  /** Props supplied to every matching component below, each one a local prop can override. */
+  value: Partial<Props>;
+  children?: JSX.Element;
+}
+
+/** What {@link createRecipeContext} returns — the two halves of Chakra's seam, plus its reader. */
+export interface RecipeContext<Props extends object> {
+  /** Mint the component: props context, recipe class, and the style-prop pipeline, over `tag`. */
+  withContext(tag: ValidComponent): Component<Props>;
+  /** The ancestor that pushes props down — `<ButtonGroup>` is nothing but this. */
+  PropsProvider: Component<PropsProviderProps<Props>>;
+  /** The context on its own, for a component whose body `withContext` cannot express. */
+  usePropsContext(): Partial<Props>;
+}
+
+/**
+ * Chakra's `createRecipeContext` — a component factory bound to one recipe, and the props context
+ * an ancestor uses to supply that component's props from above.
+ *
+ * ```tsx
+ * const { withContext, PropsProvider } = createRecipeContext<HeadingProps, HeadingVariantProps>({
+ *   recipe: heading,
+ *   variantKeys: ["size"],
+ * });
+ *
+ * export const Heading = withContext("h2");
+ * export const HeadingPropsProvider = PropsProvider;
+ * ```
+ *
+ * **It adds no styling logic.** `createRecipeClass` still resolves the recipe into the class
+ * `renderStyled` carries under `@layer recipes`, and `renderStyled` still owns style props,
+ * `class`, `css`, `unstyled`, `as`/`render` and ref merging. What is new here is only the context,
+ * which is why `Container`'s hand-written body and a component minted here produce the same element.
+ *
+ * `usePropsContext` is returned separately because the second consumer shape does not fit
+ * `withContext`: `Button` wraps its children in a `Loader` when `loading`, so it reads the context
+ * itself and calls `createRecipeClass` + `renderStyled` directly.
+ */
+export function createRecipeContext<
+  Props extends object,
+  Variants extends object = Record<never, never>,
+>(options: RecipeContextOptions<Props, Variants> = {}): RecipeContext<Props> {
+  // Defaulted rather than Chakra's `strict: false` plus an undefined check at every read: no
+  // provider is the overwhelmingly common case — a `<Text>` with no ancestor supplying it is not a
+  // mistake — so the empty bag is the answer, not a branch. The repo's other three contexts carry
+  // an `Accessor<Value>`; this one carries a **props object**, for the reason the provider states.
+  const PropsContext = createContext<Partial<Props>>({});
+
+  const variantKeys = options.variantKeys ?? [];
+
+  const usePropsContext = () => useContext(PropsContext);
+
+  const PropsProvider: Component<PropsProviderProps<Props>> = (props) => {
+    // A props object of getters, never the accessor the shape suggests. Solid's `merge` turns a
+    // **function** source into a memo, and `renderStyled` enumerates the merged bag in a component
+    // body — reading a memo there is the `STRICT_READ_UNTRACKED` diagnostic `mount()` fails on
+    // (measured). A plain object enumerates without reading anything, which is the shape
+    // `withDefaults` already uses for the same reason.
+    //
+    // So the key SET is snapshotted here, deliberately untracked, and each VALUE stays lazy — the
+    // same split `renderStyled` makes over its own style props, and what lets
+    // `<ButtonGroup size={size()}>` re-resolve every component below when the signal changes.
+    const provided = Object.defineProperties(
+      {},
+      Object.fromEntries(
+        untrack(() => Object.keys(props.value)).map((key) => [
+          key,
+          {
+            get: () => (props.value as Record<string, unknown>)[key],
+            enumerable: true,
+            configurable: true,
+          },
+        ]),
+      ),
+    ) as Partial<Props>;
+
+    return <PropsContext value={provided}>{props.children}</PropsContext>;
+  };
+
+  const withContext =
+    (tag: ValidComponent): Component<Props> =>
+    (componentProps) => {
+      // Context first, local props second, so a local prop wins — Chakra's order. Both sides stay
+      // lazy: `merge` resolves a key by reading the last source that has it, at read time, so
+      // nothing here snapshots a provider value or a style prop.
+      const props = merge(usePropsContext(), componentProps) as ElementPropsBag & {
+        as?: ValidComponent;
+        render?: RenderProp<ElementPropsBag>;
+      };
+
+      const recipe = options.recipe;
+
+      return renderStyled<ElementPropsBag>({
+        as: props.as ?? tag,
+        render: props.render,
+        // The variant keys are the recipe's inputs, not the element's: forwarded, `size` would
+        // reach the DOM as an attribute, and it is not a style prop for `renderStyled` to swallow.
+        props: variantKeys.length === 0 ? props : omit(props, ...variantKeys),
+        recipeClass:
+          recipe === undefined
+            ? undefined
+            : createRecipeClass(recipe, {
+                // Read inside the accessor, so the variant values are tracked rather than
+                // snapshotted — the same reason the factory builds its variant bag this way.
+                variantProps: () =>
+                  Object.fromEntries(variantKeys.map((key) => [key, props[key]])) as Variants,
+              }),
+      });
+    };
+
+  return { withContext, PropsProvider, usePropsContext };
+}
