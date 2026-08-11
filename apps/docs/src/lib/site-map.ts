@@ -1,5 +1,5 @@
 import type { Component } from "solid-js";
-import { docsNav, type NavItem } from "~/lib/docs-config";
+import { docsNav, type NavItem, repoBranch, repoUrl } from "~/lib/docs-config";
 
 /**
  * The content tree, joined to the nav register.
@@ -28,7 +28,8 @@ export interface TocEntry {
  * compile-mode canary, not user-facing docs.
  */
 export interface DocLinks {
-  /** The component's directory under `packages/chakra-ui-solid/src/components`. */
+  /** The component's directory, repo-relative — a path in frontmatter, a URL by the time it is
+   * read (see {@link toPage}). */
   source?: string;
   /** Its preset key, or absent where the key resolves to nothing (`roadmap.md` §4). */
   recipe?: string;
@@ -88,6 +89,19 @@ export interface SidebarGroup {
 // async boundary to hide an await behind.
 const modules = import.meta.glob<DocModule>("../content/**/*.mdx", { eager: true });
 
+/**
+ * Frontmatter writes `source: packages/chakra-ui-solid/src/components/box`; the header renders a
+ * link to that file on GitHub. Joining the two here rather than in the header is chakra-ui.com's
+ * split (`__reference-impl__/chakra-ui/apps/www/velite.config.ts`, the `links` transform): a page
+ * declares a path, the pipeline decides what a path resolves to.
+ */
+function toLinks(links: DocLinks | undefined): DocLinks | undefined {
+  if (links?.source === undefined) {
+    return links;
+  }
+  return { ...links, source: `${repoUrl}/tree/${repoBranch}/${links.source}` };
+}
+
 function toPage(key: string, module: DocModule): DocPage | null {
   const slug = key.match(/\/content\/(.+)\.mdx$/)?.[1];
   const section = slug?.split("/")[0];
@@ -100,7 +114,7 @@ function toPage(key: string, module: DocModule): DocPage | null {
     path: `/docs/${slug}`,
     title: module.frontmatter.title,
     description: module.frontmatter.description,
-    links: module.frontmatter.links,
+    links: toLinks(module.frontmatter.links),
     module,
   };
 }

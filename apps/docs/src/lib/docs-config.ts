@@ -20,6 +20,19 @@
  * pages they do not document at all (`docs-site.md` §2.3).
  */
 
+/**
+ * Where a page's `source` link points. chakra-ui.com keeps the same two values in its own
+ * `docs.config.ts` and joins them in the content pipeline rather than in a page's frontmatter — so
+ * frontmatter carries a path, one place carries the host, and moving branches is one edit.
+ *
+ * **The branch is the one these docs are built from**, which is `develop` and not `main` — a page
+ * documents the component as this branch has it, and `main` is behind, so half the links would
+ * 404 on the components it has not seen yet. Upstream's value is `main` for the same reason: it is
+ * where their docs are built.
+ */
+export const repoUrl = "https://github.com/fabien-ml/chakra-ui-solid";
+export const repoBranch = "develop";
+
 export interface NavItem {
   title: string;
   /** The URL segment. Absent on a group that is a heading rather than a path segment. */

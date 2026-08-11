@@ -1,6 +1,8 @@
 import type { JSX } from "@solidjs/web";
 import { Box } from "chakra-ui-solid";
 import { For, Show } from "solid-js";
+import { ArrowUpRightIcon } from "~/components/site/icons";
+import { GithubIcon, ReactIcon } from "~/components/site/project-marks";
 import type { DocPage } from "~/lib/site-map";
 
 /**
@@ -19,52 +21,61 @@ const LINK_LABELS: Record<string, string> = {
   source: "Source",
   recipe: "Recipe",
   machine: "Machine",
-  chakra: "Chakra UI",
+  chakra: "React version",
 };
 
 /**
- * A link value that is a URL renders as an anchor; anything else renders as text.
+ * Every link key but `chakra` points at a file on GitHub — ours for `source` and `recipe`, Zag's for
+ * `machine`. `chakra` is the same page on the React version's site, so it takes React's mark.
+ */
+function LinkIcon(props: { name: string }) {
+  return (
+    <Box as="span" display="inline-flex" fontSize="lg">
+      <Show when={props.name === "chakra"} fallback={<GithubIcon />}>
+        <ReactIcon />
+      </Show>
+    </Box>
+  );
+}
+
+/**
+ * Mark, label, and an arrow saying it opens elsewhere — chakra-ui.com's own header link, whose
+ * `ResourceIcon` is the same rule: the mark of whatever the link crosses to.
  *
- * The one that is not a URL today is `source`. chakra-ui.com builds it into a `tree/main/...` link
- * on its own repository; ours is private (`decisions-ledger.md` D-02), so a link would 404 for every reader.
- * The path still tells you where the code lives, and the day the repository is public the
- * frontmatter value becomes a URL and this renders a link with nothing else changing.
+ * Every value here is a URL by now: `source` is a repo-relative path in frontmatter and
+ * `~/lib/site-map` joins it onto the repository (`decisions-ledger.md` D-02 assumed a private
+ * repository and a path that could not be linked; it is public, so it is a link).
  */
 function PageLink(props: { name: string; value: string }) {
   const label = () => LINK_LABELS[props.name] ?? props.name;
 
   return (
-    <Show
-      when={/^https?:\/\//.test(props.value)}
-      fallback={
-        <Box as="span" color="fg.muted">
-          {label()}:{" "}
-          <Box as="code" fontFamily="mono" fontSize="xs">
-            {props.value}
-          </Box>
-        </Box>
-      }
+    <Box
+      display="inline-flex"
+      alignItems="center"
+      gap="2"
+      fontWeight="medium"
+      color="fg.muted"
+      _hover={{ color: "fg" }}
+      render={(renderProps) => (
+        <a
+          {...(renderProps as JSX.AnchorHTMLAttributes<HTMLAnchorElement>)}
+          href={props.value}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {renderProps.children}
+        </a>
+      )}
     >
-      <Box
-        fontWeight="medium"
-        color="fg.muted"
-        textDecoration="underline"
-        textUnderlineOffset="3px"
-        _hover={{ color: "fg" }}
-        render={(renderProps) => (
-          <a
-            {...(renderProps as JSX.AnchorHTMLAttributes<HTMLAnchorElement>)}
-            href={props.value}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {renderProps.children}
-          </a>
-        )}
-      >
-        {label()} ↗
+      <LinkIcon name={props.name} />
+      <Box as="span" textDecoration="underline" textUnderlineOffset="3px">
+        {label()}
       </Box>
-    </Show>
+      <Box as="span" display="inline-flex" color="fg.subtle" ms="-1">
+        <ArrowUpRightIcon />
+      </Box>
+    </Box>
   );
 }
 

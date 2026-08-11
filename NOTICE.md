@@ -2,7 +2,7 @@
 
 > **The sections outnumber the tables that have rows, and that is the design.** A section exists per
 > upstream we read, whether or not anything is derived from it, so an empty table is a statement
-> rather than an absence. Four carry rows today — Zag.js, Chakra UI, Framework logos, Lucide. The
+> rather than an absence. Four carry rows today — Zag.js, Chakra UI, Project marks, Lucide. The
 > rest are guards.
 >
 > **What fills a row in** is the five obligations in [`CLAUDE.md`](CLAUDE.md), and
@@ -167,14 +167,25 @@ The other ten — `bell`, `box`, `copy`, `heart`, `menu`, `paint-bucket`, `party
 `phone-forwarded`, `sun` — are Lucide's own and are covered by the ISC grant alone. No separate row: they are the same file, and
 `attribution.config.ts` keys one entry per file.
 
-## Framework logos
+## Project marks
 
-The docs site's framework grid shows each project's own logo to name the framework that cell links
-to. **Nominative use** — identifying a thing by its name and mark — and none of the three implies
-endorsement, sponsorship or affiliation.
+Two places on this site show another project's mark to name that project: the **framework grid**,
+where each cell's logo names the framework it links to, and every **docs page header**, where the
+two links carry GitHub's mark for the source file and React's for the same page on the React
+version's site. **Nominative use** — identifying a thing by its name and mark — and none of the five
+implies endorsement, sponsorship or affiliation.
 
-Every file below is the mark as its project publishes it, with **one exception**, recorded here
-because "unmodified" is otherwise the claim this section makes. `vite-light.svg` is Vite's
+Every file below is the mark as its project publishes it, with **two exceptions**, recorded here
+because "unmodified" is otherwise the claim this section makes.
+
+`project-marks.tsx` holds the two inline marks, each recoloured to `currentColor` because they sit
+inside a line of muted text that brightens on hover — GitHub's from their own Octicons set,
+unchanged otherwise, and React's with **one further change**: the ellipse stroke is 1.6 where
+React's file says 1. Their file is drawn at a logo's size; at the 18px this sits at, a 1-unit stroke
+in a 23-unit viewBox falls under a pixel and reads as a smudge. The geometry — three ellipses at 0°,
+60° and 120° about a nucleus, in React's own viewBox — is untouched.
+
+`vite-light.svg` is Vite's
 `logo.svg` with the two parenthesis strokes recoloured from white to `#08060D`: white parentheses
 are invisible against a white page, and Vite publishes a dark-ink version of the lockup
 (`vite-dark.svg`, which carries their wordmark) but none of the bare mark. **The colour is theirs,
@@ -183,6 +194,8 @@ colour is touched, and `vite-dark.svg` here is their `logo.svg` byte for byte.
 
 | File | Source | Mark held by |
 | ---- | ------ | ------------ |
+| `apps/docs/src/components/site/project-marks.tsx` | `primer/octicons` — `icons/mark-github-16.svg`, monochrome | GitHub, Inc. |
+| `apps/docs/src/components/site/project-marks.tsx` | `facebook/react` — `fixtures/dom/public/react-logo.svg`, monochrome, stroke 1.6 | Meta Platforms, Inc. |
 | `apps/docs/public/logos/vite-dark.svg` | `vitejs/vite` — `docs/public/logo.svg` | The Vite project |
 | `apps/docs/public/logos/vite-light.svg` | `vitejs/vite` — `docs/public/logo.svg`, parentheses recoloured | The Vite project |
 | `apps/docs/public/logos/solid-start.svg` | `solidjs/solid-docs` — `public/solid-start.svg` | The SolidJS project |

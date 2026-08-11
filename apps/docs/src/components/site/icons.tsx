@@ -6,7 +6,7 @@
  *
  * Fourteen of these are Lucide's own derivatives of Feather, and carry a second notice:
  * Copyright (c) 2013-present Cole Bemis, MIT License. Both licences are reproduced in full, and the
- * thirteen named, in the LICENSE and NOTICE.md at the repository root.
+ * fourteen named, in the LICENSE and NOTICE.md at the repository root.
  *
  * This file has been modified from the original.
  *
@@ -24,7 +24,8 @@
  * `<svg>` have no such failure mode.
  *
  * Add a glyph by pasting its paths from `lucide-static`'s `icons/` — never by inlining an `<svg>`
- * somewhere else. The brand marks are the other file, `~/components/site/logo`.
+ * somewhere else. The marks are the other two files: ours in `~/components/site/logo`, GitHub's and
+ * React's in `~/components/site/project-marks`.
  */
 
 import type { JSX } from "@solidjs/web";

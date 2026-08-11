@@ -111,12 +111,12 @@ const docsApp: AttributionEntry[] = [
     package: null,
   },
   {
-    // One entry for twenty glyphs, on the reasoning that makes `apps/docs/src/content` one row
+    // One entry for twenty-four glyphs, on the reasoning that makes `apps/docs/src/content` one row
     // rather than 111: the icon set is a single derivative of one upstream directory. `upstreamFile`
     // is that directory, and the module names the individual `icons/*.svg` above each component —
     // which is what a reader auditing the claim actually opens.
     //
-    // The only ISC entry, and the only one owing a *second* upstream: thirteen of the twenty are
+    // The only ISC entry, and the only one owing a *second* upstream: fourteen of the twenty-four are
     // Lucide's own derivatives of Feather, MIT. Both notices are in the root `NOTICE.md`.
     file: "apps/docs/src/components/site/icons.tsx",
     upstreamProject: "lucide-icons/lucide",
@@ -170,6 +170,15 @@ export const noticeOnlyPaths: NoticeOnlyPath[] = [
   {
     path: "apps/docs/public/icon-512.png",
     reason: "As `icon-192.png`, at the size an install prompt uses.",
+  },
+  {
+    path: "apps/docs/src/components/site/project-marks.tsx",
+    reason:
+      "Not our derivative. Two other projects' marks — GitHub's and React's — naming what a page " +
+      "header's links cross to. Nominative use, as the framework logos are. Inline rather than " +
+      "files in `public/` because they sit in a line of text and must take `currentColor`; that " +
+      "monochrome, and React's stroke width at text size, are the only departures from each mark " +
+      "as its project publishes it.",
   },
   {
     path: "apps/docs/public/logos/vite-dark.svg",
