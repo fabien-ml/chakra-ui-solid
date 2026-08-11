@@ -165,9 +165,11 @@ describe("defineChakraConfig — the keys it merges rather than replaces", () =>
   });
 
   it("folds `staticCss.extend` in rather than passing it through", () => {
-    // The spelling Panda's own docs teach, and the one that undoes the union if it reaches Panda
-    // untouched: Panda's `extend` path *replaces* a top-level `css` array instead of adding to it,
-    // so a passed-through `extend` would take the preset's seven entries with it.
+    // The spelling Panda's Extend page tells you to use — it lists `staticCss` among the parts
+    // `extend` extends. It does not extend this one: measured on one merge against `conditions`,
+    // `globalCss` and `utilities` from that same list, those three keep both sides and `staticCss`
+    // keeps only the consumer's, because they are keyed by name and `staticCss.css` is an array.
+    // Passed through untouched it would undo the union and take the preset's seven entries with it.
     const theirs = [{ properties: { color: ["red.500"] } }];
     const config = defineChakraConfig({
       ...MINIMAL,

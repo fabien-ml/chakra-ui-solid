@@ -200,6 +200,13 @@ function chakraStaticCss(
   // this key. Panda's `extend` path does not add to a top-level `css` array, it replaces it
   // (measured) — so an untouched `staticCss: { extend: { css } }` reaching Panda would undo exactly
   // the union this function exists to build, and take the preset's seven entries with it.
+  //
+  // And it is the spelling Panda **tells you to use**: its Extend page lists `staticCss` among the
+  // parts `extend` extends, beside `conditions`, `globalCss` and `utilities`. Measured against
+  // those three on one merge, the other three keep both sides and `staticCss` keeps only the
+  // consumer's — because they are objects keyed by name and `staticCss.css` is an array. So a
+  // consumer following Panda's own documentation is the case this branch exists for, not an exotic
+  // one.
   const { extend, ...rest } = theirs ?? {};
 
   return {

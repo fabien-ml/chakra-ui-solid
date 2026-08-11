@@ -95,12 +95,18 @@ export default defineChakraConfig({
 });
 ```
 
-That one needs the merge more than `theme` does, and `extend` is no help. A config's
-`staticCss.css` **replaces** a preset's whole array, and writing it as `staticCss: { extend: { css } }`
-replaces it too — the `extend` escape rescues `theme` and does nothing here. So the preset's own
-seven entries are written into your config alongside yours rather than left behind in the preset,
-and an `extend` block of yours is folded into the same union. Either spelling works and neither
-loses anything.
+That one needs the merge more than `theme` does, and neither spelling avoids the need. A config's
+`staticCss.css` **replaces** a preset's whole array, and `staticCss: { extend: { css } }` replaces it
+too. So the preset's own seven entries are written into your config alongside yours, rather than left
+behind in the preset for Panda to drop — and if you write an `extend` block, it is folded into that
+same union rather than passed through.
+
+> **`extend` does not extend `staticCss`, whatever you have read.** Panda's
+> [Extend](https://panda-css.com/docs/concepts/extend) page lists `staticCss` among the parts the
+> keyword extends. Measured on one merge against three of its list-mates: `conditions`, `globalCss`
+> and `utilities` each keep the preset's entry *and* yours; `staticCss` keeps only yours. The three
+> are objects keyed by name, so a clash is per name — `staticCss.css` is an array, and the whole
+> array loses. Nothing warns you, which is why this function does the union itself.
 
 Those seven are not decoration: `<Flex inline>`, `<Wrap>` and every `StackSeparator` flip a value at
 runtime, Panda's usage scan cannot see a value that appears in no source file, and the pre-generated
