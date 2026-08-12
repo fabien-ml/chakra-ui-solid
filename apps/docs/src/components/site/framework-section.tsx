@@ -143,15 +143,24 @@ export function FrameworkSection() {
  * nothing (`plan.md` §0.2). `check:style-contract` rule 1 is what makes that a build failure.
  */
 function FrameworkLogo(props: { framework: Framework }) {
-  /** Box computed the class; the `<img>` is what wears it. */
-  const image = (source: string, computed: { class?: unknown }): JSX.Element => (
-    <img class={computed.class as string} src={source} alt="" />
+  /**
+   * Box computed the class; the `<img>` is what wears it.
+   *
+   * **`source` is an accessor, not a string.** A `render` callback is invoked by `renderElement`
+   * outside any tracking scope, so calling `darkSource()` at the call site was a reactive read with
+   * nothing watching it — `[STRICT_READ_UNTRACKED] … in <Box>`, once per framework that has a dark
+   * mark. Taking the accessor moves the read into the `src` attribute, which is a tracked position.
+   */
+  const image = (source: () => string, computed: { class?: unknown }): JSX.Element => (
+    <img class={computed.class as string} src={source()} alt="" />
   );
 
   return (
     <Show
       when={props.framework.logoDark}
-      fallback={<Box height="9" width="auto" render={(p) => image(props.framework.logo, p)} />}
+      fallback={
+        <Box height="9" width="auto" render={(p) => image(() => props.framework.logo, p)} />
+      }
     >
       {(darkSource) => (
         <>
@@ -159,14 +168,14 @@ function FrameworkLogo(props: { framework: Framework }) {
             height="9"
             width="auto"
             _dark={{ display: "none" }}
-            render={(p) => image(props.framework.logo, p)}
+            render={(p) => image(() => props.framework.logo, p)}
           />
           <Box
             height="9"
             width="auto"
             display="none"
             _dark={{ display: "block" }}
-            render={(p) => image(darkSource(), p)}
+            render={(p) => image(darkSource, p)}
           />
         </>
       )}
