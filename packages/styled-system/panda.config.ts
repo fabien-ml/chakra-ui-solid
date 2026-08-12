@@ -34,6 +34,15 @@ export default defineConfig({
   // stylesheet carrying different names — every class we emit is then absent from their sheet,
   // silently. `defineChakraConfig()` is what stops that being constructable (`plan.md` §3.4).
   hash: false,
+  // Chakra v3's own `cssVarsPrefix` default, and it namespaces ~547 token variables away from the
+  // identically-named ones a consumer's app declares for itself. `cssVar` alone, so class names
+  // stay bare and `hash` above still describes them.
+  //
+  // It has to be written here as well as in `defineChakraConfig()`, and this is the one knob where
+  // a disagreement survives a green suite: the *class* names would still match, so every rule
+  // would be found — and then resolve against a variable nobody declared. `token.var()` is
+  // compiled from this config into the package we publish.
+  prefix: { cssVar: "chakra" },
   // Panda's own default, written out because `defineChakraConfig()` writes it out too. Left
   // inherited on both sides the two agreed by coincidence, and a consumer who set `separator: "="`
   // met nothing to stop them: their sheet would carry `p=4` while this runtime went on computing

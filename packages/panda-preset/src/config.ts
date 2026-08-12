@@ -89,6 +89,12 @@ const LOCKED = {
   eject: true,
   // Must match the setting our published `styled-system` was generated with. See `LockedKey`.
   hash: false,
+  // `cssVar` only, so class names keep their bare `p_4` spelling and everything above about `hash`
+  // and `separator` still holds. `chakra` is the React version's own `cssVarsPrefix` default, and
+  // the namespace earns its keep twice: it is what a reader who knows Chakra expects to find, and
+  // it keeps our ~547 token variables — `--spacing-4`, `--colors-red-500`, `--sizes-md` — out of
+  // a collision with the identically-named ones an app declares for itself.
+  prefix: { cssVar: "chakra" },
   // Set rather than inherited. Panda's default is `_` on both sides, so today the two agree by
   // coincidence and a consumer who wrote `separator: "="` met no resistance at all — their sheet
   // would carry `p=4` while our runtime went on computing `p_4`.
@@ -162,9 +168,6 @@ export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
     preflight: true,
     ...(rest as Config),
     ...LOCKED,
-    // `LOCKED` cannot carry this: the agreed value is *absent*, and a `prefix` key holding
-    // `undefined` is what overwrites one that arrived from an untyped config.
-    prefix: undefined,
     // Ours first, so a consumer's preset is later and therefore wins on a conflict.
     presets: [chakraSolidPreset, ...(presets ?? [])],
     theme: theme as Config["theme"],
@@ -269,27 +272,28 @@ const lockedKeysPlugin: Plugin = {
       // would otherwise fail in total silence.
       console.warn(
         `[chakra-ui-solid] restoring ${overridden.join(", ")} in panda.config — our published ` +
-          `runtime emits class names like "p_4", and a stylesheet named any other way contains no ` +
-          `such rule, so every component would render unstyled with no error anywhere.`,
+          `runtime emits class names like "p_4" and variables like "--chakra-spacing-4", and a ` +
+          `stylesheet naming either differently contains no such rule and declares no such ` +
+          `variable, so every component would render unstyled with no error anywhere.`,
       );
 
-      return { ...config, ...LOCKED, prefix: undefined };
+      return { ...config, ...LOCKED };
     },
   },
 };
 
 function lockedKeysOverriddenIn(config: Config): string[] {
-  const overridden = Object.entries(LOCKED)
+  return Object.entries(LOCKED)
     .filter(([key, locked]) => {
       const actual = config[key as keyof Config];
-      // `importMap` is the one array in the table, so identity says nothing about it.
+      // `importMap` and `prefix` are the two structural values in the table, so identity says
+      // nothing about them — and for `prefix` this branch is also what catches the string
+      // spelling, since `"chakra"` would prefix class names too.
       return typeof locked === "object"
         ? JSON.stringify(actual) !== JSON.stringify(locked)
         : actual !== locked;
     })
     .map(([key]) => key);
-
-  return config.prefix === undefined ? overridden : [...overridden, "prefix"];
 }
 
 /**

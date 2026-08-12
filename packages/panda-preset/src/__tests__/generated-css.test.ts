@@ -42,15 +42,15 @@ describe("the generated stylesheet", () => {
   });
 
   it("keys its semantic colours off the `.light` and `.dark` classes the docs name", () => {
-    // The preset gives semantic colours **no base value**: `--colors-bg-panel` and its ~100
+    // The preset gives semantic colours **no base value**: `--chakra-colors-bg-panel` and its ~100
     // siblings are declared only inside `.light { … }` and `.dark { … }`. A page carrying neither
     // class has no colours at all — every semantic token resolves to an undefined custom property
     // and computes to `transparent`, with no error anywhere. So the selector is the whole
     // colour-mode contract, and this library ships no provider, hook or toggle.
-    expect(css).toMatch(/\.light\s*\{[^}]*--colors-/);
-    expect(css).toMatch(/\.dark\s*\{[^}]*--colors-/);
+    expect(css).toMatch(/\.light\s*\{[^}]*--chakra-colors-/);
+    expect(css).toMatch(/\.dark\s*\{[^}]*--chakra-colors-/);
 
-    const scopes = [...css.matchAll(/([^{};\n]+)\{[^}]*--colors-bg-panel:/g)].map((match) =>
+    const scopes = [...css.matchAll(/([^{};\n]+)\{[^}]*--chakra-colors-bg-panel:/g)].map((match) =>
       (match[1] ?? "").trim().split(/\s+/).pop(),
     );
     expect(scopes).toContain(".light");
@@ -64,7 +64,7 @@ describe("the generated stylesheet", () => {
     // parses. `@chakra-ui/react`'s runtime theme spells both `switch` and loses nothing, which
     // makes this a preset defect rather than Chakra behavior, so inheriting it would be a
     // divergence from the thing we are porting. Our preset adds one token key, `cursor.switch`.
-    expect(css).toMatch(/--cursor-switch:/);
+    expect(css).toMatch(/--chakra-cursor-switch:/);
     expect(css).not.toMatch(/cursor:\s*switch\s*[;}]/);
   });
 });

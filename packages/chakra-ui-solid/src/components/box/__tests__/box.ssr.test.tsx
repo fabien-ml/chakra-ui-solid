@@ -32,19 +32,19 @@ async function renderDeclarations(
 describe("Box — the server sends markup whose classes have real rules", () => {
   it("resolves a spacing token", async () => {
     expect(await renderDeclarations(() => <Box p="4" />)).toMatchObject({
-      padding: "var(--spacing-4)",
+      padding: "var(--chakra-spacing-4)",
     });
   });
 
   it("resolves a semantic colour token", async () => {
     expect(await renderDeclarations(() => <Box bg="bg.panel" />)).toMatchObject({
-      background: "var(--colors-bg-panel)",
+      background: "var(--chakra-colors-bg-panel)",
     });
   });
 
   it("resolves one of the 17 aliased shorthands", async () => {
     expect(await renderDeclarations(() => <Box gapX="4" />)).toMatchObject({
-      "column-gap": "var(--spacing-4)",
+      "column-gap": "var(--chakra-spacing-4)",
     });
   });
 
@@ -52,7 +52,7 @@ describe("Box — the server sends markup whose classes have real rules", () => 
     expect(
       await renderDeclarations(() => <Box css={[{ margin: "2" }, { margin: "6" }]} />),
     ).toMatchObject({
-      margin: "var(--spacing-6)",
+      margin: "var(--chakra-spacing-6)",
     });
   });
 

@@ -59,12 +59,15 @@ describe("defineChakraConfig — the knobs that must match ours", () => {
     }
   });
 
-  it("leaves Panda's other name-shaping knob unset on both sides", () => {
-    // `prefix` is the one locked key whose agreed value is *absent*. Ours writes the key holding
-    // `undefined`, which is what overwrites a value arriving from an untyped config; the other side
-    // must not mention it at all.
-    expect(defineChakraConfig(MINIMAL).prefix).toBeUndefined();
-    expect(ourConfigSource).not.toMatch(/^\s*prefix:/m);
+  it("namespaces every token variable, and only the variables", () => {
+    // `prefix` is the one locked key whose value is an object, so it is asserted here rather than
+    // in `SHARED_KNOBS` above — that loop matches source text through `JSON.stringify`, which
+    // spells an object nothing in a `.ts` file looks like.
+    //
+    // `cssVar` alone is the whole point. Panda's string spelling — `prefix: "chakra"` — would
+    // prefix class names too, and our published runtime computes `p_4`.
+    expect(defineChakraConfig(MINIMAL).prefix).toEqual({ cssVar: "chakra" });
+    expect(ourConfigSource).toMatch(/^\s*prefix: \{ cssVar: "chakra" \},/m);
   });
 
   it("points the extractor at our published package, on both sides", () => {
@@ -96,7 +99,7 @@ describe("defineChakraConfig — the knobs that must match ours", () => {
     });
     defineChakraConfig({
       ...MINIMAL,
-      // @ts-expect-error — locked: `className` renames the rules, `cssVar` renames the variables
+      // @ts-expect-error — locked: `cssVar` is `chakra`, and this spelling renames the rules too
       prefix: "ck",
     });
     defineChakraConfig({
@@ -121,7 +124,7 @@ describe("defineChakraConfig — the knobs that must match ours", () => {
     } as unknown as ChakraConfigOverrides);
 
     expect(config.hash).toBe(false);
-    expect(config.prefix).toBeUndefined();
+    expect(config.prefix).toEqual({ cssVar: "chakra" });
   });
 });
 
@@ -256,9 +259,9 @@ describe("defineChakraConfig — the plugin that catches what the types cannot",
     }) as Config;
 
     expect(corrected.hash).toBe(false);
-    expect(corrected.prefix).toBeUndefined();
+    expect(corrected.prefix).toEqual({ cssVar: "chakra" });
     expect(corrected.separator).toBe("_");
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining("hash, separator, prefix"));
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("hash, prefix, separator"));
 
     warn.mockRestore();
   });

@@ -57,7 +57,12 @@ naming a file (`blueprint §1.2`) points there instead.
 - [ ] combobox — S:combobox · 14/16 · Z ⚠
       **Duplicate slot `empty`**. `+indicatorGroup`, `+empty`. Floating. Restrictive-content-model hazard (§10.4 of the blueprint)
 - [ ] date-picker — S:datePicker · 24/26 · Z
-      **Duplicate slot `view`**. `+indicatorGroup`. Floating
+      **Duplicate slot `view`**. `+indicatorGroup`. Floating.
+      The preset's `prevTrigger`/`nextTrigger` write `boxShadow: "0 0 0 2px
+      var(--colors-color-palette-focus-ring)"` as a **literal**, not a token reference, so our
+      `chakra` cssVar prefix never reaches it and the shadow resolves to nothing. The only two such
+      strings in the whole preset. The `outline-color` beside it still rings the focused trigger, so
+      this is a second ring lost, not the indicator
 - [ ] dialog — S:dialog · 7/10 · D ⚠
       **Duplicate slot `backdrop`**. `+header/body/footer`. The worked blueprint
 - [ ] drawer — dialog · S:drawer · 7/10 · D ⚠

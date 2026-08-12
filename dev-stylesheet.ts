@@ -20,7 +20,7 @@
 import "./packages/styled-system/styled-system/styles.css";
 
 // `<html class="light">`, because the preset gives its semantic colour tokens **no base value**:
-// `--colors-bg-panel` and its ~100 siblings are declared only inside `.light { … }` and
+// `--chakra-colors-bg-panel` and its ~100 siblings are declared only inside `.light { … }` and
 // `.dark { … }`, so with neither class on an ancestor every semantic colour resolves to an
 // undefined custom property and computes to `transparent`.
 //

@@ -210,7 +210,7 @@ rules our class names never match — an unstyled component, with nothing raised
 | Key | Why |
 | --- | --- |
 | `hash` | Hashed rules; our runtime still emits `p_4` |
-| `prefix` | `className` renames the rules; `cssVar` renames the variables, and the `var(--sizes-*)` strings inside `SimpleGrid` and `Bleed` are already compiled |
+| `prefix` | Set to `{ cssVar: "chakra" }`. `className` would rename the rules; `cssVar` renames the variables, and the `var(--chakra-sizes-*)` strings inside `SimpleGrid` and `Bleed` are already compiled |
 | `separator` | `p_4` becomes `p=4` in the sheet only |
 | `presets` | A re-declare drops every Chakra token and recipe |
 | `importMap` | Unregisters the `chakra` factory, and every `<chakra.button>` emits nothing |
@@ -246,11 +246,14 @@ token("colors.red.500");
 // => "#ef4444"
 
 token.var("colors.red.500");
-// => "var(--colors-red-500)"
+// => "var(--chakra-colors-red-500)"
 
 css({ color: "red.500", bg: "blue.200" });
 // => "c_red.500 bg_blue.200"
 ```
+
+`token.var` returns exactly what the React version's `system.token.var` does, down to the `chakra`
+namespace — that is the point of the locked `prefix` above.
 
 One difference worth reading twice: `system.css` returns a style object for a CSS-in-JS library to
 insert, and `css` here returns a **class name string** naming rules your stylesheet already

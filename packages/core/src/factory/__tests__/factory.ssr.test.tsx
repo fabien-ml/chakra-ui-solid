@@ -48,29 +48,29 @@ async function renderDeclarations(
 describe("chakra — the server sends markup whose classes have real rules", () => {
   it("resolves the recipe's base and its default variant", async () => {
     expect(await renderDeclarations(() => <StyledButton type="button" />)).toMatchObject({
-      "padding-inline": "var(--spacing-5)",
-      "margin-block": "var(--spacing-2)",
+      "padding-inline": "var(--chakra-spacing-5)",
+      "margin-block": "var(--chakra-spacing-2)",
     });
   });
 
   it("resolves the variant a prop selects", async () => {
     expect(
       await renderDeclarations(() => <StyledButton type="button" tone="subtle" />),
-    ).toMatchObject({ "margin-block": "var(--spacing-6)" });
+    ).toMatchObject({ "margin-block": "var(--chakra-spacing-6)" });
   });
 
   it("resolves a style prop over the recipe's own value", async () => {
     expect(
       await renderDeclarations(() => <StyledButton type="button" paddingInline="1" />),
-    ).toMatchObject({ "padding-inline": "var(--spacing-1)" });
+    ).toMatchObject({ "padding-inline": "var(--chakra-spacing-1)" });
   });
 
   it("resolves the JSX-namespace form", async () => {
     expect(
       await renderDeclarations(() => <chakra.div paddingInline="5" marginBlock="2" />),
     ).toMatchObject({
-      "padding-inline": "var(--spacing-5)",
-      "margin-block": "var(--spacing-2)",
+      "padding-inline": "var(--chakra-spacing-5)",
+      "margin-block": "var(--chakra-spacing-2)",
     });
   });
 

@@ -32,7 +32,7 @@ export const Route = createFileRoute("/")({ component: DocsHome });
  * **The teal is scoped to this page, on this element.** Every accent below — the pill, the CTA, the
  * highlight mark, the eyebrows, the washes — reads `colorPalette.*`, and chakra-ui.com accents whole
  * marketing pages the same way, with one `colorPalette="teal"` at the page root. It cannot go on
- * `<body>`: `--colors-color-palette-*` inherits, so from there it also reaches the component
+ * `<body>`: `--chakra-colors-color-palette-*` inherits, so from there it also reaches the component
  * previews inside every docs example (`~/components/layout`).
  */
 function DocsHome() {

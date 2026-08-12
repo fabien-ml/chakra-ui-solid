@@ -9,8 +9,8 @@ import { Box, type BoxProps } from "chakra-ui-solid";
  * contains — it renders nothing and raises no error (`plan.md` §0.2). Every call site writes its
  * own literals, and `check:style-contract` is what keeps that from regressing.
  *
- * The gradient reads `--colors-color-palette-solid` rather than naming teal, so the wash follows
- * whatever palette the page it floats behind is scoped to — `routes/index.tsx` sets
+ * The gradient reads `--chakra-colors-color-palette-solid` rather than naming teal, so the wash
+ * follows whatever palette the page it floats behind is scoped to — `routes/index.tsx` sets
  * `colorPalette="teal"` on the landing root, and the property inherits from there.
  */
 export function Blob(props: BoxProps) {
@@ -25,7 +25,7 @@ export function Blob(props: BoxProps) {
       pointerEvents="none"
       flexShrink="0"
       hideBelow="md"
-      backgroundImage="radial-gradient(var(--colors-color-palette-solid) 0%, transparent 60%)"
+      backgroundImage="radial-gradient(var(--chakra-colors-color-palette-solid) 0%, transparent 60%)"
       {...props}
     />
   );

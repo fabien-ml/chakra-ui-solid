@@ -20,7 +20,7 @@ import { css } from "@chakra-ui-solid/styled-system/css";
  * types. This site has one, so the sections are the top bar and there is no second row.
  *
  * **Two properties, and `colorPalette` is not a third.** It compiles to
- * `--colors-color-palette-*`, custom properties inherit, and every `<Example>` preview is a
+ * `--chakra-colors-color-palette-*`, custom properties inherit, and every `<Example>` preview is a
  * descendant of `<body>` — so setting it here repainted every component in every example teal
  * while a reader's own app, which has only the preset's `html { … gray }` default, rendered gray.
  * Teal belongs at the sites that want it, as chakra-ui.com puts it.

@@ -40,8 +40,8 @@ describe("the `chakra` factory reaches a consumer's extractor", () => {
     // passes only because `jsxFactory: "chakra"` and `importMap.jsx` are both set — it is the one
     // that fails first when either goes.
     expect(consumerDeclarations(css({ marginTop: "7", background: "teal.400" }))).toEqual({
-      "margin-top": "var(--spacing-7)",
-      background: "var(--colors-teal-400)",
+      "margin-top": "var(--chakra-spacing-7)",
+      background: "var(--chakra-colors-teal-400)",
     });
   });
 
@@ -50,7 +50,7 @@ describe("the `chakra` factory reaches a consumer's extractor", () => {
 
     expect(consumerDeclarations(link())).toEqual({
       "text-decoration-line": "underline",
-      color: "var(--colors-purple-500)",
+      color: "var(--chakra-colors-purple-500)",
     });
   });
 
@@ -64,25 +64,25 @@ describe("the `chakra` factory reaches a consumer's extractor", () => {
     });
 
     expect(consumerDeclarations(button())).toMatchObject({
-      "font-weight": "var(--font-weights-bold)",
-      background: "var(--colors-blue-600)",
+      "font-weight": "var(--chakra-font-weights-bold)",
+      background: "var(--chakra-colors-blue-600)",
     });
     // The source only ever writes `tone="subtle"`, and the default is `solid`. A consumer switching
     // a variant at runtime needs both, and only the config — not the JSX — can say so.
     expect(consumerDeclarations(button({ tone: "subtle" }))).toMatchObject({
-      background: "var(--colors-blue-100)",
+      background: "var(--chakra-colors-blue-100)",
     });
   });
 
   it("emits a rule for the config passed alongside the options argument", () => {
     expect(consumerDeclarations(cva({ base: { fill: "orange.500" } })())).toEqual({
-      fill: "var(--colors-orange-500)",
+      fill: "var(--chakra-colors-orange-500)",
     });
   });
 
   it("emits a style prop written on a component the factory returned", () => {
     expect(consumerDeclarations(css({ paddingInline: "3" }))).toEqual({
-      "padding-inline": "var(--spacing-3)",
+      "padding-inline": "var(--chakra-spacing-3)",
     });
   });
 

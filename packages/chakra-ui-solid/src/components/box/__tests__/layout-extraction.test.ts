@@ -41,7 +41,7 @@ describe("the layout tier reaches a consumer's extractor", () => {
     // `Em` has no Panda pattern behind its name and no runtime-valued props, so this is the whole
     // of what a consumer's own source contributes: `jsxStyleProps: "all"` over a capitalized tag.
     expect(consumerDeclarations(css({ letterSpacing: "wide" }))).toEqual({
-      "letter-spacing": "var(--letter-spacings-wide)",
+      "letter-spacing": "var(--chakra-letter-spacings-wide)",
     });
   });
 
@@ -66,8 +66,8 @@ describe("the layout tier reaches a consumer's extractor", () => {
     // Pattern channel. `square.raw` here IS the call `square.tsx` makes; the fixture writes
     // `<Square size="12">` and nothing else, so a mapping drift shows up as a missing rule.
     expect(consumerDeclarations(css(square.raw({ size: "12" })))).toMatchObject({
-      width: "var(--sizes-12)",
-      height: "var(--sizes-12)",
+      width: "var(--chakra-sizes-12)",
+      height: "var(--chakra-sizes-12)",
       display: "flex",
     });
   });
@@ -75,7 +75,7 @@ describe("the layout tier reaches a consumer's extractor", () => {
   it("emits Circle's rounding alongside the same size mapping", () => {
     expect(consumerDeclarations(css(circle.raw({ size: "12" })))).toMatchObject({
       "border-radius": "9999px",
-      width: "var(--sizes-12)",
+      width: "var(--chakra-sizes-12)",
     });
   });
 
@@ -104,7 +104,7 @@ describe("the layout tier reaches a consumer's extractor", () => {
       top: "0",
     });
     expect(consumerDeclarations(css({ fontWeight: "semibold" }))).toEqual({
-      "font-weight": "var(--font-weights-semibold)",
+      "font-weight": "var(--chakra-font-weights-semibold)",
     });
   });
 
@@ -149,7 +149,7 @@ describe("the layout tier reaches a consumer's extractor", () => {
     ).toMatchObject({
       "justify-content": "space-around",
       "flex-wrap": "wrap",
-      gap: "var(--spacing-3)",
+      gap: "var(--chakra-spacing-3)",
     });
   });
 
@@ -211,7 +211,7 @@ describe("the layout tier reaches a consumer's extractor", () => {
       consumerDeclarations(css(float.raw({ placement: "bottom-center", offset: "1" }))),
     ).toMatchObject({
       position: "absolute",
-      "inset-block-end": "var(--spacing-1)",
+      "inset-block-end": "var(--chakra-spacing-1)",
       translate: "-50% 50%",
     });
   });
@@ -237,7 +237,7 @@ describe("the layout tier reaches a consumer's extractor", () => {
     // is the recipe's own name, and the variant is the half nobody's source spells.
     expect(consumerDeclarations("container")).toMatchObject({
       position: "relative",
-      "max-width": "var(--sizes-8xl)",
+      "max-width": "var(--chakra-sizes-8xl)",
       "margin-inline": "auto",
     });
     expect(consumerDeclarations("container--centerContent_true")).toEqual({

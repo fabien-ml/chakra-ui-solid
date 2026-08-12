@@ -21,9 +21,10 @@
  * **That hoist costs `currentColor`, so the token is named instead.** A `stop-color: currentColor`
  * resolves against the element the `<stop>` lives on — not the element referencing the gradient —
  * so once the `<defs>` moved out of the icon, Chakra's two `currentColor` stops started reading the
- * body's colour and the bolt came out the wrong shade in both modes. `var(--colors-fg-inverted)` is
- * the same value their `color="fg.inverted"` supplies, and it is a custom property declared inside
- * `.light` and `.dark`, so it still switches with the colour mode from anywhere in the document.
+ * body's colour and the bolt came out the wrong shade in both modes.
+ * `var(--chakra-colors-fg-inverted)` is the same value their `color="fg.inverted"` supplies, and it
+ * is a custom property declared inside `.light` and `.dark`, so it still switches with the colour
+ * mode from anywhere in the document.
  *
  * **The camel-cased SVG attributes are rewritten to their DOM names** (`stop-color`,
  * `stop-opacity`, `gradient-units`): Solid's compiler emits attribute names verbatim, where React
@@ -55,9 +56,9 @@ export function SiteGradientDefs() {
           y2="342"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="var(--colors-fg-inverted)" stop-opacity="0.5" />
+          <stop stop-color="var(--chakra-colors-fg-inverted)" stop-opacity="0.5" />
           <stop offset="0.505" stop-color="#137773" stop-opacity="0.6" />
-          <stop offset="1" stop-color="var(--colors-fg-inverted)" stop-opacity="0.5" />
+          <stop offset="1" stop-color="var(--chakra-colors-fg-inverted)" stop-opacity="0.5" />
         </linearGradient>
 
         <linearGradient
