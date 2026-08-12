@@ -24,6 +24,9 @@ export function Steps(props: { children?: JSX.Element }) {
         {(step, index) => (
           <Box display="flex" gap="4" alignItems="stretch">
             <Box display="flex" flexDirection="column" alignItems="center">
+              {/* The badge is the only accented thing in a step, and the palette is scoped to it:
+                  `layerStyle="fill.subtle"` is `bg: colorPalette.subtle; color: colorPalette.fg`,
+                  so without this the number would read whatever palette the page carries. */}
               <Box
                 as="span"
                 aria-hidden="true"
@@ -34,6 +37,7 @@ export function Steps(props: { children?: JSX.Element }) {
                 width="7"
                 height="7"
                 borderRadius="l2"
+                colorPalette="teal"
                 layerStyle="fill.subtle"
                 fontSize="sm"
                 fontWeight="medium"

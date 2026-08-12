@@ -38,7 +38,11 @@ export function PropsTable(props: { component: string; interface?: string }) {
     >
       <For each={entries()}>
         {(entry) => (
-          <Box my="6">
+          // The two code cells below read `colorPalette.fg`, and the palette is scoped here so they
+          // do not follow the page. chakra-ui.com's table accents the same two cells through
+          // `accent.fg`, a semantic token this preset does not ship, so teal is the nearest thing
+          // that keeps a default and a type visually distinct from the prose around them.
+          <Box my="6" colorPalette="teal">
             <Box borderWidth="1px" borderColor="border" borderRadius="l2" overflowX="auto">
               <Box as="table" width="full" fontSize="sm" borderCollapse="collapse">
                 <thead>

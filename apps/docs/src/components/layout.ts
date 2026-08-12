@@ -18,6 +18,12 @@ import { css } from "@chakra-ui-solid/styled-system/css";
  * One height at every breakpoint, where theirs grows to 104px from `md`: their header has a second
  * row for picking a docs section, because their first row is a site-level nav over five content
  * types. This site has one, so the sections are the top bar and there is no second row.
+ *
+ * **Two properties, and `colorPalette` is not a third.** It compiles to
+ * `--colors-color-palette-*`, custom properties inherit, and every `<Example>` preview is a
+ * descendant of `<body>` — so setting it here repainted every component in every example teal
+ * while a reader's own app, which has only the preset's `html { … gray }` default, rendered gray.
+ * Teal belongs at the sites that want it, as chakra-ui.com puts it.
  */
 export const shellClass = css({
   "--header-height": "64px",
@@ -26,8 +32,4 @@ export const shellClass = css({
   flexDirection: "column",
   minH: "100dvh",
   bg: "bg",
-  // Their sidebar's current page, their tab underline and their link colour all read
-  // `colorPalette`, and their docs set it to teal. Setting it once on the root is the token-level
-  // way to inherit that everywhere rather than naming `teal.*` at each site.
-  colorPalette: "teal",
 });

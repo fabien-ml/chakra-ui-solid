@@ -28,10 +28,16 @@ export const Route = createFileRoute("/")({ component: DocsHome });
  * **Every element on it is `Box` and style props**, not `css()` beside a `<div>`. This site is the
  * standing consumer instance the library is validated against (`docs-site.md` §1.1), and a landing
  * page that advertises a style-props API without using one is not evidence of anything.
+ *
+ * **The teal is scoped to this page, on this element.** Every accent below — the pill, the CTA, the
+ * highlight mark, the eyebrows, the washes — reads `colorPalette.*`, and chakra-ui.com accents whole
+ * marketing pages the same way, with one `colorPalette="teal"` at the page root. It cannot go on
+ * `<body>`: `--colors-color-palette-*` inherits, so from there it also reaches the component
+ * previews inside every docs example (`~/components/layout`).
  */
 function DocsHome() {
   return (
-    <Box position="relative" overflowX="hidden">
+    <Box position="relative" overflowX="hidden" colorPalette="teal">
       <AmbientLights />
 
       {/* The bolt behind the hero, at chakra-ui.com's own offsets. It brings its own colour — the

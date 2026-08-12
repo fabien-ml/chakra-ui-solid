@@ -12,6 +12,7 @@ export function NotFound() {
         having moved.
       </Box>
       <Box
+        colorPalette="teal"
         color="colorPalette.fg"
         textDecoration="underline"
         render={(renderProps) => (

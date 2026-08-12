@@ -71,7 +71,16 @@ function SidebarLink(props: { doc: NavPage; currentSlug: string }) {
         _hover={{ layerStyle: "fill.subtle" }}
         // `_currentPage` is Panda's name for the `[aria-current=page]` selector this used to spell
         // out — same rule, and the same one the section tabs in the header use.
-        _currentPage={{ layerStyle: "fill.subtle", color: "colorPalette.fg", fontWeight: "medium" }}
+        //
+        // The palette is set inside the condition rather than on the link, so only the current item
+        // is teal and the hover wash above stays neutral. This is the one accented site in
+        // chakra-ui.com's docs shell, and it is accented in exactly this place.
+        _currentPage={{
+          colorPalette: "teal",
+          layerStyle: "fill.subtle",
+          color: "colorPalette.fg",
+          fontWeight: "medium",
+        }}
         render={(renderProps) => (
           <DocLink
             slug={props.doc.slug}

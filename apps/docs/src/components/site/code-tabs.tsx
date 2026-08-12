@@ -88,6 +88,10 @@ export function CodeTabs(props: { label: string; items: CodeTab[] }) {
                 borderRadius="l2"
                 cursor="pointer"
                 focusRing="outside"
+                // Scoped here rather than inherited from the page: this only ever renders on the
+                // landing page today, and a selected tab that silently turned gray the first time
+                // the component was reused elsewhere is the failure this whole change is about.
+                colorPalette="teal"
                 bg={isSelected() ? "colorPalette.subtle" : "transparent"}
                 color={isSelected() ? "colorPalette.fg" : "fg.muted"}
                 render={(renderProps) => (
