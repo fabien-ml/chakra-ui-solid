@@ -87,6 +87,16 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/radiomark/__tests__/radiomark.ssr-entry.tsx",
   ),
+  // Conditional on a **count** rather than a boolean: `ColorSwatchMix` renders a `<For>` over two,
+  // three or four colours, so each subject consumes a different number of hydration keys and a
+  // miscount shifts every sibling after it. It is also the first subject styled through an inline
+  // `style` attribute — `--color` is an arbitrary runtime colour, so it cannot be a class — and a
+  // server and client that write that string differently leave the swatch painted by whichever side
+  // won, with nothing to say so.
+  "color-swatch": join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/color-swatch/__tests__/color-swatch.ssr-entry.tsx",
+  ),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

@@ -171,8 +171,27 @@ naming a file (`blueprint §1.2`) points there instead.
       are its own, not `components/icons.tsx`'s: Chakra draws them as direct children of the styled
       element, where a glyph from that module is a nested `svg`
 - [ ] code — A:code · —/1
-- [ ] color-swatch — A:colorSwatch · —/1
-      Composed into `colorPicker` — must land before B8
+- [x] color-swatch — A:colorSwatch · —/1
+      **The recipes compose; the components do not** — the inverse of the two rows above, and this
+      line read "Composed into `colorPicker` — must land before B8" until it was measured.
+      `theme/recipes/color-picker.ts:122` spreads `...colorSwatchRecipe.base` into the `swatch` slot,
+      and the installed `@chakra-ui/panda-preset` already ships it inlined. But `color-picker.tsx`
+      never renders a `ColorSwatch`: `ColorPickerSwatch` and `ColorPickerValueSwatch` are Ark parts
+      through `withContext(…, "swatch")`. So `unstyled` is not load-bearing here at all, and **B8
+      waits on nothing from this row.** Nothing in scope consumes the component — upstream's only
+      consumers are compositions (`combobox-color-picker`, referenced by no page; a charts example;
+      a rich-text-editor snippet, not a row), and the `empty-state` hits a grep turns up are
+      `react-icons`' `HiColorSwatch`. Its own docs page is the only thing that renders it.
+      Three exports, and the first props context of the three composed primitives. Nine `size`
+      values and a `shape` variant (`square`/`circle`/`rounded`) — not the `variant`/`filled` pair.
+      `value` is **required** and reaches the element as an inline `--color`: it is an arbitrary
+      runtime colour, so `css` would generate nothing, and an unset `--color` invalidates the whole
+      `background` shorthand at computed-value time, taking the checkerboard with it. So the
+      assertion that means anything here is `background-image`, never `backgroundColor`, which reads
+      `rgba(0, 0, 0, 0)` on a working swatch.
+      `ColorSwatchMix`'s over-4 guard is a **body-level** check, where Chakra's is a render check
+      that re-runs: thrown from the accessor `<For>` reads, Solid 2.0 halts the reactive graph for
+      the whole page (`[REACTIVITY_HALTED]`) and every later render anywhere no-ops. Measured
 - [x] container — A:container · —/1
       **The one recipe the preset is missing** (§1.3a). One preset delta, expression-tier, `@license` + `NOTICE` rows
 - [ ] download-trigger — ✗downloadTrigger · —/1

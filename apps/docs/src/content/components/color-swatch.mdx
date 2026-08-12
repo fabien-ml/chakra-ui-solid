@@ -1,0 +1,53 @@
+---
+title: Color Swatch
+description: Used to preview a color
+links:
+  source: packages/chakra-ui-solid/src/components/color-swatch
+  chakra: https://chakra-ui.com/docs/components/color-swatch
+---
+
+<Example name="color-swatch-basic" />
+
+## Usage
+
+```tsx
+import { ColorSwatch } from "chakra-ui-solid";
+```
+
+```tsx
+<ColorSwatch value="#bada55" />
+```
+
+> `value` is required. The colour and the checkerboard behind it share one `background` shorthand,
+> so a swatch with nothing to paint loses both and renders as an empty box.
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the color swatch.
+
+<Example name="color-swatch-with-sizes" />
+
+### Alpha
+
+Here's an example of how to create a color swatch with an alpha channel.
+
+<Example name="color-swatch-with-alpha" />
+
+### Mixed Colors
+
+Use the `ColorSwatchMix` to create a color swatch that contains multiple colors, but retains the size
+of a single color swatch.
+
+<Example name="color-swatch-mixed" />
+
+### Palette
+
+Here's an example of composing multiple swatches to create a palette.
+
+<Example name="color-swatch-palette" />
+
+## Props
+
+<PropsTable component="color-swatch" />

@@ -14,6 +14,9 @@ import {
   Checkmark,
   Circle,
   CloseButton,
+  ColorSwatch,
+  ColorSwatchMix,
+  ColorSwatchPropsProvider,
   Container,
   Em,
   EnvironmentProvider,
@@ -103,6 +106,17 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   // Its default ✕ is a leaf `<svg>` written inside the component rather than hoisted beside it —
   // JSX at module scope is constructed at *import* time and 500s the route before anything renders.
   CloseButton: () => <CloseButton />,
+  // Its colour is an inline `style`, not a class — the one component whose whole appearance is
+  // missing from the server's markup if the custom property is not written there.
+  ColorSwatch: () => <ColorSwatch value="#bada55" />,
+  // Three colours, because that is the arm with a spanning last cell: two colours render a plain
+  // grid and would exercise neither the span nor the `width: unset` beside it.
+  ColorSwatchMix: () => <ColorSwatchMix items={["red", "pink", "green"]} />,
+  ColorSwatchPropsProvider: () => (
+    <ColorSwatchPropsProvider value={{ shape: "circle" }}>
+      <ColorSwatch value="#bada55" />
+    </ColorSwatchPropsProvider>
+  ),
   Container: () => <Container>page</Container>,
   Em: () => <Em>emphasis</Em>,
   // Given no `value` it renders a probe element and discovers its root node from a ref, which is a

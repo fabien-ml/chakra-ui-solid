@@ -21,6 +21,7 @@ export * from "./button";
 export * from "./center";
 export * from "./checkmark";
 export * from "./circle";
+export * from "./color-swatch";
 export * from "./container";
 export * from "./em";
 export * from "./environment";
