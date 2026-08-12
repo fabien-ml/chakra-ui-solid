@@ -51,41 +51,71 @@ function readFromDocument(): ColorMode {
   return document.documentElement.classList.contains("dark") ? "dark" : "light";
 }
 
-// Seeded from the document on the client and from a constant on the server. Reading the document
-// is what makes the signal agree with the paint on the very first client render: the pre-paint
-// script has already run by the time this module is evaluated, so there is no tick during which
-// the signal says one thing and the page shows another.
+/**
+ * What the OS asks for — the pre-paint script's own fallback, and what a *cleared* preference goes
+ * back to.
+ */
+function preferredColorMode(): ColorMode {
+  return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+// Seeded from the constant the **server** renders, on both sides — never from the document, even
+// on the client where the document is right there.
 //
-// On the server there is no document, and this module is never written, so the constant is all any
-// request ever sees. A prerendered attribute that depends on the mode is therefore rendered light
-// and corrected during hydration — Solid re-runs the attribute expression when it claims the node,
-// and an attribute is not a paint.
-const [colorMode, setColorModeSignal] = createSignal<ColorMode>(
-  isServer ? "light" : readFromDocument(),
-);
+// Reading it here is the obvious form and it is the bug it looks like the fix for. Solid trusts the
+// markup it hydrates: claiming a node subscribes an attribute expression without re-applying it, so
+// a prerendered attribute is only ever corrected by a later *change*. Seed this to what the page
+// already says and there is no change left to make — the toggle keeps the light-mode wording of its
+// `aria-label` under a dark document until the first click, which is the one thing this signal has
+// to get right. So both sides start at the server's guess and {@link syncColorMode} publishes the
+// real one once the tree is mounted.
+//
+// On the server there is no document and this module is never written, so the constant is all any
+// request ever sees.
+const [colorMode, setColorModeSignal] = createSignal<ColorMode>("light");
 
 export { colorMode };
+
+/** Paint it and publish it: the half of a mode change that is not persistence. */
+function applyColorMode(mode: ColorMode) {
+  const root = document.documentElement;
+  root.classList.remove("light", "dark");
+  root.classList.add(mode);
+  root.style.colorScheme = mode;
+  setColorModeSignal(mode);
+}
 
 /** Paint it, remember it, publish it — in that order, so the page never lags the store. */
 export function setColorMode(mode: ColorMode) {
   if (isServer) {
     return;
   }
-  const root = document.documentElement;
-  root.classList.remove("light", "dark");
-  root.classList.add(mode);
-  root.style.colorScheme = mode;
+  applyColorMode(mode);
   try {
     localStorage.setItem(STORAGE_KEY, mode);
   } catch {
     // Same unavailable-storage case the pre-paint script guards. Persistence is best-effort; the
     // class on the document is not, and it is already written above.
   }
-  setColorModeSignal(mode);
 }
 
 export function toggleColorMode() {
   setColorMode(colorMode() === "dark" ? "light" : "dark");
+}
+
+/**
+ * Publish what the pre-paint script decided, as a change rather than as a seed.
+ *
+ * Called from `__root.tsx` on mount, which is the earliest point a write reaches an attribute the
+ * server already rendered — see the seed above for why the write has to happen at all. It never
+ * persists: following `prefers-color-scheme` is not the same as choosing a mode, and writing it
+ * down here would pin the first visit's OS setting forever.
+ */
+export function syncColorMode() {
+  if (isServer) {
+    return;
+  }
+  setColorModeSignal(readFromDocument());
 }
 
 // Cross-tab sync. The `storage` event fires in every *other* tab of the origin, so two open docs
@@ -97,6 +127,17 @@ if (!isServer) {
     if (event.key !== STORAGE_KEY) {
       return;
     }
-    setColorMode(event.newValue === "dark" ? "dark" : "light");
+    // A **removed** key is the preference being cleared, not a choice of light — this tab goes back
+    // under `prefers-color-scheme`, the way a first visit does. Reading it as light was a loop as
+    // well as a wrong answer: `setColorMode` persists, so one tab clearing the key had every other
+    // tab write `"light"` straight back, and the clear became a preference nobody expressed.
+    //
+    // `applyColorMode` rather than `setColorMode` for the same reason. The tab that made the change
+    // has already stored it; a second write here only races the first.
+    applyColorMode(
+      event.newValue === "dark" || event.newValue === "light"
+        ? event.newValue
+        : preferredColorMode(),
+    );
   });
 }

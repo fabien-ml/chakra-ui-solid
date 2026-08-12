@@ -9,11 +9,10 @@ import { colorMode, toggleColorMode } from "~/lib/color-mode";
  * hidden per mode, so the button shows the right thing on the very first paint — the same reason
  * the pre-paint script exists (`~/lib/color-mode`).
  *
- * Only the accessible name reads the signal, and it is **stale until the first toggle** when the
- * mode comes from `prefers-color-scheme` rather than from storage: the server renders the
- * light-mode wording, and Solid does not re-run the attribute expression while claiming the node
- * during hydration. Pre-dates this component using `IconButton`; the fix belongs in
- * `~/lib/color-mode`, not here.
+ * Only the accessible name reads the signal, and it is the reason that signal starts at the
+ * server's guess and is corrected on mount rather than seeded from the document: Solid subscribes a
+ * prerendered attribute during hydration without re-applying it, so nothing but a *change* can fix
+ * the wording the server wrote (`~/lib/color-mode`).
  *
  * The frame is the `button` recipe and nothing else: `size="sm"` is the 36px square this used to
  * spell as `boxSize="9"`, and the base gives it the centring, the radius, the cursor and the
