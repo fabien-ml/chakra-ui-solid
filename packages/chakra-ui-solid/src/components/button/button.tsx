@@ -3,6 +3,8 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   renderStyled,
+  withContextDefaults,
+  withDefaults,
 } from "@chakra-ui-solid/core";
 import { type ButtonVariantProps, button } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -96,12 +98,21 @@ const { PropsProvider, usePropsContext } = createRecipeContext<ButtonProps>();
  * tag, and `render` is handed the computed props (children included) to place itself. There is no
  * arrangement here where wrapping the children breaks the element, so there is nothing to guard.
  */
-export const Button: Component<ButtonProps> = (componentProps) => {
-  // Context first, local props second, so a local prop wins — Chakra's order, and the seam's.
-  const props = merge(usePropsContext(), componentProps);
+export const Button: Component<ButtonProps> = (props) => {
+  // Context first, local props second, so a local prop wins — Chakra's order, and the seam's. By
+  // *value*, not by presence: `merge` would let a wrapper's unset `size={props.size}` beat the
+  // `ButtonGroup` above it, since the key is there to win with (`CLAUDE.md`, *The third hazard*).
+  //
+  // `type` is a default here rather than a JSX attribute before the spread, which is how Chakra
+  // spells it: that form loses to a forwarded `type={props.type}` that is unset, and a button with
+  // no `type` submits the form around it. An explicit `type="submit"` still wins.
+  const merged = withDefaults(withContextDefaults(props, usePropsContext()), {
+    type: "button",
+    loading: false,
+  } satisfies Partial<ButtonProps>);
 
   const recipeClass = createRecipeClass(button, {
-    variantProps: () => ({ size: props.size, variant: props.variant }),
+    variantProps: () => ({ size: merged.size, variant: merged.variant }),
   });
 
   // **Resolved once, read in both arms.** `props.children` compiles to a lazy getter, and the two
@@ -113,37 +124,34 @@ export const Button: Component<ButtonProps> = (componentProps) => {
   // Loader, which reads each exactly once (through a `children()` of its own, because *it* gates on
   // them). A reflexive `children()` on a single read only adds a memo and moves the subtree's
   // hydration key — `CLAUDE.md`, *The second hazard*.
-  const content = children(() => props.children);
+  const content = children(() => merged.children);
 
-  const elementProps = merge(
-    // Before the consumer's props, so an explicit `type="submit"` still wins.
-    { type: "button" },
-    omit(props, ...VARIANT_KEYS, ...LOADING_KEYS, "children"),
-    {
-      /** Chakra's `dataAttr`: present-and-empty when loading, absent when not. */
-      get "data-loading"() {
-        return props.loading === true ? "" : undefined;
-      },
-      get disabled() {
-        return props.loading === true || props.disabled === true;
-      },
-      children: (
-        <Show when={props.loading} fallback={content()}>
-          <Loader
-            spinner={props.spinner}
-            text={props.loadingText}
-            spinnerPlacement={props.spinnerPlacement}
-          >
-            {content()}
-          </Loader>
-        </Show>
-      ),
+  // Every read below goes to `merged`, never to `props`: `withDefaults` copies nothing, so
+  // `omit(props, …)` would hand the element a bag with the defaults missing.
+  const elementProps = merge(omit(merged, ...VARIANT_KEYS, ...LOADING_KEYS, "children"), {
+    /** Chakra's `dataAttr`: present-and-empty when loading, absent when not. */
+    get "data-loading"() {
+      return merged.loading ? "" : undefined;
     },
-  );
+    get disabled() {
+      return merged.loading || merged.disabled === true;
+    },
+    children: (
+      <Show when={merged.loading} fallback={content()}>
+        <Loader
+          spinner={merged.spinner}
+          text={merged.loadingText}
+          spinnerPlacement={merged.spinnerPlacement}
+        >
+          {content()}
+        </Loader>
+      </Show>
+    ),
+  });
 
   return renderStyled<ButtonElementProps>({
-    as: (props.as ?? "button") as ValidComponent,
-    render: props.render,
+    as: (merged.as ?? "button") as ValidComponent,
+    render: merged.render,
     // The variant keys are the recipe's inputs, not the element's, and the loading keys are this
     // component's: forwarded, `size` and `spinnerPlacement` would both reach the DOM as attributes.
     props: elementProps as unknown as ButtonElementProps,

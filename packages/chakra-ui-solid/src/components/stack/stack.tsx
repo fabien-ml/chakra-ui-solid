@@ -1,4 +1,10 @@
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import {
+  type CssProp,
+  chakra,
+  composeCss,
+  type HTMLChakraProps,
+  withDefaults,
+} from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import { flex } from "@chakra-ui-solid/styled-system/patterns";
 import type { ConditionalValue, SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
@@ -70,11 +76,13 @@ export const StackDirectionContext = createContext<Accessor<StackDirection>>(() 
  * its keywords come from the preset's `staticCss`.
  */
 export const Stack: Component<StackProps> = (props) => {
-  const direction = () => props.direction ?? "column";
-  const resolved = children(() => props.children);
+  const merged = withDefaults(props, { direction: "column" } satisfies Partial<StackProps>);
+
+  const direction = () => merged.direction;
+  const resolved = children(() => merged.children);
 
   const withSeparators = () => {
-    const separator = props.separator;
+    const separator = merged.separator;
     if (separator === undefined) {
       return resolved();
     }
@@ -87,20 +95,20 @@ export const Stack: Component<StackProps> = (props) => {
     );
   };
 
-  const elementProps = merge(omit(props, ...OPTIONS, "css", "class", "children"), {
+  const elementProps = merge(omit(merged, ...OPTIONS, "css", "class", "children"), {
     get css(): CssProp {
       return composeCss(
         flex.raw({
           direction: direction(),
-          align: props.align,
-          justify: props.justify,
-          wrap: props.wrap,
+          align: merged.align,
+          justify: merged.justify,
+          wrap: merged.wrap,
         }),
-        props.css,
+        merged.css,
       );
     },
     get class() {
-      return cx("chakra-stack", props.class as string | undefined);
+      return cx("chakra-stack", merged.class as string | undefined);
     },
   });
 
@@ -114,12 +122,25 @@ export const Stack: Component<StackProps> = (props) => {
   );
 };
 
-/** HStack — a {@link Stack} that runs across, with its children centred on the cross axis. */
-export const HStack: Component<StackProps> = (props) => (
-  <Stack align="center" {...props} direction="row" />
-);
+/**
+ * HStack — a {@link Stack} that runs across, with its children centred on the cross axis.
+ *
+ * `align` is a default rather than an attribute before the spread, so a wrapper forwarding an unset
+ * `align={props.align}` still gets a centred stack. Its keywords reach a stylesheet through the
+ * preset's `staticCss` either way, so nothing here depended on the JSX spelling for extraction.
+ *
+ * The merged bag is bound to a name and never spread as a call expression: Solid's compiler wraps a
+ * call in a JSX spread in a function, `merge` turns a function source into a memo, and `Stack` then
+ * reads that memo in its body — the `STRICT_READ_UNTRACKED` diagnostic `mount()` fails on.
+ * `ButtonGroup` says the same about its own two.
+ */
+export const HStack: Component<StackProps> = (props) => {
+  const merged = withDefaults(props, { align: "center" } satisfies Partial<StackProps>);
+  return <Stack {...merged} direction="row" />;
+};
 
 /** VStack — a {@link Stack} that runs down, with its children centred on the cross axis. */
-export const VStack: Component<StackProps> = (props) => (
-  <Stack align="center" {...props} direction="column" />
-);
+export const VStack: Component<StackProps> = (props) => {
+  const merged = withDefaults(props, { align: "center" } satisfies Partial<StackProps>);
+  return <Stack {...merged} direction="column" />;
+};

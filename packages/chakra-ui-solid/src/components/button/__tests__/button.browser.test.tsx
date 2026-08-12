@@ -67,6 +67,16 @@ describe("Button", () => {
     expect(style.backgroundColor).not.toBe(TRANSPARENT);
   });
 
+  it("keeps `type=button` when a wrapper forwards an unset `type`", () => {
+    // Spelled `merge({ type: "button" }, props)`, the default is resolved by *presence*: the key is
+    // there with `undefined`, so it wins, the attribute is dropped, and the platform's `submit`
+    // takes over — a button that posts the form around it. Nothing errors, and forwarding an
+    // optional prop is the most ordinary thing a wrapper does.
+    mounted = mountElement(() => <Button type={undefined}>Save</Button>);
+
+    expect(mounted.element.getAttribute("type")).toBe("button");
+  });
+
   it("resolves `size` and `variant` to real computed styles", () => {
     mounted = mountElement(() => (
       <Button size="lg" variant="ghost">
@@ -215,6 +225,18 @@ describe("ButtonGroup", () => {
     expect(getComputedStyle(queryElement(mounted.element, "button")).height).toBe("44px");
   });
 
+  it("still reaches a Button that forwards an unset `size`", () => {
+    // The same presence trap one layer up: the context is a default, so `merge(context, props)`
+    // lets a wrapper's `size={props.size}` with nothing set erase the group's `sm`.
+    mounted = mountElement(() => (
+      <ButtonGroup size="sm">
+        <Button size={undefined}>One</Button>
+      </ButtonGroup>
+    ));
+
+    expect(getComputedStyle(queryElement(mounted.element, "button")).height).toBe("36px");
+  });
+
   it("re-resolves the Buttons below it when its own `size` is a signal", () => {
     // The assertion `recipe.splitVariantProps(props)` would have failed. It destructures the props
     // object eagerly, so the value read at that moment is the value the subtree keeps — the group
@@ -284,6 +306,16 @@ describe("CloseButton", () => {
     expect(mounted.element.getAttribute("aria-label")).toBe("Dismiss notification");
     expect(mounted.element.querySelector("svg")).toBeNull();
     expect(queryElement(mounted.element, "[data-testid='custom']")).toBeDefined();
+  });
+
+  it("keeps both defaults when a wrapper forwards them unset", () => {
+    // As JSX attributes before the spread these resolved by presence, so a dismiss control built on
+    // CloseButton and passing its own optional props through lost the ghost variant *and* the
+    // accessible name — an unlabelled solid button, with nothing to say so.
+    mounted = mountElement(() => <CloseButton variant={undefined} aria-label={undefined} />);
+
+    expect(mounted.element.getAttribute("aria-label")).toBe("Close");
+    expect(getComputedStyle(mounted.element).backgroundColor).toBe(TRANSPARENT);
   });
 });
 

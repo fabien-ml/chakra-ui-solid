@@ -114,6 +114,14 @@ describe("HStack and VStack", () => {
     expect(style.alignItems).toBe("flex-end");
     expect(style.flexDirection).toBe("row");
   });
+
+  it("stays centred when a wrapper forwards an unset `align`", () => {
+    // `align="center"` before the spread resolved by presence, so a forwarded `align={props.align}`
+    // with nothing set stretched the row instead of centring it.
+    mounted = mountElement(() => <HStack align={undefined}>content</HStack>);
+
+    expect(getComputedStyle(mounted.element).alignItems).toBe("center");
+  });
 });
 
 describe("the separator", () => {

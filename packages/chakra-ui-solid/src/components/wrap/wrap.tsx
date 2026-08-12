@@ -1,4 +1,10 @@
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import {
+  type CssProp,
+  chakra,
+  composeCss,
+  type HTMLChakraProps,
+  withDefaults,
+} from "@chakra-ui-solid/core";
 import { css, cx } from "@chakra-ui-solid/styled-system/css";
 import type { WrapProperties } from "@chakra-ui-solid/styled-system/patterns";
 import { wrap } from "@chakra-ui-solid/styled-system/patterns";
@@ -35,18 +41,22 @@ const StyledWrap = chakra("div", {
  * because the preset's `staticCss` pre-generates the four `flexDirection` keywords.
  */
 export const Wrap: Component<WrapProps> = (props) => {
-  const elementProps = merge(omit(props, "align", "justify", "direction", "css", "class"), {
+  const merged = withDefaults(props, { gap: DEFAULT_GAP } satisfies Partial<WrapProps>);
+
+  // `gap` is omitted rather than forwarded as well: the pattern below now emits it on every render,
+  // and a style prop carrying the same value is a second declaration of one thing.
+  const elementProps = merge(omit(merged, "align", "justify", "direction", "gap", "css", "class"), {
     get css(): CssProp {
       const styles = wrap.raw({
-        align: props.align,
-        justify: props.justify,
-        gap: props.gap ?? DEFAULT_GAP,
+        align: merged.align,
+        justify: merged.justify,
+        gap: merged.gap,
       });
-      styles.flexDirection = props.direction;
-      return composeCss(styles, props.css);
+      styles.flexDirection = merged.direction;
+      return composeCss(styles, merged.css);
     },
     get class() {
-      return cx("chakra-wrap", props.class as string | undefined);
+      return cx("chakra-wrap", merged.class as string | undefined);
     },
   });
 

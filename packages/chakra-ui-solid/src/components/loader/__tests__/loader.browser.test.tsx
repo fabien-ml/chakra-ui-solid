@@ -110,6 +110,19 @@ describe("Loader", () => {
     expect(getComputedStyle(queryElement(mounted.element, "span")).visibility).toBe("visible");
   });
 
+  it("stays `display: contents` when a wrapper forwards an unset `display`", () => {
+    // Spelled `merge({ display: "contents" }, props)` the default resolved by presence, so this
+    // gave the Loader a box of its own — an inline element between the button and its label, which
+    // is what centres the spinner somewhere else and lets the width collapse.
+    mounted = mountElement(() => (
+      <Loader display={undefined} spinner={false}>
+        <span data-testid="label">Save</span>
+      </Loader>
+    ));
+
+    expect(getComputedStyle(mounted.element).display).toBe("contents");
+  });
+
   /**
    * The hazard these two exist for: a JSX-valued **prop** compiles to a lazy getter that runs
    * `createComponent` on every read, and both slots are read twice in a render — once by their

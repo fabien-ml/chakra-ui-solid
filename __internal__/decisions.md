@@ -1,8 +1,8 @@
 # Settled
 
-Decisions and measured traps that exist nowhere else in this repo. Anything already enforced by a
-check, a test, or a code comment is not repeated here. Full reasoning:
-`git show 6613a4e:__internal__/`.
+Decisions and measured traps that exist nowhere else in this repo, plus the long form of the styling
+hazard `CLAUDE.md` states as a rule. Anything else already enforced by a check, a test, or a code
+comment is not repeated here. Full reasoning: `git show 6613a4e:__internal__/`.
 
 ## The merged bag meets style props — read this before the first machine part
 
@@ -143,6 +143,33 @@ cursor. It was audited and **ships unchanged**: dropping it would remove behavio
 So `check:no-runtime-css`'s source grep must **never** be pointed at dependencies. On a Zag minor,
 diff against these four sites rather than re-adjudicating them.
 
+## Silent unstyling — the three routes, and what breaks each
+
+**A Panda class whose CSS was never generated renders nothing and raises no error.** An unstyled
+component and a green suite look identical, which is why this is the hazard the whole styling layer
+is arranged around (`plan.md` §0.2 has the long form).
+
+A style value reaches a stylesheet by exactly three routes, and there is no fourth:
+
+1. **Statically extractable** — a literal Panda can read out of the source: a JSX attribute on a
+   capitalized component, a `chakra.*` tag, or a `css` / `cva` / `sva` call. **Not** an object
+   literal inside any other function call, which is why a style-prop default stays a JSX attribute
+   before the spread and cannot move into `withDefaults` (`solid-2.0-notes.md`, the table).
+2. **Declared in `staticCss`** — for a value that arrives as a prop and is spelled in no file:
+   `display: inline-flex`, the `alignItems` / `justifyContent` keywords, every recipe variant value
+   (`staticCss: ["*"]`, 488 of them).
+3. **Routed through a CSS custom property** — `style={{ "--w": w }}` with `w="var(--w)"`, for a value
+   with no finite set behind it: a track list, an aspect ratio, a grid span.
+
+Two more things the routes do not cover:
+
+- **Static is not resolving.** `mt="4x"` extracts fine and emits `margin-top: 4x`, which no browser
+  parses. `check:declaration-support` puts every emitted declaration to a real Chromium.
+- **Tests assert computed styles, never class names.** `classList.contains("p_4")` passes on a
+  completely unstyled element, so a class-name assertion cannot see this failure at all. The one
+  exception is `factory.test.ts`, which asks *which key* produced a class and computes every expected
+  value by calling `css()` rather than typing one out.
+
 ## Style props outrank the `css` prop
 
 **Chakra's order, and ours since 2026-08-10: `css(recipe, cssProp, styleProps)`.** The escape hatch
@@ -224,61 +251,15 @@ generated types (`ConditionalValue<V> = V | Array<V | null> | {…}`), while the
 consumer's config. Forgetting `defineChakraConfig({ responsive })` is a silent unstyling in two spellings,
 and the array form is the one no doc page shows.
 
-## A JSX-valued prop read twice is built twice — the `children()` procedure
-
-**A JSX-element *prop* compiles to a lazy getter that runs `createComponent` on every read.** Not a
-value: a getter. So a `spinner={<MySpinner />}` read in two places builds `MySpinner` twice and
-throws one away, along with whatever state it set up. The trigger is exactly **read more than once
-in one render** — almost always a flow-control gate plus its body:
-
-```tsx
-<Match when={props.text}>…{props.text}…</Match>   // two builds, one discarded
-```
-
-Resolve once with `children()` and read the accessor everywhere, **default inside the call**:
-
-```tsx
-const spinner = children(() => props.spinner ?? <Spinner size="inherit" />);
-// gate and body now both read the memo
-<Match when={spinner()}>…{spinner()}…</Match>
-```
-
-`children()`'s memo is lazy, so an unselected branch builds nothing — which is also why the default
-belongs there and **not** in `withDefaults`, whose `defaults` object literal is constructed eagerly
-on every call. Module scope is not the alternative either: JSX there runs at import time and 500s
-the SSR route.
-
-**A slot read exactly once needs nothing** — inside a `<Show>` or not — and neither does a
-directly-written child (`<Button><Icon /></Button>`), which the compiler creates once as a value.
-Only props are getters. `Switch` reads only the selected branch's children, so a `props.children`
-appearing in three `<Match>` bodies is still one read. A reflexive `children()` on a single read
-only adds a memo and relocates the subtree's hydration key, so it is a cost with no return.
-
-**Why it needs writing down:** the discarded build is invisible to every other assertion. Same
-markup, same geometry, same computed styles, green suite. Measured in `loader.tsx` on 2026-08-12 —
-raw reads built both slots exactly twice — which is why any multi-read slot also owes a
-**single-creation test that counts real constructions** (`loader.browser.test.tsx`).
-
-On `@solidjs/web` before `2.0.0-beta.32` the gate read also consumed a hydration key it then
-discarded, mis-keying the body node on the client only; beta.32 fixed that axis and leaves this one
-untouched. Full procedure and its evidence: hope-ui's `__internal__/solid-2.0-notes.md`, search
-"`children()` decision procedure".
-
 ## SSR and the Solid compiler
 
-- **A `Portal` must never render during SSR** — `@solidjs/web`'s throws rather than degrading. Guard
-  with a plain `if (isServer) return props.children`, not `<Show>`: no reactive branch to allocate.
-- **A static child beside a dynamic sibling inside a restrictive content model (`<select>`,
-  `<table>`) crashes the non-hydratable compile** — closing tags are omitted unless `hydratable`,
-  and the walk throws on `null`. Make those children one dynamic expression. Reaches `select`,
-  `combobox`, `listbox`.
-- **Three phases are strict-read, not one:** a component render body, a `<For>`/repeat callback, and
-  an effect's second callback. The repeat callback is where the repeated part (shape E) lands, so a
-  `mount()` diagnostic there is a genuine defect, never a missing `untrack`. Solid 1.x has neither
-  strict-read nor `REACTIVE_WRITE_IN_OWNED_SCOPE`, so no upstream suite can see any of it.
 - **`createRegisteredId` has no call site in a faithful port.** Zag derives part ids from the scope
   and DOM-sniffs them (`checkRenderedElements`, a frame after open) rather than having `Title`
   register upward. A cross-scope write *outside* a Portal-guarded subtree owes fresh reasoning.
+
+The rest of this ground — the `children()` procedure, hydration keys, the `Portal` and `<select>`
+crashes, the three strict-read phases — is in `solid-2.0-notes.md`, which carries the Solid
+semantics end to end.
 
 ## Performance — do not "fix" what is already O(N)
 

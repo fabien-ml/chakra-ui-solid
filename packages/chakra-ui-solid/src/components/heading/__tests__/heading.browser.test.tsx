@@ -88,4 +88,17 @@ describe("Heading", () => {
 
     expect(getComputedStyle(mounted.element).fontSize).toBe("30px");
   });
+
+  it("keeps the provider's value when a wrapper forwards an unset `size`", () => {
+    // The seam's merge resolves by *value*, not by presence. Spelled `merge(context, props)` it
+    // resolves by presence, and `<Heading size={props.size}>` in a wrapper with nothing set beats
+    // the provider with `undefined` — the subtree silently drops back to the recipe's `xl`.
+    mounted = mountElement(() => (
+      <HeadingPropsProvider value={{ size: "lg" }}>
+        <Heading size={undefined}>Some heading text</Heading>
+      </HeadingPropsProvider>
+    ));
+
+    expect(getComputedStyle(mounted.element).fontSize).toBe("18px");
+  });
 });

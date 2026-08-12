@@ -41,3 +41,23 @@ export function withDefaults<Props extends object, Defaults extends Partial<Prop
 
   return merge(props, Object.defineProperties({}, descriptors)) as WithDefaults<Props, Defaults>;
 }
+
+/**
+ * The same resolution for a **props context** — the bag a `PropsProvider` supplies to every
+ * component below it, which a local prop overrides.
+ *
+ * That is a default with a dynamic key set, not a precedence chain, so `merge(context, props)` has
+ * the presence bug above: `<Button size={props.size}>` inside a `<ButtonGroup size="sm">` forwards a
+ * present `undefined` and the group's size is lost. Chakra resolves the same merge by value
+ * (`packages/react/src/merge-props.ts`), so presence here is a divergence too.
+ *
+ * Separate from {@link withDefaults} only for the return type: `WithDefaults<Props, Partial<Props>>`
+ * marks *every* key required and non-nullish, which is right for a literal defaults object and a lie
+ * for a context bag, where any key may be absent.
+ */
+export function withContextDefaults<Props extends object>(
+  props: Props,
+  context: Partial<Props>,
+): Props {
+  return withDefaults(props, context) as Props;
+}

@@ -1,7 +1,8 @@
 import type { JSX, ValidComponent } from "@solidjs/web";
-import { type Component, createContext, merge, omit, untrack, useContext } from "solid-js";
+import { type Component, createContext, omit, untrack, useContext } from "solid-js";
 import type { RenderProp } from "../render/render";
 import { renderStyled } from "../render-styled/render-styled";
+import { withContextDefaults } from "../utils/defaults";
 import { createRecipeClass, type RecipeFn } from "./recipe";
 
 /** What `renderStyled` is handed once the variants are split off — keys in, no element type out. */
@@ -113,10 +114,13 @@ export function createRecipeContext<
   const withContext =
     (tag: ValidComponent): Component<Props> =>
     (componentProps) => {
-      // Context first, local props second, so a local prop wins — Chakra's order. Both sides stay
-      // lazy: `merge` resolves a key by reading the last source that has it, at read time, so
-      // nothing here snapshots a provider value or a style prop.
-      const props = merge(usePropsContext(), componentProps) as ElementPropsBag & {
+      // Context first, local props second, so a local prop wins — Chakra's order — and resolved by
+      // *value*, which is Chakra's too (`packages/react/src/merge-props.ts`). Plain `merge` resolves
+      // by presence, so `<Heading size={props.size}>` in a wrapper with nothing set would beat the
+      // provider with `undefined` and lose the subtree's size (`CLAUDE.md`, *The third hazard*).
+      // Both sides stay lazy either way: the defaults are getters read at read time, so nothing
+      // here snapshots a provider value or a style prop.
+      const props = withContextDefaults(componentProps, usePropsContext()) as ElementPropsBag & {
         as?: ValidComponent;
         render?: RenderProp<ElementPropsBag>;
       };

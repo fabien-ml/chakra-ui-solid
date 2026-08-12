@@ -1,4 +1,4 @@
-import { chakra, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import { chakra, type HTMLChakraProps, withDefaults } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import { type ComponentProps, isServer } from "@solidjs/web";
@@ -133,7 +133,12 @@ function decorateChildren(items: Element[], skip: ((child: Element) => boolean) 
  * the name `Group`, so the keywords they can take are pre-generated in the preset's `staticCss`.
  */
 export const Group: Component<GroupProps> = (props) => {
-  const resolved = children(() => props.children);
+  const merged = withDefaults(props, {
+    align: "center",
+    justify: "flex-start",
+  } satisfies Partial<GroupProps>);
+
+  const resolved = children(() => merged.children);
 
   // Solid 2.0's two-callback form, and the split matters: everything reactive is read in the
   // compute callback, because the second one is a strict-read scope where a prop read would be a
@@ -151,27 +156,30 @@ export const Group: Component<GroupProps> = (props) => {
       items: isServer
         ? []
         : resolved.toArray().filter((child): child is Element => child instanceof Element),
-      skip: props.skip,
+      skip: merged.skip,
     }),
     ({ items, skip }) => decorateChildren(items, skip),
   );
 
+  // The three shorthands are computed **before** the consumer's own props, so an explicit
+  // `alignItems` overrides one — Chakra's order. They are getters over `merged`, so the defaults
+  // survive the `omit` beside them.
   const elementProps = merge(
     {
       get alignItems() {
-        return props.align ?? "center";
+        return merged.align;
       },
       get justifyContent() {
-        return props.justify ?? "flex-start";
+        return merged.justify;
       },
       get flexWrap() {
-        return props.wrap;
+        return merged.wrap;
       },
     },
-    omit(props, "align", "justify", "wrap", "skip", "class", "children"),
+    omit(merged, "align", "justify", "wrap", "skip", "class", "children"),
     {
       get class() {
-        return cx("chakra-group", props.class as string | undefined);
+        return cx("chakra-group", merged.class as string | undefined);
       },
       get children() {
         return resolved();

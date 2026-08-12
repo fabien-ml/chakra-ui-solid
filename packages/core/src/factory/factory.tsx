@@ -168,19 +168,30 @@ function chakraFactory<Element extends ValidComponent, Variants extends RecipeVa
   return (componentProps) => {
     const props = componentProps as ElementPropsBag;
 
-    // `splitProps`'s Solid 2.0 spelling, and never `recipe.splitVariantProps(props)`: that reads
+    // Merged **first, once, and into a name** — every read below goes to `merged`, never to `props`.
+    // Not `merge(defaultProps, …)`: SolidJS 2.0 resolves a key by *presence*, so a
+    // forwarded-but-unset `type={props.type}` would beat the default with `undefined`.
+    // `withDefaults` resolves with `??`, which is what Chakra's `compact()` buys there.
+    //
+    // `as` and `render` are read off `merged` too, where they used to be read off the raw bag —
+    // `defaultProps: { as: "span" }` did nothing at all (`CLAUDE.md`, *The third hazard*).
+    //
+    // And **before** the variant split rather than after it, so a default for a variant key reaches
+    // the recipe rather than the DOM. `ChakraFactoryOptions` cannot spell one today — its `Props` is
+    // `HTMLChakraProps<Element>`, which carries no variants — so that half is ordering kept correct
+    // for whenever it can, and untestable until then.
+    const merged = defaultProps === undefined ? props : withDefaults(props, defaultProps);
+
+    // `splitProps`'s Solid 2.0 spelling, and never `recipe.splitVariantProps(merged)`: that reads
     // every key of the bag eagerly, which snapshots each one and collapses the reactivity of every
     // style prop passed alongside a variant. `variantKeys` is fixed for a given recipe, so
     // partitioning by it reads nothing.
-    const elementProps = variantKeys.length === 0 ? props : omit(props, ...variantKeys);
+    const elementProps = variantKeys.length === 0 ? merged : omit(merged, ...variantKeys);
 
     return renderStyled<ElementPropsBag>({
-      as: (props.as ?? element) as ValidComponent,
-      render: props.render as RenderProp<ElementPropsBag> | undefined,
-      // Not `merge(defaultProps, elementProps)`: SolidJS 2.0 resolves a key by *presence*, so a
-      // forwarded-but-unset `type={props.type}` would beat the default with `undefined`.
-      // `withDefaults` resolves with `??`, which is what Chakra's `compact()` buys there.
-      props: defaultProps === undefined ? elementProps : withDefaults(elementProps, defaultProps),
+      as: (merged.as ?? element) as ValidComponent,
+      render: merged.render as RenderProp<ElementPropsBag> | undefined,
+      props: elementProps,
       // `raw()` — the merged style OBJECT for the selected variants, compound variants included —
       // rather than `recipe()`, the class. An inline `cva` emits atomic classes into the same
       // cascade layer as style props, so a separate class would be decided by Panda's source
@@ -188,7 +199,7 @@ function chakraFactory<Element extends ValidComponent, Variants extends RecipeVa
       // the *generated* recipes, which do have a layer of their own.
       //
       // Read inside the accessor, so the variant values are tracked rather than snapshotted.
-      baseStyles: recipe === undefined ? undefined : () => recipe.raw(variantPropsOf(props)),
+      baseStyles: recipe === undefined ? undefined : () => recipe.raw(variantPropsOf(merged)),
       forwardProp,
     });
   };

@@ -1,6 +1,6 @@
 import { chakra, type HTMLChakraProps, withDefaults } from "@chakra-ui-solid/core";
 import type { ComponentProps, JSX } from "@solidjs/web";
-import { type Component, children, Match, merge, omit, Show, Switch } from "solid-js";
+import { type Component, children, Match, omit, Show, Switch } from "solid-js";
 import { AbsoluteCenter } from "../absolute-center";
 import { Span } from "../span";
 import { Spinner } from "../spinner";
@@ -48,16 +48,18 @@ export interface LoaderProps extends HTMLChakraProps<"span"> {
  *   up their space in the *parent's* flow. That is what keeps the button's width from collapsing
  *   the moment it starts loading — the wrapper itself measures nothing.
  */
-export const Loader: Component<LoaderProps> = (loaderProps) => {
-  const props = withDefaults(loaderProps, { visible: true, spinnerPlacement: "start" });
+export const Loader: Component<LoaderProps> = (props) => {
+  // `display` is a default like the other three, not a `merge` source before the spread: that form
+  // resolves by presence, so a forwarded `display={props.display}` that is unset would erase it and
+  // give the Loader a box of its own — which every note above says it does not have. An explicit
+  // `display` still wins (`CLAUDE.md`, *The third hazard*).
+  const merged = withDefaults(props, {
+    display: "contents",
+    visible: true,
+    spinnerPlacement: "start",
+  } satisfies Partial<LoaderProps>);
 
-  // `display` first, the consumer's props after, so an explicit `display` still wins — Chakra's
-  // order. Spelled as a `merge` rather than as a JSX attribute before a spread, because the two
-  // mean the same thing to Solid and TypeScript rejects the second (TS2783).
-  const wrapperProps = merge(
-    { display: "contents" },
-    omit(props, "children", "spinner", "spinnerPlacement", "text", "visible"),
-  );
+  const wrapperProps = omit(merged, "children", "spinner", "spinnerPlacement", "text", "visible");
 
   // **Both slots are resolved once and read only through the accessor.** A JSX-valued *prop*
   // compiles to a lazy getter that runs `createComponent` on **every** read, and each of these is
@@ -72,21 +74,21 @@ export const Loader: Component<LoaderProps> = (loaderProps) => {
   // visible. Module scope is not the alternative either: JSX there runs at import time and 500s
   // the SSR route.
   const spinner = children(
-    () => props.spinner ?? <Spinner size="inherit" borderWidth="0.125em" color="inherit" />,
+    () => merged.spinner ?? <Spinner size="inherit" borderWidth="0.125em" color="inherit" />,
   );
-  const text = children(() => props.text);
+  const text = children(() => merged.text);
 
-  // `props.children` is deliberately **not** resolved this way: `Switch` reads the selected
+  // `merged.children` is deliberately **not** resolved this way: `Switch` reads the selected
   // branch's children and nothing else, so it is read exactly once per render, and a reflexive
   // `children()` on a single read only adds a memo and moves the subtree's hydration key.
   return (
-    <Switch fallback={<Span {...wrapperProps}>{props.children}</Span>}>
-      <Match when={!props.visible}>{props.children}</Match>
+    <Switch fallback={<Span {...wrapperProps}>{merged.children}</Span>}>
+      <Match when={!merged.visible}>{merged.children}</Match>
       <Match when={text()}>
         <Span {...wrapperProps}>
-          <Show when={props.spinnerPlacement === "start"}>{spinner()}</Show>
+          <Show when={merged.spinnerPlacement === "start"}>{spinner()}</Show>
           {text()}
-          <Show when={props.spinnerPlacement === "end"}>{spinner()}</Show>
+          <Show when={merged.spinnerPlacement === "end"}>{spinner()}</Show>
         </Span>
       </Match>
       {/* `??` falls back on `null` too, so only a present-and-falsy `spinner={false}` gets past
@@ -95,7 +97,7 @@ export const Loader: Component<LoaderProps> = (loaderProps) => {
         <Span {...wrapperProps}>
           <AbsoluteCenter display="inline-flex">{spinner()}</AbsoluteCenter>
           <Span visibility="hidden" display="contents">
-            {props.children}
+            {merged.children}
           </Span>
         </Span>
       </Match>

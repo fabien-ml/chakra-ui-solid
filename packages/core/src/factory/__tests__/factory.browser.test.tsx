@@ -162,6 +162,12 @@ describe("chakra — defaultProps", () => {
       render(() => <DefaultedButton type="submit">styled</DefaultedButton>).getAttribute("type"),
     ).toBe("submit");
   });
+
+  it("supplies `as`, which was read off the raw props and never saw the defaults", () => {
+    const Defaulted = chakra("div", {}, { defaultProps: { as: "span" } });
+
+    expect(render(() => <Defaulted>styled</Defaulted>).tagName).toBe("SPAN");
+  });
 });
 
 describe("chakra — SVG geometry", () => {
