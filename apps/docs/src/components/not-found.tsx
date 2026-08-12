@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/solid-router";
-import { Box } from "chakra-ui-solid";
+import { Box, Button } from "chakra-ui-solid";
 
 export function NotFound() {
   return (
@@ -11,10 +11,11 @@ export function NotFound() {
         This site is built one batch at a time, so a page you expected may not exist yet rather than
         having moved.
       </Box>
-      <Box
+      {/* The palette is declared here rather than inherited: this page renders outside the landing
+        root, which is the one place that sets `colorPalette="teal"`. A literal, because a
+        `colorPalette` assembled from a variable is a class nobody generated. */}
+      <Button
         colorPalette="teal"
-        color="colorPalette.fg"
-        textDecoration="underline"
         render={(renderProps) => (
           <Link to="/" class={renderProps.class as string}>
             {renderProps.children}
@@ -22,7 +23,7 @@ export function NotFound() {
         )}
       >
         Back to the docs home
-      </Box>
+      </Button>
     </Box>
   );
 }

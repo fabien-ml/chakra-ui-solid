@@ -1,11 +1,13 @@
 import { Link, useLocation } from "@tanstack/solid-router";
-import { Box } from "chakra-ui-solid";
+import { Box, IconButton } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { ColorModeToggle } from "~/components/color-mode-toggle";
 import { Container } from "~/components/container";
 import { DocLink } from "~/components/doc-link";
 import { LogoIcon } from "~/components/site/logo";
+import { GithubIcon } from "~/components/site/project-marks";
 import { SITE_NAME } from "~/config";
+import { repoUrl } from "~/lib/docs-config";
 import { firstPageOf, liveSections } from "~/lib/site-map";
 
 /**
@@ -104,7 +106,27 @@ export function SiteHeader() {
           </For>
         </Box>
 
-        <Box ms="auto" display="flex" alignItems="center" gap="2">
+        <Box ms="auto" display="flex" alignItems="center" gap="1">
+          {/* The label sits on the anchor rather than on IconButton, because the render callback
+            picks `class` and `children` rather than spreading: Button's computed props carry a
+            `type="button"` and a `disabled`, and neither belongs on a link. */}
+          <IconButton
+            variant="ghost"
+            size="sm"
+            render={(renderProps) => (
+              <a
+                href={repoUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${SITE_NAME} on GitHub`}
+                class={renderProps.class as string}
+              >
+                {renderProps.children}
+              </a>
+            )}
+          >
+            <GithubIcon />
+          </IconButton>
           <ColorModeToggle />
         </Box>
       </Container>

@@ -1,19 +1,6 @@
-import { Box, Group, Stack } from "chakra-ui-solid";
+import { Box, Button, Group, Stack } from "chakra-ui-solid";
 
-const OutlineButton = (props: { children: string }) => (
-  <Box
-    as="button"
-    px="4"
-    py="2"
-    borderWidth="1px"
-    borderColor="border"
-    borderRadius="l2"
-    fontWeight="medium"
-  >
-    {props.children}
-  </Box>
-);
-
+/** Chakra's version uses its `Badge`, which has not shipped here yet. */
 const SolidBadge = (props: { colorPalette: string; children: string }) => (
   <Box
     colorPalette={props.colorPalette}
@@ -33,8 +20,8 @@ export default function GroupWithAttached() {
   return (
     <Stack gap="4">
       <Group attached>
-        <OutlineButton>Item 1</OutlineButton>
-        <OutlineButton>Item 2</OutlineButton>
+        <Button variant="outline">Item 1</Button>
+        <Button variant="outline">Item 2</Button>
       </Group>
 
       <Group attached>
