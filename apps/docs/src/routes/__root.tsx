@@ -7,7 +7,6 @@ import { onSettled } from "solid-js";
 import { shellClass } from "~/components/layout";
 import { NotFound } from "~/components/not-found";
 import { SiteGradientDefs } from "~/components/site/logo";
-import { SiteFooter } from "~/components/site-footer";
 import { SiteHeader } from "~/components/site-header";
 import { SITE_DESCRIPTION, SITE_NAME } from "~/config";
 import { colorModePrePaintScript, syncColorMode } from "~/lib/color-mode";
@@ -89,10 +88,15 @@ function RootLayout(props: { children: JSX.Element }) {
         {/* Every bolt on the site fills from one of these three gradients (`~/components/site/logo`). */}
         <SiteGradientDefs />
         <SiteHeader />
+        {/* No footer here, and that is the point. The docs shell's sidebar and table of contents are
+            sticky inside the article's flex row, so anything the root layout renders *below* that row
+            is scroll the sticky columns cannot survive: the last ~190px of every docs page dragged
+            both of them up off the screen, and on a one-screen page that was the only scroll there
+            was. The footer belongs to the landing page, which has no sticky columns
+            (`~/routes/index`). */}
         <Box as="main" flex="1">
           {props.children}
         </Box>
-        <SiteFooter />
         <Scripts />
       </body>
     </html>

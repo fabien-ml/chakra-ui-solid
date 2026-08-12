@@ -7,6 +7,7 @@ import { HeroSection } from "~/components/site/hero-section";
 import { BlitzIcon } from "~/components/site/logo";
 import { NextStepsSection } from "~/components/site/next-steps-section";
 import { ParitySection } from "~/components/site/parity-section";
+import { SiteFooter } from "~/components/site-footer";
 
 export const Route = createFileRoute("/")({ component: DocsHome });
 
@@ -37,21 +38,27 @@ export const Route = createFileRoute("/")({ component: DocsHome });
  */
 function DocsHome() {
   return (
-    <Box position="relative" overflowX="hidden" colorPalette="teal">
-      <AmbientLights />
+    <>
+      <Box position="relative" overflowX="hidden" colorPalette="teal">
+        <AmbientLights />
 
-      {/* The bolt behind the hero, at chakra-ui.com's own offsets. It brings its own colour — the
-        gradient names `fg.inverted` itself (`~/components/site/logo`), so this Box only places it. */}
-      <Box position="absolute" top="58px" right="67px" hideBelow="md" pointerEvents="none">
-        <BlitzIcon />
+        {/* The bolt behind the hero, at chakra-ui.com's own offsets. It brings its own colour — the
+          gradient names `fg.inverted` itself (`~/components/site/logo`), so this Box only places it. */}
+        <Box position="absolute" top="58px" right="67px" hideBelow="md" pointerEvents="none">
+          <BlitzIcon />
+        </Box>
+
+        <HeroSection />
+        <DesignSystemSection />
+        <ParitySection />
+        <FrameworkSection />
+        <NextStepsSection />
       </Box>
 
-      <HeroSection />
-      <DesignSystemSection />
-      <ParitySection />
-      <FrameworkSection />
-      <NextStepsSection />
-    </Box>
+      {/* Outside the Box above, not inside it: that one is `overflowX: hidden` to clip the blobs,
+          and a clipping ancestor is also a scroll container the footer has no reason to sit in. */}
+      <SiteFooter />
+    </>
   );
 }
 
