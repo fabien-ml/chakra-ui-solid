@@ -51,6 +51,24 @@ describe("every props table names its interface", () => {
     expect(captionsFor(component)).toEqual(expected);
   });
 
+  it("leads with the interface the directory is named after", () => {
+    // Order is the only thing that says which of several tables is the page's subject. Interfaces
+    // arrive in filename order, which put `StackSeparatorProps` above `StackProps` on the Stack
+    // page, `GridItemProps` above `GridProps`, and `ButtonGroupProps` above `ButtonProps`.
+    const pascal = (component: string) =>
+      `${component
+        .split("-")
+        .map((word) => `${word[0]?.toUpperCase() ?? ""}${word.slice(1)}`)
+        .join("")}Props`;
+
+    for (const component of directories) {
+      const names = (propsTables[component] ?? []).map((entry) => entry.name);
+      if (names.includes(pascal(component))) {
+        expect(names[0], component).toBe(pascal(component));
+      }
+    }
+  });
+
   it("covers every directory with more than one interface", () => {
     // The subset the bug actually lives in, named so that deleting the loop above cannot quietly
     // take the interesting cases with it.

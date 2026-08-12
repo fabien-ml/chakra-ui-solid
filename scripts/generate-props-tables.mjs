@@ -219,6 +219,27 @@ function foldLocalOptions(interfaces) {
     .map((entry) => ({ ...entry, props: [...entry.props, ...UNIVERSAL_PROPS] }));
 }
 
+/** The interface a directory is named after — `color-swatch` → `ColorSwatchProps`. */
+function principalInterfaceName(component) {
+  return `${component
+    .split("-")
+    .map((word) => word[0].toUpperCase() + word.slice(1))
+    .join("")}Props`;
+}
+
+/**
+ * The directory's namesake interface first, the rest after it in file order.
+ *
+ * Interfaces arrive in directory-walk order, which is alphabetical by filename — so the `stack` page
+ * opened with `StackSeparatorProps`, `grid` with `GridItemProps`, and `button` with
+ * `ButtonGroupProps`. A reader looking up the component the page is named after found a table for
+ * something else above it. Order is the only thing that says which of several tables is the subject.
+ */
+function leadWithTheNamesakeOf(component, interfaces) {
+  const namesake = principalInterfaceName(component);
+  return [...interfaces].sort((a, b) => Number(b.name === namesake) - Number(a.name === namesake));
+}
+
 // `__tests__` is a directory beside the components, not one of them. Left in, it emits a
 // `__tests__` "component" whose only rows are the universal three — a table no page asks for and
 // every consumer of this file then has to filter out by name.
@@ -266,13 +287,10 @@ for (const component of componentDirs) {
   // generator's loud "run `pnpm codegen`" fallback, which is a false alarm.
   tables[component] =
     interfaces.length > 0
-      ? interfaces
+      ? leadWithTheNamesakeOf(component, interfaces)
       : [
           {
-            name: `${component
-              .split("-")
-              .map((word) => word[0].toUpperCase() + word.slice(1))
-              .join("")}Props`,
+            name: principalInterfaceName(component),
             description: "",
             // Empty rather than guessed: nothing here declares what such a component extends.
             extends: [],
