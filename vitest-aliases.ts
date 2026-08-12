@@ -79,6 +79,21 @@ export const chakraSolidAlias: { find: RegExp; replacement: string }[] = [
   },
 ];
 
+/**
+ * The docs app's own `~/…` → `apps/docs/src/…` alias, mirrored from `apps/docs/vite.config.ts`.
+ *
+ * Without it the `browser` project can mount only those docs components that happen to import
+ * nothing through `~` — which is 6 files out of 23, and is why the docs app's one component test
+ * covers `prose.tsx` and nothing else. A component nobody can mount is a component whose bugs are
+ * found on the page, which is how a props table shipped with two unlabelled tables.
+ *
+ * Scoped to the `~/` prefix, which only this repo's docs app uses, so it cannot capture a package
+ * import.
+ */
+export const docsSrcAlias = [
+  { find: /^~\//, replacement: `${join(import.meta.dirname, "apps/docs/src")}/` },
+];
+
 export const serverBuildAlias = [
   { find: /^solid-js$/, replacement: resolveServerEntry("solid-js") },
   { find: /^@solidjs\/web$/, replacement: resolveServerEntry("@solidjs/web") },

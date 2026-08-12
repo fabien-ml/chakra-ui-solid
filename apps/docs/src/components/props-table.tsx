@@ -14,6 +14,23 @@ import { propsTables } from "~/generated/props-tables";
  * the description stacked in that last cell rather than split into a fourth column. A reader
  * comparing the two sites is comparing the same shape, which is the whole point of a 1:1 port.
  *
+ * **Every table names its own interface, in a `<caption>`.** chakra-ui.com never needs this — their
+ * `PropTable` is keyed by a single `part`, so one call is one table. Ours is keyed by a component
+ * *directory*, and five of them hold more than one interface, so an unscoped call renders several
+ * tables in a row. Unlabelled, a reader cannot tell which component each belongs to, and the
+ * failure arrives **later than the page it breaks**: a page written when its directory held one
+ * interface silently grows a second anonymous table the day a sibling component ships beside it.
+ * That is how `color-swatch` shipped two. Labelling here rather than in the pages is what makes it
+ * unrepeatable — a page cannot forget, and a scoped call is self-describing too.
+ *
+ * A `<caption>` rather than a heading: it is the element HTML has for naming a table, it is
+ * announced with the table by a screen reader, and it keeps the page's table of contents a list of
+ * the author's sections rather than of type names.
+ *
+ * The interface **name** only, never its `description` — that field is the JSDoc above the
+ * declaration, which is written for whoever maintains the component and reads as noise to whoever
+ * is looking up a prop.
+ *
  * A missing entry renders **loudly** rather than as an empty box, because an empty box looks
  * intentional. An entry with no rows is a different thing and says so in a row of its own: some
  * components really do add no prop of their own, and `Container`'s two are variants the recipe
@@ -45,6 +62,7 @@ export function PropsTable(props: { component: string; interface?: string }) {
           <Box my="6" colorPalette="teal">
             <Box borderWidth="1px" borderColor="border" borderRadius="l2" overflowX="auto">
               <Box as="table" width="full" fontSize="sm" borderCollapse="collapse">
+                <Caption>{entry.name}</Caption>
                 <thead>
                   <tr>
                     <Th>Prop</Th>
@@ -154,6 +172,33 @@ const Code = (props: { children: unknown; color?: string; fontWeight?: string })
     fontWeight={props.fontWeight}
   >
     {props.children as never}
+  </Box>
+);
+
+/**
+ * The interface's name, as the table's own caption.
+ *
+ * `captionSide: "top"` is written out rather than left to the default: it *is* the default in every
+ * engine, and it is also the one declaration that decides whether the label reads as a title or as
+ * a footnote — an inherited default that silently flipped would be a wrong answer that still looks
+ * deliberate.
+ */
+const Caption = (props: { children: string }) => (
+  <Box
+    as="caption"
+    captionSide="top"
+    textAlign="start"
+    fontFamily="mono"
+    fontSize="xs"
+    fontWeight="semibold"
+    color="fg"
+    bg="bg.subtle"
+    borderBottomWidth="1px"
+    borderColor="border"
+    px="4"
+    py="2"
+  >
+    {props.children}
   </Box>
 );
 

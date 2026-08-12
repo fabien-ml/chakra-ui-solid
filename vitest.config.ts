@@ -6,7 +6,7 @@ import { playwright } from "@vitest/browser-playwright";
 import solid from "vite-plugin-solid";
 import { defineConfig } from "vitest/config";
 import { solidPluginOptions } from "./solid-babel-options.ts";
-import { chakraSolidAlias, serverBuildAlias } from "./vitest-aliases.ts";
+import { chakraSolidAlias, docsSrcAlias, serverBuildAlias } from "./vitest-aliases.ts";
 import { hydrationFixtureBridge } from "./vitest-hydration-bridge.ts";
 import { testProjects } from "./vitest-projects.ts";
 
@@ -93,7 +93,9 @@ export default defineConfig({
         // needs no committed `.html` fixture at any component count. See
         // `vitest-hydration-bridge.ts`.
         plugins: [solid(solidPluginOptions({ hydratable: true })), hydrationFixtureBridge()],
-        resolve: { alias: chakraSolidAlias },
+        // `docsSrcAlias` only here: the docs app's components are rendered, so this is the one
+        // project that can mount them, and it is the project their tests live in.
+        resolve: { alias: [...chakraSolidAlias, ...docsSrcAlias] },
         test: {
           name: "browser",
           ...projectGlobs("browser"),
