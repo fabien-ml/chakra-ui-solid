@@ -1,0 +1,53 @@
+---
+title: Icon Button
+description: Used to render an icon within a button
+links:
+  source: packages/chakra-ui-solid/src/components/button
+  chakra: https://chakra-ui.com/docs/components/icon-button
+---
+
+<Example name="icon-button-basic" />
+
+## Usage
+
+```tsx
+import { IconButton } from "chakra-ui-solid";
+```
+
+```tsx
+<IconButton aria-label="Search database">
+  <SearchIcon />
+</IconButton>
+```
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the button.
+
+<Example name="icon-button-with-sizes" />
+
+### Variants
+
+Use the `variant` prop to change its visual style
+
+<Example name="icon-button-with-variants" />
+
+### Color
+
+Use the `colorPalette` prop to change the color of the button
+
+<Example name="icon-button-with-colors" />
+
+### Rounded
+
+Set `rounded="full"` to make the button fully rounded
+
+<Example name="icon-button-rounded" />
+
+## Props
+
+`IconButton` takes everything `Button` takes.
+
+<PropsTable component="button" interface="ButtonProps" />

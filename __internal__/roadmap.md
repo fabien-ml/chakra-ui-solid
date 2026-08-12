@@ -151,8 +151,8 @@ naming a file (`blueprint §1.2`) points there instead.
 ## Atomic-recipe components (21)
 
 - [ ] badge — A:badge · —/1
-- [ ] button — A:button · —/1
-      `useRecipe({ key })` directly, not a recipe context. Also ships `ButtonGroup`, `IconButton`, `CloseButton`
+- [x] button — A:button · —/1
+      `createRecipeContext({ key })`, read as `usePropsContext` + `createRecipeClass` because the children are wrapped when `loading`. `ButtonGroup` is the one that uses `useRecipe({ key })` directly. Also ships `IconButton`, `CloseButton`
 - [ ] checkmark — A:checkmark · —/1
       Composed **into** `checkbox`/`checkboxCard` slot recipes — must land before B4
 - [ ] code — A:code · —/1

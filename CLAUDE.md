@@ -87,8 +87,11 @@ suite is red. It exists for the two failures that take a whole route down rather
 module-scope JSX, and a DOM global read during render (`Element is not defined`).
 
 Hydration round-trips stay per-component, because each costs a `*.ssr-entry.tsx` and a row in
-`HYDRATION_ENTRIES` (`vitest-hydration-bridge.ts`); `box` and `loader` carry one. Add one when a
-component's tree is conditional or resolves a slot through `children()`. `check:ssr-coverage` — the
+`HYDRATION_ENTRIES` (`vitest-hydration-bridge.ts`); `box`, `loader` and `button` carry one. Add one
+when a component's tree is conditional or resolves a slot through `children()`. **Both sides must
+make the same calls in the same order** — an `if (!isServer)` around a `createRenderEffect` shifts
+every hydration key after it, which is how `Group` was silently unhydratable until Button's fixture
+put one inside it. `check:ssr-coverage` — the
 fourth check script, and the only one added since the cut — enforces the wiring: registry and
 fixture files agree both ways, every registered id is really hydrated, every `*.ssr.test.tsx`
 really renders.

@@ -17,6 +17,7 @@
       "aspect-ratio": "src/components/aspect-ratio/index.ts",
       "bleed": "src/components/bleed/index.ts",
       "box": "src/components/box/index.ts",
+      "button": "src/components/button/index.ts",
       "center": "src/components/center/index.ts",
       "circle": "src/components/circle/index.ts",
       "container": "src/components/container/index.ts",

@@ -130,6 +130,8 @@ export const docsNav: NavItem[] = [
         title: "Buttons",
         items: [
           { title: "Button", url: "button" },
+          { title: "Close Button", url: "close-button" },
+          { title: "Icon Button", url: "icon-button" },
           { title: "Download Trigger", url: "download-trigger" },
         ],
       },

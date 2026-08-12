@@ -135,23 +135,26 @@ function decorateChildren(items: Element[], skip: ((child: Element) => boolean) 
 export const Group: Component<GroupProps> = (props) => {
   const resolved = children(() => props.children);
 
-  // Not merely skipped on the server — **unreachable** there. A render effect runs during SSR, and
-  // `child instanceof Element` reads a DOM global that does not exist in that runtime: the whole
-  // page 500s with `Element is not defined`, which is how a docs page carrying a Group found it.
-  // The decoration was always client-only (see `decorateChildren`), so this costs nothing beyond
-  // what that route already costs.
-  if (!isServer) {
-    // Solid 2.0's two-callback form, and the split matters: everything reactive is read in the
-    // compute callback, because the second one is a strict-read scope where a prop read would be a
-    // diagnostic rather than a subscription.
-    createRenderEffect(
-      () => ({
-        items: resolved.toArray().filter((child): child is Element => child instanceof Element),
-        skip: props.skip,
-      }),
-      ({ items, skip }) => decorateChildren(items, skip),
-    );
-  }
+  // Solid 2.0's two-callback form, and the split matters: everything reactive is read in the
+  // compute callback, because the second one is a strict-read scope where a prop read would be a
+  // diagnostic rather than a subscription.
+  //
+  // **The `isServer` guard is inside the compute, not around the call.** A render effect runs
+  // during SSR, and `child instanceof Element` reads a DOM global that does not exist in that
+  // runtime: the whole page 500s with `Element is not defined`, which is how a docs page carrying a
+  // Group found it. But *skipping the call itself* on the server is worse and quieter — the client
+  // then allocates a hydration id (`_hk`) the server never did, every key after it shifts by one,
+  // and `hydrate()` gives up on the first node it cannot find. Both sides must make the same calls
+  // in the same order; only what they read may differ.
+  createRenderEffect(
+    () => ({
+      items: isServer
+        ? []
+        : resolved.toArray().filter((child): child is Element => child instanceof Element),
+      skip: props.skip,
+    }),
+    ({ items, skip }) => decorateChildren(items, skip),
+  );
 
   const elementProps = merge(
     {

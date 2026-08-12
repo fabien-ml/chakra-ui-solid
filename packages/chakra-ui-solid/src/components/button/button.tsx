@@ -1,0 +1,161 @@
+import {
+  createRecipeClass,
+  createRecipeContext,
+  type HTMLChakraProps,
+  renderStyled,
+} from "@chakra-ui-solid/core";
+import { type ButtonVariantProps, button } from "@chakra-ui-solid/styled-system/recipes";
+import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
+import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
+import { type Component, children, merge, omit, Show } from "solid-js";
+import { Loader } from "../loader";
+
+/**
+ * The two variants spelled out rather than inherited from the generated `ButtonVariantProps`, so
+ * each carries a description a reader can use and a type they can read — and this is the interface
+ * the docs page's props table is built from. Drift is caught by {@link VARIANT_KEYS} below, which
+ * is typed against the generated variants.
+ */
+export interface ButtonProps extends HTMLChakraProps<"button"> {
+  /**
+   * The control's height, padding, gap and type scale together.
+   *
+   * @default "md"
+   */
+  size?: ConditionalValue<"2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl">;
+  /**
+   * How much of the colour palette the button spends — `solid` is the filled one, `plain` carries
+   * no background or border at all.
+   *
+   * @default "solid"
+   */
+  variant?: ConditionalValue<"solid" | "subtle" | "surface" | "outline" | "ghost" | "plain">;
+  /**
+   * Show a spinner and disable the control. The button keeps the width it had, because the
+   * {@link Loader} hides the children in place rather than removing them.
+   *
+   * @default false
+   */
+  loading?: boolean;
+  /** Shown in place of the children while loading, with the spinner beside it. */
+  loadingText?: JSX.Element;
+  /** What to spin. Defaults to a Spinner sized and coloured off the button's own label. */
+  spinner?: JSX.Element;
+  /**
+   * Which side of `loadingText` the spinner sits on. Only read when `loadingText` is passed.
+   *
+   * @default "start"
+   */
+  spinnerPlacement?: "start" | "end";
+}
+
+/** The DOM props Button forwards to the rendered element, as Box names its own. */
+type ButtonElementProps = ComponentProps<"button">;
+
+/**
+ * The recipe's own inputs, as literal keys rather than `button.variantKeys` — `omit` narrows the
+ * returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` is what
+ * keeps the two lists one list at compile time: a variant renamed in the recipe stops the build
+ * here, and the test asserts the same equality at runtime.
+ *
+ * Never Panda's generated `splitVariantProps`, which is how Chakra spells this in `ButtonGroup`:
+ * it destructures the props object eagerly, so in Solid a changed `size` stops re-resolving.
+ * `ButtonGroup` imports this tuple instead.
+ */
+export const VARIANT_KEYS = [
+  "size",
+  "variant",
+] as const satisfies readonly (keyof ButtonVariantProps & keyof ButtonProps)[];
+
+/** The four props that drive the Loader. Not style props, so they need omitting by name. */
+const LOADING_KEYS = ["loading", "loadingText", "spinner", "spinnerPlacement"] as const;
+
+/**
+ * The props context on its own — no `withContext`, and no recipe handed to the seam.
+ *
+ * `withContext` mints a component whose body is *only* the recipe class plus the style-prop
+ * pipeline, and Button's body is not that: it wraps its children in a {@link Loader}. So it takes
+ * the half of the seam it can use — the context an ancestor writes to — and calls
+ * `createRecipeClass` + `renderStyled` itself, which is `Container`'s shape with a props context in
+ * front. Passing `recipe`/`variantKeys` here would configure a `withContext` nobody calls, and read
+ * as though changing them changed what Button resolves.
+ */
+const { PropsProvider, usePropsContext } = createRecipeContext<ButtonProps>();
+
+/**
+ * Button — the control, styled by the `button` recipe, with the loading state Chakra gives it.
+ *
+ * **`loading` disables the element and swaps the children for a {@link Loader}**, which either
+ * replaces them with `loadingText` and a spinner or hides them in place under a centred one. The
+ * width does not change either way, which is the whole reason the Loader has a hidden wrapper.
+ *
+ * Chakra guards that swap with `!props.asChild && loading`, and **the guard does not port**. Its
+ * subject is `asChild`, which merges the button's props onto the caller's single child element; a
+ * Loader wrapper would break that one-child contract, so React has to skip it. Our analogues are
+ * `as` and `render`, and neither has that shape — `as="a"` renders our children into a different
+ * tag, and `render` is handed the computed props (children included) to place itself. There is no
+ * arrangement here where wrapping the children breaks the element, so there is nothing to guard.
+ */
+export const Button: Component<ButtonProps> = (componentProps) => {
+  // Context first, local props second, so a local prop wins — Chakra's order, and the seam's.
+  const props = merge(usePropsContext(), componentProps);
+
+  const recipeClass = createRecipeClass(button, {
+    variantProps: () => ({ size: props.size, variant: props.variant }),
+  });
+
+  // **Resolved once, read in both arms.** `props.children` compiles to a lazy getter, and the two
+  // branches below each read it — so read raw, toggling `loading` would rebuild the whole child
+  // subtree and throw the previous one away, taking any state it held with it. `children()`
+  // resolves it once in this owner and hands the *same nodes* to whichever arm is live.
+  //
+  // `loadingText` and `spinner` deliberately get no such treatment: they are passed straight to the
+  // Loader, which reads each exactly once (through a `children()` of its own, because *it* gates on
+  // them). A reflexive `children()` on a single read only adds a memo and moves the subtree's
+  // hydration key — `CLAUDE.md`, *The second hazard*.
+  const content = children(() => props.children);
+
+  const elementProps = merge(
+    // Before the consumer's props, so an explicit `type="submit"` still wins.
+    { type: "button" },
+    omit(props, ...VARIANT_KEYS, ...LOADING_KEYS, "children"),
+    {
+      /** Chakra's `dataAttr`: present-and-empty when loading, absent when not. */
+      get "data-loading"() {
+        return props.loading === true ? "" : undefined;
+      },
+      get disabled() {
+        return props.loading === true || props.disabled === true;
+      },
+      children: (
+        <Show when={props.loading} fallback={content()}>
+          <Loader
+            spinner={props.spinner}
+            text={props.loadingText}
+            spinnerPlacement={props.spinnerPlacement}
+          >
+            {content()}
+          </Loader>
+        </Show>
+      ),
+    },
+  );
+
+  return renderStyled<ButtonElementProps>({
+    as: (props.as ?? "button") as ValidComponent,
+    render: props.render,
+    // The variant keys are the recipe's inputs, not the element's, and the loading keys are this
+    // component's: forwarded, `size` and `spinnerPlacement` would both reach the DOM as attributes.
+    props: elementProps as unknown as ButtonElementProps,
+    recipeClass,
+  });
+};
+
+/**
+ * Supplies props to every {@link Button} below it — `<ButtonPropsProvider value={{ size: "sm" }}>`
+ * sets the size for a subtree. A `Button` that passes the prop itself still wins.
+ *
+ * {@link ButtonGroup} is this provider plus a `Group`, and it is the only writer to a props context
+ * in the library.
+ */
+export const ButtonPropsProvider = PropsProvider;

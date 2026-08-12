@@ -4,9 +4,9 @@
  * per glyph, named in the comment above each component. Taken from `lucide-static@1.31.0`.
  * Copyright (c) 2026 Lucide Icons and Contributors. Licensed under the ISC License.
  *
- * Fourteen of these are Lucide's own derivatives of Feather, and carry a second notice:
+ * Fifteen of these are Lucide's own derivatives of Feather, and carry a second notice:
  * Copyright (c) 2013-present Cole Bemis, MIT License. Both licences are reproduced in full, and the
- * fourteen named, in the LICENSE and NOTICE.md at the repository root.
+ * fifteen named, in the LICENSE and NOTICE.md at the repository root.
  *
  * This file has been modified from the original.
  *
@@ -291,6 +291,17 @@ export function TypeIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
       <path d="M12 4v16" />
       <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
       <path d="M9 20h6" />
+    </svg>
+  );
+}
+
+/** lucide `voicemail` — `icons/voicemail.svg` */
+export function VoicemailIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <circle cx="6" cy="12" r="4" />
+      <circle cx="18" cy="12" r="4" />
+      <line x1="6" x2="18" y1="16" y2="16" />
     </svg>
   );
 }

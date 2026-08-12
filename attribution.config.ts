@@ -98,6 +98,17 @@ const chakraReact: AttributionEntry[] = [
     license: "MIT",
     package: "core",
   },
+  {
+    // One SVG path — the ✕ a `CloseButton` shows when the caller passes no icon. A copied path is
+    // expression however few bytes it takes (`apps/docs/src/components/decorative-box.tsx` is here
+    // for the same reason), where the component around it is API shape and owes nothing. The first
+    // derivative in the `chakra-ui-solid` package, whose NOTICE table was empty until now.
+    file: "packages/chakra-ui-solid/src/components/button/close-button.tsx",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "packages/react/src/components/icons.tsx",
+    license: "MIT",
+    package: "chakra-ui-solid",
+  },
 ];
 
 const docsApp: AttributionEntry[] = [
@@ -111,12 +122,12 @@ const docsApp: AttributionEntry[] = [
     package: null,
   },
   {
-    // One entry for twenty-four glyphs, on the reasoning that makes `apps/docs/src/content` one row
+    // One entry for twenty-five glyphs, on the reasoning that makes `apps/docs/src/content` one row
     // rather than 111: the icon set is a single derivative of one upstream directory. `upstreamFile`
     // is that directory, and the module names the individual `icons/*.svg` above each component —
     // which is what a reader auditing the claim actually opens.
     //
-    // The only ISC entry, and the only one owing a *second* upstream: fourteen of the twenty-four are
+    // The only ISC entry, and the only one owing a *second* upstream: fifteen of the twenty-five are
     // Lucide's own derivatives of Feather, MIT. Both notices are in the root `NOTICE.md`.
     file: "apps/docs/src/components/site/icons.tsx",
     upstreamProject: "lucide-icons/lucide",

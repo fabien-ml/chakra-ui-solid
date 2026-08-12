@@ -7,8 +7,12 @@ import {
   AspectRatio,
   Bleed,
   Box,
+  Button,
+  ButtonGroup,
+  ButtonPropsProvider,
   Center,
   Circle,
+  CloseButton,
   Container,
   Em,
   EnvironmentProvider,
@@ -20,6 +24,7 @@ import {
   Heading,
   HeadingPropsProvider,
   HStack,
+  IconButton,
   Loader,
   LoaderOverlay,
   LocaleProvider,
@@ -58,7 +63,7 @@ import {
  * Neither is visible to the `browser` project, which has a DOM and imports in a client runtime, and
  * neither needs a per-component file to catch. The **expensive** half — that the server's markup
  * still hydrates — stays per-component and opt-in, because it costs a fixture entry and a bridge
- * registration each: `box` and `loader` carry one today.
+ * registration each: `box`, `loader` and `button` carry one today.
  */
 const SUBJECTS: Record<string, () => JSX.Element> = {
   AbsoluteCenter: () => <AbsoluteCenter>centred</AbsoluteCenter>,
@@ -69,8 +74,28 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   ),
   Bleed: () => <Bleed inline="4">wide</Bleed>,
   Box: () => <Box p="4">boxed</Box>,
+  // Loading, because that is the branch that mounts a Loader and resolves the children through
+  // `children()` — the idle branch writes them straight in and would not exercise either.
+  Button: () => (
+    <Button loading loadingText="Saving…">
+      Save
+    </Button>
+  ),
+  ButtonGroup: () => (
+    <ButtonGroup size="sm">
+      <Button>One</Button>
+    </ButtonGroup>
+  ),
+  ButtonPropsProvider: () => (
+    <ButtonPropsProvider value={{ variant: "outline" }}>
+      <Button>One</Button>
+    </ButtonPropsProvider>
+  ),
   Center: () => <Center>middle</Center>,
   Circle: () => <Circle size="10">1</Circle>,
+  // Its default ✕ is a leaf `<svg>` written inside the component rather than hoisted beside it —
+  // JSX at module scope is constructed at *import* time and 500s the route before anything renders.
+  CloseButton: () => <CloseButton />,
   Container: () => <Container>page</Container>,
   Em: () => <Em>emphasis</Em>,
   // Given no `value` it renders a probe element and discovers its root node from a ref, which is a
@@ -103,6 +128,11 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <HeadingPropsProvider value={{ size: "sm" }}>
       <Heading>Title</Heading>
     </HeadingPropsProvider>
+  ),
+  IconButton: () => (
+    <IconButton aria-label="Search">
+      <span>⌕</span>
+    </IconButton>
   ),
   Loader: () => <Loader text="Saving…">Save</Loader>,
   LoaderOverlay: () => <LoaderOverlay>loading</LoaderOverlay>,

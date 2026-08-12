@@ -8,7 +8,9 @@ import { Spinner } from "../spinner";
 export interface LoaderProps extends HTMLChakraProps<"span"> {
   /**
    * Whether the loader is showing. `false` renders the children on their own, with no wrapper
-   * element at all — which is what lets a Button mount one unconditionally.
+   * element at all, so a consumer can leave a Loader mounted across a state change rather than
+   * swapping it in and out. Chakra's Button does not take that route — it mounts a Loader only
+   * while `loading` and never passes this prop.
    *
    * @default true
    */

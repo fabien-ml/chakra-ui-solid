@@ -97,6 +97,12 @@ resolved against the dependency would compute a class with no rule behind it. It
 into `packages/panda-preset/src/container-recipe.ts` with one modification — the `className` — and
 no other recipe or token table is re-emitted anywhere in this repository.
 
+**One SVG path is copied.** `CloseButton` shows a ✕ when the caller passes no icon of their own,
+and that glyph's path data is Chakra's — a copied path is expression however few bytes it takes.
+The component around it is API shape and owes nothing; only the `d` attribute does. It lives inline
+in `close-button.tsx` until the `icon` component ships the shared chevron/check/close set
+(`roadmap.md` line 167), at which point the row moves with it rather than being written twice.
+
 **The documentation content is different, and it is a derivative.** `apps/docs/src/content` follows
 chakra-ui.com's page structure, section order, example set and — where our API has not changed the
 claim — its sentences. Chakra's docs are covered by the same single MIT grant as their code: one
@@ -120,6 +126,7 @@ fold on the docs home and in every page's footer.
 | File | Derived from |
 | ---- | ------------ |
 | `packages/core/src/factory/factory.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/styled-system/factory.tsx` |
+| `packages/chakra-ui-solid/src/components/button/close-button.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/site/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
@@ -138,11 +145,11 @@ fold on the docs home and in every page's footer.
 
 The docs site's UI icons are Lucide's, copied as path data from **`lucide-static@1.31.0`** (`icons/`,
 one `.svg` per glyph). This is what the React docs use too — their examples and landing page import
-`react-icons/lu`, which is Lucide — so the twenty-four glyphs below are what a 1:1 port of those
+`react-icons/lu`, which is Lucide — so the twenty-five glyphs below are what a 1:1 port of those
 pages requires rather than a set we chose. Lucide is not a dependency and has no SolidJS 2.0 build;
 the alternative to copying the paths is not importing them.
 
-**One row for twenty-four glyphs**, directory-scoped for the same reason `apps/docs/src/content` is
+**One row for twenty-five glyphs**, directory-scoped for the same reason `apps/docs/src/content` is
 one row rather than 111. Which upstream file each glyph came from is named in the comment above its
 component, and that is what an audit opens.
 
@@ -157,11 +164,11 @@ component, and that is what an audit opens.
 - **Copyright:** Copyright (c) 2013-present Cole Bemis
 
 Lucide began as a fork of Feather and carries Feather's MIT notice forward for the icons that
-descend from it. **Fourteen of our twenty-four are on that list**, and so owe this second notice as
+descend from it. **Fifteen of our twenty-five are on that list**, and so owe this second notice as
 well as the ISC one above:
 
 `arrow-left`, `arrow-right`, `arrow-up-right`, `check`, `chevron-down`, `chevron-left`,
-`chevron-right`, `external-link`, `moon`, `plus`, `search`, `terminal`, `type`, `x`
+`chevron-right`, `external-link`, `moon`, `plus`, `search`, `terminal`, `type`, `voicemail`, `x`
 
 The other ten — `bell`, `box`, `copy`, `heart`, `menu`, `paint-bucket`, `party-popper`, `phone`,
 `phone-forwarded`, `sun` — are Lucide's own and are covered by the ISC grant alone. No separate row: they are the same file, and

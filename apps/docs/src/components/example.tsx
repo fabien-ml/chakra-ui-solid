@@ -54,14 +54,13 @@ export function Example(props: { name: string }) {
       >
         {(loaded) => (
           <Box
-            // A column that **stretches**, not a centred row: an example is ported from Chakra's
-            // own docs, where the preview is a block container, so `<Stack><Box h="20" /></Stack>`
-            // is written with no width of its own. Centred, every one of those collapses to zero
-            // width and the preview renders an empty box.
-            display="flex"
-            flexDirection="column"
-            alignItems="stretch"
-            justifyContent="center"
+            // **A block container, which is what Chakra's own preview is** (`apps/www/components/
+            // example.tsx`: a bare `<Box padding="10">`), and the shape every example is written
+            // against. It has to fill the width, because `<Stack><Box h="20" /></Stack>` is written
+            // with no width of its own and would collapse to nothing if the preview centred it —
+            // but a *flex column* fills too much: it blockifies its children, so an example whose
+            // root is intrinsically sized, like a lone `IconButton`, is stretched to the full
+            // width and a `rounded="full"` circle renders as a pill.
             borderWidth="1px"
             borderColor="border"
             borderTopRadius="l2"

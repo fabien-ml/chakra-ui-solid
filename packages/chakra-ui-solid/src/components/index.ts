@@ -17,6 +17,7 @@ export * from "./absolute-center";
 export * from "./aspect-ratio";
 export * from "./bleed";
 export * from "./box";
+export * from "./button";
 export * from "./center";
 export * from "./circle";
 export * from "./container";

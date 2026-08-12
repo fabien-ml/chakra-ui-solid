@@ -1,8 +1,6 @@
 # Third-party notices — `chakra-ui-solid`
 
-This package contains **no files derived from another project**. The table below is empty by fact
-rather than by omission, and it exists so that the first derivative lands into a shape that already
-matches the five obligations in [`CLAUDE.md`](https://github.com/fabien-ml/chakra-ui-solid/blob/main/CLAUDE.md).
+This package contains one file derived from another project, listed in the table below.
 
 Reading a reference for its reasoning, its public API shape, or an ARIA pattern owes nothing and
 does not appear here. Only a file that reproduces an upstream's **expression** gets a row, and
@@ -12,5 +10,34 @@ The repository-wide notice is [`NOTICE.md`](https://github.com/fabien-ml/chakra-
 this file lists only this package's own derived files, because it is the one that travels in the npm
 tarball and the only one a consumer who never visits the repository will see.
 
+## Chakra UI
+
+- **Project:** https://github.com/chakra-ui/chakra-ui (`@chakra-ui/react`)
+- **License:** MIT License
+- **Copyright:** Copyright (c) 2019 Chakra Systems Inc.
+
+`@chakra-ui/react` is a read reference for public API shape, prop names, component anatomy and
+naming, none of which owes anything. What is derived is one **SVG path**: the ✕ a `CloseButton`
+shows when the caller passes no icon of their own. A copied path is expression however few bytes it
+takes; the component around it is not.
+
 | File | Derived from |
 | ---- | ------------ |
+| `src/components/button/close-button.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
+
+```
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute,
+sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or
+substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```

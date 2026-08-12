@@ -44,7 +44,8 @@ describe("Loader", () => {
     ));
 
     // Not merely *a* span around the children — the container holds the child and nothing else, so
-    // a Button that mounts a Loader unconditionally adds no element to the DOM while idle.
+    // a caller who leaves a Loader mounted across a state change adds no element to the DOM while
+    // idle.
     expect(mounted.container.childNodes.length).toBe(1);
     expect(mounted.element.dataset.testid).toBe("label");
   });
@@ -144,8 +145,8 @@ describe("Loader", () => {
   });
 
   it("builds neither slot when it is not visible", () => {
-    // `children()`'s memo is lazy and `Switch` stops at the first matching gate, so a Button that
-    // mounts a Loader while idle pays for nothing. An eager memo here would build both.
+    // `children()`'s memo is lazy and `Switch` stops at the first matching gate, so a Loader left
+    // mounted while idle pays for nothing. An eager memo here would build both.
     const countedSpinner = countingComponent();
     const countedText = countingComponent();
     const Spinner = countedSpinner.component;
