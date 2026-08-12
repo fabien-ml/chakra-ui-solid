@@ -148,45 +148,19 @@ function interfacesIn(sourceFile) {
 }
 
 /**
- * The three props **every** component here takes, which no component declares.
+ * `as`, `render` and `unstyled` are **not here**, and that is the point.
  *
  * They come from `ChakraStylingProps`, which every `*Props` interface inherits through
- * `HTMLChakraProps`, so a table without them is missing three props a reader can genuinely pass —
- * and for a component that adds none of its own (`Container` before its variants, `Circle`,
- * `Float`) the table would otherwise be empty. chakra-ui.com does the same thing with its own
- * `as` and `asChild` rows; `render` is ours, because a Solid element cannot be cloned.
+ * `HTMLChakraProps` — so they belong to the library, not to any component. Appending them as rows
+ * put the same three lines on all 33 tables, saying nothing about the component the reader opened,
+ * and it made "does this component have props?" unanswerable: a table showing only those three
+ * looked identical to one for a component that really adds nothing.
  *
- * Appended rather than expanded from the type, because the rest of what `HTMLChakraProps` carries
- * is the whole style-prop surface and every DOM attribute — several hundred names that would bury
- * these three.
+ * They are named once by the renderer instead (`apps/docs/src/components/props-table.tsx`), in the
+ * same sentence that names the rest of the inherited surface, and documented in full on Box's page
+ * — `### As Prop`, `### render`, `### unstyled`. A table here lists what its component *declares*,
+ * and nothing else.
  */
-const UNIVERSAL_PROPS = [
-  {
-    name: "as",
-    required: false,
-    type: "ValidComponent",
-    defaultValue: null,
-    description: "The element or component to render instead of the default one.",
-  },
-  {
-    name: "render",
-    required: false,
-    type: "(props) => JSX.Element",
-    defaultValue: null,
-    description:
-      "Render an element of your own, given the computed props. A function, never an element — " +
-      "Solid has no `cloneElement`, so an element could only be rendered with its props dropped.",
-  },
-  {
-    name: "unstyled",
-    required: false,
-    type: "boolean",
-    defaultValue: null,
-    description:
-      "Drop the component's own styles. Style props and the `css` prop still apply — the opt-out " +
-      "is of the theme, not of styling.",
-  },
-];
 
 /**
  * Chakra splits a component's own props across two interfaces — `FlexOptions` holds them and
@@ -215,8 +189,7 @@ function foldLocalOptions(interfaces) {
         extends: entry.extends.filter((base) => !byName.has(base)),
         props: rows.sort((a, b) => a.name.localeCompare(b.name)),
       };
-    })
-    .map((entry) => ({ ...entry, props: [...entry.props, ...UNIVERSAL_PROPS] }));
+    });
 }
 
 /** The interface a directory is named after — `color-swatch` → `ColorSwatchProps`. */
@@ -294,7 +267,9 @@ for (const component of componentDirs) {
             description: "",
             // Empty rather than guessed: nothing here declares what such a component extends.
             extends: [],
-            props: [...UNIVERSAL_PROPS],
+            // No rows, which is the honest answer and now a renderable one: the page says the
+            // component adds nothing of its own and names what it inherits.
+            props: [],
           },
         ];
 }

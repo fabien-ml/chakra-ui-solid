@@ -1,0 +1,79 @@
+---
+title: Composition
+description: Learn how to compose components in chakra-ui-solid.
+links:
+  chakra: https://chakra-ui.com/docs/components/concepts/composition
+---
+
+## The `as` Prop
+
+Used to change the underlying HTML element that a component renders. It provides a straightforward
+way to change the underlying element while retaining the component's functionality.
+
+```tsx
+<Heading as="h3">Hello, world!</Heading>
+```
+
+> **TypeScript:** the caveat with the `as` prop is that the type of the component passed to it must
+> be compatible with the component's props. We do not infer the underlying component's props from
+> `as`.
+
+`as` stays a loose `ValidComponent` rather than a generic that re-types props from the element, and
+that is deliberate rather than unfinished: the deep conditional types that would buy you `href` on
+`as="a"` also wreck editor completions across every component in the library.
+
+<Example name="box-with-as-prop" />
+
+## The `render` Prop
+
+Used to compose a component's functionality onto an element you supply — the React version's
+`asChild`, which this library does not have.
+
+It is a **function** that receives the computed props and returns the element, never a JSX element.
+A Solid JSX element is an already-constructed node by the time it reaches us and there is no
+`cloneElement`, so accepting one could only mean rendering it with every computed prop dropped.
+
+```tsx
+<Popover.Trigger render={(props) => <Button {...props}>Open</Button>} />
+```
+
+<Example name="box-with-render-prop" />
+
+That cast is real, and it is narrow. Box types its element props against `HTMLElement`, and Solid's
+`Ref<HTMLElement>` is not assignable to `Ref<HTMLAnchorElement>` — so a `render` target that is a
+**host element narrower than `HTMLElement`** needs a cast. Elements whose interface *is*
+`HTMLElement` — `section`, `article`, `span`, `mark` and their neighbours — need none, and neither
+does a component that accepts `JSX.HTMLAttributes<HTMLElement>`. A part typed against its own
+element, like `Dialog.Trigger` against `HTMLButtonElement`, needs none either.
+
+## The `unstyled` Prop
+
+Used to drop a component's own theme styles while keeping everything else it does. Style props and
+the `css` prop still apply — the opt-out is of the recipe, not of styling.
+
+```tsx
+<Checkmark unstyled css={{ color: "fg.inverted" }} />
+```
+
+This is how one component re-dresses another it is built from, rather than a way to render a bare
+element: a `Checkbox` renders `<Checkmark unstyled>` and hands it its own slot's styles, so the mark
+takes the checkbox's size and colour instead of the checkmark recipe's.
+
+## Best Practices
+
+To avoid common pitfalls when using `as` and `render`, there are a few practices to consider:
+
+- **Forward refs.** A component you pass to `as`, or render from `render`, must put the `ref` it is
+  given on its element — otherwise whatever positions, focuses or measures it has nothing to hold.
+- **Spread props.** It must spread the props it is given too. `render` hands you every computed prop
+  including `class`, and a target that drops them renders unstyled.
+
+```tsx
+const MyComponent = (props: BoxProps) => <Box {...props} />;
+
+// with `as`
+<MyComponent as="button" />
+
+// with `render`
+<Button render={(props) => <MyComponent {...props}>Click me</MyComponent>} />
+```

@@ -1,7 +1,7 @@
 import type { JSX } from "@solidjs/web";
 import { Box, Stack } from "chakra-ui-solid";
 import { For, Show } from "solid-js";
-import type { PropRow } from "~/generated/props-tables";
+import type { PropRow, PropsInterface } from "~/generated/props-tables";
 import { propsTables } from "~/generated/props-tables";
 
 /**
@@ -32,9 +32,10 @@ import { propsTables } from "~/generated/props-tables";
  * is looking up a prop.
  *
  * A missing entry renders **loudly** rather than as an empty box, because an empty box looks
- * intentional. An entry with no rows is a different thing and says so in a row of its own: some
- * components really do add no prop of their own, and `Container`'s two are variants the recipe
- * owns rather than members of any interface here.
+ * intentional. An entry with **no rows** is a different thing and renders no table at all, only its
+ * name and the inherited sentence: some components really do add no prop of their own (`Text`,
+ * `Em`, `VisuallyHidden`), and `Container`'s two are variants the recipe owns rather than members of
+ * any interface here.
  */
 export function PropsTable(props: { component: string; interface?: string }) {
   const entries = () => {
@@ -60,51 +61,112 @@ export function PropsTable(props: { component: string; interface?: string }) {
           // `accent.fg`, a semantic token this preset does not ship, so teal is the nearest thing
           // that keeps a default and a type visually distinct from the prose around them.
           <Box my="6" colorPalette="teal">
-            <Box borderWidth="1px" borderColor="border" borderRadius="l2" overflowX="auto">
-              <Box as="table" width="full" fontSize="sm" borderCollapse="collapse">
-                <Caption>{entry.name}</Caption>
-                <thead>
-                  <tr>
-                    <Th>Prop</Th>
-                    <Th>Default</Th>
-                    <Th>Type</Th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <Show
-                    when={entry.props.length > 0}
-                    fallback={
-                      <tr>
-                        <Td colSpan={3}>No props to display</Td>
-                      </tr>
-                    }
-                  >
+            <Show
+              when={entry.props.length > 0}
+              fallback={
+                // No table at all, rather than a table of three rows that would be the same three
+                // on every such page. The interface is still named, so the section answers "what
+                // does this component add?" with "nothing" instead of looking unfinished.
+                <Box as="p" fontWeight="semibold" fontFamily="mono" fontSize="xs" color="fg">
+                  {entry.name}
+                </Box>
+              }
+            >
+              <Box borderWidth="1px" borderColor="border" borderRadius="l2" overflowX="auto">
+                <Box as="table" width="full" fontSize="sm" borderCollapse="collapse">
+                  <Caption>{entry.name}</Caption>
+                  <thead>
+                    <tr>
+                      <Th>Prop</Th>
+                      <Th>Default</Th>
+                      <Th>Type</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
                     <For each={entry.props}>{(row) => <Row {...row} />}</For>
-                  </Show>
-                </tbody>
-              </Box>
-            </Box>
-            <Show when={entry.extends.length > 0}>
-              <Box as="p" fontSize="sm" color="fg.muted" mt="2">
-                Plus everything it inherits:{" "}
-                <For each={entry.extends}>
-                  {(base, index) => (
-                    <>
-                      <Show when={index() > 0}>{", "}</Show>
-                      <Code>{base}</Code>
-                    </>
-                  )}
-                </For>
-                . Those are the whole style-prop surface and the DOM attributes of the element it
-                renders — several hundred names, listed here as their sources rather than expanded.
+                  </tbody>
+                </Box>
               </Box>
             </Show>
+            <Inherited entry={entry} />
           </Box>
         )}
       </For>
     </Show>
   );
 }
+
+/**
+ * What the component takes but does not declare — the sentence that replaced three table rows.
+ *
+ * It always names `as`, `render` and `unstyled`, because every component takes all three and — Box
+ * excepted, which declares `as` and `render` itself — none of them declares any: they arrive from
+ * `ChakraStylingProps`, through `HTMLChakraProps`. Appended as rows they were the same three lines
+ * on all 33 tables, saying nothing about the component the reader opened, and they made a component
+ * that adds nothing of its own indistinguishable from one that adds three things.
+ *
+ * The heritage clauses are named rather than expanded for the same reason they always were: they
+ * are the whole style-prop surface and every DOM attribute of the rendered element.
+ */
+function Inherited(props: { entry: PropsInterface }) {
+  return (
+    <Box as="p" fontSize="sm" color="fg.muted" mt="2">
+      <Show when={props.entry.props.length === 0}>Adds no prop of its own. It takes </Show>
+      <Show when={props.entry.props.length > 0}>Plus </Show>
+      <Show when={props.entry.extends.length > 0}>
+        everything it inherits —{" "}
+        <For each={props.entry.extends}>
+          {(base, index) => (
+            <>
+              <Show when={index() > 0}>{", "}</Show>
+              <Code>{base}</Code>
+            </>
+          )}
+        </For>
+        , the whole style-prop surface and the DOM attributes of the element it renders, several
+        hundred names listed as their sources rather than expanded — and{" "}
+      </Show>
+      the three every component takes: <CompositionLink hash="the-as-prop">as</CompositionLink>,{" "}
+      <CompositionLink hash="the-render-prop">render</CompositionLink> and{" "}
+      <CompositionLink hash="the-unstyled-prop">unstyled</CompositionLink>.
+    </Box>
+  );
+}
+
+/**
+ * A link to where one of the universal three is documented in full.
+ *
+ * The **Composition** page, not Box's — `as` and `render` are how any component is composed onto
+ * another element, and `unstyled` is how one component re-dresses another it is built from. It is
+ * also where the React version puts the counterpart page (`components/concepts/composition`), whose
+ * `asChild` section ours replaces with `render`.
+ *
+ * A plain anchor, not the router's `DocLink`. This is **content**, and every other content link is
+ * a plain anchor already — `visually-hidden.mdx` writes `[Box](/docs/components/box#render)` in
+ * markdown, which compiles to one. `DocLink` is for the site's chrome, and it wraps the router's
+ * `Link`, whose `useRouter` needs a `RouterProvider` above it: reaching for it here would make
+ * `PropsTable` unmountable outside a router and take its whole test file with it.
+ *
+ * The anchor reaches the element through `render` rather than `as="a"`, because `href` is not on
+ * `BoxProps` — which is the exact limitation the `as` section it links to describes.
+ */
+const CompositionLink = (props: { hash: string; children: string }) => (
+  <Box
+    color="colorPalette.fg"
+    textDecoration="underline"
+    textUnderlineOffset="2px"
+    render={(renderProps) => (
+      <a
+        {...(renderProps as JSX.AnchorHTMLAttributes<HTMLAnchorElement>)}
+        href={`/docs/components/concepts/composition#${props.hash}`}
+      >
+        {renderProps.children}
+      </a>
+    )}
+  >
+    <Code color="colorPalette.fg">{props.children}</Code>
+  </Box>
+);
 
 function Row(props: PropRow) {
   return (

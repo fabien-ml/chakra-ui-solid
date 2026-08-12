@@ -83,6 +83,11 @@ export const docsNav: NavItem[] = [
     url: "components",
     items: [
       {
+        title: "Concepts",
+        url: "concepts",
+        items: [{ title: "Composition", url: "composition" }],
+      },
+      {
         title: "Layout",
         items: [
           { title: "Aspect Ratio", url: "aspect-ratio" },

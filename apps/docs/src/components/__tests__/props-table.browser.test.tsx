@@ -6,6 +6,15 @@ import "../../../styled-system/styles.css";
 import { propsTables } from "../../generated/props-tables";
 import { PropsTable } from "../props-table";
 
+/** The Composition page's source, so the link check reads its real headings rather than a copy. */
+const compositionSource = Object.values(
+  import.meta.glob<string>("../../content/components/concepts/composition.mdx", {
+    eager: true,
+    query: "?raw",
+    import: "default",
+  }),
+)[0] as string;
+
 /**
  * **Every props table names the interface it is showing.**
  *
@@ -26,11 +35,18 @@ afterEach(() => {
   mounted = undefined;
 });
 
-function captionsFor(component: string, iface?: string): string[] {
+/**
+ * The interface names a call renders, table or not.
+ *
+ * An entry whose component declares nothing of its own renders **no table** — the three universal
+ * props are named in a sentence instead of repeated as rows on all 33 pages — so the name is read
+ * from whichever element carries it.
+ */
+function namesFor(component: string, iface?: string): string[] {
   mounted = mount(() => <PropsTable component={component} interface={iface} />);
-  return [...mounted.container.querySelectorAll("table")].map(
-    (table) => table.querySelector("caption")?.textContent ?? "",
-  );
+  return [...mounted.container.querySelectorAll("caption, p[class]:first-child")]
+    .map((element) => element.textContent ?? "")
+    .filter((text) => /Props$/.test(text));
 }
 
 const directories = Object.keys(propsTables);
@@ -48,7 +64,7 @@ describe("every props table names its interface", () => {
 
     // In order, so a caption cannot be right by coincidence on a directory with two interfaces
     // whose tables were rendered the other way round.
-    expect(captionsFor(component)).toEqual(expected);
+    expect(namesFor(component)).toEqual(expected);
   });
 
   it("leads with the interface the directory is named after", () => {
@@ -76,7 +92,7 @@ describe("every props table names its interface", () => {
 
     expect(multiple.length).toBeGreaterThan(0);
     for (const component of multiple) {
-      const captions = captionsFor(component);
+      const captions = namesFor(component);
       expect(new Set(captions).size, component).toBe(captions.length);
       mounted?.dispose();
       mounted = undefined;
@@ -84,7 +100,78 @@ describe("every props table names its interface", () => {
   });
 
   it("names the one table a scoped call renders", () => {
-    expect(captionsFor("color-swatch", "ColorSwatchMixProps")).toEqual(["ColorSwatchMixProps"]);
+    expect(namesFor("color-swatch", "ColorSwatchMixProps")).toEqual(["ColorSwatchMixProps"]);
+  });
+});
+
+describe("the three every component takes", () => {
+  const UNIVERSAL = ["as", "render", "unstyled"];
+
+  it("are appended to no table, and appear only where an interface really declares them", () => {
+    // They come from `ChakraStylingProps` through `HTMLChakraProps`, so they belong to the library
+    // and not to any component. As appended rows they were the same three lines on all 33 tables —
+    // saying nothing about the component the reader opened — and they made a component that adds
+    // nothing of its own look identical to one that adds three things.
+    //
+    // `BoxProps` is the one exception and is not one: Box is the polymorphic primitive and writes
+    // `as` and `render` into its own interface, each with its own JSDoc. The generator reads what is
+    // declared, so those two are Box's rows by the same rule that keeps them off every other table.
+    const carrying = Object.entries(propsTables)
+      .flatMap(([, entries]) => entries)
+      .filter((entry) => entry.props.some((row) => UNIVERSAL.includes(row.name)))
+      .map((entry) => entry.name);
+
+    expect(carrying).toEqual(["BoxProps"]);
+    expect(propsTables.box?.[0]?.props.map((row) => row.name)).toEqual(["as", "render"]);
+  });
+
+  it("are named once per entry, linking into headings that exist", () => {
+    mounted = mount(() => <PropsTable component="color-swatch" />);
+    const links = [...mounted.container.querySelectorAll("a")];
+
+    expect(links.map((a) => a.textContent)).toEqual([...UNIVERSAL, ...UNIVERSAL]);
+
+    // Read against the page's **real headings**, not a hard-coded list. A link into an anchor that
+    // does not exist scrolls nowhere and says nothing — the reader lands at the top of Composition
+    // and concludes we never documented the prop. Renaming a heading there now fails here.
+    const anchors = new Set(
+      [...compositionSource.matchAll(/^##\s+(.+)$/gm)].map(([, heading]) =>
+        (heading ?? "")
+          .toLowerCase()
+          .replace(/`/g, "")
+          .trim()
+          .replace(/[^\w]+/g, "-"),
+      ),
+    );
+    expect(anchors.size).toBeGreaterThan(0);
+
+    for (const link of links) {
+      const href = link.getAttribute("href") ?? "";
+      const [path, hash] = href.split("#");
+      expect(path).toBe("/docs/components/concepts/composition");
+      expect(anchors, href).toContain(hash);
+    }
+  });
+
+  it("are what a component with no props of its own has to say", () => {
+    // The other half of the same fix: `text` declares nothing, so there is no table — and without
+    // this sentence the page would read as though Text took no props at all.
+    mounted = mount(() => <PropsTable component="text" />);
+
+    expect(mounted.container.querySelector("table")).toBeNull();
+    expect(mounted.container.textContent).toContain("TextProps");
+    expect(mounted.container.textContent).toContain("Adds no prop of its own");
+    for (const name of UNIVERSAL) {
+      expect(mounted.container.textContent, name).toContain(name);
+    }
+  });
+
+  it("still names the inherited surface when the component does add props", () => {
+    mounted = mount(() => <PropsTable component="color-swatch" interface="ColorSwatchProps" />);
+
+    expect(mounted.container.querySelector("table")).not.toBeNull();
+    expect(mounted.container.textContent).toContain("HTMLChakraProps");
+    expect(mounted.container.textContent).toContain("the three every component takes");
   });
 });
 

@@ -77,23 +77,7 @@ The `Box` component supports all CSS properties as props, making it easy to styl
 <PropsTable component="box" />
 
 Both rows are read from the interface in `packages/chakra-ui-solid/src/components/box/box.tsx` by the generator,
-not transcribed. The inherited half is named rather than expanded: `JsxStyleProps` is the entire
+not transcribed — and Box is the one component that *declares* `as` and `render` rather than
+inheriting them, which is why they are rows here and a sentence everywhere else. The inherited half is named rather than expanded: `JsxStyleProps` is the entire
 style-prop vocabulary, and `PatchHtmlProps<JSX.HTMLAttributes<HTMLElement>>` is the DOM attribute
 surface with the five `html*` renames applied.
-
-### render
-
-Polymorphism beyond `as` is the `render` prop, on Box and on every part of every component. It is
-a **function** that receives the computed props and returns the element — never a JSX element, and
-never `asChild`. A Solid JSX element is an already-constructed node by the time it reaches us and
-there is no `cloneElement`, so accepting one could only mean dropping every prop that was computed
-for it.
-
-<Example name="box-with-render-prop" />
-
-That cast is real, and it is narrow. Box types its element props against `HTMLElement`, and Solid's
-`Ref<HTMLElement>` is not assignable to `Ref<HTMLAnchorElement>` — so a `render` target that is a
-**host element narrower than `HTMLElement`** needs a cast. Elements whose interface *is*
-`HTMLElement` — `section`, `article`, `span`, `mark` and their neighbours — need none, and neither
-does a component that accepts `JSX.HTMLAttributes<HTMLElement>`. A part typed against its own
-element, like `Dialog.Trigger` against `HTMLButtonElement`, needs none either.
