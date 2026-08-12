@@ -160,7 +160,11 @@ naming a file (`blueprint §1.2`) points there instead.
 - [x] button — A:button · —/1
       `createRecipeContext({ key })`, read as `usePropsContext` + `createRecipeClass` because the children are wrapped when `loading`. `ButtonGroup` is the one that uses `useRecipe({ key })` directly. Also ships `IconButton`, `CloseButton`
 - [x] checkmark — A:checkmark · —/1
-      **The recipes do not compose — the components do**, which this note used to get backwards.
+      **The generated recipe classes do not compose — the components do.** A Checkbox control never
+      carries `.checkmark`; the shared styles are there because the preset inlined
+      `checkmarkRecipe.base` into `checkbox.control` and `checkboxCard.indicator` at authoring time.
+      (This line read "the recipes do not compose" until the `radiomark` row, which is too strong —
+      the recipe *sources* plainly do.)
       `CheckboxIndicator` and `CheckboxCardIndicator` are its only two consumers upstream, and each
       renders `<Checkmark unstyled>` and hands it its own slot's styles through `css`. So the load-
       bearing prop for B4 is `unstyled`, not the recipe key. Still must land before B4. Its glyphs
@@ -186,8 +190,15 @@ naming a file (`blueprint §1.2`) points there instead.
 - [ ] kbd — A:kbd · —/1
 - [ ] link — A:link · —/1
 - [ ] mark — A:mark · —/1
-- [ ] radiomark — A:radiomark · —/1
-      Composed into `radioGroup`/`radioCard` — must land before B4
+- [x] radiomark — A:radiomark · —/1
+      **Both compose, differently.** The preset's `radioGroup`/`radioCard` slot recipes inline
+      `radiomarkRecipe.base` and its size/variant objects, so those styles are already in our
+      generated CSS and this row owes them nothing. What B4 consumes is the **component**:
+      `RadioGroupItemControl` and `RadioCardItemIndicator` each render `<Radiomark unstyled>` and
+      hand it their own slot's styles through `css`, and `radio-card` adds `aria-hidden` at the call
+      site. `class="dot"` is the seam that survives `unstyled` — the slot recipes carry the `& .dot`
+      rule the dropped `.radiomark` class would have supplied. Four `variant` values, not five: no
+      `plain`
 - [ ] separator — A:separator · —/1
 - [ ] skeleton — A:skeleton · —/1
       Plus `SkeletonCircle`, `SkeletonText`

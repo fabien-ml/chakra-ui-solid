@@ -33,6 +33,7 @@
       "loader": "src/components/loader/index.ts",
       "locale": "src/components/locale/index.ts",
       "quote": "src/components/quote/index.ts",
+      "radiomark": "src/components/radiomark/index.ts",
       "simple-grid": "src/components/simple-grid/index.ts",
       "spacer": "src/components/spacer/index.ts",
       "span": "src/components/span/index.ts",

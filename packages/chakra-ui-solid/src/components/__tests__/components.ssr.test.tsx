@@ -32,6 +32,7 @@ import {
   LoaderOverlay,
   LocaleProvider,
   Quote,
+  Radiomark,
   SimpleGrid,
   Spacer,
   Span,
@@ -158,6 +159,9 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </LocaleProvider>
   ),
   Quote: () => <Quote>quoted</Quote>,
+  // Checked, because that is the arm that renders a child — the unchecked one is an empty `span`
+  // and would pass the "did any element come back" check with the dot never built.
+  Radiomark: () => <Radiomark checked />,
   SimpleGrid: () => (
     <SimpleGrid columns={3}>
       <div>cell</div>

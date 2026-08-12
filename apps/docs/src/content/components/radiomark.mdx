@@ -1,0 +1,58 @@
+---
+title: Radiomark
+description: A visual indicator used to show selected and unselected radio states
+links:
+  source: packages/chakra-ui-solid/src/components/radiomark
+  chakra: https://chakra-ui.com/docs/components/radiomark
+---
+
+<Example name="radiomark-basic" />
+
+## Usage
+
+```tsx
+import { Radiomark } from "chakra-ui-solid";
+```
+
+```tsx
+<Radiomark checked />
+```
+
+> `Radiomark` is the mark, not the control. It has no input behind it and nothing to click — a
+> `RadioGroup` supplies the state and the label, and this is what it draws beside them.
+
+## Examples
+
+### States
+
+The Radiomark component supports checked and unchecked states, with optional disabled state.
+
+<Example name="radiomark-states" />
+
+### Variants
+
+Use the `variant` prop to change the visual style of the radiomark.
+
+<Example name="radiomark-variants" />
+
+### Sizes
+
+Use the `size` prop to change the size of the radiomark.
+
+<Example name="radiomark-with-sizes" />
+
+### Colors
+
+Use the `colorPalette` prop to change the color scheme of the radiomark.
+
+<Example name="radiomark-with-colors" />
+
+### Filled
+
+Use the `filled` prop with the `outline` variant to add a background color to the radiomark.
+
+<Example name="radiomark-with-filled" />
+
+## Props
+
+<PropsTable component="radiomark" />

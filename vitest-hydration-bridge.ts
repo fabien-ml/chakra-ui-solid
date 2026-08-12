@@ -79,6 +79,14 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/loader/__tests__/loader.ssr-entry.tsx",
   ),
+  // Conditional too, and the smallest version of it: a checked one renders `span.dot` and an
+  // unchecked one renders nothing, so one sibling's state shifts the hydration key of every sibling
+  // after it. Its `unstyled` arm is the consumer path — the recipe drops out and the `css` prop is
+  // all that names the dot, on both sides.
+  radiomark: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/radiomark/__tests__/radiomark.ssr-entry.tsx",
+  ),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

@@ -33,6 +33,7 @@ export * from "./icon";
 export * from "./loader";
 export * from "./locale";
 export * from "./quote";
+export * from "./radiomark";
 export * from "./simple-grid";
 export * from "./spacer";
 export * from "./span";
