@@ -15,6 +15,7 @@ export type {
 export { chakra } from "@chakra-ui-solid/core";
 export * from "./absolute-center";
 export * from "./aspect-ratio";
+export * from "./badge";
 export * from "./bleed";
 export * from "./box";
 export * from "./button";

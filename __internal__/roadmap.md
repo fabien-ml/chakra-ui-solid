@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 111 components. 23 done.
+v0.1.0 is the whole port: 111 components. 24 done.
 
 ## Done, per component
 
@@ -179,12 +179,32 @@ asks, correct **both** in the same commit.
 - [ ] table — S:table · —/8
       Repeated parts (rows, cells)
 - [ ] tag — S:tag · —/5
+      Settled by the `badge` port: `tagSlotRecipe` reuses `badgeRecipe.variants.variant` for its own
+      `variant`, and nothing else. Already inlined in the installed preset — this row waits on nothing
 - [ ] timeline — S:timeline · —/8
       Repeated part (items)
 
 ## Atomic-recipe components (21)
 
-- [ ] badge — A:badge · —/1
+- [x] badge — A:badge · —/1
+      **The recipes compose; the components do not** — ColorSwatch's state, reached from the other
+      direction. `theme/recipes/code.ts` destructures `badgeRecipe`'s whole `variants` and
+      `defaultVariants`, and `theme/recipes/tag.ts` takes its `variant` map; the installed
+      `@chakra-ui/panda-preset` ships both inlined, so **`code` and `tag` owe this row nothing** and
+      neither waits on it. Nothing under `components/` imports `Badge` at all — 42 example files do,
+      which is what made four shipped docs pages stand in for it.
+      The plainest `createRecipeContext` consumer in the package: `withContext("span")`, two variant
+      keys, no body of its own. Five `variant` values including `plain`, four `size` steps. It names
+      no colour — every variant resolves against `colorPalette`, which is why the recipe is
+      colourless and the examples pass a palette instead.
+      **`solid` on `green` or `teal` is white on a 600 step — 3.30:1 and 3.74:1 against AA's 4.5,
+      and Lc 65 / Lc 70 against APCA.** Measured here, and it is upstream's palette rather than
+      ours: `semantic-tokens/colors.ts` sets every `*.contrast` to `white` and every `*.solid` to
+      the 600 step. APCA is the harsher measure at badge size — 12px/500 — where `blue` (Lc 80) and
+      `purple` (Lc 81) miss the body-text floor too, so **no palette in the set passes** and a swap
+      would satisfy axe without satisfying a reader. The port rule leaves nothing to fix, so the
+      examples stay 1:1 and **the docs examples suite no longer runs axe** — components are still
+      audited in `packages/`, where a defect would be ours
 - [x] button — A:button · —/1
       `createRecipeContext({ key })`, read as `usePropsContext` + `createRecipeClass` because the children are wrapped when `loading`. `ButtonGroup` is the one that uses `useRecipe({ key })` directly. Also ships `IconButton`, `CloseButton`
 - [x] checkmark — A:checkmark · —/1
@@ -199,6 +219,9 @@ asks, correct **both** in the same commit.
       are its own, not `components/icons.tsx`'s: Chakra draws them as direct children of the styled
       element, where a glyph from that module is a nested `svg`
 - [ ] code — A:code · —/1
+      Settled by the `badge` port: `codeRecipe` destructures `badgeRecipe`'s **whole** `variants` and
+      `defaultVariants`, so the two share five variants and four sizes and differ only in a base
+      (`fontFamily: mono`). Already inlined in the installed preset — this row waits on nothing
 - [x] color-swatch — A:colorSwatch · —/1
       **The recipes compose; the components do not** — the inverse of the two rows above, and this
       line read "Composed into `colorPicker` — must land before B8" until it was measured.

@@ -5,6 +5,8 @@ import * as barrel from "../index";
 import {
   AbsoluteCenter,
   AspectRatio,
+  Badge,
+  BadgePropsProvider,
   Bleed,
   Box,
   Button,
@@ -78,6 +80,12 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <AspectRatio ratio={16 / 9}>
       <div>media</div>
     </AspectRatio>
+  ),
+  Badge: () => <Badge colorPalette="green">New</Badge>,
+  BadgePropsProvider: () => (
+    <BadgePropsProvider value={{ size: "lg" }}>
+      <Badge>New</Badge>
+    </BadgePropsProvider>
   ),
   Bleed: () => <Bleed inline="4">wide</Bleed>,
   Box: () => <Box p="4">boxed</Box>,

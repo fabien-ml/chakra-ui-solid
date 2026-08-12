@@ -1,0 +1,52 @@
+---
+title: Badge
+description: Used to highlight an item's status for quick recognition.
+links:
+  source: packages/chakra-ui-solid/src/components/badge
+  chakra: https://chakra-ui.com/docs/components/badge
+---
+
+<Example name="badge-basic" />
+
+## Usage
+
+```tsx
+import { Badge } from "chakra-ui-solid";
+```
+
+```tsx
+<Badge>Badge</Badge>
+```
+
+## Examples
+
+### Icon
+
+Render an icon within the badge directly.
+
+<Example name="badge-with-icon" />
+
+The badge is an `inline-flex` row with a `gap`, so a glyph needs no wrapper — put it before or after
+the label and the row spaces itself.
+
+### Variants
+
+Badges come in different variants.
+
+<Example name="badge-with-variants" />
+
+A fifth, `plain`, drops the box entirely and leaves the text in the palette's foreground colour.
+
+### Sizes
+
+Badges come in different sizes.
+
+<Example name="badge-with-sizes" />
+
+## Props
+
+<PropsTable component="badge" />
+
+The badge names no colour of its own. Every variant resolves against `colorPalette`, which is an
+inherited style prop — so `<Badge colorPalette="green">` and a `colorPalette` on any ancestor pick
+the palette, and the four variants decide how much of it the badge spends.

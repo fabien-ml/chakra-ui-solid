@@ -159,7 +159,7 @@ one `.svg` per glyph). This is what the React docs use too — their examples an
 pages requires rather than a set we chose. Lucide is not a dependency and has no SolidJS 2.0 build;
 the alternative to copying the paths is not importing them.
 
-**One row for twenty-five glyphs**, directory-scoped for the same reason `apps/docs/src/content` is
+**One row for twenty-seven glyphs**, directory-scoped for the same reason `apps/docs/src/content` is
 one row rather than 111. Which upstream file each glyph came from is named in the comment above its
 component, and that is what an audit opens.
 
@@ -174,11 +174,12 @@ component, and that is what an audit opens.
 - **Copyright:** Copyright (c) 2013-present Cole Bemis
 
 Lucide began as a fork of Feather and carries Feather's MIT notice forward for the icons that
-descend from it. **Fifteen of our twenty-five are on that list**, and so owe this second notice as
+descend from it. **Seventeen of our twenty-seven are on that list**, and so owe this second notice as
 well as the ISC one above:
 
-`arrow-left`, `arrow-right`, `arrow-up-right`, `check`, `chevron-down`, `chevron-left`,
-`chevron-right`, `external-link`, `moon`, `plus`, `search`, `terminal`, `type`, `voicemail`, `x`
+`arrow-left`, `arrow-right`, `arrow-up-right`, `at-sign`, `check`, `chevron-down`, `chevron-left`,
+`chevron-right`, `external-link`, `moon`, `plus`, `search`, `star`, `terminal`, `type`, `voicemail`,
+`x`
 
 The other ten — `bell`, `box`, `copy`, `heart`, `menu`, `paint-bucket`, `party-popper`, `phone`,
 `phone-forwarded`, `sun` — are Lucide's own and are covered by the ISC grant alone. No separate row: they are the same file, and

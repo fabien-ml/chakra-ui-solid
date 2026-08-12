@@ -15,6 +15,7 @@
       ".": "src/components/index.ts",
       "absolute-center": "src/components/absolute-center/index.ts",
       "aspect-ratio": "src/components/aspect-ratio/index.ts",
+      "badge": "src/components/badge/index.ts",
       "bleed": "src/components/bleed/index.ts",
       "box": "src/components/box/index.ts",
       "button": "src/components/button/index.ts",
