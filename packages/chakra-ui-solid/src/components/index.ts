@@ -19,6 +19,7 @@ export * from "./bleed";
 export * from "./box";
 export * from "./button";
 export * from "./center";
+export * from "./checkmark";
 export * from "./circle";
 export * from "./container";
 export * from "./em";

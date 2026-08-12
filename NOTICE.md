@@ -106,6 +106,12 @@ are API shape and owe nothing; only the `d` attributes do. Chakra's own header c
 recognisably Lucide's, but Chakra's file is where they were taken from, so that is what the row
 below names.
 
+**Two further glyphs are copied, from a different file.** `Checkmark` draws its own tick and its own
+indeterminate dash rather than reaching for the set above — Chakra's are direct children of the
+element the recipe styles, where the glyph module's are each a nested `svg`. The tick traces the
+same three points either way; the dash has no counterpart there. Same reasoning, so the same row:
+the two shapes are Chakra's, the component around them is API shape and owes nothing.
+
 **The documentation content is different, and it is a derivative.** `apps/docs/src/content` follows
 chakra-ui.com's page structure, section order, example set and — where our API has not changed the
 claim — its sentences. Chakra's docs are covered by the same single MIT grant as their code: one
@@ -130,6 +136,7 @@ fold on the docs home and in every page's footer.
 | ---- | ------------ |
 | `packages/core/src/factory/factory.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/styled-system/factory.tsx` |
 | `packages/chakra-ui-solid/src/components/icons.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
+| `packages/chakra-ui-solid/src/components/checkmark/checkmark.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/checkmark/checkmark.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/site/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |

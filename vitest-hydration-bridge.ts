@@ -56,6 +56,14 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
   // and client must name the same classes — and if they do not, the element is styled by whichever
   // side won, silently.
   box: join(repoRoot, "packages/chakra-ui-solid/src/components/box/__tests__/box.ssr-entry.tsx"),
+  // A `Switch` whose three arms are three different node counts — a `path`, a `polyline`, or
+  // nothing — so the branch the server took decides every hydration key after it. It is also the
+  // only subject rendering an `svg`, where the presentation style props leave as classes and the
+  // two sides have to name the same ones.
+  checkmark: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/checkmark/__tests__/checkmark.ssr-entry.tsx",
+  ),
   // Three trees in one, because Button picks its shape from `loading` and `loadingText` and each
   // shape consumes a different number of hydration keys. It is also the only subject that renders
   // a **props context** on the server — `ButtonGroup` supplies the variants from above.

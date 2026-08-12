@@ -1,0 +1,65 @@
+---
+title: Checkmark
+description:
+  A visual indicator used to show checked, unchecked, or indeterminate states
+links:
+  source: packages/chakra-ui-solid/src/components/checkmark
+  chakra: https://chakra-ui.com/docs/components/checkmark
+---
+
+<Example name="checkmark-basic" />
+
+## Usage
+
+```tsx
+import { Checkmark } from "chakra-ui-solid";
+```
+
+```tsx
+<Checkmark checked />
+```
+
+> `Checkmark` is the mark, not the control. It has no input behind it and nothing to click — a
+> `Checkbox` supplies the state and the label, and this is what it draws inside.
+
+## Examples
+
+### Indeterminate
+
+Use the `indeterminate` prop to show an indeterminate state.
+
+<Example name="checkmark-indeterminate" />
+
+### States
+
+The Checkmark component supports three states: unchecked (default), checked, and indeterminate.
+
+<Example name="checkmark-states" />
+
+### Variants
+
+Use the `variant` prop to change the visual style of the checkmark.
+
+<Example name="checkmark-with-variants" />
+
+### Sizes
+
+Use the `size` prop to change the size of the checkmark.
+
+<Example name="checkmark-with-sizes" />
+
+### Colors
+
+Use the `colorPalette` prop to change the color scheme of the checkmark.
+
+<Example name="checkmark-with-colors" />
+
+### Filled
+
+Use the `filled` prop with the `outline` variant to add a background color to the checkmark.
+
+<Example name="checkmark-with-filled" />
+
+## Props
+
+<PropsTable component="checkmark" />

@@ -1,6 +1,6 @@
 # Third-party notices — `chakra-ui-solid`
 
-This package contains one file derived from another project, listed in the table below.
+This package contains two files derived from another project, listed in the table below.
 
 Reading a reference for its reasoning, its public API shape, or an ARIA pattern owes nothing and
 does not appear here. Only a file that reproduces an upstream's **expression** gets a row, and
@@ -19,12 +19,14 @@ tarball and the only one a consumer who never visits the repository will see.
 `@chakra-ui/react` is a read reference for public API shape, prop names, component anatomy and
 naming, none of which owes anything. What is derived is a set of **SVG paths**: the 18 internal
 glyphs a component renders when the caller passes no icon of their own — the ✕ on a `CloseButton`,
-the chevron on an `Accordion`, the tick on a selected `Menu` item. A copied path is expression
-however few bytes it takes; the components around them are not.
+the chevron on an `Accordion`, the tick on a selected `Menu` item — plus the two `Checkmark` draws
+itself, a tick and an indeterminate dash. A copied path is expression however few bytes it takes;
+the components around them are not.
 
 | File | Derived from |
 | ---- | ------------ |
 | `src/components/icons.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
+| `src/components/checkmark/checkmark.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/checkmark/checkmark.tsx` |
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and

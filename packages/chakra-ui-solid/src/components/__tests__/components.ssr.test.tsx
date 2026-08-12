@@ -11,6 +11,7 @@ import {
   ButtonGroup,
   ButtonPropsProvider,
   Center,
+  Checkmark,
   Circle,
   CloseButton,
   Container,
@@ -94,6 +95,9 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </ButtonPropsProvider>
   ),
   Center: () => <Center>middle</Center>,
+  // Checked, because that is the arm that draws a glyph — the unchecked one renders an empty `svg`
+  // and would pass the "did any element come back" check with the whole `Switch` dead.
+  Checkmark: () => <Checkmark checked />,
   Circle: () => <Circle size="10">1</Circle>,
   // Its default ✕ is a leaf `<svg>` written inside the component rather than hoisted beside it —
   // JSX at module scope is constructed at *import* time and 500s the route before anything renders.

@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 111 components. 22 done.
+v0.1.0 is the whole port: 111 components. 23 done.
 
 ## Done, per component
 
@@ -43,7 +43,8 @@ naming a file (`blueprint §1.2`) points there instead.
 - [ ] carousel — S:carousel · 10/11
       **Duplicate slot `progressText`** (§1.3b)
 - [ ] checkbox — S:checkbox · 4/5
-      Composes the `checkmark` **atomic** recipe from Workstream B
+      Its indicator part renders `<Checkmark unstyled>` and passes it `styles.indicator` — the
+      component, not the `checkmark` recipe, which is shipped
 - [ ] checkbox-card — checkbox · S:checkboxCard · 4/7
       Second public component on one machine
 - [ ] clipboard — ✗clipboard · 6/—
@@ -158,8 +159,13 @@ naming a file (`blueprint §1.2`) points there instead.
 - [ ] badge — A:badge · —/1
 - [x] button — A:button · —/1
       `createRecipeContext({ key })`, read as `usePropsContext` + `createRecipeClass` because the children are wrapped when `loading`. `ButtonGroup` is the one that uses `useRecipe({ key })` directly. Also ships `IconButton`, `CloseButton`
-- [ ] checkmark — A:checkmark · —/1
-      Composed **into** `checkbox`/`checkboxCard` slot recipes — must land before B4
+- [x] checkmark — A:checkmark · —/1
+      **The recipes do not compose — the components do**, which this note used to get backwards.
+      `CheckboxIndicator` and `CheckboxCardIndicator` are its only two consumers upstream, and each
+      renders `<Checkmark unstyled>` and hands it its own slot's styles through `css`. So the load-
+      bearing prop for B4 is `unstyled`, not the recipe key. Still must land before B4. Its glyphs
+      are its own, not `components/icons.tsx`'s: Chakra draws them as direct children of the styled
+      element, where a glyph from that module is a nested `svg`
 - [ ] code — A:code · —/1
 - [ ] color-swatch — A:colorSwatch · —/1
       Composed into `colorPicker` — must land before B8

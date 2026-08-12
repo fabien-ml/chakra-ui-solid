@@ -110,6 +110,19 @@ const chakraReact: AttributionEntry[] = [
     license: "MIT",
     package: "chakra-ui-solid",
   },
+  {
+    // Two more glyphs — the tick a checked Checkmark draws and the dash an indeterminate one draws.
+    // They are not the row above: they come from a different upstream file, the tick is expressed
+    // as a polyline rather than a path, and the dash has no counterpart in the glyph set at all.
+    // (The tick traces the same three points as `CheckIcon` there, which is why the reuse was
+    // considered; it was declined because a nested `svg` is not the markup Chakra renders.) The
+    // component around them is public API shape and owes nothing.
+    file: "packages/chakra-ui-solid/src/components/checkmark/checkmark.tsx",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "packages/react/src/components/checkmark/checkmark.tsx",
+    license: "MIT",
+    package: "chakra-ui-solid",
+  },
 ];
 
 const docsApp: AttributionEntry[] = [
