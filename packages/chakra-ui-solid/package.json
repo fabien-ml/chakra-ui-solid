@@ -28,6 +28,7 @@
       "grid": "src/components/grid/index.ts",
       "group": "src/components/group/index.ts",
       "heading": "src/components/heading/index.ts",
+    "icon": "src/components/icon/index.ts",
       "loader": "src/components/loader/index.ts",
       "locale": "src/components/locale/index.ts",
       "quote": "src/components/quote/index.ts",

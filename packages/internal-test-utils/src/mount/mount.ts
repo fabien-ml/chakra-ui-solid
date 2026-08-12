@@ -9,9 +9,17 @@ export interface MountedComponent {
   dispose: () => void;
 }
 
-export interface MountedElement extends MountedComponent {
-  /** The single element the tree rendered — what a styled primitive's computed-style assertion reads. */
-  element: HTMLElement;
+export interface MountedElement<El extends HTMLElement | SVGElement = HTMLElement>
+  extends MountedComponent {
+  /**
+   * The single element the tree rendered — what a styled primitive's computed-style assertion reads.
+   *
+   * Defaulted to `HTMLElement`, which is what all but one component renders. `Icon` renders an
+   * `svg`, and an `svg` is **not** an `HTMLElement`, so its test asks for the other one by name:
+   * `mountElement<SVGElement>(…)`. A plain union here instead of the parameter would have cost every
+   * existing test its `HTMLElement`, and `getBoundingClientRect` with it.
+   */
+  element: El;
 }
 
 /**
@@ -164,15 +172,17 @@ export function mount(ui: () => JSX.Element): MountedComponent {
  * {@link mount} for a component that renders exactly one element, with that element resolved.
  *
  * Every styled primitive's test wants the same three lines — mount, reach for
- * `container.firstElementChild`, narrow it to an `HTMLElement` — and a test that skipped the
+ * `container.firstElementChild`, narrow it to a styleable element — and a test that skipped the
  * narrowing would read `getComputedStyle(null)` and fail somewhere unhelpful.
  */
-export function mountElement(ui: () => JSX.Element): MountedElement {
+export function mountElement<El extends HTMLElement | SVGElement = HTMLElement>(
+  ui: () => JSX.Element,
+): MountedElement<El> {
   const mounted = mount(ui);
   const element = mounted.container.firstElementChild;
-  if (!(element instanceof HTMLElement)) {
+  if (!(element instanceof HTMLElement) && !(element instanceof SVGElement)) {
     mounted.dispose();
-    throw new Error("expected the tree to render exactly one HTML element");
+    throw new Error("expected the tree to render exactly one HTML or SVG element");
   }
-  return { ...mounted, element };
+  return { ...mounted, element: element as El };
 }

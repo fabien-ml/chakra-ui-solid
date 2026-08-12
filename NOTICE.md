@@ -97,11 +97,14 @@ resolved against the dependency would compute a class with no rule behind it. It
 into `packages/panda-preset/src/container-recipe.ts` with one modification — the `className` — and
 no other recipe or token table is re-emitted anywhere in this repository.
 
-**One SVG path is copied.** `CloseButton` shows a ✕ when the caller passes no icon of their own,
-and that glyph's path data is Chakra's — a copied path is expression however few bytes it takes.
-The component around it is API shape and owes nothing; only the `d` attribute does. It lives inline
-in `close-button.tsx` until the `icon` component ships the shared chevron/check/close set
-(`roadmap.md` line 167), at which point the row moves with it rather than being written twice.
+**A set of SVG paths is copied.** Chakra keeps an internal glyph module — the ✕ a `CloseButton`
+shows, the chevron an `Accordion` points with, the tick a `Menu` marks a selection with — and 24 of
+its components render one when the caller passes no icon of their own. Those 18 glyphs' path data
+is Chakra's, and a copied path is expression however few bytes it takes. The components around them
+are API shape and owe nothing; only the `d` attributes do. Chakra's own header credits
+[react-icons](https://react-icons.github.io/react-icons/) for the ideas and several glyphs are
+recognisably Lucide's, but Chakra's file is where they were taken from, so that is what the row
+below names.
 
 **The documentation content is different, and it is a derivative.** `apps/docs/src/content` follows
 chakra-ui.com's page structure, section order, example set and — where our API has not changed the
@@ -126,7 +129,7 @@ fold on the docs home and in every page's footer.
 | File | Derived from |
 | ---- | ------------ |
 | `packages/core/src/factory/factory.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/styled-system/factory.tsx` |
-| `packages/chakra-ui-solid/src/components/button/close-button.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
+| `packages/chakra-ui-solid/src/components/icons.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/site/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |

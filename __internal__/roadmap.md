@@ -168,8 +168,11 @@ naming a file (`blueprint §1.2`) points there instead.
 - [ ] download-trigger — ✗downloadTrigger · —/1
       Key resolves to nothing in Chakra too
 - [x] heading — A:heading · —/1
-- [ ] icon — A:icon · —/1
-      Plus `createIcon`; the internal chevron/check/close set (`brief-plan` §2.10)
+- [x] icon — A:icon · —/1
+      Plus `createIcon`, and the internal glyph module at `components/icons.tsx` — **18 glyphs, not
+      the "chevron/check/close set" this note used to claim**: upstream exports 19 and 24 component
+      files import 18 of them, `ErrorIcon` alone unused. Read `components/icons.tsx` upstream, not
+      this line
 - [ ] input — A:input · —/1
       Styles Ark's `Field.Input`
 - [ ] input-addon — A:inputAddon · —/1

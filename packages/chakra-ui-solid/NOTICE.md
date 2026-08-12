@@ -17,13 +17,14 @@ tarball and the only one a consumer who never visits the repository will see.
 - **Copyright:** Copyright (c) 2019 Chakra Systems Inc.
 
 `@chakra-ui/react` is a read reference for public API shape, prop names, component anatomy and
-naming, none of which owes anything. What is derived is one **SVG path**: the ✕ a `CloseButton`
-shows when the caller passes no icon of their own. A copied path is expression however few bytes it
-takes; the component around it is not.
+naming, none of which owes anything. What is derived is a set of **SVG paths**: the 18 internal
+glyphs a component renders when the caller passes no icon of their own — the ✕ on a `CloseButton`,
+the chevron on an `Accordion`, the tick on a selected `Menu` item. A copied path is expression
+however few bytes it takes; the components around them are not.
 
 | File | Derived from |
 | ---- | ------------ |
-| `src/components/button/close-button.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
+| `src/components/icons.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and

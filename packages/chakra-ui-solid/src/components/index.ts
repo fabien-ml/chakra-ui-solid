@@ -28,6 +28,7 @@ export * from "./float";
 export * from "./grid";
 export * from "./group";
 export * from "./heading";
+export * from "./icon";
 export * from "./loader";
 export * from "./locale";
 export * from "./quote";

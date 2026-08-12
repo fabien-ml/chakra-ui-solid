@@ -99,11 +99,12 @@ const chakraReact: AttributionEntry[] = [
     package: "core",
   },
   {
-    // One SVG path — the ✕ a `CloseButton` shows when the caller passes no icon. A copied path is
-    // expression however few bytes it takes (`apps/docs/src/components/decorative-box.tsx` is here
-    // for the same reason), where the component around it is API shape and owes nothing. The first
-    // derivative in the `chakra-ui-solid` package, whose NOTICE table was empty until now.
-    file: "packages/chakra-ui-solid/src/components/button/close-button.tsx",
+    // The internal glyph set — 18 SVG paths, the defaults component recipes render when the caller
+    // passes no icon. A copied path is expression however few bytes it takes
+    // (`apps/docs/src/components/decorative-box.tsx` is here for the same reason), where the
+    // components around them are API shape and owe nothing. The ✕ lived in `close-button.tsx` while
+    // it was the only one; it moved here with the rest rather than earning a second row.
+    file: "packages/chakra-ui-solid/src/components/icons.tsx",
     upstreamProject: "chakra-ui/chakra-ui",
     upstreamFile: "packages/react/src/components/icons.tsx",
     license: "MIT",

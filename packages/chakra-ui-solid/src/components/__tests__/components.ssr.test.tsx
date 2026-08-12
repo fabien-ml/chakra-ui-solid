@@ -24,7 +24,9 @@ import {
   Heading,
   HeadingPropsProvider,
   HStack,
+  Icon,
   IconButton,
+  IconPropsProvider,
   Loader,
   LoaderOverlay,
   LocaleProvider,
@@ -129,10 +131,20 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
       <Heading>Title</Heading>
     </HeadingPropsProvider>
   ),
+  Icon: () => (
+    <Icon size="lg">
+      <path d="M20 6 9 17l-5-5" />
+    </Icon>
+  ),
   IconButton: () => (
     <IconButton aria-label="Search">
       <span>⌕</span>
     </IconButton>
+  ),
+  IconPropsProvider: () => (
+    <IconPropsProvider value={{ size: "sm" }}>
+      <Icon />
+    </IconPropsProvider>
   ),
   Loader: () => <Loader text="Saving…">Save</Loader>,
   LoaderOverlay: () => <LoaderOverlay>loading</LoaderOverlay>,

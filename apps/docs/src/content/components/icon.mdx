@@ -1,0 +1,75 @@
+---
+title: Icon
+description: Used to display an svg icon
+links:
+  source: packages/chakra-ui-solid/src/components/icon
+  chakra: https://chakra-ui.com/docs/components/icon
+---
+
+<Example name="icon-basic" />
+
+## Usage
+
+```tsx
+import { Icon } from "chakra-ui-solid";
+```
+
+```tsx
+<Icon />
+```
+
+> Chakra ships no icons of its own, and neither do we. `Icon` styles a glyph you bring — from an
+> icon library, from a pasted `svg`, or from `createIcon` below.
+
+## Examples
+
+### Icon libraries
+
+Wrap any glyph that renders an `svg`, and `Icon` sizes and colours it.
+
+<Example name="icon-with-icon-library" />
+
+> No icon package supports SolidJS 2.0 yet, so the glyphs above are this site's own — SVG path data
+> copied out of [Lucide](https://lucide.dev), each one a small component wrapping a leaf `svg`. That
+> is the same shape a published icon package would have, so this page changes only its imports the
+> day one exists.
+
+### Custom svg
+
+Use the `render` prop to render your own `svg` rather than nesting one inside `Icon`'s.
+
+<Example name="icon-with-custom-svg" />
+
+> This is what Chakra's React version spells `asChild`. The callback is handed the computed props —
+> the recipe's class, the style props, the ref — and places them on the element you write.
+
+### Create Icon
+
+Use the `createIcon` utility for a glyph you reuse enough to name.
+
+<Example name="icon-with-create-icon" />
+
+`path` is a **function** returning the glyph's elements, where Chakra's React version takes the
+elements directly. A JSX value there would be built when the module loads rather than when the
+component renders, which takes a server-rendered route down before anything reaches the page.
+
+For a single-path glyph, `d` is the shorthand:
+
+```tsx
+const DotIcon = createIcon({ d: "M12 12h.01" });
+```
+
+`viewBox` defaults to `0 0 24 24`, and `defaultProps` supplies any `Icon` prop the caller leaves
+unset:
+
+```tsx
+const WideIcon = createIcon({
+  viewBox: "0 0 32 32",
+  d: "M16 16h.01",
+  defaultProps: { size: "sm" },
+});
+```
+
+## Props
+
+<PropsTable component="icon" />
