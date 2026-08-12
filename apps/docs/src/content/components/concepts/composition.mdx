@@ -34,7 +34,7 @@ A Solid JSX element is an already-constructed node by the time it reaches us and
 `cloneElement`, so accepting one could only mean rendering it with every computed prop dropped.
 
 ```tsx
-<Popover.Trigger render={(props) => <Button {...props}>Open</Button>} />
+<Button render={(props) => <MyButton {...props}>Open</MyButton>} />
 ```
 
 <Example name="box-with-render-prop" />
@@ -43,8 +43,8 @@ That cast is real, and it is narrow. Box types its element props against `HTMLEl
 `Ref<HTMLElement>` is not assignable to `Ref<HTMLAnchorElement>` — so a `render` target that is a
 **host element narrower than `HTMLElement`** needs a cast. Elements whose interface *is*
 `HTMLElement` — `section`, `article`, `span`, `mark` and their neighbours — need none, and neither
-does a component that accepts `JSX.HTMLAttributes<HTMLElement>`. A part typed against its own
-element, like `Dialog.Trigger` against `HTMLButtonElement`, needs none either.
+does a component that accepts `JSX.HTMLAttributes<HTMLElement>`. A component whose props are a
+*Chakra* type needs one for a different reason, which Best Practices below spells out.
 
 ## The `unstyled` Prop
 
@@ -56,24 +56,36 @@ the `css` prop still apply — the opt-out is of the recipe, not of styling.
 ```
 
 This is how one component re-dresses another it is built from, rather than a way to render a bare
-element: a `Checkbox` renders `<Checkmark unstyled>` and hands it its own slot's styles, so the mark
-takes the checkbox's size and colour instead of the checkmark recipe's.
+element: a checkbox built on `Checkmark` renders `<Checkmark unstyled>` and hands it its own slot's
+styles, so the mark takes the checkbox's size and colour instead of the checkmark recipe's.
 
 ## Best Practices
 
-To avoid common pitfalls when using `as` and `render`, there are a few practices to consider:
+`as` and `render` both hand your element every prop the component computed for it — the composed
+`class`, the merged `ref`, the children, and the DOM attributes. To avoid common pitfalls, there are
+a few practices to consider:
 
-- **Forward refs.** A component you pass to `as`, or render from `render`, must put the `ref` it is
-  given on its element — otherwise whatever positions, focuses or measures it has nothing to hold.
-- **Spread props.** It must spread the props it is given too. `render` hands you every computed prop
-  including `class`, and a target that drops them renders unstyled.
+- **Spread the props.** A target that picks them off by name loses whichever it did not name — the
+  `class`, the `ref`, an attribute — and nothing errors.
+- **Never destructure them.** They are a live props proxy whose `class` is a getter that recomputes
+  when a style prop changes, so `render={({ class: className }) => …}` reads it once and freezes the
+  element at whatever it was on the first render.
+- **Refs need no forwarding.** Solid has no `forwardRef`: `ref` arrives as an ordinary prop, and the
+  spread applies it whether the target is a host element or another chakra-ui-solid component.
+  Dropping the spread is the only way to lose it.
 
 ```tsx
-const MyComponent = (props: BoxProps) => <Box {...props} />;
+const MyButton = (props: ComponentProps<"button">) => <button {...props} />;
 
-// with `as`
-<MyComponent as="button" />
+// with `as` — Button renders MyButton in place of its own element
+<Button as={MyButton}>Click me</Button>
 
-// with `render`
-<Button render={(props) => <MyComponent {...props}>Click me</MyComponent>} />
+// with `render` — the same target, called with the computed props
+<Button render={(props) => <MyButton {...props}>Click me</MyButton>} />
 ```
+
+Type the target against **the element's** props, as `MyButton` does, rather than against the Chakra
+component's. What a target is handed is the DOM props, and a Chakra props type spells five of those
+attributes `htmlSize`, `htmlWidth`, `htmlHeight`, `htmlTranslate` and `htmlContent` — keeping the
+plain names for the style props of the same name — so a target typed `BoxProps` or `ButtonProps`
+does not accept them without a cast.
