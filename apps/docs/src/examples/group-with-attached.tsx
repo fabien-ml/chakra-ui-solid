@@ -1,20 +1,4 @@
-import { Box, Button, Group, Stack } from "chakra-ui-solid";
-
-/** Chakra's version uses its `Badge`, which has not shipped here yet. */
-const SolidBadge = (props: { colorPalette: string; children: string }) => (
-  <Box
-    colorPalette={props.colorPalette}
-    bg="colorPalette.subtle"
-    color="colorPalette.fg"
-    px="2"
-    py="0.5"
-    borderRadius="l1"
-    fontSize="xs"
-    fontWeight="medium"
-  >
-    {props.children}
-  </Box>
-);
+import { Badge, Button, Group, Stack } from "chakra-ui-solid";
 
 export default function GroupWithAttached() {
   return (
@@ -25,8 +9,12 @@ export default function GroupWithAttached() {
       </Group>
 
       <Group attached>
-        <SolidBadge colorPalette="purple">Commit status</SolidBadge>
-        <SolidBadge colorPalette="green">90+</SolidBadge>
+        <Badge variant="solid" colorPalette="purple">
+          Commit status
+        </Badge>
+        <Badge variant="solid" colorPalette="green">
+          90+
+        </Badge>
       </Group>
     </Stack>
   );

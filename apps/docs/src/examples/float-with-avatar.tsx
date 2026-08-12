@@ -1,4 +1,4 @@
-import { Box, Circle, Float } from "chakra-ui-solid";
+import { Badge, Box, Circle, Float } from "chakra-ui-solid";
 
 export default function FloatWithAvatar() {
   return (
@@ -7,17 +7,9 @@ export default function FloatWithAvatar() {
         FS
       </Circle>
       <Float placement="bottom-end">
-        <Box
-          bg="teal.subtle"
-          color="teal.fg"
-          px="2"
-          py="0.5"
-          borderRadius="l1"
-          fontSize="xs"
-          fontWeight="medium"
-        >
+        <Badge size="sm" variant="solid" colorPalette="teal">
           New
-        </Box>
+        </Badge>
       </Float>
     </Box>
   );

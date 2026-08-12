@@ -35,6 +35,16 @@ Here's an example of how to create a color swatch with an alpha channel.
 
 <Example name="color-swatch-with-alpha" />
 
+### With Badge
+
+Here's an example of how to compose the `ColorSwatch` with a `Badge`.
+
+<Example name="color-swatch-with-badge" />
+
+`boxSize` is a style prop, so it lands in `@layer utilities` and beats the `--swatch-size` the
+`size` variant sets — which is what lets the swatch take its size from the badge's text instead of
+from the scale.
+
 ### Mixed Colors
 
 Use the `ColorSwatchMix` to create a color swatch that contains multiple colors, but retains the size

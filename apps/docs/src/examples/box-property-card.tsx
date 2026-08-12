@@ -1,36 +1,34 @@
-import { Box } from "chakra-ui-solid";
+import { Badge, Box, HStack, Icon, Text } from "chakra-ui-solid";
+import { StarIcon } from "../components/site/icons";
 
 export default function BoxPropertyCard() {
   return (
     <Box maxW="sm" borderWidth="1px" borderColor="border" borderRadius="l2" overflow="hidden">
+      {/* Chakra's version puts an `Image` here, which has not shipped yet. */}
       <Box height="40" bg="bg.emphasized" aria-hidden="true" />
 
       <Box p="4" display="flex" flexDirection="column" gap="2">
-        <Box display="flex" alignItems="center" gap="2">
-          <Box
-            as="span"
-            bg="teal.subtle"
-            color="teal.fg"
-            px="2"
-            py="0.5"
-            borderRadius="l1"
-            fontSize="xs"
-            fontWeight="medium"
-          >
+        <HStack>
+          <Badge colorPalette="teal" variant="solid">
             Superhost
-          </Box>
-          <Box as="span" fontSize="sm" fontWeight="medium" color="fg">
-            {data.rating} ({data.reviewCount})
-          </Box>
-        </Box>
+          </Badge>
+          <HStack gap="1" fontWeight="medium">
+            <Icon color="orange.400">
+              <StarIcon />
+            </Icon>
+            <Text>
+              {data.rating} ({data.reviewCount})
+            </Text>
+          </HStack>
+        </HStack>
 
-        <Box fontWeight="medium" color="fg">
+        <Text fontWeight="medium" color="fg">
           {data.title}
-        </Box>
+        </Text>
 
-        <Box color="fg.muted" fontSize="sm">
+        <HStack color="fg.muted" fontSize="sm">
           {data.formattedPrice} · {data.beds} beds
-        </Box>
+        </HStack>
       </Box>
     </Box>
   );
