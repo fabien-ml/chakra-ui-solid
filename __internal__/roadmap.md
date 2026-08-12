@@ -32,6 +32,26 @@ what the anatomy adds over Zag's. A bare `§n` in a note points into
 [parity-matrix.md](parity-matrix.md), which holds the measurements the notes were drawn from; a note
 naming a file (`blueprint §1.2`) points there instead.
 
+### What a note is worth, and the propagation rule
+
+**The checkbox is the note's provenance.** A note under `- [x]` was checked against
+`__reference-impl__` when the row shipped and corrected in that commit, so it can be read as fact. A
+note under `- [ ]` was written before any of that component's code was read: it is a **prediction**,
+and four of the four component rows ported so far have found theirs wrong. `icon` said "the
+chevron/check/close set", where upstream exports 19 glyphs and 24 files import 18 of them
+(`ErrorIcon` alone unused). `checkmark`, `radiomark` and `color-swatch` each said "Composed into X"
+about a relationship with four possible states, and hit a different one each time — because whether
+the recipe *sources* compose and whether the *components* do are separate questions with separate
+answers, and "composed" names neither. Correcting a note is routine work, not a finding: budget for
+it rather than reporting it.
+
+**A measurement settles every note it touches, not only the row being ported.** This is the failure
+the three composition rows exposed: shipping `radiomark` established how `radiomark` composes into
+`radioGroup` and `radioCard` *in both directions*, that fact was written onto the `radiomark` row —
+and the `radio-group` row went on claiming the old guess for two more ports, one row away from the
+answer, because nothing said to look. When a row's measurement answers a question another row's note
+asks, correct **both** in the same commit.
+
 ## Machine components (45)
 
 - [ ] accordion — S:accordion · 5/6 · M
@@ -96,9 +116,17 @@ naming a file (`blueprint §1.2`) points there instead.
       Second public component on one machine
 - [ ] qr-code — S:qrCode · 5/5
 - [ ] radio-group — S:radioGroup · 6/8
-      `+itemAddon`, `+itemIndicator`. Composes the `radiomark` atomic recipe. Repeated part
+      `+itemAddon`, `+itemIndicator`. Repeated part. **Both compose, and this line said only
+      "Composes the `radiomark` atomic recipe" until the `radiomark` row measured it** (§*Reading a
+      row*, the propagation rule): the preset's `radioGroup` slot recipe inlines
+      `radiomarkRecipe.base` into `itemControl` plus every size and variant, so those styles are
+      already in our generated CSS; and `RadioGroupItemControl` *also* renders `<Radiomark unstyled>`
+      with `css={[styles.itemControl, props.css]}`. The load-bearing prop is `unstyled`
 - [ ] radio-card — radio-group · S:radioCard · 6/10
-      Extends Chakra's *extended* radioGroup anatomy: `+itemContent`, `+itemDescription`
+      Extends Chakra's *extended* radioGroup anatomy: `+itemContent`, `+itemDescription`.
+      Composes `radiomark` the same two ways as `radio-group`, on `itemIndicator` rather than
+      `itemControl`, and adds `aria-hidden` at the call site — measured on the `radiomark` row,
+      where this line said nothing at all
 - [ ] rating-group — S:ratingGroup · 4/5
       `+itemIndicator`. Repeated part
 - [ ] scroll-area — S:scrollArea · 6/6

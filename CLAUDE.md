@@ -95,11 +95,15 @@ SolidJS idioms excepted — those are what the port *is*. Adding a fix Chakra la
 is removing behavior Chakra has. **And nothing ships before what it depends on** — not its source,
 and not its docs page.
 
-**`__reference-impl__` is what a row *is*; the roadmap only says that it exists.** A per-component
-note is a summary written before the code was read, and two have been wrong so far — line 155 named
-the wrong component, line 167 scoped the `icon` row to 6 glyphs where upstream has 19 across 24
-consumers. Open the counterpart under `__reference-impl__/chakra-ui/packages/react/src/` before
-planning a row, grep its real consumers, and correct the note in the same commit as the code.
+**`__reference-impl__` is what a row *is*; the roadmap only says that it exists.** A note under an
+unchecked row is a **prediction written before that component's code was read**, and all four
+component rows ported so far have found theirs wrong — expect it and budget for it rather than
+reporting it as a finding. A note under a **checked** row was verified against the reference when it
+shipped and can be read as fact. Open the counterpart under
+`__reference-impl__/chakra-ui/packages/react/src/` before planning a row, grep its real consumers,
+and correct the note in the same commit as the code — **including every *other* row's note the same
+measurement settles**, which is how `radio-group` kept a wrong one through two ports that had
+already answered it. `roadmap.md` §*Reading a row* carries the detail.
 
 Reading a reference for reasoning, public API shape, or an ARIA pattern owes nothing. Reproducing its
 expression makes the file a derivative: *could someone diff my file against theirs and see the same

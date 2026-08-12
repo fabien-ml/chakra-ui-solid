@@ -33,9 +33,16 @@ function captionsFor(component: string, iface?: string): string[] {
   );
 }
 
-const directories = Object.keys(propsTables).filter((name) => !name.startsWith("__"));
+const directories = Object.keys(propsTables);
 
 describe("every props table names its interface", () => {
+  it("holds only real components", () => {
+    // `scripts/generate-props-tables.mjs` walks `src/components/*`, which contains `__tests__`
+    // alongside the components. It used to emit that as a component of its own, and the filter that
+    // hid it lived here — in the consumer, where the next consumer would not know to repeat it.
+    expect(directories.filter((name) => name.startsWith("__"))).toEqual([]);
+  });
+
   it.each(directories)("%s", (component) => {
     const expected = (propsTables[component] ?? []).map((entry) => entry.name);
 

@@ -219,8 +219,11 @@ function foldLocalOptions(interfaces) {
     .map((entry) => ({ ...entry, props: [...entry.props, ...UNIVERSAL_PROPS] }));
 }
 
+// `__tests__` is a directory beside the components, not one of them. Left in, it emits a
+// `__tests__` "component" whose only rows are the universal three — a table no page asks for and
+// every consumer of this file then has to filter out by name.
 const componentDirs = readdirSync(componentsSrc, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory())
+  .filter((entry) => entry.isDirectory() && !entry.name.startsWith("__"))
   .map((entry) => entry.name)
   .sort();
 
