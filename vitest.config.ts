@@ -115,6 +115,34 @@ export default defineConfig({
         // `docsSrcAlias` only here: the docs app's components are rendered, so this is the one
         // project that can mount them, and it is the project their tests live in.
         resolve: { alias: [...chakraSolidAlias, ...docsSrcAlias] },
+        // Pre-bundling is DECLARED here, never discovered — the same knob the docs app sets, for a
+        // failure that is worse in this project. Vite 8's rolldown dependency **scanner** runs with
+        // JSX disabled, so it dies on the first `.tsx` it walks into and the cold-start scan finds
+        // nothing. Vite then discovers deps as the tests request them, re-optimizes, and issues a
+        // full page reload **mid-run** — which aborts whichever test file was being imported at that
+        // moment:
+        //
+        //   Error: Failed to import test file …/button.browser.test.tsx
+        //   Caused by: TypeError: Failed to fetch dynamically imported module: …
+        //
+        // Nothing in that names the optimizer, and the file it names is whichever one lost the race,
+        // so it reads as a broken component and reproduces nowhere: a warm `node_modules/.vite` (any
+        // second local run) has no discovery to do, and only a cold cache — every CI run — races.
+        //
+        // `noDiscovery` is what makes that impossible rather than unlikely. Its cost is that a new
+        // **CJS** dependency in this project's graph now fails loudly at import ("does not provide
+        // an export named 'default'") until it is added to `include`, which is the trade: a
+        // deterministic error naming the module, instead of a flake naming an innocent test.
+        // ESM dependencies need no entry — unbundled is only slower.
+        //
+        // `axe-core` is the one CJS module here, and the entry has to be the **bare specifier**: an
+        // absolute path resolves without error and pre-bundles nothing (measured). That is what puts
+        // it in the root's `devDependencies` and its version in the catalog — under pnpm's strict
+        // layout a specifier the root cannot resolve is skipped with a warning nothing reads.
+        optimizeDeps: {
+          noDiscovery: true,
+          include: ["axe-core"],
+        },
         test: {
           name: "browser",
           ...projectGlobs("browser"),

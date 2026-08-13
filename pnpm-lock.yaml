@@ -241,6 +241,9 @@ catalogs:
     '@zag-js/utils':
       specifier: 1.43.0
       version: 1.43.0
+    axe-core:
+      specifier: 4.13.0
+      version: 4.13.0
     solid-js:
       specifier: 2.0.0-rc.0
       version: 2.0.0-rc.0
@@ -289,6 +292,9 @@ importers:
       '@zag-js/focus-visible':
         specifier: 'catalog:'
         version: 1.43.0
+      axe-core:
+        specifier: 'catalog:'
+        version: 4.13.0
       babel-preset-solid:
         specifier: 2.0.0-rc.0
         version: 2.0.0-rc.0(@babel/core@7.29.7)(solid-js@2.0.0-rc.0)
@@ -467,7 +473,7 @@ importers:
   packages/internal-test-utils:
     dependencies:
       axe-core:
-        specifier: 4.13.0
+        specifier: 'catalog:'
         version: 4.13.0
       postcss:
         specifier: 8.5.26

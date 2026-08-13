@@ -76,6 +76,14 @@ catalog:
   # other — and the warm-up exists precisely because the second installation throws.
   "@zag-js/focus-visible": 1.43.0
 
+  # axe-core, in the catalog for a reason no other test dependency has: it is the one CJS module in
+  # the `browser` project's graph, so it is the one that MUST be pre-bundled, and `vitest.config.ts`
+  # names it in `optimizeDeps.include` (see the comment there). Vite matches an `include` entry to
+  # an import by resolved file, so the root and `@chakra-ui-solid/internal-test-utils` resolving two
+  # different copies would leave the import unbundled with the entry still pre-bundling something —
+  # the mid-run re-optimization comes back and the `include` line still looks right.
+  axe-core: 4.13.0
+
   # Storybook — the local playground (`testing.md` §7). Pinned exactly for the same reason the Solid
   # trio is, and the reason is Storybook-specific: 10.5's `enhanceContext` loader replaces
   # `HTMLElement.prototype.focus` with an accessor, `@zag-js/focus-visible` reads that property off
