@@ -1,3 +1,4 @@
+import type { JSX } from "@solidjs/web";
 import { createSignal } from "solid-js";
 import type { Meta, StoryObj } from "storybook-solidjs-vite";
 import { Box } from "./box";
@@ -114,6 +115,9 @@ export const As: Story = {
  * props — never a JSX element and never `asChild`. A Solid JSX element is an already-constructed
  * node by the time it reaches us and there is no `cloneElement`, so accepting one could only mean
  * dropping every prop Box computed (`component-blueprint.md` §3.5).
+ *
+ * The cast is the one every `render` target that is not a `div` needs, because Box's props are a
+ * `div`'s (`composition.mdx`, *The `render` Prop*).
  */
 export const RenderProp: Story = {
   render: () => (
@@ -123,7 +127,11 @@ export const RenderProp: Story = {
       color="fg"
       borderRadius="l2"
       borderWidth="1px"
-      render={(props) => <article {...props}>rendered as &lt;article&gt;</article>}
+      render={(props) => (
+        <article {...(props as JSX.HTMLAttributes<HTMLElement>)}>
+          rendered as &lt;article&gt;
+        </article>
+      )}
     />
   ),
 };

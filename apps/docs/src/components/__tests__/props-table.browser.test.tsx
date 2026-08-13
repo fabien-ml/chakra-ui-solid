@@ -107,22 +107,22 @@ describe("every props table names its interface", () => {
 describe("the three every component takes", () => {
   const UNIVERSAL = ["as", "render", "unstyled"];
 
-  it("are appended to no table, and appear only where an interface really declares them", () => {
+  it("are declared by no interface, so they are a row on no table", () => {
     // They come from `ChakraStylingProps` through `HTMLChakraProps`, so they belong to the library
     // and not to any component. As appended rows they were the same three lines on all 33 tables —
     // saying nothing about the component the reader opened — and they made a component that adds
     // nothing of its own look identical to one that adds three things.
     //
-    // `BoxProps` is the one exception and is not one: Box is the polymorphic primitive and writes
-    // `as` and `render` into its own interface, each with its own JSDoc. The generator reads what is
-    // declared, so those two are Box's rows by the same rule that keeps them off every other table.
+    // `BoxProps` used to be the exception, back when Box hand-wrote `as` and `render` into an
+    // interface of its own. It is `chakra("div")` now, so the exception is gone and the rule has no
+    // holes: the generator reads what is *declared*, and nothing declares these.
     const carrying = Object.entries(propsTables)
       .flatMap(([, entries]) => entries)
       .filter((entry) => entry.props.some((row) => UNIVERSAL.includes(row.name)))
       .map((entry) => entry.name);
 
-    expect(carrying).toEqual(["BoxProps"]);
-    expect(propsTables.box?.[0]?.props.map((row) => row.name)).toEqual(["as", "render"]);
+    expect(carrying).toEqual([]);
+    expect(propsTables.box?.[0]?.props).toEqual([]);
   });
 
   it("are named once per entry, linking into headings that exist", () => {

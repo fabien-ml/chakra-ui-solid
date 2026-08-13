@@ -99,11 +99,11 @@ export function PropsTable(props: { component: string; interface?: string }) {
 /**
  * What the component takes but does not declare — the sentence that replaced three table rows.
  *
- * It always names `as`, `render` and `unstyled`, because every component takes all three and — Box
- * excepted, which declares `as` and `render` itself — none of them declares any: they arrive from
- * `ChakraStylingProps`, through `HTMLChakraProps`. Appended as rows they were the same three lines
- * on all 33 tables, saying nothing about the component the reader opened, and they made a component
- * that adds nothing of its own indistinguishable from one that adds three things.
+ * It always names `as`, `render` and `unstyled`, because every component takes all three and none
+ * of them declares any: they arrive from `ChakraStylingProps`, through `HTMLChakraProps`. Appended
+ * as rows they were the same three lines on all 33 tables, saying nothing about the component the
+ * reader opened, and they made a component that adds nothing of its own indistinguishable from one
+ * that adds three things.
  *
  * The heritage clauses are named rather than expanded for the same reason they always were: they
  * are the whole style-prop surface and every DOM attribute of the rendered element.
@@ -142,13 +142,14 @@ function Inherited(props: { entry: PropsInterface }) {
  * `asChild` section ours replaces with `render`.
  *
  * A plain anchor, not the router's `DocLink`. This is **content**, and every other content link is
- * a plain anchor already — `visually-hidden.mdx` writes `[Box](/docs/components/box#render)` in
- * markdown, which compiles to one. `DocLink` is for the site's chrome, and it wraps the router's
+ * a plain anchor already — `visually-hidden.mdx` links the Composition page in markdown, which
+ * compiles to one. `DocLink` is for the site's chrome, and it wraps the router's
  * `Link`, whose `useRouter` needs a `RouterProvider` above it: reaching for it here would make
  * `PropsTable` unmountable outside a router and take its whole test file with it.
  *
  * The anchor reaches the element through `render` rather than `as="a"`, because `href` is not on
- * `BoxProps` — which is the exact limitation the `as` section it links to describes.
+ * `BoxProps` — Box's props are a `div`'s — which is the exact limitation the `as` section it links
+ * to describes.
  */
 const CompositionLink = (props: { hash: string; children: string }) => (
   <Box
@@ -290,9 +291,9 @@ const Td = (props: { children: unknown; width?: string; colSpan?: number }) => (
     color="fg.muted"
     verticalAlign="top"
     width={props.width}
-    // The span is a `td` attribute, and Box types its props against `HTMLAttributes<HTMLElement>`
-    // which `as` never re-types — so the one cell that spans the table reaches it through `render`,
-    // exactly as `box.mdx` documents. Solid spells it `colspan`, as HTML does.
+    // The span is a `td` attribute, and Box types its props against a `div`'s, which `as` never
+    // re-types — so the one cell that spans the table reaches it through `render`, exactly as the
+    // Composition page documents. Solid spells it `colspan`, as HTML does.
     render={
       props.colSpan === undefined
         ? undefined

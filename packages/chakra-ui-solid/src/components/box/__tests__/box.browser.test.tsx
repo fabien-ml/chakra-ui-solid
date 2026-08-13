@@ -4,6 +4,7 @@ import {
   hydrateFixture,
   mount,
 } from "@chakra-ui-solid/internal-test-utils";
+import type { JSX } from "@solidjs/web";
 import { createSignal, flush } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import { Box } from "../box";
@@ -151,7 +152,15 @@ describe("Box — polymorphism", () => {
 
   it("hands the computed props to a `render` prop", () => {
     const element = render(() => (
-      <Box p="4" render={(props) => <article {...props}>rendered</article>} />
+      <Box
+        p="4"
+        // Box's props are a `div`'s, so a `render` target that is any other element needs this
+        // cast — `HTMLDivElement` is not assignable to `<article>`'s `Ref<HTMLElement>`. Every
+        // other component here has always been in the same position (`composition.mdx`).
+        render={(props) => (
+          <article {...(props as JSX.HTMLAttributes<HTMLElement>)}>rendered</article>
+        )}
+      />
     ));
     expect(element.tagName).toBe("ARTICLE");
     expect(getComputedStyle(element).padding).toBe("16px");

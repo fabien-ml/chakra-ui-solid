@@ -299,7 +299,8 @@ asks, correct **both** in the same commit.
 - [x] bleed — ○
       Already routes through `--bleed-*` custom properties
 - [x] box
-      The styling-seam gate. hope-ui's 34-line port is the start
+      The styling-seam gate. `chakra("div")` and nothing else, as upstream is — the hope-ui port it
+      started as was the seam before the factory existed
 - [x] center
 - [x] circle — ○
       `Square` with a radius

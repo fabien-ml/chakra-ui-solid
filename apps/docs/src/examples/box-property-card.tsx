@@ -3,11 +3,11 @@ import { StarIcon } from "../components/site/icons";
 
 export default function BoxPropertyCard() {
   return (
-    <Box maxW="sm" borderWidth="1px" borderColor="border" borderRadius="l2" overflow="hidden">
-      {/* Chakra's version puts an `Image` here, which has not shipped yet. */}
+    <Box maxW="sm" borderWidth="1px">
+      {/* The React version's page puts an `Image` here, which has not shipped yet. */}
       <Box height="40" bg="bg.emphasized" aria-hidden="true" />
 
-      <Box p="4" display="flex" flexDirection="column" gap="2">
+      <Box p="4" spaceY="2">
         <HStack>
           <Badge colorPalette="teal" variant="solid">
             Superhost
@@ -19,13 +19,11 @@ export default function BoxPropertyCard() {
             </Text>
           </HStack>
         </HStack>
-
         <Text fontWeight="medium" color="fg">
           {data.title}
         </Text>
-
-        <HStack color="fg.muted" fontSize="sm">
-          {data.formattedPrice} · {data.beds} beds
+        <HStack color="fg.muted">
+          {data.formattedPrice} • {data.beds} beds
         </HStack>
       </Box>
     </Box>

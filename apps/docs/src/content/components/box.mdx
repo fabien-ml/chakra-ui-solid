@@ -46,15 +46,11 @@ Use the `borderWidth` and `borderColor` prop to apply border styles.
 
 ### As Prop
 
-Use the `as` prop to render a different element.
+Use the `as` prop to render a different component.
 
-> Inspect the DOM to see the rendered element.
+> Inspect the DOM to see the rendered component.
 
 <Example name="box-with-as-prop" />
-
-`as` stays a loose `ValidComponent` rather than a generic that re-types props from the element.
-That is deliberate: the deep conditional types that would buy you `href` on `as="a"` also wreck
-editor completions across every component in the library.
 
 ### Shadow
 
@@ -73,9 +69,3 @@ Here's an example of a property card built with layout primitives.
 The `Box` component supports all CSS properties as props, making it easy to style elements.
 
 <PropsTable component="box" />
-
-Both rows are read from the interface in `packages/chakra-ui-solid/src/components/box/box.tsx` by the generator,
-not transcribed — and Box is the one component that *declares* `as` and `render` rather than
-inheriting them, which is why they are rows here and a sentence everywhere else. The inherited half is named rather than expanded: `JsxStyleProps` is the entire
-style-prop vocabulary, and `PatchHtmlProps<JSX.HTMLAttributes<HTMLElement>>` is the DOM attribute
-surface with the five `html*` renames applied.

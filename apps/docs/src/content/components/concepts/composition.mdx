@@ -39,12 +39,12 @@ A Solid JSX element is an already-constructed node by the time it reaches us and
 
 <Example name="box-with-render-prop" />
 
-That cast is real, and it is narrow. Box types its element props against `HTMLElement`, and Solid's
-`Ref<HTMLElement>` is not assignable to `Ref<HTMLAnchorElement>` — so a `render` target that is a
-**host element narrower than `HTMLElement`** needs a cast. Elements whose interface *is*
-`HTMLElement` — `section`, `article`, `span`, `mark` and their neighbours — need none, and neither
-does a component that accepts `JSX.HTMLAttributes<HTMLElement>`. A component whose props are a
-*Chakra* type needs one for a different reason, which Best Practices below spells out.
+That cast is real, and it is narrow. Every component types its element props against **the element
+it renders** — Box's are a `div`'s, Span's a `span`'s — and Solid's `Ref<HTMLDivElement>` is not
+assignable to `Ref<HTMLAnchorElement>`, so a `render` target that is a **different host element**
+needs a cast. A target that renders the same element needs none, and neither does a component
+typed against the same `JSX.HTMLAttributes`. A component whose props are a *Chakra* type needs one
+for a different reason, which Best Practices below spells out.
 
 ## The `unstyled` Prop
 
