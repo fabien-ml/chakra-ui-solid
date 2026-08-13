@@ -561,9 +561,11 @@ Two properties this buys, and one trap it does not close:
 - **It cannot drift in the direction that matters.** A component gaining a prop gains a table row on
   the next build. A hand-written table would omit it, and a reader would conclude the prop does not
   exist — a failure with no error and no test.
-- **The machine half is better than Chakra's own.** Chakra fetches Ark's prop metadata from
-  `ark-ui.com` at generate time; we read the type from the installed package, so the table is
-  versioned by our lockfile rather than by whatever the network returned.
+- **The machine half would be better than Chakra's own.** Chakra fetches Ark's prop metadata from
+  `ark-ui.com` at generate time; reading the type from the installed package versions the table by
+  our lockfile rather than by whatever the network returned. *Prospective, not built* — see the reach
+  paragraph below: this input has no implementation, and the machine props reach a table today
+  because we declare them ourselves.
 - **The trap: a missing table renders as an empty box, and an empty box looks intentional.** So
   `check:props-tables` asserts an entry for every part component `check:anatomy-parts` knows about
   (`testing.md` §8). No entry is a red build, not a quiet gap.
@@ -571,6 +573,50 @@ Two properties this buys, and one trap it does not close:
 **What fails if the generator itself drifts:** the JSDoc descriptions. Types and defaults are
 mechanical; the sentence beside them is prose, and it is exactly as trustworthy as any comment
 (`definition-of-done.md` §7.4). Stated so nobody reads "generated" as "verified".
+
+**Its reach, as built — one of the three inputs, and how far it walks.** The script implements **our
+own part props** and nothing else: the TypeScript compiler API over
+`packages/chakra-ui-solid/src/components/<component>/**`. Neither the machine's `Props` type nor the
+preset is read. (Its own header numbers the three the other way round from the table above; go by the
+subject, not the digit.)
+
+The first machine component still shipped a correct Root table, because **we re-declare the machine's
+props ourselves** — `CreateCollapsibleProps` writes out the nine `@zag-js/collapsible` keys a consumer
+passes, the eleven in its `props.ts` minus the two the library injects from context. That makes the
+machine input a **deduplication rather than a prerequisite**, and it retires P8-C3's gate as written
+(§7.2): "a non-empty, correct Root props table for the first component page with a machine" now passes
+whether that input exists or not. Two consequences of the walk itself, from `25c7084`:
+
+- **`foldLocalOptions` folds the whole local heritage chain, not one link.** A single hop left
+  `CollapsibleRootProps` with **0** rows — `CollapsibleRootProps` → `CollapsibleRootBaseProps` →
+  `CreateCollapsibleProps`, and only the last declares anything — and left `CloseButtonProps` at
+  **0** the same way, empty since it shipped. They are 9 and 6 now. `IconButtonProps` had its six
+  all along, so the commit message's claim that both were empty is half wrong; what it and
+  `FlexProps`, `FloatProps`, `WrapProps` lost was the *inherited* sentence, because a fold dropped
+  the base's own non-local heritage (`HTMLChakraProps<"button">`, `FlexProperties`, …) along with
+  the base's name. `close-button.mdx` and `icon-button.mdx` both still point at `ButtonProps`, which
+  was the only table with rows; each can point at its own now.
+- **`lazyMount` and `unmountOnExit` are named, never listed — and the sentence that names them is
+  wrong about what they are.** They live on `RenderStrategyProps` in `packages/core`, outside the
+  walked directory, so they reach a table only as an `extends` name — where `Inherited` renders them
+  as *"the whole style-prop surface and the DOM attributes of the element it renders, several hundred
+  names"*. They are neither. Collapsible's page demonstrates `unmountOnExit` in its **Lazy Mounted**
+  example while its own table implies the prop is a DOM attribute, and `lazyMount` appears nowhere on
+  the page at all. **Eleven tables inherit a named interface this way** — also `FlexProperties`,
+  `FloatProperties`, `WrapProperties`, `GroupProps`, `SquareProps`, `GridProps`, `ColorSwatchProps`,
+  `PropsProviderProps<…>`.
+
+  **Widening the walk to `packages/core` is the wrong fix, and would be wrong in the Default column.**
+  `RenderStrategyProps` declares `@default false` for both, but Chakra defaults them to **true** on
+  six components (`dialog`, `drawer`, `tooltip`, `menu`, `action-bar`, `floating-panel` —
+  `parity-matrix.md` §6.1). One shared interface cannot state a per-component default, so folding it
+  would stamp a wrong `false` onto six tables. **The route is to re-declare the two props on each
+  component's own props interface with its own `@default`** — the same thing we already do for the
+  machine's keys rather than reading Zag's types, and for the same reason: the table has to be right
+  per component, not right on average. The renderer owes the other half, splitting its sentence so a
+  named interface is not described as a DOM attribute. Assigned to **Phase 4**; this is the
+  discoverability failure §4.2's own trap paragraph is about, arriving as a *wrong* sentence rather
+  than an empty box.
 
 ### 4.3 Generated pages — tokens and style props
 
@@ -817,7 +863,7 @@ here with their gate and carried to P9 as §8 row 3.
 | **P8-C** | **Split into three at S3b** (**D-142**), because one gate covered three subjects with three different first-existence dates. §4.2 gives the generator three inputs and P8-C asserted all of them at once against a Dialog that does not exist until step 5 | — | see below |
 | **P8-C1** | The generator reads **our own part props** from the TypeScript compiler API with no running system object | **Closed at S3b**: a non-empty, correct table for `Box` — `as` and `render`, with their types and their JSDoc, read from `packages/chakra-ui-solid/src/components/box/box.tsx` | — |
 | **P8-C2** | The generator reads the **recipe's variant map** with no running system object | The variant section of the first component page with a recipe. **Shares its fate with P7-A**, which needs the same map and is already dated step 4 | Step 4 |
-| **P8-C3** | The generator reads a **machine's `Props` type** from `@zag-js/<machine>` through our lockfile | A non-empty, correct Root props table for Dialog — the first component page with a machine | Step 5 |
+| **P8-C3** | The generator reads a **machine's `Props` type** from `@zag-js/<machine>` through our lockfile | ~~A non-empty, correct Root props table for Dialog — the first component page with a machine~~ **This gate no longer tests the assumption.** Collapsible was the first machine page and its Root table is non-empty and correct with input 1 unbuilt, because `CreateCollapsibleProps` declares the machine's nine consumer-facing keys itself (§4.2). A gate that passes either way tests nothing — what would is a **diff** of a declared interface against `@zag-js/<machine>`'s `Props` | **Open**, and no longer blocking a component |
 | **P8-D** | The docs app's Panda run is representative of a consumer's, so `check:css-coverage` against its sheet means what the step-4 run means | `check:docs-consumer-config` (§6.1) — **live from S3b**, which is the half that can pass now. The coverage half needs the check itself and the buildinfo, both step 4 (**D-139**). Note what neither proves: representativeness of one config, not of all | Step 4, every push |
 
 ---

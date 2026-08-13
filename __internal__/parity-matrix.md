@@ -678,6 +678,23 @@ small refactor of a 30-line function, and it is cheap now and annoying after B2 
 the presence-only shape. **Assigned to step 5**, so Dialog's presence and Collapsible's share one
 render strategy from the start.
 
+**Shipped, and the family holds as measured.** `createRenderStrategy(present, options)` lives in
+`@chakra-ui-solid/core` and takes a plain `Accessor<boolean>`; Collapsible passes `api().visible`,
+which stays true through the machine's own `closing` state, so `unmountOnExit` removes the node on
+`animationend` rather than at the start of the close. **No package in the repo depends on
+`@zag-js/presence`**, which is the strongest form of the claim above: family M needed no presence
+instance to be written, only a `present` accessor. The port also confirms the half this section could
+only infer from Ark — `@zag-js/collapsible`'s `getTriggerProps()` emits `aria-controls`
+**unconditionally**, so a Collapsible trigger carries the IDREF while its content is unmounted and
+`AccordionItemTrigger` really is adding that gate itself.
+
+**One thing the family carries that this section did not name.** `connect()` computes
+`skip = !context.get("initial") && open` and drops the content's `data-state` whenever it is true —
+`initial` is set only between a user-driven transition and its `animation.end`. So a content that
+starts open has no `data-state` at all, never matches the recipe's `_open` keyframes, and does not
+animate in on load, while the root, trigger and indicator say `open` throughout. Accordion's item
+content inherits it, which makes this a family-M property rather than a Collapsible one.
+
 ### 6.3 The `aria-controls` override, by component
 
 Six Ark components carry it; all six have a Chakra component, so all six get the one line:
@@ -905,7 +922,7 @@ them is a `useX` machine hook. So:
 
 | Surface | Count | Shape | Lands |
 |---|---|---|---|
-| **`Context`** — `<Dialog.Context>{(api) => …}</Dialog.Context>`, a render prop over the component's own context | **43** components | **Per-component row.** Ten lines, no recipe, no machine props | **With the component's batch.** No separate work item |
+| **`Context`** — `<Dialog.Context>{(api) => …}</Dialog.Context>`, a render prop over the component's own context | **43** components | **Per-component row.** One line, no recipe, no machine props — and a constraint on every *example* that uses one: the render prop is called in the part's body, so it must **return JSX** or the read is untracked and freezes at mount (`component-blueprint.md` §3.2) | **With the component's batch.** No separate work item |
 | **`useX` / `useXContext`** — the machine hook and its context reader | one per machine family | **Per-component row**, exported from the component's own subpath (`chakra-ui-solid/dialog`), **not** from `./hooks` | With the component's batch. `useX` is what `RootProvider` consumes |
 | **`RootProvider`** — `<Dialog.RootProvider value={useDialog(...)}>` | **41** components | **Per-component row**, but it needs `useX` first | With the component's batch |
 | **`PropsProvider`** — a defaults-injection context | **47** components | **One cross-cutting mechanism in `@chakra-ui-solid/core`**, then one thin row per component | **Mechanism at step 5b** (the first batch with two components on one machine, which is where injected defaults first earn their keep); rows with each batch |
@@ -1006,7 +1023,7 @@ preset's animations) → closed at P2, resolved the other way. `plan.md` §11.2'
 | **3** | `plan.md` §10: *"the 56 slot recipes are, correspondingly, the machine surface"* | **False by 15.** 34 slot recipes are driven by a same-named machine, 7 by a machine under another name, and **15 have no machine at all** (§2.1–2.3). The companion claim — all 18 atomic recipes are non-machine — is **exactly true** | **P7** (the DoD's per-kind rules), **P9** |
 | **4** | `component-blueprint.md` §3.1: `dialog`'s duplicated `backdrop` slot is a live trap | **Seven slot recipes duplicate a slot**, not one — `carousel`, `combobox`, `datePicker`, `dialog`, `drawer`, `field`, `splitter` (§1.3b). The cause is the preset hard-coding what Chakra's theme derives. **The generated-CSS coverage check must dedupe or it reports seven permanent false failures** | **P7** (the check) |
 | **5** | `component-blueprint.md` §11.13: `RootProvider` needs *"a public `useDialog` hook (`plan.md` §5.5's `./hooks` subpath)"* | **Measured wrong.** Chakra exports `useDialog` from the **component's own barrel**; `./hooks` is 14 unrelated utility hooks, 7 of which are React re-render machinery and are excluded individually (§5.8, §10). `RootProvider`/`PropsProvider`/`Context` are **per-component rows in each batch**, not a deferred sweep | **P7, P8, P9** |
-| **6** | `component-blueprint.md` §7.2's render strategy takes its `present` from a `@zag-js/presence` instance | **Two presence families.** `collapsible` and `accordion` take it from the **collapsible machine's own `visible`** (§6.2). The render strategy must be source-agnostic, and that refactor lands at **step 5**, not after B2 is written against the presence-only shape | **P7** (the DoD's presence tests) |
+| **6** | `component-blueprint.md` §7.2's render strategy takes its `present` from a `@zag-js/presence` instance | **Two presence families.** `collapsible` and `accordion` take it from the **collapsible machine's own `visible`** (§6.2). The render strategy must be source-agnostic, and that refactor lands at **step 5**, not after B2 is written against the presence-only shape. **Shipped as `createRenderStrategy` in `core`**, and Collapsible is the family-M source exercising it | **P7** (the DoD's presence tests) |
 | **7** | `plan.md` §1.3 treats `swittch` as a spelling oddity in the slot-recipe registry — *"invisible to consumers either way"* | **Wider, and one reference is broken.** `swittch` is also the `cursor` **token** key, while the Switch recipe references `cursor: "switch"` — so the preset's Switch **silently loses its `cursor: pointer`**, where Chakra's runtime theme does not (§1.3c). It is a preset defect, not Chakra behavior, so inheriting it is a divergence. **Our preset adds one `theme.extend.tokens.cursor.switch` key**; the slot-recipe key stays `swittch`, verbatim. The upstream issue now has a concrete defect to report | **P7** (the preset delta, the upstream filing), **P9** |
 | **7b** | `plan.md` §1.3's *"depend, do not vendor"* holds with no expression-tier files outside the `zag-solid` fork | Two preset deltas P6 adds, and they are **not** the same tier: the `cursor.switch` token key is one word and owes nothing; the **`container` recipe** (§1.3a, §2.5) is a recipe **body** reproduced from `@chakra-ui/react` — expression-tier under `CLAUDE.md`, *Reference use*, owing an `@license` header and root + package `NOTICE.md` rows. Plus **six components whose recipe key resolves to nothing in Chakra too** (§2.5), which the coverage check must allow-list | **P7** (the preset, the coverage allow-list), **P9** |
 | **8** | `plan.md` §10's build order ends at step 7 | **Step 5b inserted** (Popover, the floating probe, §8) and **B1–B8** written past step 7 (§9.2). Workstream B keeps its position and carries **45 components**; five of its atomic recipes are hard prerequisites for B3/B4/B8 | **P7** (the DoD is per-batch), **P8** (docs follow the batches) |

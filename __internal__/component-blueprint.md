@@ -325,7 +325,8 @@ upstream key verbatim, file an issue" case.
 
 ### 3.2 The four part shapes
 
-Every part component in this library is one of these. Full code in §11.
+Every part component that **renders an element** is one of these. Full code in §11. `parity-matrix.md`
+§7 hands the fifth — the repeated part — and one part component renders nothing at all, below.
 
 | Shape | Has | Example | Body |
 |---|---|---|---|
@@ -333,6 +334,29 @@ Every part component in this library is one of these. Full code in §11.
 | **B** Presence-gated machine part | A + presence | `Content`, `Backdrop` | A + a `<Show>` gate, presence's `presenceProps`, and presence's `setNode` as the internal ref |
 | **C** Slot-only part | recipe slot only | `Header`, `Body`, `Footer` | `renderStyled` with a `recipeClass` and nothing else |
 | **D** Behavior-only part | context behavior, no slot | `ActionTrigger` | `renderStyled` with a composed handler and no `recipeClass` |
+
+**The `Context` part is none of the shapes** — it renders no element, takes no props but `children`,
+has no slot, and never reaches `renderStyled`. 43 components ship one (`parity-matrix.md` §10). Its
+whole body is one line:
+
+```tsx
+export function CollapsibleContext(props: CollapsibleContextProps): JSX.Element {
+  return props.children(useCollapsibleContext())
+}
+```
+
+**That line is where the hazard is: the call happens once, in the part's own body, which is not a
+tracking scope.** So the render prop must return JSX — a callback returning a plain string reads the
+machine untracked and freezes on the value it had at mount.
+
+```tsx
+{(c) => (c.open ? "Show Less" : "Show More")}                        // frozen at mount
+{(c) => <Show when={c.open} fallback="Show More">Show Less</Show>}   // tracked
+```
+
+The React version writes the bare ternary and it works there, so **every ported example that uses a
+`Context` hits this** — Collapsible's Partial Height did. `tsc` sees nothing (both branches are valid
+`JSX.Element`), and no unit test sees it either; the docs-examples suite is what fails.
 
 ### 3.3 Context: composition, not inheritance
 
@@ -404,12 +428,23 @@ const elementProps = mergeProps(
   open with `if (event.defaultPrevented) return`, so a consumer cannot cancel one by calling
   `preventDefault()` in their own. That is a real ergonomic loss against hope-ui's convention, and it
   is the port target's behavior.
-- A **consumer `id` wins over the machine's**, because `id` is last-wins. Ark ships this; so do we.
-  It is a hazard: the machine resolves both the emitted attribute and its own `getElementById` lookup
-  through the same function (`dialog.dom.ts`), so overriding the attribute alone desynchronizes them.
-  **The supported route is `ids` on the Root** — proven to work, and the retraction of the claim that
-  it could not is `prior-art.md` §8.1. Document it on every Root; do not strip `id` from parts
-  (hope-ui did; Chakra does not).
+- **On a part, a consumer `id` wins over the machine's**, because `id` is last-wins. Ark ships this;
+  so do we. It is a hazard: the machine resolves both the emitted attribute and its own
+  `getElementById` lookup through the same function (`dialog.dom.ts`), so overriding the attribute
+  alone desynchronizes them. **The supported route is `ids` on the Root** — proven to work, and the
+  retraction of the claim that it could not is `prior-art.md` §8.1. Document it on every Root; do not
+  strip `id` from parts (hope-ui did; Chakra does not).
+- **On a Root, `id` never reaches the element at all — it seeds the machine.** This bullet read as one
+  rule for both until Collapsible was ported, and Dialog could not have caught it: Ark's `DialogRoot`
+  renders nothing, so every prop it takes is the machine's by default and the two cases look like one.
+  A Root that *does* render an element splits them, and **40 of the 42 Ark roots that render one put
+  `id` in the machine's half** (`splitCollapsibleProps`, `AccordionRoot`'s inline list, …; the two
+  that do not are `swap` and `toggle`, which have no `id` to split). The root's own attribute becomes
+  `collapsible:{id}`, and `ids` is again the way to name the elements.
+
+  So a Root's props interface **omits the element's `id`** — `Omit<HTMLChakraProps<"div">, "id">` —
+  which also changes its type from `string | false | undefined` to `string`. `RootProvider` is the
+  other way round: it starts no machine, so its `id` is the element's and stays on `HTMLChakraProps`.
 
 **Order 2 — the computed `class`,** resolved by `renderStyled` (`prior-art.md` §2.5), low → high:
 
@@ -633,12 +668,15 @@ the string it already gives us.
 
 ### 4.4 `unstyled`, at two levels
 
-Chakra supports it on the Root (kills every slot) and on each part (kills that slot). Both are two
-lines:
+Chakra supports it on the Root (kills every slot) and on each part (kills that slot). Only the Root
+costs a line:
 
 - Root: `createSlotClasses(..., { unstyled: () => merged.unstyled })` returns empty strings.
-- Part: `recipeClass: () => (props.unstyled ? undefined : ctx.slots().content)`, and `unstyled` is
-  omitted from the forwarded props by `renderStyled` (addition 2).
+- Part: **nothing.** This said `recipeClass: () => (props.unstyled ? undefined : ctx.slots().content)`
+  until Collapsible's four parts were written against it, and the ternary is dead code: `renderStyled`
+  reads `props.unstyled` itself and suppresses both `recipeClass` and `baseStyles` when it is true
+  (addition 2, which also keeps the prop off the element). A part passes `recipeClass` unconditionally
+  and hands `unstyled` straight through in its props bag.
 
 ### 4.5 The seam has no precedent — so the first component is a probe
 
@@ -1346,7 +1384,7 @@ export const DialogTrigger: Component<DialogTriggerProps> = (props) => {
     // and never reach the element (§4.1.1).
     styleSource: props,
     render: props.render,
-    recipeClass: () => (props.unstyled ? undefined : ctx.slots().trigger),
+    recipeClass: () => ctx.slots().trigger,
   })
 }
 ```
@@ -1393,7 +1431,7 @@ export const DialogBackdrop: Component<DialogBackdropProps> = (props) => {
         styleSource: props,
         render: props.render,
         ref: presence.setNode,
-        recipeClass: () => (props.unstyled ? undefined : ctx.slots().backdrop),
+        recipeClass: () => ctx.slots().backdrop,
       })}
     </Show>
   )
@@ -1414,7 +1452,7 @@ export const DialogPositioner: Component<DialogPositionerProps> = (props) => {
         props: elementProps,
         styleSource: props,
         render: props.render,
-        recipeClass: () => (props.unstyled ? undefined : ctx.slots().positioner),
+        recipeClass: () => ctx.slots().positioner,
       })}
     </Show>
   )
@@ -1462,7 +1500,7 @@ export const DialogContent: Component<DialogContentProps> = (props) => {
         styleSource: props,
         render: props.render,
         ref: ctx.contentPresence.setNode,
-        recipeClass: () => (props.unstyled ? undefined : ctx.slots().content),
+        recipeClass: () => ctx.slots().content,
       })}
     </Show>
   )
@@ -1484,7 +1522,7 @@ export const DialogTitle: Component<DialogTitleProps> = (props) => {
     props: elementProps,
     styleSource: props,
     render: props.render,
-    recipeClass: () => (props.unstyled ? undefined : ctx.slots().title),
+    recipeClass: () => ctx.slots().title,
   })
 }
 ```
@@ -1505,7 +1543,7 @@ export const DialogCloseTrigger: Component<DialogCloseTriggerProps> = (props) =>
     props: elementProps,
     styleSource: props,
     render: props.render,
-    recipeClass: () => (props.unstyled ? undefined : ctx.slots().closeTrigger),
+    recipeClass: () => ctx.slots().closeTrigger,
   })
 }
 ```
@@ -1525,7 +1563,7 @@ function createSlotPart(slot: "header" | "body" | "footer"): Component<DialogSlo
       as: (props.as ?? "div") as ValidComponent,
       props,
       render: props.render,
-      recipeClass: () => (props.unstyled ? undefined : ctx.slots()[slot]),
+      recipeClass: () => ctx.slots()[slot],
     })
   }
 }

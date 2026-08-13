@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 111 components. 24 done.
+v0.1.0 is the whole port: 111 components. 33 done.
 
 ## Done, per component
 
@@ -37,13 +37,19 @@ naming a file (`blueprint §1.2`) points there instead.
 **The checkbox is the note's provenance.** A note under `- [x]` was checked against
 `__reference-impl__` when the row shipped and corrected in that commit, so it can be read as fact. A
 note under `- [ ]` was written before any of that component's code was read: it is a **prediction**,
-and four of the four component rows ported so far have found theirs wrong. `icon` said "the
+and four of the five component rows ported so far have found theirs wrong. `icon` said "the
 chevron/check/close set", where upstream exports 19 glyphs and 24 files import 18 of them
 (`ErrorIcon` alone unused). `checkmark`, `radiomark` and `color-swatch` each said "Composed into X"
 about a relationship with four possible states, and hit a different one each time — because whether
 the recipe *sources* compose and whether the *components* do are separate questions with separate
 answers, and "composed" names neither. Correcting a note is routine work, not a finding: budget for
 it rather than reporting it.
+
+**The fifth failed the other way.** `collapsible` said *"the machine-owned presence family (§6.2)"*,
+which was true and settled nothing. The ship still corrected three sections of
+`component-blueprint.md`, two of `parity-matrix.md`, one of `docs-site.md`, and the `accordion` and
+`presence` rows — none of which this note asked about. **A one-clause note is not a cheap correct
+note; it is a prediction that declined to make one**, and it costs the same measurement to close.
 
 **A measurement settles every note it touches, not only the row being ported.** This is the failure
 the three composition rows exposed: shipping `radiomark` established how `radiomark` composes into
@@ -55,7 +61,12 @@ asks, correct **both** in the same commit.
 ## Machine components (45)
 
 - [ ] accordion — S:accordion · 5/6 · M
-      `+itemBody`. **Settles the fifth part shape** (§7). `aria-controls` gated on `collapsible.isUnmounted`
+      `+itemBody`. **Settles the fifth part shape** (§7). The `aria-controls` gate is **Accordion's
+      own line, not the machine's** — the `collapsible` row measured the trigger emitting the IDREF
+      unconditionally, so nothing arrives gated. Ark reads `collapsible.isUnmounted`; ours reads the
+      store's `unmounted`. Family M's render strategy already ships, so this row waits on nothing
+      there — and its item content inherits the `skip` that leaves an initially-open one with no
+      `data-state`
 - [ ] action-bar — popover · S:actionBar · 10/5 · D
       Uses 3 of popover's 10 parts + Chakra-only `separator`, `selectionTrigger`. No trigger part → no `aria-controls` line
 - [ ] avatar — S:avatar · 3/3
@@ -71,8 +82,37 @@ asks, correct **both** in the same commit.
       Recipe key resolves to nothing **in Chakra too** (§2.5). Coverage-check allow-list
 - [ ] code-block — clipboard · S:codeBlock · 6/14
       14 slots, one machine part used. Shiki adapters are consumer-supplied
-- [ ] collapsible — S:collapsible · 4/4 · M
-      The machine-owned presence family (§6.2)
+- [x] collapsible — S:collapsible · 4/4 · M
+      **Family M, confirmed** (§6.2), and the first machine component. No `@zag-js/presence`: the
+      strategy's `present` is the machine's own `visible`, which stays true through the `closing`
+      state, so `unmountOnExit` removes the node on `animationend` rather than when the close
+      begins. `createRenderStrategy(present, options)` in `core` is the source-agnostic half §6.2
+      assigned to step 5 — it shipped here, ahead of the presence family it was split for.
+      **The trigger carries no `aria-controls` gate.** Collapsible's own trigger is
+      `mergeProps(getTriggerProps(), props)` and nothing else, so the IDREF is emitted even while the
+      content is unmounted. The gate lives one level up, in Accordion's item trigger, and belongs to
+      that row.
+      **`connect()` suppresses the content's `data-state` whenever the machine is settled open** —
+      `skip = !context.get("initial") && open`, and `initial` is true only between a user-driven
+      transition and its `animation.end`. So an initially-open content carries no `data-state` and
+      never runs the enter keyframes, and the attribute disappears again once any enter animation
+      finishes; root, trigger and indicator say `open` throughout. Zag's behaviour, not ours, and
+      Accordion's item content inherits the same `skip`.
+      **A consumer `id` seeds the machine rather than naming the root element** — the root's own
+      attribute is `collapsible:{id}`, so `CollapsibleRootProps` is `Omit<HTMLChakraProps<"div">,
+      "id">` and `ids` is the way to control the attributes themselves. `RootProvider` is the other
+      way round: it starts no machine, so its `id` is the element's. That is the Root rule for every
+      machine row, not this one's quirk (blueprint §3.4).
+      **No defaults at all**, unusually: Chakra sets neither `lazyMount` nor `unmountOnExit` on
+      Collapsible, so there is no `withDefaults` call and no forwarded-`undefined` hazard to guard.
+      Zero recipe variants — `collapsibleVariantKeys` is `[]` — and only the `content` slot has a
+      body, so the other three carry a class name and no rules and there is nothing to assert on
+      them. `hidden` is not stripped: the slot sets `overflow` and no `display`, so the UA `[hidden]`
+      rule stands on its own, and a `collapsedHeight`/`collapsedWidth` removes `hidden` entirely and
+      keeps the closed box.
+      `<Collapsible.Context>`'s render prop is called once in the part's **body**, so a callback
+      returning a plain string reads untracked and freezes at mount. It must return JSX — the same
+      holds for the 42 other components with a `Context` part (blueprint §3.2)
 - [ ] color-picker — S:colorPicker · 24/26 · Z
       Largest anatomy in the library. `+channelText`. Floating
 - [ ] combobox — S:combobox · 14/16 · Z ⚠
@@ -109,7 +149,9 @@ asks, correct **both** in the same commit.
 - [ ] popover — S:popover · 10/13 · Z ⚠
       `+header/body/footer`. **The floating probe** (§8). Presence-gated `aria-controls`
 - [ ] presence — Z
-      Headless machine, no anatomy. `chakra(ArkPresence)`; our `createPresence` already lives in `core` (`plan.md` §6)
+      Headless machine, no anatomy. `chakra(ArkPresence)`. **`core` holds no `createPresence`** —
+      blueprint §7.1 does not carry hope-ui's, and what the `collapsible` ship actually put there is
+      `createRenderStrategy`, the `lazyMount`/`unmountOnExit` half over a plain `present` accessor
 - [ ] progress — S:progress · 9/9
       Machine-emitted inline `style` for the fill — legal, not a CIJ mark
 - [ ] progress-circle — progress · S:progressCircle · 9/9
