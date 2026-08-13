@@ -1,8 +1,9 @@
-import type { JSX, ValidComponent } from "@solidjs/web";
-import { type Component, createContext, omit, untrack, useContext } from "solid-js";
+import type { ValidComponent } from "@solidjs/web";
+import { type Component, omit } from "solid-js";
 import type { RenderProp } from "../render/render";
 import { renderStyled } from "../render-styled/render-styled";
 import { withContextDefaults } from "../utils/defaults";
+import { createPropsContext, type PropsProviderProps } from "./props-context";
 import { createRecipeClass, type RecipeFn } from "./recipe";
 
 /** What `renderStyled` is handed once the variants are split off — keys in, no element type out. */
@@ -31,12 +32,6 @@ export interface RecipeContextOptions<Props extends object, Variants extends obj
   variantKeys?: readonly (keyof Variants & keyof Props & string)[];
 }
 
-export interface PropsProviderProps<Props extends object> {
-  /** Props supplied to every matching component below, each one a local prop can override. */
-  value: Partial<Props>;
-  children?: JSX.Element;
-}
-
 /** What {@link createRecipeContext} returns — the two halves of Chakra's seam, plus its reader. */
 export interface RecipeContext<Props extends object> {
   /** Mint the component: props context, recipe class, and the style-prop pipeline, over `tag`. */
@@ -61,55 +56,24 @@ export interface RecipeContext<Props extends object> {
  * export const HeadingPropsProvider = PropsProvider;
  * ```
  *
- * **It adds no styling logic.** `createRecipeClass` still resolves the recipe into the class
- * `renderStyled` carries under `@layer recipes`, and `renderStyled` still owns style props,
- * `class`, `css`, `unstyled`, `as`/`render` and ref merging. What is new here is only the context,
- * which is why `Container`'s hand-written body and a component minted here produce the same element.
+ * **It adds no styling logic, and it owns no context of its own.** The props context is
+ * {@link createPropsContext}, which every machine component reaches for directly; `createRecipeClass`
+ * still resolves the recipe into the class `renderStyled` carries under `@layer recipes`, and
+ * `renderStyled` still owns style props, `class`, `css`, `unstyled`, `as`/`render` and ref merging.
+ * What this composes is a `withContext` over the two, which is why `Container`'s hand-written body
+ * and a component minted here produce the same element.
  *
- * `usePropsContext` is returned separately because the second consumer shape does not fit
- * `withContext`: `Button` wraps its children in a `Loader` when `loading`, so it reads the context
- * itself and calls `createRecipeClass` + `renderStyled` directly.
+ * `usePropsContext` is re-returned because the second consumer shape does not fit `withContext`:
+ * `Button` wraps its children in a `Loader` when `loading`, so it reads the context itself and calls
+ * `createRecipeClass` + `renderStyled` directly.
  */
 export function createRecipeContext<
   Props extends object,
   Variants extends object = Record<never, never>,
 >(options: RecipeContextOptions<Props, Variants> = {}): RecipeContext<Props> {
-  // Defaulted rather than Chakra's `strict: false` plus an undefined check at every read: no
-  // provider is the overwhelmingly common case — a `<Text>` with no ancestor supplying it is not a
-  // mistake — so the empty bag is the answer, not a branch. The repo's other three contexts carry
-  // an `Accessor<Value>`; this one carries a **props object**, for the reason the provider states.
-  const PropsContext = createContext<Partial<Props>>({});
+  const { PropsProvider, usePropsContext } = createPropsContext<Props>();
 
   const variantKeys = options.variantKeys ?? [];
-
-  const usePropsContext = () => useContext(PropsContext);
-
-  const PropsProvider: Component<PropsProviderProps<Props>> = (props) => {
-    // A props object of getters, never the accessor the shape suggests. Solid's `merge` turns a
-    // **function** source into a memo, and `renderStyled` enumerates the merged bag in a component
-    // body — reading a memo there is the `STRICT_READ_UNTRACKED` diagnostic `mount()` fails on
-    // (measured). A plain object enumerates without reading anything, which is the shape
-    // `withDefaults` already uses for the same reason.
-    //
-    // So the key SET is snapshotted here, deliberately untracked, and each VALUE stays lazy — the
-    // same split `renderStyled` makes over its own style props, and what lets
-    // `<ButtonGroup size={size()}>` re-resolve every component below when the signal changes.
-    const provided = Object.defineProperties(
-      {},
-      Object.fromEntries(
-        untrack(() => Object.keys(props.value)).map((key) => [
-          key,
-          {
-            get: () => (props.value as Record<string, unknown>)[key],
-            enumerable: true,
-            configurable: true,
-          },
-        ]),
-      ),
-    ) as Partial<Props>;
-
-    return <PropsContext value={provided}>{props.children}</PropsContext>;
-  };
 
   const withContext =
     (tag: ValidComponent): Component<Props> =>

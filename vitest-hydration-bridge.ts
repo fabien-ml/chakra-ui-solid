@@ -87,6 +87,15 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/radiomark/__tests__/radiomark.ssr-entry.tsx",
   ),
+  // The first **machine** subject, and the first whose branch is decided by a state machine rather
+  // than by a prop the render body reads. Three roots — closed, `defaultOpen`, and `lazyMount` with
+  // no content element at all — so the state the machine started in on the server decides the key of
+  // everything after it. It is also the first subject calling `createUniqueId()`, three times, off
+  // the same counter the `_hk` keys come from.
+  collapsible: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/collapsible/__tests__/collapsible.ssr-entry.tsx",
+  ),
   // Conditional on a **count** rather than a boolean: `ColorSwatchMix` renders a `<For>` over two,
   // three or four colours, so each subject consumes a different number of hydration keys and a
   // miscount shifts every sibling after it. It is also the first subject styled through an inline

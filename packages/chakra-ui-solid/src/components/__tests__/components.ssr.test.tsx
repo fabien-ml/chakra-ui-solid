@@ -16,10 +16,18 @@ import {
   Checkmark,
   Circle,
   CloseButton,
+  CollapsibleContent,
+  CollapsibleContext,
+  CollapsibleIndicator,
+  CollapsiblePropsProvider,
+  CollapsibleRoot,
+  CollapsibleRootProvider,
+  CollapsibleTrigger,
   ColorSwatch,
   ColorSwatchMix,
   ColorSwatchPropsProvider,
   Container,
+  createCollapsible,
   Em,
   EnvironmentProvider,
   Flex,
@@ -114,6 +122,56 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   // Its default ✕ is a leaf `<svg>` written inside the component rather than hoisted beside it —
   // JSX at module scope is constructed at *import* time and 500s the route before anything renders.
   CloseButton: () => <CloseButton />,
+  // Open, because that is the branch whose content element exists: a closed one still renders (it
+  // carries `hidden`), but an open one is the state the machine's `initialState` had to reach on a
+  // server where `onSettled` never runs.
+  CollapsibleContent: () => (
+    <CollapsibleRoot defaultOpen>
+      <CollapsibleContent>body</CollapsibleContent>
+    </CollapsibleRoot>
+  ),
+  CollapsibleContext: () => (
+    <CollapsibleRoot>
+      <CollapsibleContext>
+        {(collapsible) => <span>{collapsible.open ? "open" : "closed"}</span>}
+      </CollapsibleContext>
+    </CollapsibleRoot>
+  ),
+  CollapsibleIndicator: () => (
+    <CollapsibleRoot>
+      <CollapsibleIndicator>▾</CollapsibleIndicator>
+    </CollapsibleRoot>
+  ),
+  CollapsiblePropsProvider: () => (
+    <CollapsiblePropsProvider value={{ defaultOpen: true }}>
+      <CollapsibleRoot>
+        <CollapsibleContent>body</CollapsibleContent>
+      </CollapsibleRoot>
+    </CollapsiblePropsProvider>
+  ),
+  CollapsibleRoot: () => (
+    <CollapsibleRoot>
+      <CollapsibleTrigger>Show</CollapsibleTrigger>
+    </CollapsibleRoot>
+  ),
+  // The one subject that starts its machine outside the component that renders it, which is the
+  // path a server render would take through `createCollapsible` with no Root above it.
+  CollapsibleRootProvider: () => {
+    const Subject = () => {
+      const collapsible = createCollapsible({ defaultOpen: true });
+      return (
+        <CollapsibleRootProvider value={collapsible}>
+          <CollapsibleContent>body</CollapsibleContent>
+        </CollapsibleRootProvider>
+      );
+    };
+    return <Subject />;
+  },
+  CollapsibleTrigger: () => (
+    <CollapsibleRoot>
+      <CollapsibleTrigger>Show</CollapsibleTrigger>
+    </CollapsibleRoot>
+  ),
   // Its colour is an inline `style`, not a class — the one component whose whole appearance is
   // missing from the server's markup if the custom property is not written there.
   ColorSwatch: () => <ColorSwatch value="#bada55" />,

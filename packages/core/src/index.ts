@@ -65,20 +65,21 @@ export type {
   HTMLChakraProps,
 } from "./factory/factory";
 export { chakra } from "./factory/factory";
+export { createComponentContext } from "./internal/create-component-context";
 export type { CreateRegisteredIdOptions } from "./internal/create-registered-id";
 export { createRegisteredId } from "./internal/create-registered-id";
 export type { Locale, LocaleProviderProps, UseFilterProps, UseFilterReturn } from "./locale/locale";
 export { LocaleProvider, useFilter, useLocaleContext } from "./locale/locale";
+export type { PropsContext, PropsProviderProps } from "./recipe/props-context";
+export { createPropsContext } from "./recipe/props-context";
 export type { RecipeClassOptions, RecipeFn, SlotRecipeFn } from "./recipe/recipe";
 export { createRecipeClass, createSlotClasses } from "./recipe/recipe";
-export type {
-  PropsProviderProps,
-  RecipeContext,
-  RecipeContextOptions,
-} from "./recipe/recipe-context";
+export type { RecipeContext, RecipeContextOptions } from "./recipe/recipe-context";
 export { createRecipeContext } from "./recipe/recipe-context";
 export type { RenderElementOptions, RenderProp } from "./render/render";
 export { renderElement } from "./render/render";
+export type { RenderStrategy, RenderStrategyProps } from "./render-strategy/render-strategy";
+export { createRenderStrategy } from "./render-strategy/render-strategy";
 export type { DisplacedHtmlProp, HtmlProps, PatchHtmlProps } from "./render-styled/html-props";
 export { HTML_PROP_RENAMES } from "./render-styled/html-props";
 export type { CssProp, PlainCssValue, RenderStyledOptions } from "./render-styled/render-styled";

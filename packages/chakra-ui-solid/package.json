@@ -22,6 +22,7 @@
       "center": "src/components/center/index.ts",
       "checkmark": "src/components/checkmark/index.ts",
       "circle": "src/components/circle/index.ts",
+      "collapsible": "src/components/collapsible/index.ts",
       "color-swatch": "src/components/color-swatch/index.ts",
       "container": "src/components/container/index.ts",
       "em": "src/components/em/index.ts",
