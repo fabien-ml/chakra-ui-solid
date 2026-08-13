@@ -55,8 +55,8 @@ catalog:
   # together: `@zag-js/core` owns `mergeProps` (which our own `mergeProps` delegates to for the
   # composing keys) and the `Bindable`/`Machine`/`Service` contracts the adapter implements, so a
   # skew between core and the machine packages is a behavior change with no type error to announce
-  # it. The machine packages themselves (`@zag-js/dialog`, …) arrive at milestone 5 and join this
-  # block at the same version.
+  # it. The machine packages themselves join this block at the same version, one per ported row,
+  # starting with `@zag-js/collapsible` below.
   #
   # 1.43.0 is the fork's *target*; 1.42.0 is the baseline it was taken from and the number a
   # re-sync diffs against (`NOTICE.md`, `zag-solid-adapter.md` §1). The three deltas between them are
@@ -64,6 +64,9 @@ catalog:
   "@zag-js/core": 1.43.0
   "@zag-js/types": 1.43.0
   "@zag-js/utils": 1.43.0
+  # The first machine package. It pulls `@zag-js/anatomy` transitively; nothing imports that
+  # directly, so it needs no entry of its own.
+  "@zag-js/collapsible": 1.43.0
   # Two more Zag utilities, on the same pin and for the same reason. `@chakra-ui-solid/core`'s
   # locale context takes `isRTL`/`createFilter` from `i18n-utils` and its environment context takes
   # `getDocument`/`getWindow` from `dom-query` — the same MIT packages Chakra reaches for through

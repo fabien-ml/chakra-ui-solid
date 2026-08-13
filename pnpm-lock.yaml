@@ -223,6 +223,9 @@ catalogs:
     '@tanstack/solid-start':
       specifier: 2.0.0-rc.0
       version: 2.0.0-rc.0
+    '@zag-js/collapsible':
+      specifier: 1.43.0
+      version: 1.43.0
     '@zag-js/core':
       specifier: 1.43.0
       version: 1.43.0
@@ -416,6 +419,9 @@ importers:
       '@chakra-ui-solid/styled-system':
         specifier: workspace:*
         version: link:../styled-system
+      '@zag-js/collapsible':
+        specifier: 'catalog:'
+        version: 1.43.0
     devDependencies:
       '@chakra-ui-solid/internal-test-utils':
         specifier: workspace:*
@@ -2327,6 +2333,12 @@ packages:
 
   '@yuku-toolchain/types@0.8.4':
     resolution: {integrity: sha512-p7JE8flrj7ijZ/qLjHi4UwKqMarMD6zumbKXhrjp2I2iLJOuTYiQyci2U36VlXcUlNyzsY7E/mLnKCHotbzJVw==}
+
+  '@zag-js/anatomy@1.43.0':
+    resolution: {integrity: sha512-hcARaNvhU+jXukKCU4Gz4eXU2oUSlppi15L/MoxcckMum+Pu1HFqjWpllDgjb7RyByHYX6XfFk6ijPRV8EzPpg==}
+
+  '@zag-js/collapsible@1.43.0':
+    resolution: {integrity: sha512-6AqDCYLQI/AdD4gOIlg/msQUkkvdH4WknZCm4dCgJ2v9sRPu7QcCSN83Y/k/PTQqv02V4pVSRQHVHzLosGjShw==}
 
   '@zag-js/core@1.43.0':
     resolution: {integrity: sha512-iIpTu/U1OHKXGjXq/bn/ek32nIKE0lmS2gLdihYmv1jtPXH8hVHaIOXR5KYGfOjMVb4+FiMMCZHlH9MWbLk2iA==}
@@ -6162,6 +6174,16 @@ snapshots:
     optional: true
 
   '@yuku-toolchain/types@0.8.4': {}
+
+  '@zag-js/anatomy@1.43.0': {}
+
+  '@zag-js/collapsible@1.43.0':
+    dependencies:
+      '@zag-js/anatomy': 1.43.0
+      '@zag-js/core': 1.43.0
+      '@zag-js/dom-query': 1.43.0
+      '@zag-js/types': 1.43.0
+      '@zag-js/utils': 1.43.0
 
   '@zag-js/core@1.43.0':
     dependencies:
