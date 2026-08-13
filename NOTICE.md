@@ -188,12 +188,12 @@ The other ten — `bell`, `box`, `copy`, `heart`, `menu`, `paint-bucket`, `party
 ## Project marks
 
 Two places on this site show another project's mark to name that project: the **framework grid**,
-where each cell's logo names the framework it links to, and every **docs page header**, where the
+where each cell's logo names the setup it links to, and every **docs page header**, where the
 two links carry GitHub's mark for the source file and React's for the same page on the React
-version's site. **Nominative use** — identifying a thing by its name and mark — and none of the five
+version's site. **Nominative use** — identifying a thing by its name and mark — and none of the four
 implies endorsement, sponsorship or affiliation.
 
-Every file below is the mark as its project publishes it, with **two exceptions**, recorded here
+Every file below is the mark as its project publishes it, with **one exception**, recorded here
 because "unmodified" is otherwise the claim this section makes.
 
 `project-marks.tsx` holds the two inline marks, each recoloured to `currentColor` because they sit
@@ -203,20 +203,15 @@ React's file says 1. Their file is drawn at a logo's size; at the 18px this sits
 in a 23-unit viewBox falls under a pixel and reads as a smudge. The geometry — three ellipses at 0°,
 60° and 120° about a nucleus, in React's own viewBox — is untouched.
 
-`vite-light.svg` is Vite's
-`logo.svg` with the two parenthesis strokes recoloured from white to `#08060D`: white parentheses
-are invisible against a white page, and Vite publishes a dark-ink version of the lockup
-(`vite-dark.svg`, which carries their wordmark) but none of the bare mark. **The colour is theirs,
-not ours** — `#08060D` is what that lockup uses on a light background. No path, proportion or other
-colour is touched, and `vite-dark.svg` here is their `logo.svg` byte for byte.
+Vite's two files and SolidStart's left with the grid's third cell: SolidStart retired into
+`@solidjs/vite-plugin`'s start mode, so the grid names who owns the server rather than which
+framework compiles the app, and `solid.svg` is the mark that replaced both.
 
 | File | Source | Mark held by |
 | ---- | ------ | ------------ |
 | `apps/docs/src/components/site/project-marks.tsx` | `primer/octicons` — `icons/mark-github-16.svg`, monochrome | GitHub, Inc. |
 | `apps/docs/src/components/site/project-marks.tsx` | `facebook/react` — `fixtures/dom/public/react-logo.svg`, monochrome, stroke 1.6 | Meta Platforms, Inc. |
-| `apps/docs/public/logos/vite-dark.svg` | `vitejs/vite` — `docs/public/logo.svg` | The Vite project |
-| `apps/docs/public/logos/vite-light.svg` | `vitejs/vite` — `docs/public/logo.svg`, parentheses recoloured | The Vite project |
-| `apps/docs/public/logos/solid-start.svg` | `solidjs/solid-docs` — `public/solid-start.svg` | The SolidJS project |
+| `apps/docs/public/logos/solid.svg` | `solidjs/solid-site` — `public/img/logo/without-wordmark/logo.svg` | The SolidJS project |
 | `apps/docs/public/logos/tanstack-light.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-emblem-charcoal.svg` | Tanner Linsley / TanStack |
 | `apps/docs/public/logos/tanstack-dark.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-emblem-white.svg` | Tanner Linsley / TanStack |
 

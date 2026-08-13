@@ -15,6 +15,10 @@ export const Route = createFileRoute("/")({ component: DocsHome });
  * The docs home, in chakra-ui.com's section order — hero, demo strip, design system, frameworks,
  * closing call to action — with five of their sections gone and three of ours in their place.
  *
+ * **Their framework grid survives at two cells rather than three**, and the cut is a measurement
+ * rather than a taste: SolidStart retired into `@solidjs/vite-plugin`'s start mode, so the choice a
+ * SolidJS app still makes is who owns the server, not which framework compiles it.
+ *
  * **What is dropped, and why it is not a judgement about them.** *Used by*, the stats row,
  * testimonials, sponsors and the Pro tier are all claims about a project's standing, and this one
  * has none yet; a landing page that made them would be the first thing on the site that is not
@@ -39,7 +43,13 @@ export const Route = createFileRoute("/")({ component: DocsHome });
 function DocsHome() {
   return (
     <>
-      <Box position="relative" overflowX="hidden" colorPalette="teal">
+      {/* `overflowX="clip"`, never `hidden`. The job here is to clip the ambient blobs sideways,
+        and `overflow-x: hidden` cannot do only that: the spec forces the other axis off `visible`,
+        so this Box computes `overflow-y: auto` and becomes a **second vertical scroll container**
+        inside the page's own. It shows no bar while its content happens to fit exactly, and grows
+        one the moment anything overflows — which is what a mis-sized image in the framework grid
+        did. `clip` clips without establishing a scroll container, which is why it exists. */}
+      <Box position="relative" overflowX="clip" colorPalette="teal">
         <AmbientLights />
 
         {/* The bolt behind the hero, at chakra-ui.com's own offsets. It brings its own colour — the

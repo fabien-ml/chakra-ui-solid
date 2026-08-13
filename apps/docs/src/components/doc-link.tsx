@@ -15,6 +15,12 @@ import { Link } from "@tanstack/solid-router";
  */
 export function DocLink(props: {
   slug: string;
+  /**
+   * A heading id on the destination page, without the `#`. It is a separate prop rather than part
+   * of `slug` because the slug is the splat **param**: a `#` inside it is percent-encoded into the
+   * path and the link resolves to a page that does not exist.
+   */
+  hash?: string;
   class?: string;
   "aria-current"?: "page" | undefined;
   children: JSX.Element;
@@ -23,6 +29,7 @@ export function DocLink(props: {
     <Link
       to="/docs/$"
       params={{ _splat: props.slug }}
+      hash={props.hash}
       class={props.class}
       aria-current={props["aria-current"]}
     >

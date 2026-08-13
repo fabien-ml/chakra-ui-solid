@@ -8,6 +8,12 @@ import { Eyebrow, HighlightHeading, Subheading } from "~/components/site/typogra
  * Where chakra-ui.com closes on a product tier, this page closes on what is missing — the positive
  * form of *a page for an unbuilt component is a promise* (`roadmap.md` §9.2). The absence is stated
  * here rather than left for a reader to discover through a 404.
+ *
+ * **Only one direction of that is true, and the copy used to claim both.** A page never ships ahead
+ * of its component, which is §9.2. The converse — that everything shipped has a page — is not:
+ * `button` ships `Button`, `ButtonGroup`, `IconButton` and `CloseButton`, and only the last two
+ * have pages. So the sidebar is described as a reading list rather than as an inventory of what
+ * exists.
  */
 export function NextStepsSection() {
   return (
@@ -24,18 +30,18 @@ export function NextStepsSection() {
           py={{ base: "10", md: "16" }}
         >
           <Box display="flex" flexDirection="column" gap="4" maxW="3xl">
-            <Eyebrow>What is not here yet</Eyebrow>
+            <Eyebrow>What isn’t here yet</Eyebrow>
             <HighlightHeading level="h2" query="one batch at a time">
-              This library is being built one batch at a time
+              This library ships one batch at a time
             </HighlightHeading>
             <Subheading>
-              A component gets its docs page in the same phase it ships, so anything missing from
-              the sidebar has not been written yet rather than gone undocumented.
+              A page never appears before the component does, though a component can ship before its
+              page. The sidebar is the reading list, not the inventory.
             </Subheading>
             <Box as="p" color="fg.muted" maxW="2xl">
-              Charts are excluded outright, and on a dependency ground rather than a styling one:
-              Chakra's chart tier peer-depends on Recharts and React, and there is no Solid charting
-              substrate to bind to.
+              Charts are the one deliberate gap, and dependencies are the reason rather than
+              styling. Chakra’s chart tier peer-depends on Recharts and React, and Solid has no
+              charting substrate to bind to.
             </Box>
 
             <Box display="flex" flexWrap="wrap" gap="3" mt="6">

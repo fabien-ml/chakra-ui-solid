@@ -8,25 +8,28 @@ import { BlitzIcon } from "~/components/site/logo";
 import { HighlightHeading, Subheading } from "~/components/site/typography";
 
 /**
- * chakra-ui.com's framework grid, ported to the three frameworks a Solid app actually uses — their
- * five are React's (`docs-site.md` §2.2).
+ * chakra-ui.com's framework grid, ported — and it is **two cells rather than their five**, because
+ * a SolidJS app no longer picks a framework. SolidStart retired into `@solidjs/vite-plugin`'s start
+ * mode, TanStack Start is a plugin on the same Vite, and a client-only app is that Vite with one
+ * flag off. What is left to choose between is who owns the server, which is what these two name.
  *
- * **Each cell is a link to that framework's guide**, where theirs is a logo with a `title`
- * attribute — the same grid, doing something when you click it.
+ * **Both cells land on the same page**, at the section for that choice. That is not a shortcut: the
+ * answer for every setup is the identical empty configuration, and
+ * `/docs/get-started/build-setup` measures it rather than asserting it.
  *
- * The logos are each project's own SVG, served from `public/logos/` rather than inlined. Two
- * reasons, both practical: Vite's and SolidStart's carry `<mask>`, `<filter>` and `<clipPath>` ids
- * that would collide across a page once inlined, and an `<img>` keeps ~31 KB of path data out of
- * every HTML document the prerender writes.
+ * The logos are each project's own SVG, served from `public/logos/` rather than inlined, so the
+ * generic `id="a"`…`id="d"` gradient ids in Solid's mark cannot collide with anything and ~4 KB of
+ * path data stays out of every HTML document the prerender writes.
  *
  * **Each is the mark alone, never a lockup carrying the project's name.** The cell prints that name
  * underneath as text, so a wordmark in the image says it twice — which is why TanStack's emblem is
- * here rather than their stacked logo, and why Vite's bare `logo.svg` is here rather than the
- * `VITE(⚡)` lockup that is the only form they publish a dark-ink version of.
+ * here rather than their stacked logo, and why Solid's is the `without-wordmark` file.
  */
 interface Framework {
   title: string;
   slug: string;
+  /** The heading id the cell lands on, so a two-cell grid still answers two different questions. */
+  hash: string;
   logo: string;
   /** Only where the mark, or a part of it, would vanish against one of the two backgrounds. */
   logoDark?: string;
@@ -34,19 +37,15 @@ interface Framework {
 
 const frameworks: Framework[] = [
   {
-    title: "Vite",
-    slug: "get-started/frameworks/vite",
-    logo: "/logos/vite-light.svg",
-    logoDark: "/logos/vite-dark.svg",
-  },
-  {
-    title: "SolidStart",
-    slug: "get-started/frameworks/solid-start",
-    logo: "/logos/solid-start.svg",
+    title: "Start mode",
+    slug: "get-started/build-setup",
+    hash: "server-rendered-apps",
+    logo: "/logos/solid.svg",
   },
   {
     title: "TanStack Start",
-    slug: "get-started/frameworks/tanstack-start",
+    slug: "get-started/build-setup",
+    hash: "tanstack-start",
     logo: "/logos/tanstack-light.svg",
     logoDark: "/logos/tanstack-dark.svg",
   },
@@ -76,13 +75,19 @@ export function FrameworkSection() {
           textAlign="center"
         >
           {/* The `\n` is a hard break — a `<br />` here would make the highlight split silently
-            miss and the phrase would render unhighlighted (`~/components/site/typography`). */}
-          <HighlightHeading level="h2" query="framework" maxW="xl">
-            {"Works with your favorite\nSolidJS framework"}
+            miss and the phrase would render unhighlighted (`~/components/site/typography`).
+
+            **The highlight is the last phrase, and it is what the reader gets** — the same shape as
+            the parity heading, which ends on *without the runtime headache* rather than on the
+            absence it describes. *Nothing to configure* is the fact; *configures itself* is the
+            thing that happens for them, and it is also literally what was measured: the plugin
+            derives the settings from the dependency tree. */}
+          <HighlightHeading level="h2" query="configures itself" maxW="xl">
+            {"Whichever owns your server,\nthe build configures itself"}
           </HighlightHeading>
-          <Subheading maxW="md">
-            One guide each, one screen long, because the difference between them is a build setting
-            rather than a provider.
+          <Subheading maxW="lg">
+            Both run on the same Vite plugin, and it works out what our packages need from your
+            dependency tree.
           </Subheading>
         </Box>
 
@@ -113,7 +118,11 @@ export function FrameworkSection() {
                 focusRing="outside"
                 _hover={{ bg: "bg.subtle", color: "fg" }}
                 render={(props) => (
-                  <DocLink slug={framework.slug} class={props.class as string}>
+                  <DocLink
+                    slug={framework.slug}
+                    hash={framework.hash}
+                    class={props.class as string}
+                  >
                     {props.children}
                   </DocLink>
                 )}

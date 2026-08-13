@@ -1,5 +1,5 @@
 import type { JSX } from "@solidjs/web";
-import { Box } from "chakra-ui-solid";
+import { Badge, Box, Checkmark, ColorSwatch, Spinner, Stack } from "chakra-ui-solid";
 import { Container } from "~/components/container";
 import { DocLink } from "~/components/doc-link";
 import { DemoFrame, DemoStrip } from "~/components/site/demo-frame";
@@ -7,6 +7,7 @@ import { ArrowRightIcon, PartyPopperIcon, TerminalIcon } from "~/components/site
 import { DocLinkButton } from "~/components/site/link-button";
 import { HighlightHeading, Subheading } from "~/components/site/typography";
 import { DISCLAIMER } from "~/config";
+import { sidebarGroups } from "~/lib/site-map";
 
 /**
  * The hero, in chakra-ui.com's order and at their length: announcement pill, heading with one
@@ -63,6 +64,18 @@ export function HeroSection() {
   );
 }
 
+/**
+ * Counted off the sidebar rather than written down, because a number in this pill is a claim that
+ * goes stale every batch — and the previous one did, sitting at *Box is the first component
+ * shipped* long after it was not. `Concepts` is a group of prose pages, so it is excluded: the
+ * count means components a reader can open, which is exactly what the sidebar already lists.
+ */
+function shippedComponentCount() {
+  return sidebarGroups("components")
+    .filter((group) => group.title !== "Concepts")
+    .reduce((total, group) => total + group.pages.length, 0);
+}
+
 function AnnouncementPill() {
   return (
     <Box
@@ -92,7 +105,7 @@ function AnnouncementPill() {
       <Box as="span" display="inline-flex" flexShrink="0">
         <PartyPopperIcon />
       </Box>
-      Early — Box is the first component shipped
+      Early days: {shippedComponentCount()} components shipped
       <Box as="span" display="inline-flex" flexShrink="0">
         <ArrowRightIcon />
       </Box>
@@ -109,11 +122,18 @@ function AnnouncementPill() {
  * be dropped: without it a reader installs, runs, and every component renders naked with nothing
  * anywhere saying why (`plan.md` §4.4). The install page states all three at length, and the button
  * beside this line goes there.
+ *
+ * **`Requires` prefixes the strip so no item has to qualify itself.** The Panda entry read *Panda
+ * CSS in your build*, which is the precise fact and the wrong register for a landing page — a
+ * half-sentence sitting between two noun phrases, explaining a build step to a reader who has not
+ * agreed to install anything yet. One leading verb covers all three, and *Panda CSS* stops reading
+ * as something we use and starts reading as something they need. `PANDA_PREREQUISITE` is where the
+ * precise version lives, verbatim, on the page that asks for the install.
  */
 function Requirements() {
   return (
     <Box as="p" fontSize="sm" color="fg.subtle">
-      SolidJS 2.0 · Panda CSS in your build · ESM only
+      Requires SolidJS 2.0 · Panda CSS · ESM only
     </Box>
   );
 }
@@ -186,24 +206,48 @@ function InstallCommand() {
 }
 
 /**
- * Chakra's strip demos five machine components. Ours demos the one that has shipped, five ways —
- * and says so in the captions rather than dressing five boxes up as five components. `roadmap.md`
- * §9.2's rule in its positive form: the absence is stated rather than left for a reader to find.
+ * Chakra's strip demos five machine components. Ours mixes **real components with the styling API
+ * underneath them**, because both are the claim: the components are Chakra's part-for-part, and the
+ * style props beside them are what compiles to a stylesheet instead of running.
+ *
+ * It used to demo Box five ways and say so, which was honest when Box was the only component that
+ * had shipped and became the page's stalest sentence once it was not (`roadmap.md` §9.2 — the
+ * absence is stated, but so is the presence).
+ *
+ * **Nothing in flight appears here.** A frame is a claim that a reader can go and use the thing, so
+ * a component earns one when its docs page is live, not when its source lands.
  */
 function ComponentDemos() {
   return (
     <DemoStrip>
-      <DemoFrame label="Box">
-        <Box
-          bg="colorPalette.solid"
-          color="colorPalette.contrast"
-          px="5"
-          py="3"
-          borderRadius="l2"
-          fontWeight="medium"
-        >
-          This is the Box
-        </Box>
+      <DemoFrame label="Badge">
+        <Stack direction="row">
+          <Badge variant="solid">Solid</Badge>
+          <Badge variant="subtle">Subtle</Badge>
+          <Badge variant="outline">Outline</Badge>
+        </Stack>
+      </DemoFrame>
+
+      <DemoFrame label="Checkmark">
+        <Stack direction="row" align="center">
+          <Checkmark checked />
+          <Checkmark indeterminate />
+          <Checkmark />
+          <Checkmark checked disabled />
+        </Stack>
+      </DemoFrame>
+
+      <DemoFrame label="Color Swatch">
+        <Stack direction="row" align="center">
+          <ColorSwatch value="#bada55" />
+          <ColorSwatch value="#0ea5e9" />
+          <ColorSwatch value="#f97316" />
+          <ColorSwatch value="#a855f7" />
+        </Stack>
+      </DemoFrame>
+
+      <DemoFrame label="Spinner">
+        <Spinner />
       </DemoFrame>
 
       <DemoFrame label="Style props">

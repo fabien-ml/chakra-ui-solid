@@ -206,28 +206,18 @@ export const noticeOnlyPaths: NoticeOnlyPath[] = [
       "as its project publishes it.",
   },
   {
-    path: "apps/docs/public/logos/vite-dark.svg",
+    path: "apps/docs/public/logos/solid.svg",
     reason:
-      "Not our derivative. Another project's mark, shown to name the framework its cell links " +
-      "to — nominative use, which owes a row and no header. Vite's own `logo.svg`, byte for byte.",
-  },
-  {
-    path: "apps/docs/public/logos/vite-light.svg",
-    reason:
-      "The same file with its two parenthesis strokes recoloured, because white ones are " +
-      "invisible on a white page and Vite publishes no dark-ink version of the bare mark. The " +
-      "colour is `#08060D`, taken from their own light-background lockup rather than chosen here.",
-  },
-  {
-    path: "apps/docs/public/logos/solid-start.svg",
-    reason: "Nominative use, as `vite-dark.svg`.",
+      "Not our derivative. Another project's mark, shown to name the setup its cell links to — " +
+      "nominative use, which owes a row and no header. SolidJS's own `logo.svg`, byte for byte, " +
+      "and the `without-wordmark` file because the cell prints the name underneath as text.",
   },
   {
     path: "apps/docs/public/logos/tanstack-light.svg",
-    reason: "Nominative use, as `vite-dark.svg`.",
+    reason: "Nominative use, as `solid.svg`.",
   },
   {
     path: "apps/docs/public/logos/tanstack-dark.svg",
-    reason: "Nominative use, as `vite-dark.svg`.",
+    reason: "Nominative use, as `solid.svg`.",
   },
 ];
