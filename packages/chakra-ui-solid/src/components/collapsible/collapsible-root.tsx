@@ -6,7 +6,7 @@ import {
   withContextDefaults,
 } from "@chakra-ui-solid/core";
 import { collapsible } from "@chakra-ui-solid/styled-system/recipes";
-import type { ComponentProps, JSX } from "@solidjs/web";
+import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 import type {
   CollapsibleRootBaseProps,
@@ -46,8 +46,9 @@ const ROOT_OWN_KEYS = [
   "unmountOnExit",
 ] as const satisfies readonly (keyof CollapsibleRootBaseProps)[];
 
-/** The two styling props both roots read for themselves, whichever machine they were handed. */
+/** The three styling props both roots read for themselves, whichever machine they were handed. */
 interface RootStylingProps {
+  as?: ValidComponent;
   unstyled?: boolean;
   render?: RenderProp<DivProps>;
 }
@@ -81,7 +82,7 @@ function renderRoot(
   return (
     <CollapsibleProvider value={value}>
       {renderStyled<DivProps, HTMLDivElement>({
-        as: "div",
+        as: (styling.as ?? "div") as ValidComponent,
         props: elementProps,
         render: styling.render,
         recipeClass: () => slots().root,

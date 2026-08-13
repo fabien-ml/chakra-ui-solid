@@ -1,5 +1,5 @@
 import { mergeProps, renderStyled } from "@chakra-ui-solid/core";
-import type { ComponentProps, JSX } from "@solidjs/web";
+import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { type Component, Show } from "solid-js";
 import type {
   CollapsibleContentProps,
@@ -29,7 +29,7 @@ export const CollapsibleTrigger: Component<CollapsibleTriggerProps> = (props) =>
   const elementProps = mergeProps(() => ctx.getTriggerProps(), props) as ButtonProps;
 
   return renderStyled<ButtonProps, HTMLButtonElement>({
-    as: "button",
+    as: (props.as ?? "button") as ValidComponent,
     props: elementProps,
     render: props.render,
     recipeClass: () => ctx.slots().trigger,
@@ -50,7 +50,7 @@ export const CollapsibleContent: Component<CollapsibleContentProps> = (props) =>
   return (
     <Show when={!ctx.unmounted}>
       {renderStyled<DivProps, HTMLDivElement>({
-        as: "div",
+        as: (props.as ?? "div") as ValidComponent,
         props: elementProps,
         render: props.render,
         recipeClass: () => ctx.slots().content,
@@ -68,7 +68,7 @@ export const CollapsibleIndicator: Component<CollapsibleIndicatorProps> = (props
   const elementProps = mergeProps(() => ctx.getIndicatorProps(), props) as DivProps;
 
   return renderStyled<DivProps, HTMLDivElement>({
-    as: "div",
+    as: (props.as ?? "div") as ValidComponent,
     props: elementProps,
     render: props.render,
     recipeClass: () => ctx.slots().indicator,
