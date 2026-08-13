@@ -48,7 +48,7 @@ CSS was never generated renders nothing and raises no error (`plan.md` §0.2).
 
 **Settled earlier, not reopened here.** The brand `chakra-ui-solid` / `@chakra-ui-solid`; the **port
 rule** — *no accessibility behavior beyond what Zag ships, nothing invented that Chakra UI v3 does
-not have, SolidJS idioms excepted* (`prior-art.md` §8.2); Zag `1.43.0`; Solid `2.0.0-beta.32`; the
+not have, SolidJS idioms excepted* (`prior-art.md` §8.2); Zag `1.43.0`; Solid `2.0.0-rc.0`; the
 a11y kernel struck to `createRegisteredId` alone; §0's two scopes (`plan.md` §0); P3's Q2 and Q4;
 P4's Q6.
 

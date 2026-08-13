@@ -20,11 +20,12 @@ const requireFromRoot = createRequire(join(import.meta.dirname, "package.json"))
  * `isServer: true`, `createUniqueId` consuming a hydration child id) and a browser one (real DOM
  * ops). `package.json#exports` picks between them with the `node` / `browser` conditions.
  *
- * Vite's default `resolve.conditions` includes `browser` **regardless of Vitest's
- * `test.environment`** — that setting only swaps JS globals like `document`, never package
- * `#exports` resolution. Confirmed empirically in hope-ui: setting `resolve.conditions` /
- * `ssr.resolve.conditions` to `["node"]` on a node project did *not* change which build was
- * resolved. An explicit alias to the server entry is what actually works.
+ * **Neither direction is reachable through `resolve.conditions`, and both had to be measured.**
+ * Setting `resolve.conditions` / `ssr.resolve.conditions` to `["node"]` on a node project did not
+ * pull in the server build (measured in hope-ui); setting them to Vite's `defaultClientConditions`
+ * does not pull in the browser build either (measured here, at the rc bump) — a Vitest project's
+ * top-level `resolve.conditions` is not what `@solidjs/vite-plugin`'s `configEnvironment` hook
+ * reads. An explicit alias to the entry you want is what actually works, in both directions.
  *
  * `createRequire().resolve()` applies Node's `node` + `require` conditions, so it lands on the
  * CommonJS server entry; its ESM sibling sits beside it and is what a real SSR bundler picks.
@@ -41,6 +42,38 @@ export function resolveServerEntry(packageName: string): string {
     );
   }
   return esmServerEntry;
+}
+
+/**
+ * The other half: the **client** build's dev entry, which sits beside the server one.
+ *
+ * Needed because `@solidjs/vite-plugin@3.0.0-next.24` started deriving a *server test posture*
+ * from `test.environment` — `environment: "node"` or `"edge-runtime"` now means "resolve the
+ * framework's server build". The `unit` project is `node` for a reason that has nothing to do with
+ * SSR (no `document` at all, so a focus or computed-style test cannot be written there by
+ * accident), and it needs client semantics: deferred writes, a real `flush()`, real effects.
+ *
+ * The failure is silent in the way this repo keeps meeting: the server build has no scheduler, so
+ * writes land eagerly and `flush(fn)` does nothing. Nothing errors — assertions about *ordering*
+ * just come out wrong, in files whose names are `bindable`, `track` and `mergeProps` rather than
+ * anything about resolution.
+ *
+ * `dev` rather than `solid`: a test run is a dev-mode client build, which is what
+ * `@solidjs/vite-plugin` resolves for the `browser` project through the `development` condition.
+ */
+export function resolveClientDevEntry(packageName: string): string {
+  const serverEntry = resolveServerEntry(packageName);
+  const clientDevEntry = serverEntry.replace(/server\.js$/, "dev.js");
+
+  if (clientDevEntry === serverEntry || !existsSync(clientDevEntry)) {
+    throw new Error(
+      `Could not locate the client dev build for "${packageName}". Resolved ${serverEntry}, ` +
+        `expected a sibling at ${clientDevEntry}. Check the package's dist layout — the "unit" ` +
+        `Vitest project silently runs against the server build without this, where writes are ` +
+        `eager and flush() is inert.`,
+    );
+  }
+  return clientDevEntry;
 }
 
 /**
@@ -97,4 +130,10 @@ export const docsSrcAlias = [
 export const serverBuildAlias = [
   { find: /^solid-js$/, replacement: resolveServerEntry("solid-js") },
   { find: /^@solidjs\/web$/, replacement: resolveServerEntry("@solidjs/web") },
+];
+
+/** The mirror of `serverBuildAlias`, for the one project that is `node` but wants client Solid. */
+export const clientBuildAlias = [
+  { find: /^solid-js$/, replacement: resolveClientDevEntry("solid-js") },
+  { find: /^@solidjs\/web$/, replacement: resolveClientDevEntry("@solidjs/web") },
 ];

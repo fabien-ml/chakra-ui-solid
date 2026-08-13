@@ -3,8 +3,8 @@
 // step 2. Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { join } from "node:path";
+import solid from "@solidjs/vite-plugin";
 import { createServer, type Plugin, type ViteDevServer } from "vite";
-import solid from "vite-plugin-solid";
 import { solidPluginOptions } from "./solid-babel-options.ts";
 import { chakraSolidAlias, serverBuildAlias } from "./vitest-aliases.ts";
 

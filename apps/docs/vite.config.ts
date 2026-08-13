@@ -6,6 +6,7 @@
 
 import { fileURLToPath } from "node:url";
 import mdx from "@mdx-js/rollup";
+import viteSolid from "@solidjs/vite-plugin";
 import withToc from "@stefanprobst/rehype-extract-toc";
 import withTocExport from "@stefanprobst/rehype-extract-toc/mdx";
 import { tanstackStart } from "@tanstack/solid-start/plugin/vite";
@@ -16,7 +17,6 @@ import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkSmartypants from "remark-smartypants";
 import { defineConfig } from "vite";
-import viteSolid from "vite-plugin-solid";
 import { solidPluginOptions } from "../../solid-babel-options.ts";
 // Imported, not re-declared. `plan.md` §9 keeps three files as **one unit** — this one,
 // `tsconfig.base.json#paths` and `vitest-aliases.ts` — because drift between them is silent: a
@@ -168,7 +168,8 @@ export default defineConfig(({ command }) => ({
     }),
 
     // `compiler: "babel"` is a workaround with a stated expiry, pinned for **this app alone**.
-    // Since `vite-plugin-solid@3.0.0-next.23` the default JSX backend is a native (Rust/oxc)
+    // Since `vite-plugin-solid@3.0.0-next.23` (now `@solidjs/vite-plugin`) the default JSX backend
+    // is a native (Rust/oxc)
     // compiler that picks its parser dialect from the file extension. The plugin knows custom
     // `extensions` are unknown to it and rewrites the name (`id + ".jsx"`) for its
     // `transformLazyAsync`/`transformRefreshAsync` passes, but the JSX pass itself is still handed

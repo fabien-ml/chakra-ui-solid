@@ -34,7 +34,7 @@ plans). Every citation in this document follows it.
 
 **Settled earlier, not reopened here.** The brand, the repository name and the docs-site naming
 (`decisions-ledger.md` D-01, D-02); the **port rule** (`prior-art.md` §8.2); Zag `1.43.0`; Solid
-`2.0.0-beta.32`; TanStack Start's **beta 2.x** line; `plan.md` §0's constraint at both boundaries;
+`2.0.0-rc.0`; TanStack Start's **2.x prerelease** line; `plan.md` §0's constraint at both boundaries;
 **zero published CSS with Panda a hard prerequisite** (`plan.md` §4.4); the a11y kernel; the batch
 order (`roadmap.md` §9); P3's Q2/Q4, P4's Q6, P5's Q7, P7's enforcement design.
 
@@ -67,10 +67,10 @@ this one wins, because the route map is the inventory.
 
 ### 1.1 The stack, and the second job it has to do
 
-`apps/docs`, TanStack Start on the **beta 2.x** line — `@tanstack/solid-start@2.0.0-beta.30` and
-`@tanstack/solid-router@2.0.0-beta.29`, both peering `solid-js: ">=2.0.0-0 <3.0.0"` (`plan.md` §3.2's
+`apps/docs`, TanStack Start on the **2.x prerelease** line — `@tanstack/solid-start@2.0.0-rc.0` and
+`@tanstack/solid-router@2.0.0-rc.0`, both peering `solid-js: ">=2.0.0-0 <3.0.0"` (`plan.md` §3.2's
 finding; the package graph entry is `plan.md` §5.1). It is the one line that runs against
-`solid-js@2.0.0-beta.32` at all, and `../hope-ui/apps/docs` runs it today.
+SolidJS 2.0 at all, and `../hope-ui/apps/docs` runs it today.
 
 **The docs app is a consumer, and that is load-bearing rather than incidental.** It installs our
 published packages, writes its own `panda.config.ts` from `defineChakraConfig()`, and runs its own Panda
@@ -182,8 +182,13 @@ second half is a constraint on what we build **today**.
 | # | Trigger | How it is observed |
 |---|---|---|
 | B1 | The prerender gate (§7.1) fails and the cause is inside `@tanstack/solid-start`, not our config | `check:prerender-complete` red with no config change that fixes it |
-| B2 | A Start or Router release moves its `solid-js` peer off the 2.x range, and no pinned pair satisfies both it and `solid-js@2.0.0-beta.32` | The catalog cannot be solved; `pnpm install` fails or resolves a second Solid |
-| B3 | The beta line stalls — **two consecutive `solid-js` 2.0 bumps the Start line does not follow**, while the docs build is broken against the newer Solid | A review call with a number attached, not a mood |
+| B2 | A Start or Router release moves its `solid-js` peer off the 2.x range, and no pinned pair satisfies both it and the `solid-js` the catalog pins | The catalog cannot be solved; `pnpm install` fails or resolves a second Solid |
+| B3 | The prerelease line stalls — **two consecutive `solid-js` 2.0 bumps the Start line does not follow**, while the docs build is broken against the newer Solid | A review call with a number attached, not a mood |
+
+**Evaluated at the `2.0.0-rc.0` bump (2026-08-13): neither fired.** Start and Router both published
+`2.0.0-rc.0` the same day Solid did, peering `>=2.0.0-0 <3.0.0`, so the catalog solved on the first
+try, one `@solidjs/web` landed, and `pnpm build:docs` prerendered every route. B3's counter is back
+to zero. Plan B stays parked.
 
 **What Plan B costs, stated rather than implied:** SSR and prerender, and therefore prose in the
 HTML. Search indexing, first-paint content, and — the loss that is ours alone — the docs app stops

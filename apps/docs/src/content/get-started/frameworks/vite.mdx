@@ -3,9 +3,13 @@ title: Using chakra-ui-solid in Vite
 description: A guide for installing chakra-ui-solid in Vite projects
 ---
 
-**No special steps.** A Vite app with `vite-plugin-solid` already compiles our packages correctly,
-because that plugin is exactly the thing our published output expects to meet. Follow
+**No special steps.** A Vite app with `@solidjs/vite-plugin` already compiles our packages
+correctly, because that plugin is exactly the thing our published output expects to meet. Follow
 [Installation](/docs/get-started/installation) and there is nothing to add here.
+
+If your project still depends on `vite-plugin-solid`, that is the same plugin under its former
+name — SolidJS 2.0 renamed it, and `vite-plugin-solid@3.0.0-next.27` is a final release that
+re-exports the new package.
 
 This page exists to say so. The two settings the SolidStart and TanStack Start pages describe are
 about **server rendering** and **dependency pre-bundling**, and a client-only Vite app does

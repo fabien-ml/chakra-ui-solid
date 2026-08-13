@@ -19,7 +19,7 @@ written.
 **Settled earlier and not reopened here.** Brand `chakra-ui-solid` / scope `@chakra-ui-solid`
 (`decisions-ledger.md` D-01). The **port rule** — no accessibility behavior beyond what Zag ships, nothing
 invented that Chakra UI v3 does not have, SolidJS idioms excepted (`prior-art.md` §8.2). Zag target
-**1.43.0**. Solid pinned at **2.0.0-beta.32**. The a11y kernel is struck to `createRegisteredId`
+**1.43.0**. Solid pinned at **2.0.0-rc.0**. The a11y kernel is struck to `createRegisteredId`
 alone.
 
 **Terms glossed on first use, for a reader who does not know this repo.** *Machine* — a Zag state

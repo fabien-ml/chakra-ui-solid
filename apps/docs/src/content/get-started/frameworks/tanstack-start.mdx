@@ -9,8 +9,8 @@ React and the component then renders nothing.
 
 ```ts title="vite.config.ts"
 import { tanstackStart } from "@tanstack/solid-start/plugin/vite";
+import viteSolid from "@solidjs/vite-plugin";
 import { defineConfig } from "vite";
-import viteSolid from "vite-plugin-solid";
 
 export default defineConfig({
   ssr: { noExternal: [/^@chakra-ui-solid\//, /^chakra-ui-solid$/] },
@@ -27,7 +27,7 @@ export default defineConfig({
 
 ## This site is that config
 
-These docs are a TanStack Start app on the beta 2.x line, prerendered to static HTML, consuming
+These docs are a TanStack Start app on the 2.x prerelease line, prerendered to static HTML, consuming
 the published packages exactly as the snippet above describes. That is deliberate: a documentation
 site that took an in-repo shortcut would prove nothing about what a reader's build does.
 

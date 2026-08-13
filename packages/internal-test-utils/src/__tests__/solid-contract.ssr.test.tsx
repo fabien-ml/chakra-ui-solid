@@ -124,7 +124,8 @@ describe("solid-js server-build contract: the <Show> `when`-gate read no longer 
 
     // Both sit inside a <Show> and differ only in the extra `when`-gate read, so any difference
     // between these two keys IS the drift. Equal means the built-then-discarded gate component
-    // consumed no id — the beta.32 fix. This assertion failing means it regressed.
+    // consumed no id — the beta.32 fix, re-confirmed unedited at `2.0.0-rc.0`. This assertion
+    // failing means it regressed, and it is the first thing to read after any Solid bump.
     expect(svgKey(whenGateAndBody)).toBeDefined();
     expect(svgKey(bodyOnly)).toBeDefined();
     expect(svgKey(whenGateAndBody)).toBe(svgKey(bodyOnly));

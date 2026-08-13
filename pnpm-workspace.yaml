@@ -13,14 +13,19 @@ catalog:
   # breaks context and hydration *silently*, so the whole repo moves together.
   #
   # It is worth checking after every install that only one copy landed:
-  #   ls node_modules/.pnpm | grep -E '^(solid-js|@solidjs\+web)@'
+  #   ls node_modules/.pnpm | grep -E '^(solid-js|@solidjs\+(web|signals|vite-plugin))@'
   # Two lines there is the skew above, and nothing fails loudly when it happens.
+  #
+  # Run it after a **clean** install, though. Bumping these versions in place leaves the old
+  # `.pnpm` directories orphaned — pnpm does not prune them — so the grep reports two lines for
+  # every entry even when `pnpm-lock.yaml` mentions the old version zero times. That is a false
+  # alarm, and `rm -rf node_modules && pnpm install` is what makes the check mean something.
   #
   # `@solidjs/signals` is not referenced by any package.json — it arrives transitively via
   # `solid-js`. The entry is here to document the lockstep, and costs nothing.
-  solid-js: 2.0.0-beta.32
-  "@solidjs/signals": 2.0.0-beta.32
-  "@solidjs/web": 2.0.0-beta.32
+  solid-js: 2.0.0-rc.0
+  "@solidjs/signals": 2.0.0-rc.0
+  "@solidjs/web": 2.0.0-rc.0
   # The JSX compiler, pinned for the same reason the runtime is. Two pipelines compile this
   # repo's JSX today (the Vitest projects and Storybook; the docs app is the third) and they must
   # agree with each other AND with the runtime above — a mismatch surfaces deep inside
@@ -32,9 +37,19 @@ catalog:
   # next.5 depends on `babel-preset-solid` by open range — so every test and story compiled
   # with `babel-preset-solid@2.0.0-beta.16` against a beta.19 runtime. `babel-preset-solid`
   # also needs the `overrides` entry below, because a catalog only binds specifiers that say
-  # `catalog:` and vite-plugin-solid asks for it by range.
-  vite-plugin-solid: 3.0.0-next.23
-  babel-preset-solid: 2.0.0-beta.32
+  # `catalog:` and the plugin asks for it by range.
+  #
+  # **The plugin was renamed.** `@solidjs/vite-plugin` is the package now; every config file in
+  # this repo imports that name. `vite-plugin-solid@3.0.0-next.27` is its final release and is two
+  # lines of `export * from "@solidjs/vite-plugin"` — it stays here for exactly one consumer:
+  # `storybook-solidjs-vite`'s framework preset does a literal
+  # `await import("vite-plugin-solid")` before `viteFinal` runs, so dropping it breaks
+  # `pnpm storybook` at config time. It compiles nothing (`.storybook/main.ts` filters the
+  # preset's plugin out and pushes ours), and the `overrides` entry below is what keeps its
+  # `^3.0.0-next.27` range from resolving to a *second* copy of the compiler.
+  "@solidjs/vite-plugin": 3.0.0-next.28
+  vite-plugin-solid: 3.0.0-next.27
+  babel-preset-solid: 2.0.0-rc.0
 
   # The three Zag packages `@chakra-ui-solid/core`'s `src/zag/` adapter binds to Solid. Pinned and moved
   # together: `@zag-js/core` owns `mergeProps` (which our own `mergeProps` delegates to for the
@@ -98,16 +113,37 @@ catalog:
   # an unreproducible local breakage on whichever day the registry moved, and the exit criteria
   # stop being observable.
   #
-  # **`beta` is the line, and `latest` is not it.** On 2026-08-09 the dist-tags are
-  # `beta: 2.0.0-beta.30` / `latest: 1.168.40` for Start and `beta: 2.0.0-beta.29` /
-  # `latest: 1.170.23` for Router. The 1.x `latest` line does not peer SolidJS 2.0 at all, so
-  # `^`-ranging these would silently pull the wrong major.
-  "@tanstack/solid-start": 2.0.0-beta.30
-  "@tanstack/solid-router": 2.0.0-beta.29
+  # **The 2.0 prerelease is the line, and `latest` is not it.** On 2026-08-13 the dist-tags are
+  # `rc: 2.0.0-rc.0` / `beta: 2.0.0-beta.31` / `latest: 1.168.42` for Start and
+  # `rc: 2.0.0-rc.0` / `beta: 2.0.0-beta.30` / `latest: 1.170.25` for Router. The 1.x `latest`
+  # line does not peer SolidJS 2.0 at all, so `^`-ranging these would silently pull the wrong
+  # major.
+  #
+  # Both followed `solid-js@2.0.0-rc.0` on the same day it landed, which is B2 and B3 evaluated
+  # and not fired: the catalog solves, and the line did not stall.
+  "@tanstack/solid-start": 2.0.0-rc.0
+  "@tanstack/solid-router": 2.0.0-rc.0
 
-# `vite-plugin-solid` depends on `babel-preset-solid` by RANGE, and a range resolves to whatever
+minimumReleaseAgeExclude:
+  - '@solidjs/signals@2.0.0-rc.0'
+  - '@solidjs/vite-plugin@3.0.0-next.28'
+  - '@solidjs/web@2.0.0-rc.0'
+  - '@tanstack/solid-router@2.0.0-rc.0'
+  - '@tanstack/solid-start-client@2.0.0-rc.0'
+  - '@tanstack/solid-start-server@2.0.0-rc.0'
+  - '@tanstack/solid-start@2.0.0-rc.0'
+  - babel-preset-solid@2.0.0-rc.0
+  - solid-js@2.0.0-rc.0
+  - vite-plugin-solid@3.0.0-next.27
+
+# `@solidjs/vite-plugin` depends on `babel-preset-solid` by RANGE, and a range resolves to whatever
 # is newest on the registry that day — which is how the compiler drifted a version behind the
-# runtime without anyone changing a file. The catalog entry above only governs the root
-# devDependency; this is what collapses the nested range onto it.
+# runtime without anyone changing a file. The catalog entries above only govern specifiers that
+# say `catalog:`; these collapse the nested ranges onto them.
+#
+# The second line is the same fact one level out: the `vite-plugin-solid` shim asks for
+# `@solidjs/vite-plugin` by `^` range, so without this Storybook's copy of the compiler can
+# resolve to a different version than the one every other pipeline compiles with.
 overrides:
   babel-preset-solid: "catalog:"
+  "@solidjs/vite-plugin": "catalog:"

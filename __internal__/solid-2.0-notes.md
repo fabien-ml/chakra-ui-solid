@@ -6,8 +6,17 @@ with the procedures and the measurements. Ported from hope-ui's `__internal__/so
 notes lived in `decisions.md` until 2026-08-12 and moved here, so one file carries the Solid
 semantics end to end.
 
-We are on `2.0.0-beta.32`, pinned in lockstep across `solid-js` / `@solidjs/signals` / `@solidjs/web`
-by the workspace catalog. `mergeProps` and `splitProps` are gone from the public API; the 2.0 idiom
+We are on `2.0.0-rc.0`, pinned in lockstep across `solid-js` / `@solidjs/signals` / `@solidjs/web`
+by the workspace catalog.
+
+**Nothing in this file changed at the rc**, and that was measured rather than assumed: the rc's
+`.d.ts` for `merge`, `omit`, `children()` and the flow controls are identical to `2.0.0-beta.32`'s,
+`merge({ type: "button" }, { type: undefined }).type` still answers `undefined`, and every contract
+test below passed unedited. The rc's additions — `loadingValue` and `seedLoadingValue` (a declared
+commit #0, so a first flight serves a placeholder instead of suspending) and `transparent` (an
+effect or memo that consumes no hydration id) — are new options on primitives this port does not
+use. The one behavior change that *did* cost a day is not Solid's at all; it is the compiler's, and
+it is in *SSR, hydration keys, and the compiler* below. `mergeProps` and `splitProps` are gone from the public API; the 2.0 idiom
 is `merge` and `omit`, imported from `solid-js`.
 
 ## `merge` resolves a key by presence, not by value — never use it to apply a default
@@ -16,7 +25,7 @@ is `merge` and `omit`, imported from `solid-js`.
 **has the key at all**, `undefined` included:
 
 ```ts
-// @solidjs/signals 2.0.0-beta.32, store/utils.js
+// @solidjs/signals 2.0.0-rc.0, store/utils.js — unchanged since 2.0.0-beta.32
 get(key) {
   for (let i = sources.length - 1; i >= 0; i--) {
     const source = resolveSource(sources[i]);
@@ -159,7 +168,8 @@ raw reads built both slots exactly twice — which is why any multi-read slot al
 
 On `@solidjs/web` before `2.0.0-beta.32` the gate read also consumed a hydration key it then
 discarded, mis-keying the body node on the client only; beta.32 fixed that axis and leaves this one
-untouched.
+untouched. The fix survived `2.0.0-rc.0` — `solid-contract.ssr.test.tsx` is what says so, and it is
+the assertion to read first after any Solid bump.
 
 ## SSR, hydration keys, and the compiler
 
@@ -192,6 +202,17 @@ hydrated, every `*.ssr.test.tsx` really renders.
   the compiler in a function, `merge` turns a function source into a memo, and the receiving
   component reads it in its body — `STRICT_READ_UNTRACKED`, reported against `<Anonymous>`. Bind the
   bag to a `const` first. Live in `ButtonGroup`, `HStack`/`VStack`, `Loader`.
+- **`test.environment: "node"` now asks the plugin for Solid's *server* build.** Since
+  `@solidjs/vite-plugin@3.0.0-next.24` (the package `vite-plugin-solid` was renamed to) the plugin
+  computes `serverTestPosture = isTestMode && (test.environment === "node" || "edge-runtime")` and
+  gives such a project Vite's server conditions. Upstream reads `node` as "I want the server
+  runtime"; the `unit` project means "no `document` at all", which is a different thing — so it
+  silently ran against the server build, where writes land eagerly and `flush(fn)` is inert.
+  Thirty-one tests went red across `bindable`, `track`, `mergeProps`, `renderStyled` and
+  `withDefaults`, none of them naming resolution. **`resolve.conditions` does not steer this**, in
+  either direction; an explicit alias does, which is why `vitest-aliases.ts` now exports
+  `clientBuildAlias` beside `serverBuildAlias`. The cheap way to tell which build a project got:
+  `Object.keys(await import("solid-js")).length` — 75 is the client, 76 is the server.
 
 ## Two more 2.0 facts that touch props
 

@@ -44,7 +44,7 @@ class whose CSS was never generated renders nothing and raises no error (`plan.m
 
 **Settled earlier, not reopened here.** The brand `chakra-ui-solid` / `@chakra-ui-solid`; the **port
 rule** — *no accessibility behavior beyond what Zag ships, nothing invented that Chakra UI v3 does not
-have, SolidJS idioms excepted* (`prior-art.md` §8.2); Zag `1.43.0`; Solid `2.0.0-beta.32`; `plan.md`
+have, SolidJS idioms excepted* (`prior-art.md` §8.2); Zag `1.43.0`; Solid `2.0.0-rc.0`; `plan.md`
 §0's two scopes; **zero published CSS, with Panda a hard prerequisite and `@pandacss/dev` a peer
 dependency** (`plan.md` §4.4); presence is a build over `@zag-js/presence` (`plan.md` §6); the a11y
 kernel is `createRegisteredId` alone (`component-blueprint.md` §8); P3's Q2/Q4, P4's Q6, P5's Q7.

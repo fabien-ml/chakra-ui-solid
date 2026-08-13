@@ -1061,9 +1061,10 @@ Carried from hope-ui and proven against Solid 2.0 (`prior-art.md` §2.6, `brief-
   setting surviving.
 - **ESM-only.** Changesets, with **no changeset while at `0.0.0`**.
 - Document **`ssr.noExternal`** for SolidStart consumers.
-- Node 24 / pnpm 11.10.0 via corepack + `devEngines`; Solid pinned at `2.0.0-beta.32` through a
+- Node 24 / pnpm 11.10.0 via corepack + `devEngines`; Solid pinned at `2.0.0-rc.0` through a
   `pnpm-workspace.yaml` catalog, lockstep across `solid-js` / `@solidjs/signals` / `@solidjs/web` /
-  `babel-preset-solid`, plus `overrides: { babel-preset-solid: "catalog:" }` (`brief-plan` §3.4).
+  `babel-preset-solid`, plus `overrides` collapsing the ranges that `@solidjs/vite-plugin` (the
+  renamed `vite-plugin-solid`) asks for onto that catalog (`brief-plan` §3.4).
 
 ---
 

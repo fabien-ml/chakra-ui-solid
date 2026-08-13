@@ -37,7 +37,7 @@ progress fills work.
 **Pre-release. Nothing is published.** 22 of the 111 components on the roadmap ship from the
 package — the layout and typography primitives, Box through Wrap — alongside the `chakra` factory,
 the style-prop surface, the Panda preset and the test harness. Every machine-backed component is
-still ahead. The stack targets `solid-js@2.0.0-beta.x`, and nothing upstream is built for SolidJS
+still ahead. The stack targets `solid-js@2.0.0-rc.x`, and nothing upstream is built for SolidJS
 2.0 yet, so every Solid-2.0-shaped adaptation here is ours.
 
 The library publishes as the unscoped `chakra-ui-solid`; its satellites keep the scope —

@@ -27,7 +27,7 @@ We publish **JSX-preserved `.jsx`** under the `"solid"` export condition. Node c
 JSX, so an externalized dependency is one the server tries to `import()` verbatim. The build fails
 with a syntax error pointing **inside our `dist`**, which reads as a broken package.
 
-`noExternal` tells Vite to inline our packages into the SSR bundle so `vite-plugin-solid` compiles
+`noExternal` tells Vite to inline our packages into the SSR bundle so `@solidjs/vite-plugin` compiles
 them, the same way it compiles your own source.
 
 ## `optimizeDeps.exclude` — what it prevents
@@ -36,7 +36,7 @@ The client build pre-bundles dependencies with a scanner that compiles JSX **as 
 pre-bundled `chakra-ui-solid` therefore produces a runtime that is not Solid — and the
 symptom is not an error. It is a component that renders nothing at all.
 
-Excluding our packages routes them back through `vite-plugin-solid`.
+Excluding our packages routes them back through `@solidjs/vite-plugin`.
 
 ## Why not just ship compiled output
 

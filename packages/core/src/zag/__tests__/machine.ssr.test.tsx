@@ -3,7 +3,7 @@
 // forked on copy (`CLAUDE.md`, *Reference use*).
 
 // `renderToStringAsync` at `@solidjs/web@2.0.0-beta.19` — the beta the fork was written against.
-// It does not exist at `2.0.0-beta.32`, which this repo pins: the server build exports
+// It does not exist at `2.0.0-rc.0`, which this repo pins: the server build exports
 // `renderToString` (sync) and `renderToStream` (awaitable, and the one that resolves resources).
 // `renderToStream` is the direct replacement and is what every other SSR test here already uses
 // (`zag-solid-adapter.md` §4.3 D4).

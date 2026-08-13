@@ -2,9 +2,9 @@
 // copy (`CLAUDE.md`, *Reference use*). The Tailwind plugin is dropped (our dev stylesheet comes from Panda, and
 // `preview.ts` imports it) and the alias table is the repo's shared one rather than a second copy.
 
+import solid from "@solidjs/vite-plugin";
 import type { StorybookConfig } from "storybook-solidjs-vite";
 import type { PluginOption } from "vite";
-import solid from "vite-plugin-solid";
 import { solidPluginOptions } from "../solid-babel-options.ts";
 import { chakraSolidAlias } from "../vitest-aliases.ts";
 
@@ -16,12 +16,17 @@ const config: StorybookConfig = {
   stories: ["../packages/*/src/**/*.stories.@(ts|tsx)"],
   framework: { name: "storybook-solidjs-vite", options: {} },
   viteFinal(config) {
-    // `storybook-solidjs-vite`'s framework preset has already put its own `vite-plugin-solid` in
-    // this config, with default options, before we see it. Adding a second one would compile every
-    // file twice; swapping it for ours is what gets `solid-babel-options.ts` — one declaration of
-    // how this repo compiles JSX, shared with the three Vitest projects and the docs app. The
-    // default in particular leaves `solid-refresh` enabled, which silently drops `children` for a
-    // component imported from another module, i.e. exactly what every story does.
+    // `storybook-solidjs-vite`'s framework preset has already put its own compiler in this config,
+    // with default options, before we see it — it does a literal `await import("vite-plugin-solid")`,
+    // which is the *only* reason that renamed shim is still a dependency (`pnpm-workspace.yaml`).
+    // Adding a second one would compile every file twice; swapping it for ours is what gets
+    // `solid-babel-options.ts` — one declaration of how this repo compiles JSX, shared with the
+    // three Vitest projects and the docs app. The default in particular leaves `solid-refresh`
+    // enabled, which silently drops `children` for a component imported from another module, i.e.
+    // exactly what every story does.
+    //
+    // Both names are the same plugin and both still emit `name: "solid"`, so this filter removes
+    // the preset's copy whichever specifier loaded it.
     const plugins = (config.plugins ?? []).filter(
       (plugin) =>
         !(plugin && typeof plugin === "object" && "name" in plugin && plugin.name === "solid"),

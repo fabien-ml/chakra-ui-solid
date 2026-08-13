@@ -2,11 +2,16 @@
 // `vitest-projects.ts` so `check:test-projects` reads the same declaration. Same author, MIT —
 // ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
+import solid from "@solidjs/vite-plugin";
 import { playwright } from "@vitest/browser-playwright";
-import solid from "vite-plugin-solid";
 import { defineConfig } from "vitest/config";
 import { solidPluginOptions } from "./solid-babel-options.ts";
-import { chakraSolidAlias, docsSrcAlias, serverBuildAlias } from "./vitest-aliases.ts";
+import {
+  chakraSolidAlias,
+  clientBuildAlias,
+  docsSrcAlias,
+  serverBuildAlias,
+} from "./vitest-aliases.ts";
 import { hydrationFixtureBridge } from "./vitest-hydration-bridge.ts";
 import { testProjects } from "./vitest-projects.ts";
 
@@ -40,7 +45,21 @@ export default defineConfig({
       {
         // Client DOM compile, no hydration keys — pure logic, no DOM rendered here anyway.
         plugins: [solid(solidPluginOptions())],
-        resolve: { alias: chakraSolidAlias },
+        // `clientBuildAlias` is load-bearing, and it is the mirror image of what the `ssr` project
+        // does below. Since `@solidjs/vite-plugin@3.0.0-next.24` the plugin derives a **server test
+        // posture** from this very project's `environment: "node"` —
+        //
+        //   serverTestPosture = isTestMode && (test.environment === "node" || "edge-runtime")
+        //
+        // — and a project in that posture resolves Solid's *server* build. That build has no
+        // scheduler: writes land eagerly and `flush(fn)` is inert, the exact opposite of the client
+        // semantics this project exists to test. It arrived as 31 red tests across `bindable`,
+        // `track`, `mergeProps`, `renderStyled` and `withDefaults`, all downstream of
+        // `solid-contract.test.ts`, and not one of them naming resolution.
+        //
+        // We are `node` for the reason below — no `document` at all — not because we want a server
+        // runtime, so this states the build directly rather than through the posture heuristic.
+        resolve: { alias: [...chakraSolidAlias, ...clientBuildAlias] },
         test: {
           name: "unit",
           // `node`, not `jsdom`, and deliberately: jsdom cannot be trusted for focus, keyboard or

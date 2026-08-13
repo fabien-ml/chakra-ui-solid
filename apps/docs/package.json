@@ -26,6 +26,7 @@
     "@chakra-ui-solid/panda-preset": "workspace:*",
     "@mdx-js/rollup": "3.1.1",
     "@pandacss/dev": "catalog:",
+    "@solidjs/vite-plugin": "catalog:",
     "@stefanprobst/rehype-extract-toc": "3.0.0",
     "@types/mdx": "2.0.14",
     "@types/node": "26.2.0",
@@ -38,7 +39,6 @@
     "shiki": "4.4.2",
     "typescript": "6.0.3",
     "vite": "8.2.1",
-    "vite-plugin-solid": "catalog:",
     "vitest": "4.1.10"
   }
 }

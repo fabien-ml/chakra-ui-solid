@@ -33,7 +33,7 @@ most of this document exists: a Panda class whose CSS was never generated render
 no error (`CLAUDE.md`; `plan.md` §0.2).
 
 **Settled earlier, not reopened here.** The brand; the **port rule** (`prior-art.md` §8.2); Zag
-`1.43.0`; Solid `2.0.0-beta.32`; `plan.md` §0's two scopes; zero published CSS with Panda a hard
+`1.43.0`; Solid `2.0.0-rc.0`; `plan.md` §0's two scopes; zero published CSS with Panda a hard
 prerequisite (`plan.md` §4.4); presence is a build over `@zag-js/presence` (`plan.md` §6); the a11y
 kernel is `createRegisteredId` alone (`component-blueprint.md` §8); the three-project Vitest split;
 Dialog then Popover as the two probes and the batch order (`roadmap.md` §9); P3's Q2/Q4, P4's Q6,
@@ -139,7 +139,7 @@ from the server DOM by anything other than event listeners.
 
 - **`children()` moves keys.** It resolves in the ambient owner and therefore allocates *ahead* of
   the surrounding element, so adding or removing one shifts `_hk` for that subtree — even now that
-  `2.0.0-beta.32` fixed the `<Show>` `when`-gate burning a key
+  `2.0.0-beta.32` fixed the `<Show>` `when`-gate burning a key (a fix that survived `2.0.0-rc.0`)
   (`component-blueprint.md` §10.2). Every add or remove owes a real round-trip.
 - **A repeated part allocates N keys.** `roadmap.md` §7.2 proof 4 is a round-trip with a non-trivial
   item list, not a smoke test with one.
@@ -826,7 +826,9 @@ produced a null-dereferencing walk, and a rendered probe story opened cleanly. T
 output omits the markers entirely, so there is nothing for a restrictive parser to reparent — which
 is the mechanism this section names. Second, `vite-plugin-solid@3.0.0-next.23` defaults to the
 **native (oxc)** backend, so the compile a consumer's Storybook performs is not the Babel one the
-claim was written against. The paragraph above is left standing because four shapes at one version
+claim was written against. (Both measurements are S3b's and name the versions of that day; the repo
+is on `babel-preset-solid@2.0.0-rc.0` and `@solidjs/vite-plugin@3.0.0-next.28` now, and neither was
+re-measured at the rc — which only widens the gap D-131 already describes.) The paragraph above is left standing because four shapes at one version
 is not a refutation of a hazard whose named victims do not exist yet — but it is a **prediction with
 no current evidence**, and B5 is where it acquires some (**D-131**).
 
