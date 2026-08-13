@@ -376,11 +376,15 @@ methods over the one `createMemo(() => connect(service, normalizeProps))`, so a 
 `ctx.getTitleProps()` and a consumer writes `dialog.open`. This section originally predicted an
 `api: Accessor<Api>` field instead, and it was wrong on two counts — it makes the public value and
 the context value two different shapes, and property access is what SolidJS 2.0 tracks through for
-every other bag of reactive state it ships (props, stores). Measured in
-`components/__tests__/store-shape.browser.test.tsx`, which times six candidate shapes over a real
-machine at 10, 30 and 78 api members; the getter object is the fastest of the shapes that read
-idiomatically, and a `createStore`/`createProjection` shape costs 15–36% more per transition to buy
-per-key granularity nothing downstream can use.
+every other bag of reactive state it ships (props, stores). Measured in `e549713`, whose
+`store-shape.browser.test.tsx` times six candidate shapes over a real machine at 10, 30 and 78 api
+members — `date-picker`'s width, the widest Zag ships, so no later machine moves these numbers. The
+getter object is the fastest of the shapes that read idiomatically; an accessor-returning shape costs
+4–8% more at wide apis, and a `createStore`/`createProjection` shape costs 17–36% more per transition
+to buy per-key granularity nothing downstream can use — and the one variant that could deliver that
+granularity is inapplicable to the 32 machines whose prop getters take a required argument. The test
+was deleted with the decision settled: it reimplemented all six shapes inline and so guarded nothing
+in `createMachineStore`, which `packages/core/src/machine-store/__tests__/` covers instead.
 
 **Neither half is written out — both are mechanisms.** The value is
 `createMachineStore(api, extra)` (`@chakra-ui-solid/core`), which enumerates the connected api once
