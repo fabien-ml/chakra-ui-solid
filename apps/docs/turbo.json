@@ -8,14 +8,22 @@
     // table would keep its previous contents and a reader would conclude the prop does not exist;
     // a component losing one would keep the row. **This glob must stay in step with the directory
     // `scripts/generate-props-tables.mjs` walks.**
+    //
+    // `src/routeTree.gen.ts` is the other generated file, TanStack Router's, written from
+    // `src/routes/` by `scripts/generate-route-tree.mjs` — those routes are this package's own
+    // source, so `$TURBO_DEFAULT$` already covers them. It is named in `outputs` for the reason
+    // above read the other way: a cache hit restores the declared outputs and runs nothing, so a
+    // file this task writes but does not name is simply absent afterwards. `typecheck` reads it,
+    // and its absence is what put `Cannot find module './routeTree.gen'` in CI to begin with.
     "codegen": {
       "dependsOn": ["^build"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/scripts/generate-props-tables.mjs",
+        "$TURBO_ROOT$/scripts/generate-route-tree.mjs",
         "$TURBO_ROOT$/packages/chakra-ui-solid/src/components/**"
       ],
-      "outputs": ["src/generated/**"]
+      "outputs": ["src/generated/**", "src/routeTree.gen.ts"]
     },
     // The same coupling, for the same reason, on the Panda run. `panda.config.ts#include` names
     // two things: this app's own source (covered by `$TURBO_DEFAULT$`) and

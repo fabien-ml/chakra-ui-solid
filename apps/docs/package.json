@@ -10,7 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "codegen": "node ../../scripts/generate-props-tables.mjs",
+    "codegen": "node ../../scripts/generate-route-tree.mjs && node ../../scripts/generate-props-tables.mjs",
     "cssgen": "panda cssgen --outfile styled-system/styles.css"
   },
   "dependencies": {
