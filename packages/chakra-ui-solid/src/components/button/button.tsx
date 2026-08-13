@@ -12,6 +12,18 @@ import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { type Component, children, merge, omit, Show } from "solid-js";
 import { Loader } from "../loader";
 
+// An alias rather than an inline union because {@link CloseButtonProps} re-declares this prop to
+// change its default without changing its values, and two spellings of one union drift apart in
+// silence: TypeScript accepts a derived interface that lists *fewer* variants than its base. The
+// props table prints what an alias resolves to, so both pages still show all six.
+/**
+ * How much of the colour palette a button spends — `solid` is the filled one, `plain` carries no
+ * background or border at all.
+ */
+export type ButtonVariant = ConditionalValue<
+  "solid" | "subtle" | "surface" | "outline" | "ghost" | "plain"
+>;
+
 /**
  * The two variants spelled out rather than inherited from the generated `ButtonVariantProps`, so
  * each carries a description a reader can use and a type they can read — and this is the interface
@@ -31,7 +43,7 @@ export interface ButtonProps extends HTMLChakraProps<"button"> {
    *
    * @default "solid"
    */
-  variant?: ConditionalValue<"solid" | "subtle" | "surface" | "outline" | "ghost" | "plain">;
+  variant?: ButtonVariant;
   /**
    * Show a spinner and disable the control. The button keeps the width it had, because the
    * {@link Loader} hides the children in place rather than removing them.

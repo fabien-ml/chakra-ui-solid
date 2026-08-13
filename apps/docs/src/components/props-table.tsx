@@ -105,33 +105,59 @@ export function PropsTable(props: { component: string; interface?: string }) {
  * reader opened, and they made a component that adds nothing of its own indistinguishable from one
  * that adds three things.
  *
- * The heritage clauses are named rather than expanded for the same reason they always were: they
- * are the whole style-prop surface and every DOM attribute of the rendered element.
+ * The heritage clauses are named rather than expanded for the same reason they always were, **but
+ * they are not all one thing.** `HTMLChakraProps` is several hundred names; `SquareProps` is one
+ * and `GridProps` is nine, and nine tables inherit a named interface of that kind. One
+ * sentence covering both told a Collapsible reader that `unmountOnExit` — the prop its own page
+ * demonstrates — was a DOM attribute of a `div` (`docs-site.md` §4.2).
  */
 function Inherited(props: { entry: PropsInterface }) {
+  const named = () => props.entry.extends.filter((base) => !isElementSurface(base));
+  const elementSurface = () => props.entry.extends.filter(isElementSurface);
+
   return (
     <Box as="p" fontSize="sm" color="fg.muted" mt="2">
       <Show when={props.entry.props.length === 0}>Adds no prop of its own. It takes </Show>
       <Show when={props.entry.props.length > 0}>Plus </Show>
-      <Show when={props.entry.extends.length > 0}>
-        everything it inherits —{" "}
-        <For each={props.entry.extends}>
-          {(base, index) => (
-            <>
-              <Show when={index() > 0}>{", "}</Show>
-              <Code>{base}</Code>
-            </>
-          )}
-        </For>
-        , the whole style-prop surface and the DOM attributes of the element it renders, several
-        hundred names listed as their sources rather than expanded — and{" "}
+      <Show when={named().length > 0}>
+        everything in <BaseList bases={named()} />,{" "}
       </Show>
+      <Show when={elementSurface().length > 0}>
+        <BaseList bases={elementSurface()} /> — the whole style-prop surface and the DOM attributes
+        of the element it renders, several hundred names listed as their sources rather than
+        expanded —{" "}
+      </Show>
+      <Show when={props.entry.extends.length > 0}>and </Show>
       the three every component takes: <CompositionLink hash="the-as-prop">as</CompositionLink>,{" "}
       <CompositionLink hash="the-render-prop">render</CompositionLink> and{" "}
       <CompositionLink hash="the-unstyled-prop">unstyled</CompositionLink>.
     </Box>
   );
 }
+
+/**
+ * Whether a heritage clause is the rendered element's own surface rather than an interface with
+ * members a reader could count.
+ *
+ * By name, because that is all the generator emits and all it needs to: `HTMLChakraProps` and
+ * `JsxStyleProps` are the only two entry points to that surface in the library, and an `Omit<…>`
+ * around either is still it. Everything else — `RenderStrategyProps`, `FlexProperties`, `GroupProps`
+ * — is a handful of props with a page or a section of its own.
+ */
+function isElementSurface(base: string): boolean {
+  return base.includes("HTMLChakraProps") || base.includes("JsxStyleProps");
+}
+
+const BaseList = (props: { bases: string[] }) => (
+  <For each={props.bases}>
+    {(base, index) => (
+      <>
+        <Show when={index() > 0}>{", "}</Show>
+        <Code>{base}</Code>
+      </>
+    )}
+  </For>
+);
 
 /**
  * A link to where one of the universal three is documented in full.

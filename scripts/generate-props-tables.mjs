@@ -90,6 +90,21 @@ function splitDefault(description) {
   return { description: description.slice(0, match.index).trim(), defaultValue: value };
 }
 
+/**
+ * A type as one line, spelled the way a reader would write it.
+ *
+ * A union long enough that the formatter wraps it keeps its newlines and its indentation in
+ * `getText`, and the Type column is a single cell: printed as written, `ButtonVariant` arrives as
+ * `ConditionalValue<⏎  "solid" | …⏎>` and renders with a gap inside each angle bracket.
+ */
+function typeText(node, sourceFile) {
+  return node
+    .getText(sourceFile)
+    .replace(/\s+/g, " ")
+    .replace(/<\s|\s>/g, (bracket) => bracket.trim())
+    .trim();
+}
+
 /** `as?: ValidComponent` → `{ name: "as", required: false, type: "ValidComponent", … }`. */
 function memberRow(member, sourceFile) {
   if (!ts.isPropertySignature(member) || !ts.isIdentifier(member.name)) {
@@ -99,7 +114,7 @@ function memberRow(member, sourceFile) {
   return {
     name: member.name.text,
     required: member.questionToken === undefined,
-    type: member.type === undefined ? "unknown" : member.type.getText(sourceFile).trim(),
+    type: member.type === undefined ? "unknown" : typeText(member.type, sourceFile),
     defaultValue,
     description,
   };
@@ -117,7 +132,7 @@ function typeAliasesIn(sourceFile) {
   const aliases = new Map();
   for (const statement of sourceFile.statements) {
     if (ts.isTypeAliasDeclaration(statement)) {
-      aliases.set(statement.name.text, statement.type.getText(sourceFile).trim());
+      aliases.set(statement.name.text, typeText(statement.type, sourceFile));
     }
   }
   return aliases;
@@ -205,6 +220,25 @@ function foldLocalOptions(interfaces) {
     return { props: rows, extends: inherited };
   }
 
+  /**
+   * One row per name, the **nearest declaration winning** — rows arrive own-first and then base by
+   * base, which is the order TypeScript itself resolves them in.
+   *
+   * A derived interface re-declares a base's prop exactly when something about it is different:
+   * `CloseButtonProps` restates `variant` because `CloseButton` defaults it to `ghost` where
+   * `Button` leaves it `solid`. Both rows kept, the reader gets two `variant`s with opposite
+   * defaults and nothing to say which one is theirs.
+   */
+  function nearestDeclarationOf(rows) {
+    const byPropName = new Map();
+    for (const row of rows) {
+      if (!byPropName.has(row.name)) {
+        byPropName.set(row.name, row);
+      }
+    }
+    return [...byPropName.values()];
+  }
+
   return interfaces
     .filter((entry) => entry.name.endsWith("Props"))
     .map((entry) => {
@@ -215,7 +249,7 @@ function foldLocalOptions(interfaces) {
       return {
         ...entry,
         extends: [...new Set(folded.extends)],
-        props: folded.props.sort((a, b) => a.name.localeCompare(b.name)),
+        props: nearestDeclarationOf(folded.props).sort((a, b) => a.name.localeCompare(b.name)),
       };
     });
 }

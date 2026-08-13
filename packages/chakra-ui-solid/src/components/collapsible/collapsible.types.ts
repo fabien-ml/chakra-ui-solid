@@ -1,9 +1,4 @@
-import type {
-  HTMLChakraProps,
-  PropsProviderProps,
-  PropTypes,
-  RenderStrategyProps,
-} from "@chakra-ui-solid/core";
+import type { HTMLChakraProps, PropsProviderProps, PropTypes } from "@chakra-ui-solid/core";
 import type { JSX } from "@solidjs/web";
 import type * as collapsible from "@zag-js/collapsible";
 
@@ -15,13 +10,13 @@ export interface CollapsibleOpenChangeDetails extends collapsible.OpenChangeDeta
 
 /**
  * Everything {@link createCollapsible} takes: the machine's own props minus the two the library
- * injects, plus the render strategy.
+ * injects, plus the two that decide when the content is in the DOM at all.
  *
  * `dir` and `getRootNode` are the two that are missing, and they are missing because they come from
  * the locale and environment contexts rather than from the consumer — `@zag-js/collapsible`'s
  * `props.ts` lists eleven keys, and these are the other nine.
  */
-export interface CreateCollapsibleProps extends RenderStrategyProps {
+export interface CreateCollapsibleProps {
   /**
    * Seeds every id the machine hands out — the root is `collapsible:{id}`, the content
    * `collapsible:{id}:content`, the trigger `collapsible:{id}:trigger`. Defaults to a generated id,
@@ -48,6 +43,25 @@ export interface CreateCollapsibleProps extends RenderStrategyProps {
   collapsedHeight?: number | string;
   /** The horizontal counterpart of {@link CreateCollapsibleProps.collapsedHeight}. */
   collapsedWidth?: number | string;
+  // Written out rather than inherited from `RenderStrategyProps`, for the reason the nine above are
+  // written out rather than read from Zag: a shared interface cannot state a per-component default.
+  // Chakra defaults both to `true` on Dialog, Drawer, Tooltip, Menu, ActionBar and FloatingPanel and
+  // to `false` here, so a `@default` that lives on the shared interface is wrong on six pages out of
+  // seven — and it is the interface's own `@default` that the docs table prints (`docs-site.md`
+  // §4.2). `createRenderStrategy` still types the two where they are read.
+  /**
+   * Keep the content out of the DOM entirely until the collapsible first opens.
+   *
+   * @default false
+   */
+  lazyMount?: boolean;
+  /**
+   * Take the content back out of the DOM once it has closed and its exit animation has finished,
+   * rather than leaving it there hidden.
+   *
+   * @default false
+   */
+  unmountOnExit?: boolean;
 }
 
 /**

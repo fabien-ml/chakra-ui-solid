@@ -1,9 +1,22 @@
 import { withDefaults } from "@chakra-ui-solid/core";
 import type { Component } from "solid-js";
 import { CloseIcon } from "../icons";
+import type { ButtonVariant } from "./button";
 import { IconButton, type IconButtonProps } from "./icon-button";
 
-export interface CloseButtonProps extends IconButtonProps {}
+export interface CloseButtonProps extends IconButtonProps {
+  // Re-declared only for the `@default` beside it. The values are Button's, through
+  // {@link ButtonVariant}, so this cannot drift into offering a different set — but the default is
+  // this component's own, and an inherited `@default "solid"` is what the docs table printed until
+  // this declaration existed (`docs-site.md` §4.2).
+  /**
+   * How much of the colour palette the button spends — `ghost` carries no background until it is
+   * hovered, which is what a control sitting in the corner of a dialog wants.
+   *
+   * @default "ghost"
+   */
+  variant?: ButtonVariant;
+}
 
 /**
  * CloseButton — the dismiss control a dialog, drawer, alert or tag closes from: an
