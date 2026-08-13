@@ -9,22 +9,13 @@ Every class name a component computes is a name in **your** stylesheet, produced
 run over **your** source. There is no prebuilt sheet to fall back on, and no version of this
 library that works without one.
 
-## Framework Guide
+## Build Setup
 
-chakra-ui-solid works in your favorite SolidJS framework. Each guide below is one screen long,
-because there is one fact per framework and it is a build setting rather than a provider.
-
-<CardGroup>
-  <Card title="Vite" slug="get-started/frameworks/vite">
-    Use chakra-ui-solid with a client-rendered Vite app
-  </Card>
-  <Card title="SolidStart" slug="get-started/frameworks/solid-start">
-    The two settings a server-rendered app needs
-  </Card>
-  <Card title="TanStack Start" slug="get-started/frameworks/tanstack-start">
-    The same two, plus the plugin order this site had to get right
-  </Card>
-</CardGroup>
+There is no per-framework guide here, because there is no per-framework difference. Client-rendered,
+server-rendered or TanStack Start, chakra-ui-solid asks nothing of your build beyond
+`@solidjs/vite-plugin` — which is the plugin a SolidJS app compiles with anyway.
+[Build setup](/docs/get-started/build-setup) is one screen on why that holds, and on what the
+symptoms look like when a toolchain gets it wrong.
 
 > The minimum SolidJS version required is 2.0. Not 1.x — the packages import `@solidjs/web`, and a
 > 1.x install fails at load.

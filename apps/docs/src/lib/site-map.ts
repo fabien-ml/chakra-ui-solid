@@ -53,7 +53,7 @@ export interface DocModule {
 }
 
 export interface DocPage {
-  /** `get-started/frameworks/vite` — the path under `/docs/`, and the content file's own path. */
+  /** `get-started/build-setup` — the path under `/docs/`, and the content file's own path. */
   slug: string;
   /** `get-started` — the top-level section, and the top bar's unit. */
   section: string;
@@ -72,7 +72,7 @@ export interface NavSection {
 /**
  * A page as the navigation names it. `navTitle` is the register's label — short, so a sidebar
  * column stays a column — while `title` is the page's own frontmatter heading, which is a
- * sentence: *Vite* in the sidebar, *Using chakra-ui-solid in Vite* at the top of the page. That
+ * sentence: *Center (Absolute)* in the sidebar, *AbsoluteCenter* at the top of the page. That
  * split is chakra-ui.com's, and losing it is what turns their sidebar into a wall of prose.
  */
 export interface NavPage extends DocPage {

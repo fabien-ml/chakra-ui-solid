@@ -1,0 +1,135 @@
+---
+title: Build setup
+description: What chakra-ui-solid asks of your build, and why the answer is nothing
+---
+
+**Nothing to configure.** If your app compiles Solid with `@solidjs/vite-plugin`, you are done —
+client-rendered, server-rendered or TanStack Start, the answer is the same and it is the empty
+answer.
+
+This page exists to say why, because the reason is the one thing about this library a build can
+get wrong.
+
+## What we publish
+
+We ship **JSX-preserved `.jsx`** under the `"solid"` export condition, with no `"import"` or
+`"default"` fallback:
+
+```json title="chakra-ui-solid/package.json"
+{
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "solid": "./dist/index.jsx"
+    }
+  }
+}
+```
+
+Your toolchain compiles it. That is what lets one published artefact produce per-environment
+output — client, server, hydrating client — instead of us guessing which one you need.
+
+The cost is that the two places a bundler tries to *avoid* compiling a dependency both break:
+
+- **Server-side externalization.** Node cannot import raw JSX. An externalized dependency dies with
+  a syntax error pointing **inside our `dist`**, which reads as a broken package rather than as a
+  missing line in your config.
+- **Client-side dependency pre-bundling.** The pre-bundler compiles JSX **as React**, so the module
+  loads and the component renders nothing at all. No error, no warning.
+
+## Why you do not have to handle either
+
+`@solidjs/vite-plugin` derives both settings itself. It crawls your dependency tree and treats any
+package whose `exports` carry a `"solid"` condition as one it has to compile, adding it to
+`optimizeDeps.exclude` and `ssr.noExternal` for you.
+
+The crawl is **recursive**, which is the part that matters in practice: you depend on
+`chakra-ui-solid`, and `@chakra-ui-solid/core` underneath it is found and handled without ever
+being named. These are the values the plugin derives for this site, from a config that sets neither:
+
+```txt
+optimizeDeps.exclude: ["@chakra-ui-solid/core", "@solidjs/meta",
+                       "@tanstack/solid-router", "chakra-ui-solid"]
+ssr.noExternal:       ["@chakra-ui-solid/core", "@solidjs/meta",
+                       "@tanstack/solid-router", "chakra-ui-solid"]
+```
+
+`@chakra-ui-solid/styled-system` is absent from that list and does not belong on it — it is
+generated `.mjs` with no JSX in it, so pre-bundling it is ordinary and harmless.
+
+## Client-rendered apps
+
+```ts title="vite.config.ts"
+import solid from "@solidjs/vite-plugin";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [solid()],
+});
+```
+
+## Server-rendered apps
+
+Start mode — `@solidjs/vite-plugin` owns entries, dev serving and the build, so there is no
+separate metaframework to install and still nothing for us to add:
+
+```ts title="vite.config.ts"
+import solid from "@solidjs/vite-plugin";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [solid({ start: true, ssr: true })],
+});
+```
+
+> SolidStart is retired as of Solid 2.0 and start mode replaces it. It never shipped a line that
+> depends on Solid 2.0, and this library requires 2.0 — so there is no version pair in which
+> SolidStart and `chakra-ui-solid` install together.
+
+## TanStack Start
+
+One ordering rule, and it is TanStack's rather than ours — `tanstackStart()` before the Solid
+plugin:
+
+```ts title="vite.config.ts"
+import { tanstackStart } from "@tanstack/solid-start/plugin/vite";
+import solid from "@solidjs/vite-plugin";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [tanstackStart(), solid({ ssr: true })],
+});
+```
+
+## This site is that config
+
+These docs are a TanStack Start app on the 2.x prerelease line, prerendered to static HTML,
+consuming the published packages exactly as above. That is deliberate: a documentation site that
+took an in-repo shortcut would prove nothing about what a reader's build does.
+
+Two things it discovered that are worth carrying, neither of them about us:
+
+- **Pre-bundling discovery.** Vite's dependency scanner runs with JSX disabled, so it throws on
+  first-party `.tsx` source. At startup Vite catches that and skips pre-bundling; the automatic
+  re-discovery that fires when an edit adds an import re-runs the same scan and takes the dev
+  server down. The symptom is *"dev crashes after every change"*. Setting `optimizeDeps.noDiscovery`
+  removes the scan.
+- **Prerender, not SPA mode.** `tanstackStart({ prerender: { enabled: true, crawlLinks: true,
+  failOnError: true } })` renders every route into full static HTML. SPA mode prerenders a
+  client-hydrated shell instead, which leaves the prose out of the markup. `failOnError` is the
+  difference between a broken route and a silently missing page.
+
+## When it does break
+
+Every failure here has the same cause — something compiled our JSX with a compiler that is not
+Solid's, or refused to compile it at all:
+
+| Symptom | Cause |
+| --- | --- |
+| Syntax error pointing inside `chakra-ui-solid/dist` | The server externalized us; Node read raw JSX |
+| Components mount but render nothing, no error | Something pre-bundled us and compiled JSX as React |
+| `Failed to resolve entry` for one of our packages | A resolver without the `"solid"` condition — there is no fallback to find |
+
+If you hit one of these, check that `@solidjs/vite-plugin` is actually in your `plugins` array
+before adding any configuration. It is the requirement; the settings it derives are not meant to be
+written by hand.

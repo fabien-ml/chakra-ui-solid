@@ -37,33 +37,26 @@ const src = fileURLToPath(new URL("./src", import.meta.url));
  * stops being evidence and becomes decoration, which is what `check:docs-consumer-config` exists
  * to prevent.
  *
- * Four knobs below are not preferences. Each is here because getting it wrong produces a failure
+ * Three knobs below are not preferences. Each is here because getting it wrong produces a failure
  * whose message names the wrong cause (`docs-site.md` §1.2), and each carries the failure it
  * prevents.
+ *
+ * **`ssr.noExternal` and `optimizeDeps.exclude` used to be knobs 1 and 2 here, and they are gone
+ * because the plugin writes them.** We publish JSX-preserved `.jsx` under the `"solid"` export
+ * condition (`plan.md` §8), and the two places a bundler avoids compiling a dependency both break
+ * on that: Node cannot import raw JSX, and the client pre-bundler compiles JSX as React and
+ * produces a component that renders nothing with no error. `@solidjs/vite-plugin` crawls the
+ * dependency tree through `vitefu` and treats every package whose `exports` carry a `"solid"`
+ * condition as one it must compile, recursively. Measured on this app's own tree, it derives
+ * `["@chakra-ui-solid/core", "@solidjs/meta", "@tanstack/solid-router", "chakra-ui-solid"]` for
+ * both — more than the hand-written lists named, and `@chakra-ui-solid/styled-system` is the only
+ * thing they had that it does not, correctly: that package is generated `.mjs` with no JSX in it.
+ * `/docs/get-started/build-setup` is the reader-facing half of this.
  */
 export default defineConfig(({ command }) => ({
   server: { port: 3000 },
 
-  // KNOB 1 — `ssr.noExternal`.
-  //
-  // We publish **JSX-preserved `.jsx`** under the `"solid"` export condition, with no `"import"`
-  // or `"default"` fallback (`plan.md` §8). Node cannot import raw JSX, so the prerender pass has
-  // to inline our packages and compile them rather than externalize them. Externalized, every
-  // route dies at build time with a syntax error pointing inside *our* `dist` — which reads as a
-  // broken package rather than as a missing line in this file.
-  ssr: {
-    noExternal: [/^@chakra-ui-solid\//, /^chakra-ui-solid$/],
-  },
-
   optimizeDeps: {
-    // KNOB 2 — `optimizeDeps.exclude`.
-    //
-    // The client build's dependency pre-bundler compiles JSX **as React**. A pre-bundled
-    // `chakra-ui-solid` therefore produces a runtime that is not Solid, and the symptom is a
-    // component that renders nothing at all — no error, no warning. Same fact as knob 1 seen from
-    // the client side: shipping source moves work into the consumer's build, which is `plan.md`
-    // §8's deliberate trade and this app is its first proof.
-    exclude: ["chakra-ui-solid", "@chakra-ui-solid/core", "@chakra-ui-solid/styled-system"],
     // Carried from hope-ui, where it was diagnosed rather than guessed: Vite 8's rolldown
     // dependency **scanner** runs with JSX disabled, so it throws `Unexpected JSX expression` the
     // moment it walks into any first-party `.tsx`/`.mdx` source. At startup Vite catches that and
@@ -96,7 +89,7 @@ export default defineConfig(({ command }) => ({
     // browser-side highlighter is `plan.md` §0, not performance.
     exampleSourceHighlighter(),
 
-    // KNOB 3 — `mdx()` at `enforce: "pre"`, **before** `vite-plugin-solid`.
+    // KNOB 1 — `mdx()` at `enforce: "pre"`, **before** `vite-plugin-solid`.
     //
     // MDX has to emit JSX (`jsx: true`) for the Solid compiler to compile it. Compiled the other
     // way round we get MDX's own hyperscript shim instead of the real Solid runtime, and the
@@ -155,7 +148,7 @@ export default defineConfig(({ command }) => ({
       }),
     },
 
-    // KNOB 4 — `tanstackStart({ prerender })` with `failOnError`.
+    // KNOB 2 — `tanstackStart({ prerender })` with `failOnError`.
     //
     // Full-document SSR of every route into static HTML. **Not** SPA mode, which prerenders a
     // client-hydrated shell: the prose would be absent from the HTML, which costs search indexing,

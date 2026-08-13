@@ -55,16 +55,8 @@ export const docsNav: NavItem[] = [
         title: "Overview",
         items: [
           { title: "Installation", url: "installation" },
+          { title: "Build setup", url: "build-setup" },
           { title: "Migration", url: "migration" },
-        ],
-      },
-      {
-        title: "Frameworks",
-        url: "frameworks",
-        items: [
-          { title: "Vite", url: "vite" },
-          { title: "SolidStart", url: "solid-start" },
-          { title: "TanStack Start", url: "tanstack-start" },
         ],
       },
       {
