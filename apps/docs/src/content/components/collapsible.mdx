@@ -1,0 +1,153 @@
+---
+title: Collapsible
+description: Used to expand and collapse additional content.
+links:
+  source: packages/chakra-ui-solid/src/components/collapsible
+  chakra: https://chakra-ui.com/docs/components/collapsible
+---
+
+<Example name="collapsible-basic" />
+
+## Usage
+
+```tsx
+import { Collapsible } from "chakra-ui-solid";
+```
+
+```tsx
+<Collapsible.Root>
+  <Collapsible.Trigger>
+    <Collapsible.Indicator />
+  </Collapsible.Trigger>
+  <Collapsible.Content />
+</Collapsible.Root>
+```
+
+## Examples
+
+### Initial Open
+
+Use the `defaultOpen` prop to render the collapsible in an open state by default.
+
+<Example name="collapsible-initial-open" />
+
+### Partial Height
+
+Use the `collapsedHeight` prop to show a preview of the content when collapsed.
+
+<Example name="collapsible-partial-height" />
+
+### Disabled
+
+Use the `disabled` prop to prevent the collapsible from being toggled.
+
+<Example name="collapsible-with-disabled" />
+
+### Controlled
+
+Use the `open` and `onOpenChange` props to control the collapsible state.
+
+<Example name="collapsible-controlled" />
+
+### Store
+
+An alternative way to control the collapsible is to use the `RootProvider` component and the
+`createCollapsible` store hook.
+
+<Example name="collapsible-with-store" />
+
+### Lazy Mounted
+
+Use the `unmountOnExit` prop to make the content unmount when collapsed.
+
+<Example name="collapsible-lazy-mounted" />
+
+## Guides
+
+### Accessing collapsible context
+
+Use `useCollapsibleContext` to access the collapsible's state and methods from any component inside
+the collapsible.
+
+```tsx
+import { Collapsible, useCollapsibleContext } from "chakra-ui-solid";
+
+function CollapsibleStatus() {
+  const collapsible = useCollapsibleContext();
+
+  return <div>Collapsible is {collapsible.open ? "open" : "closed"}</div>;
+}
+
+function MyCollapsible() {
+  return (
+    <Collapsible.Root>
+      <Collapsible.Trigger>Toggle</Collapsible.Trigger>
+      <Collapsible.Content>
+        <CollapsibleStatus />
+      </Collapsible.Content>
+    </Collapsible.Root>
+  );
+}
+```
+
+### Closing programmatically
+
+Use `setOpen(false)` from the context to close the collapsible programmatically.
+
+```tsx
+import { Button, Collapsible, useCollapsibleContext } from "chakra-ui-solid";
+
+function CloseButton() {
+  const collapsible = useCollapsibleContext();
+
+  return <Button onClick={() => collapsible.setOpen(false)}>Close Collapsible</Button>;
+}
+
+function MyCollapsible() {
+  return (
+    <Collapsible.Root>
+      <Collapsible.Trigger>Toggle</Collapsible.Trigger>
+      <Collapsible.Content>
+        <CloseButton />
+      </Collapsible.Content>
+    </Collapsible.Root>
+  );
+}
+```
+
+### Content Padding
+
+To prevent janky animations when the collapsible expands or collapses, apply padding to the inner
+content element rather than directly on `Collapsible.Content` to prevent visual stuttering as its
+animations.
+
+**DO THIS:**
+
+```tsx
+<Collapsible.Root>
+  <Collapsible.Trigger>Toggle</Collapsible.Trigger>
+  <Collapsible.Content>
+    <Box padding="4" borderWidth="1px">
+      {/* Content here */}
+    </Box>
+  </Collapsible.Content>
+</Collapsible.Root>
+```
+
+**NOT THIS:**
+
+```tsx
+<Collapsible.Root>
+  <Collapsible.Trigger>Toggle</Collapsible.Trigger>
+  {/* ❌ Avoid applying padding directly to Content */}
+  <Collapsible.Content padding="4" borderWidth="1px">
+    {/* Content here */}
+  </Collapsible.Content>
+</Collapsible.Root>
+```
+
+## Props
+
+### Root
+
+<PropsTable component="collapsible" interface="CollapsibleRootProps" />

@@ -176,18 +176,46 @@ function interfacesIn(sourceFile) {
 function foldLocalOptions(interfaces) {
   const byName = new Map(interfaces.map((entry) => [entry.name, entry]));
 
+  /**
+   * The whole local chain, not one link of it. Collapsible is three deep — `CreateCollapsibleProps`
+   * → `CollapsibleRootBaseProps` → `CollapsibleRootProps` — and a single hop left the Root with no
+   * rows at all: its base declares nothing itself, so everything it offers came from *its* base.
+   * The heritage names travel with the rows for the same reason, or `RenderStrategyProps` (which
+   * `lazyMount` and `unmountOnExit` live on) vanishes at the first fold and the table inherits from
+   * nothing on paper.
+   */
+  function chainFrom(entry, seen) {
+    if (seen.has(entry.name)) {
+      return { props: [], extends: [] };
+    }
+    seen.add(entry.name);
+
+    const rows = [...entry.props];
+    const inherited = [];
+    for (const base of entry.extends) {
+      const local = byName.get(base);
+      if (local === undefined) {
+        inherited.push(base);
+        continue;
+      }
+      const folded = chainFrom(local, seen);
+      rows.push(...folded.props);
+      inherited.push(...folded.extends);
+    }
+    return { props: rows, extends: inherited };
+  }
+
   return interfaces
     .filter((entry) => entry.name.endsWith("Props"))
     .map((entry) => {
-      const local = entry.extends.filter((base) => byName.has(base));
-      if (local.length === 0) {
+      if (!entry.extends.some((base) => byName.has(base))) {
         return entry;
       }
-      const rows = [...entry.props, ...local.flatMap((base) => byName.get(base).props)];
+      const folded = chainFrom(entry, new Set());
       return {
         ...entry,
-        extends: entry.extends.filter((base) => !byName.has(base)),
-        props: rows.sort((a, b) => a.name.localeCompare(b.name)),
+        extends: [...new Set(folded.extends)],
+        props: folded.props.sort((a, b) => a.name.localeCompare(b.name)),
       };
     });
 }
