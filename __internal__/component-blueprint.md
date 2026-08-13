@@ -10,7 +10,7 @@
 > **The parts that are not P**, because their subject shipped at steps 1–3b:
 > §1.3 (`@zag-js/focus-visible`, measured — `f57403b`), §2.1–§2.2 (`useMachine` and the
 > `[STRICT_READ_UNTRACKED]` rule, exercised by `machine.browser.test.tsx`), §3.4's precedence and
-> §3.5's `render` prop (**I** — `packages/core/src/render-styled/`, with tests), §9's a11y baseline
+> §3.5's `as` and `render` props (**I** — `packages/core/src/render-styled/`, with tests), §9's a11y baseline
 > (**M** for the retired allowances, **P** for the three predicted ones — `definition-of-done.md` §5
 > marks each row itself), and §10's `_hk` hazard (**M** — the hydrate fixture is
 > `packages/internal-test-utils/src/hydrate-fixture/`).
@@ -420,18 +420,54 @@ recipeClass  →  style props + the `css` prop  →  the consumer's `class`
 with the consumer's `class` appended last so it wins ties. **Inline `style` is forwarded untouched and
 always beats a class** — which is what makes §5's route 3 work.
 
-### 3.5 The `render` prop
+### 3.5 The `as` and `render` props
 
-Polymorphism is a `render` prop, never `asChild` (`CLAUDE.md`, *Reference use*). It is a **function** receiving the
-computed props and returning the element — never a JSX element, because a Solid JSX element is an
-already-constructed DOM node by the time it reaches us and Solid has no `cloneElement`, so accepting
-one could only mean dropping every computed prop.
+Polymorphism is `as` or `render`, never `asChild` (`CLAUDE.md`, *Reference use*). The two are one
+mechanism with two spellings, and `renderElement` is where they meet: `as` names the element,
+`render` is a **function** receiving the computed props and returning it. Never a JSX element,
+because a Solid JSX element is an already-constructed DOM node by the time it reaches us and Solid
+has no `cloneElement`, so accepting one could only mean dropping every computed prop. **That is what
+`asChild` is rejected for — the JSX child, not the idea. `as` is not rejected at all.**
 
 ```tsx
 <Dialog.CloseTrigger render={(props) => <Button {...props}>Close</Button>} />
+<Dialog.CloseTrigger as="a" />
 ```
 
-`renderElement` owns it; `renderStyled` passes it through. Every part accepts one.
+**Both, on every part, because the React version has both on every part.** Its parts are
+`chakra(ArkPart, …, { forwardAsChild: true })`, and its factory turns `as` on such a part into
+`asChild` with a synthesized child (`factory.tsx:254`):
+
+```jsx
+<FinalTag asChild {...finalProps}><props.as>{finalProps.children}</props.as></FinalTag>
+```
+
+— the machine's computed props rendered onto the consumer's element, which is exactly what
+`<Dynamic component={as} {...props} />` does here. Dropping `as` would be removing behavior Chakra
+has, and it fails silently twice over: `tsc` accepts the prop either way, because `as` reaches every
+part through `ChakraStylingProps`, and the generated props table then advertises it on a page where
+it does nothing.
+
+**So a part's element is a fallback, never a literal:**
+
+```tsx
+as: (props.as ?? "button") as ValidComponent,
+```
+
+`??`, never `merge` and never a bare literal — a wrapper forwarding an unset `as` resolves by
+presence and would hand the part `undefined`, which `<Dynamic>` renders as nothing at all
+(`CLAUDE.md`, *The third hazard*). Each part owes the `<X as={undefined} />` test alongside the one
+that names an element.
+
+`render` wins when a part is given both: `renderElement` returns on `render` before it reads `as`,
+and the factory behaves the same way.
+
+`renderElement` owns both; `renderStyled` passes them through. Every part accepts both.
+
+**Collapsible shipped without `as` and is where this was found** — its four parts hardcoded their
+element, stamped from the ten call sites in §11 below, which had it wrong before this section did.
+Nothing mechanical catches it; what does is that the four `as`/`render` tests in
+`collapsible.browser.test.tsx` are part of the stamp and travel with it.
 
 ### 3.6 Ref handling
 
@@ -527,7 +563,7 @@ from the same object.
 
 ```tsx
 renderStyled({
-  as: "div",
+  as: (props.as ?? "div") as ValidComponent,
   props: elementProps,   // machine ∪ presence ∪ consumer — forwarded to the element
   styleSource: props,    // the consumer's own props — the ONLY source of style-prop keys
   ...
@@ -1280,7 +1316,7 @@ export const DialogRoot: Component<DialogRootProps> = (props) => {
 
 ```tsx
 import { mergeProps, renderStyled } from "@chakra-ui-solid/core"
-import type { JSX } from "@solidjs/web"
+import type { JSX, ValidComponent } from "@solidjs/web"
 import { type Component, omit } from "solid-js"
 import { useDialogContext } from "./dialog-context"
 import type { DialogTriggerProps } from "./dialog.types"
@@ -1303,7 +1339,7 @@ export const DialogTrigger: Component<DialogTriggerProps> = (props) => {
   )
 
   return renderStyled<ButtonProps, HTMLButtonElement>({
-    as: "button",
+    as: (props.as ?? "button") as ValidComponent,
     props: elementProps,
     // The CONSUMER's props, never `elementProps` — a merged bag carries machine-emitted DOM
     // attributes, and any of them colliding with a style-prop name would be swallowed into a class
@@ -1319,7 +1355,7 @@ export const DialogTrigger: Component<DialogTriggerProps> = (props) => {
 
 ```tsx
 import { createPresence, mergeProps, renderStyled } from "@chakra-ui-solid/core"
-import type { JSX } from "@solidjs/web"
+import type { JSX, ValidComponent } from "@solidjs/web"
 import { type Component, Show } from "solid-js"
 import { useDialogContext } from "./dialog-context"
 import type { DialogBackdropProps } from "./dialog.types"
@@ -1352,7 +1388,7 @@ export const DialogBackdrop: Component<DialogBackdropProps> = (props) => {
   return (
     <Show when={!presence.unmounted()}>
       {renderStyled<DivProps, HTMLDivElement>({
-        as: "div",
+        as: (props.as ?? "div") as ValidComponent,
         props: elementProps,
         styleSource: props,
         render: props.render,
@@ -1374,7 +1410,7 @@ export const DialogPositioner: Component<DialogPositionerProps> = (props) => {
   return (
     <Show when={!ctx.contentPresence.unmounted()}>
       {renderStyled<DivProps, HTMLDivElement>({
-        as: "div",
+        as: (props.as ?? "div") as ValidComponent,
         props: elementProps,
         styleSource: props,
         render: props.render,
@@ -1392,7 +1428,7 @@ part. Its `style: { pointerEvents }` is the machine's and is forwarded untouched
 
 ```tsx
 import { mergeProps, renderStyled } from "@chakra-ui-solid/core"
-import type { JSX } from "@solidjs/web"
+import type { JSX, ValidComponent } from "@solidjs/web"
 import { type Component, Show } from "solid-js"
 import { useDialogContext } from "./dialog-context"
 import type { DialogContentProps } from "./dialog.types"
@@ -1403,10 +1439,11 @@ import type { DialogContentProps } from "./dialog.types"
  * `getContentProps()` and the effects its `open` state runs. This layer is assembly plus the slot
  * class.
  *
- * `as: "div"` follows the DOM, not Chakra's type. Chakra types this part
+ * The `"div"` fallback follows the DOM, not Chakra's type. Chakra types this part
  * `HTMLChakraProps<"section", …>` while the element Ark actually renders is `ark.div`; the DOM is
  * what a recipe selector, a snapshot and a screen reader all see, so the DOM wins. Same for
- * `Description`, typed `"p"` and rendered `div`.
+ * `Description`, typed `"p"` and rendered `div`. It is what the part renders when the consumer
+ * names nothing — a consumer's `as` still overrides it (§3.5).
  */
 export const DialogContent: Component<DialogContentProps> = (props) => {
   const ctx = useDialogContext()
@@ -1420,7 +1457,7 @@ export const DialogContent: Component<DialogContentProps> = (props) => {
   return (
     <Show when={!ctx.contentPresence.unmounted()}>
       {renderStyled<DivProps, HTMLDivElement>({
-        as: "div",
+        as: (props.as ?? "div") as ValidComponent,
         props: elementProps,
         styleSource: props,
         render: props.render,
@@ -1443,7 +1480,7 @@ export const DialogTitle: Component<DialogTitleProps> = (props) => {
   const elementProps = mergeProps(() => ctx.api().getTitleProps(), props)
 
   return renderStyled<JSX.HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>({
-    as: "h2",
+    as: (props.as ?? "h2") as ValidComponent,
     props: elementProps,
     styleSource: props,
     render: props.render,
@@ -1452,7 +1489,7 @@ export const DialogTitle: Component<DialogTitleProps> = (props) => {
 }
 ```
 
-`Description` is the same with `as: "div"`, `getDescriptionProps()`, and the `description` slot.
+`Description` is the same with a `"div"` fallback, `getDescriptionProps()`, and the `description` slot.
 **Neither registers anything** — the machine sniffs the DOM for `dialog:<id>:title` one frame after
 open and sets `context.rendered` from what it finds (§10.3).
 
@@ -1464,7 +1501,7 @@ export const DialogCloseTrigger: Component<DialogCloseTriggerProps> = (props) =>
   const elementProps = mergeProps(() => ctx.api().getCloseTriggerProps(), props)
 
   return renderStyled<ButtonProps, HTMLButtonElement>({
-    as: "button",
+    as: (props.as ?? "button") as ValidComponent,
     props: elementProps,
     styleSource: props,
     render: props.render,
@@ -1485,7 +1522,7 @@ function createSlotPart(slot: "header" | "body" | "footer"): Component<DialogSlo
   return (props) => {
     const ctx = useDialogContext()
     return renderStyled<DivProps, HTMLDivElement>({
-      as: "div",
+      as: (props.as ?? "div") as ValidComponent,
       props,
       render: props.render,
       recipeClass: () => (props.unstyled ? undefined : ctx.slots()[slot]),
@@ -1502,6 +1539,7 @@ export const DialogFooter = createSlotPart("footer")
 
 ```tsx
 import { composeEventHandlers, renderStyled, withDefaults } from "@chakra-ui-solid/core"
+import type { ValidComponent } from "@solidjs/web"
 import { merge } from "solid-js"
 
 /**
@@ -1526,10 +1564,15 @@ export const DialogActionTrigger: Component<DialogActionTriggerProps> = (props) 
   })
 
   return renderStyled<ButtonProps, HTMLButtonElement>({
-    as: "button",
+    // `merged`, not `props`, for both — it is the only props object once `withDefaults` has run
+    // (`CLAUDE.md`, *The third hazard*), and reading either off the raw bag is how the factory's
+    // own `defaultProps: { as: "span" }` came to do nothing at all.
+    as: (merged.as ?? "button") as ValidComponent,
     props: elementProps,
+    // `styleSource` stays `props` here and in every other part: §4.1's rule names the consumer's
+    // own props, and the thing it exists to exclude is `elementProps`, the merged machine bag.
     styleSource: props,
-    render: props.render,
+    render: merged.render,
   })
 }
 ```

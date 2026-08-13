@@ -855,11 +855,13 @@ and the failure is a component that stops responding rather than an error
 
 ### 8.8 `### render`
 
-Polymorphism is the `render` prop, on every part. It is a **function** receiving the computed props
-and returning the element — **never a JSX element, and never `asChild`** — because a Solid JSX element
-is an already-constructed node by the time it reaches us and there is no `cloneElement`, so accepting
-one could only mean dropping every computed prop (`component-blueprint.md` §3.5). One example per
-page, on the part where it is most used.
+Polymorphism is `as` **and** `render`, on every part — the React version has both on every part, and
+`as` on one of its machine parts is `asChild` with a synthesized child, which is the same mechanism
+`render` uses here (`component-blueprint.md` §3.5). `render` is a **function** receiving the computed
+props and returning the element — **never a JSX element, and never `asChild`** — because a Solid JSX
+element is an already-constructed node by the time it reaches us and there is no `cloneElement`, so
+accepting one could only mean dropping every computed prop. It is the JSX **child** that is rejected,
+never `as`. One example per page, on the part where it is most used.
 
 **And the section owes one sentence the template did not anticipate, measured at S3b on Box's own
 page** (**D-143**). A part whose element props are typed against a **wider** element than the
