@@ -1,8 +1,10 @@
 import collapsibleServerHtml from "virtual:hydration-fixture?id=collapsible";
+import { normalizeProps, useMachine } from "@chakra-ui-solid/core";
 import { hydrateFixture, type MountedComponent, mount } from "@chakra-ui-solid/internal-test-utils";
-import { createSignal } from "solid-js";
+import * as zagCollapsible from "@zag-js/collapsible";
+import { createSignal, untrack } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { Collapsible } from "../index";
+import { Collapsible, createCollapsible } from "../index";
 import { Tree } from "./collapsible.ssr-entry";
 
 let mounted: MountedComponent | undefined;
@@ -162,6 +164,26 @@ describe("Collapsible — a real machine through the adapter", () => {
     await settle();
 
     expect(root.dataset.state).toBe("open");
+  });
+
+  it("exposes every member `connect` returns, and exactly one of its own", () => {
+    // The drift a hand-written member list cannot catch. `createMachineStore` enumerates the
+    // connected api at runtime and `CreateCollapsibleReturn extends collapsible.Api<PropTypes>`
+    // inherits it at compile time, so a member a Zag minor release adds reaches both for free —
+    // this is what says the two really are the same set, rather than two lists that agree today.
+    let storeKeys: string[] = [];
+    let connectedKeys: string[] = [];
+
+    mounted = mount(() => {
+      storeKeys = Object.keys(createCollapsible());
+
+      const service = useMachine(zagCollapsible.machine, () => ({ id: "key-set-probe" }));
+      connectedKeys = untrack(() => Object.keys(zagCollapsible.connect(service, normalizeProps)));
+
+      return null;
+    });
+
+    expect([...storeKeys].sort()).toEqual([...connectedKeys, "unmounted"].sort());
   });
 });
 

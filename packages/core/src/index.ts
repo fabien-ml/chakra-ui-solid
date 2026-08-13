@@ -70,6 +70,7 @@ export type { CreateRegisteredIdOptions } from "./internal/create-registered-id"
 export { createRegisteredId } from "./internal/create-registered-id";
 export type { Locale, LocaleProviderProps, UseFilterProps, UseFilterReturn } from "./locale/locale";
 export { LocaleProvider, useFilter, useLocaleContext } from "./locale/locale";
+export { createMachineStore } from "./machine-store/machine-store";
 export type { PropsContext, PropsProviderProps } from "./recipe/props-context";
 export { createPropsContext } from "./recipe/props-context";
 export type { RecipeClassOptions, RecipeFn, SlotRecipeFn } from "./recipe/recipe";

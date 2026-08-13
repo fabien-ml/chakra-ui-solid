@@ -1,4 +1,5 @@
 import {
+  createMachineStore,
   createRenderStrategy,
   normalizeProps,
   useEnvironmentContext,
@@ -60,38 +61,9 @@ export function createCollapsible(props: CreateCollapsibleProps = {}): CreateCol
     () => ({ lazyMount: props.lazyMount, unmountOnExit: props.unmountOnExit }),
   );
 
-  // Getters over the memo, never `{ ...api() }`: a spread reads every member once, at the moment
-  // the object is built, and freezes the machine at its initial state.
-  return {
-    get open() {
-      return api().open;
-    },
-    get visible() {
-      return api().visible;
-    },
-    get disabled() {
-      return api().disabled;
-    },
+  return createMachineStore(api, {
     get unmounted() {
       return unmounted();
     },
-    setOpen(open) {
-      api().setOpen(open);
-    },
-    measureSize() {
-      api().measureSize();
-    },
-    getRootProps() {
-      return api().getRootProps();
-    },
-    getTriggerProps() {
-      return api().getTriggerProps();
-    },
-    getContentProps() {
-      return api().getContentProps();
-    },
-    getIndicatorProps() {
-      return api().getIndicatorProps();
-    },
-  };
+  });
 }

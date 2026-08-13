@@ -336,17 +336,43 @@ Every part component in this library is one of these. Full code in §11.
 
 ### 3.3 Context: composition, not inheritance
 
-The context value **holds** the machine's connected API; it never spreads it. Two fields always, plus
+The context value **holds** the machine's connected API; it never spreads it. One field always, plus
 two that only presence-bearing families need:
 
 ```ts
-interface DialogContextValue {
-  api: Accessor<dialog.Api<PropTypes>>        // always — the connected machine, recomputed per transition
+interface DialogContextValue extends CreateDialogReturn {
   slots: Accessor<Record<DialogSlot, string>> // always — the resolved slot classes, one string per slot
   contentPresence: PresenceApi                // presence families only — the Root-created shared presence (§7.5)
   renderStrategy: RenderStrategyProps         // presence families only — for parts building their own
 }
 ```
+
+`CreateDialogReturn` is the **store shape**: a stable object of reactive getters and delegating
+methods over the one `createMemo(() => connect(service, normalizeProps))`, so a part writes
+`ctx.getTitleProps()` and a consumer writes `dialog.open`. This section originally predicted an
+`api: Accessor<Api>` field instead, and it was wrong on two counts — it makes the public value and
+the context value two different shapes, and property access is what SolidJS 2.0 tracks through for
+every other bag of reactive state it ships (props, stores). Measured in
+`components/__tests__/store-shape.browser.test.tsx`, which times six candidate shapes over a real
+machine at 10, 30 and 78 api members; the getter object is the fastest of the shapes that read
+idiomatically, and a `createStore`/`createProjection` shape costs 15–36% more per transition to buy
+per-key granularity nothing downstream can use.
+
+**Neither half is written out — both are mechanisms.** The value is
+`createMachineStore(api, extra)` (`@chakra-ui-solid/core`), which enumerates the connected api once
+under `untrack`, makes every data member a getter and every function member a **rest-args** delegate
+(Zag has multi-argument members), and lets `extra` — the library's own additions, `unmounted` and
+friends — win. The type inherits, exactly as `ark-ui`'s `use-dialog.ts` does:
+
+```ts
+export interface CreateDialogReturn extends Readonly<dialog.Api<PropTypes>> {
+  readonly unmounted: boolean // only what the library adds is declared
+}
+```
+
+so a member a Zag minor release adds reaches both without an edit. `Readonly` is what makes
+`store.open = true` a compile error. One accepted loss: a `T["element"]` return widens to
+`JSX.HTMLAttributes<any>`, since that is what our own `PropTypes["element"]` is.
 
 Anything a part needs that is none of those four is a smell: it means the part is reaching for state
 the machine already owns. The one legitimate addition is a **per-item context** for repeated parts

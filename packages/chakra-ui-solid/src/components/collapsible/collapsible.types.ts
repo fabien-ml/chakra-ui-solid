@@ -1,16 +1,17 @@
 import type {
   HTMLChakraProps,
   PropsProviderProps,
+  PropTypes,
   RenderStrategyProps,
 } from "@chakra-ui-solid/core";
 import type { JSX } from "@solidjs/web";
-import type { ElementIds, OpenChangeDetails } from "@zag-js/collapsible";
+import type * as collapsible from "@zag-js/collapsible";
 
 /** The ids of the three elements the machine addresses. Useful for composition. */
-export interface CollapsibleElementIds extends ElementIds {}
+export interface CollapsibleElementIds extends collapsible.ElementIds {}
 
 /** What `onOpenChange` receives. */
-export interface CollapsibleOpenChangeDetails extends OpenChangeDetails {}
+export interface CollapsibleOpenChangeDetails extends collapsible.OpenChangeDetails {}
 
 /**
  * Everything {@link createCollapsible} takes: the machine's own props minus the two the library
@@ -50,8 +51,8 @@ export interface CreateCollapsibleProps extends RenderStrategyProps {
 }
 
 /**
- * The connected machine, as a **stable object of reactive getters** rather than the snapshot
- * `{ ...api }` React can take. Each read goes back to the live machine, so
+ * The connected machine, as a **stable object of reactive getters and delegating methods** rather
+ * than the snapshot `{ ...api }` React can take. Each read goes back to the live machine, so
  * `<Show when={collapsible.open}>` in a consumer's own tree tracks it.
  *
  * That is the `React→Solid` half, and the name is the other: SolidJS spells a primitive that
@@ -63,24 +64,14 @@ export interface CreateCollapsibleProps extends RenderStrategyProps {
  * The last difference is `unmounted`, which is Ark's `isUnmounted` under this library's
  * render-strategy name — the word `RenderStrategy` and every presence-bearing component to come
  * already use for it.
+ *
+ * The nine members Zag ships are **inherited rather than re-declared**, so a member a Zag minor adds
+ * arrives here for free and its own JSDoc is what a consumer hovers. That leaves `unmounted` as the
+ * only one written out, because it is the only one this library adds.
  */
-export interface CreateCollapsibleReturn {
-  /** Whether the collapsible is open. */
-  readonly open: boolean;
-  /** Whether the content is in view — open, or still animating closed. */
-  readonly visible: boolean;
-  /** Whether the trigger ignores clicks. */
-  readonly disabled: boolean;
+export interface CreateCollapsibleReturn extends Readonly<collapsible.Api<PropTypes>> {
   /** Whether the render strategy says the content does not belong in the DOM at all. */
   readonly unmounted: boolean;
-  /** Open or close it. */
-  setOpen(open: boolean): void;
-  /** Re-measure the content, for when it changed size while open. */
-  measureSize(): void;
-  getRootProps(): JSX.HTMLAttributes<HTMLDivElement>;
-  getTriggerProps(): JSX.ButtonHTMLAttributes<HTMLButtonElement>;
-  getContentProps(): JSX.HTMLAttributes<HTMLDivElement>;
-  getIndicatorProps(): JSX.HTMLAttributes<HTMLDivElement>;
 }
 
 /**
