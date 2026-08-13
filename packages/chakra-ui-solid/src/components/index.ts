@@ -25,6 +25,7 @@ export * from "./circle";
 export * from "./collapsible";
 export * from "./color-swatch";
 export * from "./container";
+export * from "./dialog";
 export * from "./em";
 export * from "./environment";
 export * from "./flex";

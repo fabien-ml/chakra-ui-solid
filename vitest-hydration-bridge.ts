@@ -96,6 +96,15 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/collapsible/__tests__/collapsible.ssr-entry.tsx",
   ),
+  // The first **presence** subject, and the first whose tree is split across two DOM roots. Three
+  // closed dialogs — Chakra's defaults (the trigger is all there is), `lazyMount={false}` in place,
+  // and `lazyMount={false}` inside a `<Portal>` — so each one contributes a different number of
+  // hydration keys, and the `after-portal` sibling proves the Portal costs exactly one aligned child
+  // id on both builds. Two presence machines per root run beside the dialog's own.
+  dialog: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/dialog/__tests__/dialog.ssr-entry.tsx",
+  ),
   // Conditional on a **count** rather than a boolean: `ColorSwatchMix` renders a `<For>` over two,
   // three or four colours, so each subject consumes a different number of hydration keys and a
   // miscount shifts every sibling after it. It is also the first subject styled through an inline

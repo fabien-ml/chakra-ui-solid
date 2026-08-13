@@ -1,0 +1,45 @@
+export { createDialog } from "./create-dialog";
+export type {
+  CreateDialogProps,
+  CreateDialogReturn,
+  DialogActionTriggerProps,
+  DialogBackdropProps,
+  DialogBodyProps,
+  DialogCloseTriggerProps,
+  DialogContentProps,
+  DialogContextProps,
+  DialogDescriptionProps,
+  DialogElementIds,
+  DialogFocusOutsideEvent,
+  DialogFooterProps,
+  DialogHeaderProps,
+  DialogInteractOutsideEvent,
+  DialogOpenChangeDetails,
+  DialogPointerDownOutsideEvent,
+  DialogPositionerProps,
+  DialogPresenceProps,
+  DialogPropsProviderProps,
+  DialogRootBaseProps,
+  DialogRootProps,
+  DialogRootProviderProps,
+  DialogTitleProps,
+  DialogTriggerProps,
+  DialogTriggerValueChangeDetails,
+} from "./dialog.types";
+export { useDialogContext } from "./dialog-context";
+export {
+  DialogActionTrigger,
+  DialogBackdrop,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogContext,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPositioner,
+  DialogTitle,
+  DialogTrigger,
+} from "./dialog-parts";
+export { DialogPropsProvider, DialogRoot, DialogRootProvider } from "./dialog-root";
+export * as Dialog from "./namespace";

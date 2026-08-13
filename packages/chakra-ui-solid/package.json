@@ -25,6 +25,7 @@
       "collapsible": "src/components/collapsible/index.ts",
       "color-swatch": "src/components/color-swatch/index.ts",
       "container": "src/components/container/index.ts",
+      "dialog": "src/components/dialog/index.ts",
       "em": "src/components/em/index.ts",
       "environment": "src/components/environment/index.ts",
       "flex": "src/components/flex/index.ts",

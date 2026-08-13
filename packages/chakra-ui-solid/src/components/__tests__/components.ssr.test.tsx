@@ -28,6 +28,22 @@ import {
   ColorSwatchPropsProvider,
   Container,
   createCollapsible,
+  createDialog,
+  DialogActionTrigger,
+  DialogBackdrop,
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogContext,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogPositioner,
+  DialogPropsProvider,
+  DialogRoot,
+  DialogRootProvider,
+  DialogTitle,
+  DialogTrigger,
   Em,
   EnvironmentProvider,
   Flex,
@@ -184,6 +200,98 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </ColorSwatchPropsProvider>
   ),
   Container: () => <Container>page</Container>,
+  // Chakra defaults `lazyMount` and `unmountOnExit` to `true` on Dialog, so a closed dialog's
+  // backdrop, positioner and content are not in the served markup at all. Every gated subject below
+  // opts out with `lazyMount={false}`, which is what leaves an element for this suite to find; the
+  // defaults are `dialog.ssr.test.tsx`'s subject instead.
+  DialogActionTrigger: () => (
+    <DialogRoot>
+      <DialogActionTrigger>Cancel</DialogActionTrigger>
+    </DialogRoot>
+  ),
+  DialogBackdrop: () => (
+    <DialogRoot lazyMount={false}>
+      <DialogBackdrop />
+    </DialogRoot>
+  ),
+  DialogBody: () => (
+    <DialogRoot>
+      <DialogBody>body</DialogBody>
+    </DialogRoot>
+  ),
+  DialogCloseTrigger: () => (
+    <DialogRoot>
+      <DialogCloseTrigger>✕</DialogCloseTrigger>
+    </DialogRoot>
+  ),
+  DialogContent: () => (
+    <DialogRoot lazyMount={false}>
+      <DialogContent>body</DialogContent>
+    </DialogRoot>
+  ),
+  DialogContext: () => (
+    <DialogRoot>
+      <DialogContext>{(dialog) => <span>{dialog.open ? "open" : "closed"}</span>}</DialogContext>
+    </DialogRoot>
+  ),
+  DialogDescription: () => (
+    <DialogRoot>
+      <DialogDescription>This cannot be undone.</DialogDescription>
+    </DialogRoot>
+  ),
+  DialogFooter: () => (
+    <DialogRoot>
+      <DialogFooter>actions</DialogFooter>
+    </DialogRoot>
+  ),
+  DialogHeader: () => (
+    <DialogRoot>
+      <DialogHeader>head</DialogHeader>
+    </DialogRoot>
+  ),
+  DialogPositioner: () => (
+    <DialogRoot lazyMount={false}>
+      <DialogPositioner>placed</DialogPositioner>
+    </DialogRoot>
+  ),
+  DialogPropsProvider: () => (
+    <DialogPropsProvider value={{ lazyMount: false }}>
+      <DialogRoot>
+        <DialogContent>body</DialogContent>
+      </DialogRoot>
+    </DialogPropsProvider>
+  ),
+  // The Root renders no element of its own — `dialog.anatomy` has no `root` part — so the trigger is
+  // what makes this subject produce markup at all.
+  DialogRoot: () => (
+    <DialogRoot>
+      <DialogTrigger>Open</DialogTrigger>
+    </DialogRoot>
+  ),
+  // The one subject that starts its machine outside the component that renders it, and the one open
+  // dialog in this file: `defaultOpen` is the state the presence machine has to reach on a server
+  // where no effect ever runs.
+  DialogRootProvider: () => {
+    const Subject = () => {
+      const dialog = createDialog({ defaultOpen: true });
+      return (
+        <DialogRootProvider value={dialog}>
+          <DialogContent>body</DialogContent>
+        </DialogRootProvider>
+      );
+    };
+    return <Subject />;
+  },
+  DialogTitle: () => (
+    <DialogRoot>
+      <DialogTitle>Delete file</DialogTitle>
+    </DialogRoot>
+  ),
+  DialogTrigger: () => (
+    <DialogRoot>
+      <DialogTrigger>Open</DialogTrigger>
+    </DialogRoot>
+  ),
   Em: () => <Em>emphasis</Em>,
   // Given no `value` it renders a probe element and discovers its root node from a ref, which is a
   // client-only answer — so what this asserts is that the discovery path is deferred rather than
