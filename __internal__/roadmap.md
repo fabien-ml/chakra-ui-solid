@@ -252,7 +252,18 @@ asks, correct **both** in the same commit.
       Plus `createIcon`, and the internal glyph module at `components/icons.tsx` — **18 glyphs, not
       the "chevron/check/close set" this note used to claim**: upstream exports 19 and 24 component
       files import 18 of them, `ErrorIcon` alone unused. Read `components/icons.tsx` upstream, not
-      this line
+      this line.
+      **Upstream's `Icon` has no body of its own — it is `asChild` by default** (`asChild:
+      !props.as`, `icon.tsx:28`), so `<Icon><HiHeart/></Icon>` renders the *glyph's* svg carrying the
+      recipe and `<Icon/>` alone throws `No valid child found` at `factory.tsx:241`. That default is
+      `cloneElement` and **does not port**. The two spellings that do are **`as`** — upstream's own
+      `icon-with-as-prop`, which sets `asChild: false` and puts the recipe on `props.as` — and
+      `render`. `createIcon` is the third: it passes `asChild={false}` explicitly, which is why
+      children are the glyph's *contents* there and not an element. Ours accepted the child spelling
+      and nested an svg inside its own until 2026-08-13, sizing an empty wrapper. It cannot be
+      repaired by resolving the child: on the server a resolved child is already an HTML **string**,
+      so there is no element left to put the class on, and a client-only collapse would have the two
+      sides render different trees
 - [ ] input — A:input · —/1
       Styles Ark's `Field.Input`
 - [ ] input-addon — A:inputAddon · —/1

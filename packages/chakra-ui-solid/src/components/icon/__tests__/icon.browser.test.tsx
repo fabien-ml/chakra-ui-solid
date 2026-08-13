@@ -1,9 +1,38 @@
-import { type MountedElement, mountElement } from "@chakra-ui-solid/internal-test-utils";
+import { type MountedElement, mount, mountElement } from "@chakra-ui-solid/internal-test-utils";
 import { icon } from "@chakra-ui-solid/styled-system/recipes";
+import type { JSX } from "@solidjs/web";
 import { createSignal, flush } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import { createIcon } from "../create-icon";
 import { Icon, IconPropsProvider } from "../icon";
+
+/**
+ * A glyph the way an icon package ships one: its own `svg`, drawn at `1em` in `currentColor`, taking
+ * whatever props it is handed.
+ *
+ * Its path fills the 24×24 viewBox **exactly**, which is what makes the assertions below able to see
+ * the failure they exist for. A glyph framed by a second `svg` draws inside *that* viewport, so its
+ * ink measures the inner box while the element under test measures the outer one — the two rects
+ * agree only when the recipe reached the `svg` that actually draws.
+ */
+function StarIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    // `aria-hidden` before the spread, overwritten with the same `"true"` Icon computes. It is here
+    // for the linter, which cannot see an attribute arriving in a spread.
+    <svg aria-hidden="true" viewBox="0 0 24 24" width="1em" height="1em" {...props}>
+      <path d="M0 0h24v24H0z" />
+    </svg>
+  );
+}
+
+/** The glyph's drawn box and the element's box, as one comparison. */
+function boxes(element: SVGElement) {
+  const glyph = element.querySelector("path");
+  if (glyph === null) {
+    throw new Error("expected the rendered svg to hold the glyph");
+  }
+  return { element: element.getBoundingClientRect(), glyph: glyph.getBoundingClientRect() };
+}
 
 let mounted: MountedElement<SVGElement> | undefined;
 
@@ -86,6 +115,74 @@ describe("Icon", () => {
     // `string[]` narrows nothing. This is what keeps the two lists one list: a variant added to the
     // recipe upstream and not to the tuple would reach the DOM as an attribute.
     expect(icon.variantKeys).toEqual(["size"]);
+  });
+
+  describe("the glyph is the element the recipe lands on", () => {
+    // Every other test in this file mounts a bare `<Icon />` and reads the element it renders, which
+    // is why all of them passed while four of the six Icons on the docs page drew a glyph at half its
+    // box: they never asked what was *inside*. These do.
+
+    it("`as` renders one svg, and it is the one holding the glyph", () => {
+      mounted = mountElement<SVGElement>(() => <Icon as={StarIcon} size="lg" />);
+
+      // A nested `svg` establishes its own viewport, so the recipe would be sizing an empty wrapper
+      // around a glyph resolving `1em` against the inherited font size instead.
+      expect(mounted.element.querySelector("svg")).toBeNull();
+
+      const { element, glyph } = boxes(mounted.element);
+      expect(element.width).toBe(24);
+      expect(glyph.width).toBe(element.width);
+      expect(glyph.height).toBe(element.height);
+    });
+
+    it("`render` does the same, for a glyph written at the call site", () => {
+      mounted = mountElement<SVGElement>(() => (
+        <Icon
+          size="lg"
+          render={(props) => <StarIcon {...(props as JSX.SvgSVGAttributes<SVGSVGElement>)} />}
+        />
+      ));
+
+      expect(mounted.element.querySelector("svg")).toBeNull();
+
+      const { element, glyph } = boxes(mounted.element);
+      expect(element.width).toBe(24);
+      expect(glyph.width).toBe(element.width);
+    });
+
+    it("frames raw glyph contents in its own svg, which is still one svg", () => {
+      mounted = mountElement<SVGElement>(() => (
+        <Icon size="lg" viewBox="0 0 24 24">
+          <path d="M0 0h24v24H0z" />
+        </Icon>
+      ));
+
+      expect(mounted.element.querySelector("svg")).toBeNull();
+
+      const { element, glyph } = boxes(mounted.element);
+      expect(element.width).toBe(24);
+      expect(glyph.width).toBe(element.width);
+    });
+
+    it("leaves the glyph at the surrounding font size when `size` is unset", () => {
+      // The default `inherit` sets no box, so what decides is the glyph's own `1em` — the case the
+      // docs' `box-property-card` renders, and the one that drew a 300×150 replaced-element box back
+      // when an unsized wrapper was doing the drawing.
+      const tree = mount(() => (
+        <div style={{ "font-size": "20px" }}>
+          <Icon as={StarIcon} />
+        </div>
+      ));
+      try {
+        const rendered = tree.container.querySelector("svg");
+        if (rendered === null) {
+          throw new Error("expected an svg");
+        }
+        expect(rendered.getBoundingClientRect().width).toBe(20);
+      } finally {
+        tree.dispose();
+      }
+    });
   });
 
   it("takes props from a provider above it", () => {
@@ -189,6 +286,19 @@ describe("createIcon", () => {
     expect(style.width).toBe("24px");
     expect(style.color).toBe("rgb(255, 0, 0)");
     expect(mounted.element.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("draws its glyph in its own svg, with nothing nested inside it", () => {
+    // `createIcon` is Chakra's `asChild={false}` route: the paths are contents, not an element, so
+    // the `svg` this renders is the only one and the recipe is already on it.
+    const BoxedIcon = createIcon({ d: "M0 0h24v24H0z" });
+    mounted = mountElement<SVGElement>(() => <BoxedIcon size="lg" />);
+
+    expect(mounted.element.querySelector("svg")).toBeNull();
+
+    const { element, glyph } = boxes(mounted.element);
+    expect(element.width).toBe(24);
+    expect(glyph.width).toBe(element.width);
   });
 
   it("defaults the viewBox, and takes the caller's over it", () => {

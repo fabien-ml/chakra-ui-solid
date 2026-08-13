@@ -13,9 +13,7 @@ export default function BoxPropertyCard() {
             Superhost
           </Badge>
           <HStack gap="1" fontWeight="medium">
-            <Icon color="orange.400">
-              <StarIcon />
-            </Icon>
+            <Icon as={StarIcon} color="orange.400" />
             <Text>
               {data.rating} ({data.reviewCount})
             </Text>

@@ -25,7 +25,7 @@ import { Icon } from "chakra-ui-solid";
 
 ### Icon libraries
 
-Wrap any glyph that renders an `svg`, and `Icon` sizes and colours it.
+Pass the glyph component as `as`, and `Icon` sizes and colours it.
 
 <Example name="icon-with-icon-library" />
 
@@ -33,6 +33,22 @@ Wrap any glyph that renders an `svg`, and `Icon` sizes and colours it.
 > copied out of [Lucide](https://lucide.dev), each one a small component wrapping a leaf `svg`. That
 > is the same shape a published icon package would have, so this page changes only its imports the
 > day one exists.
+
+`as` is where Chakra's React version writes the glyph as a child. Both spellings mean the same thing
+there — the child one is `asChild`, which re-creates the child element with `Icon`'s computed props
+merged in. SolidJS has no equivalent: a child is an already-constructed DOM node by the time `Icon`
+sees it, so **a glyph nested as a child keeps its own `svg` and ignores `size`**, and `as` is the
+spelling that puts the recipe on the element that actually draws.
+
+```tsx
+// ✅ one svg, and the recipe is on the element that draws
+<Icon as={HeartIcon} size="lg" />
+
+// ❌ two svgs, and `size` sizes the outer one while the glyph inside ignores it
+<Icon size="lg">
+  <HeartIcon />
+</Icon>
+```
 
 ### Custom svg
 

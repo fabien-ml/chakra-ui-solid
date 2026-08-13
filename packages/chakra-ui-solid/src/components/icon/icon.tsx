@@ -19,9 +19,10 @@ import { type Component, omit } from "solid-js";
  */
 export interface IconProps extends HTMLChakraProps<"svg"> {
   /**
-   * The glyph's box, as a scale step. `inherit` takes `1em` from the surrounding font size, which
-   * is how an icon inside a button or a menu item matches its label — and it is the default,
-   * because an icon almost always belongs to some text.
+   * The glyph's box, as a scale step. `inherit` sets no box at all — the glyph keeps the one it
+   * draws itself, which for the `1em` an icon library ships is the surrounding font size. That is
+   * how an icon inside a button or a menu item matches its label, and it is the default, because an
+   * icon almost always belongs to some text.
    *
    * @default "inherit"
    */
@@ -60,15 +61,30 @@ const VARIANT_KEYS = ["size"] as const satisfies readonly (keyof IconVariantProp
 const { PropsProvider, usePropsContext } = createRecipeContext<IconProps>();
 
 /**
- * Icon — an `svg` sized and coloured by the style system, for wrapping a glyph from anywhere.
+ * Icon — the `svg` the style system sizes and colours, for a glyph that comes from anywhere.
  *
- * We ship no icon set. A glyph comes from the caller, either as a child (`<Icon><HeartIcon /></Icon>`,
- * which nests an `svg` inside this one — legal, and how a third-party icon composes) or through
- * `render`, which hands the computed props to an `svg` the caller writes themselves. {@link createIcon}
- * is the third way, for a glyph reused enough to earn a name.
+ * We ship no icon set, and the computed styles land on **one** `svg` — never on a wrapper around
+ * another one. Three ways to hand it a glyph:
  *
- * `size="inherit"` and `color` are the two props worth knowing: the first takes `1em` from the
- * surrounding text, the second is what `currentColor` inside the glyph resolves against.
+ * - **`as`**, and this is the one to reach for: `<Icon as={HeartIcon} size="lg" />`. The glyph
+ *   component *is* the element — it receives the recipe class, the style props and the ref, and
+ *   draws them on its own `svg`.
+ * - **`render`**, for a glyph written inline or one that needs props of its own beside ours:
+ *   `<Icon render={(props) => <svg {...props} viewBox="0 0 32 32">…</svg>} />`.
+ * - **children**, which are the glyph's *contents* framed by the `svg` rendered here:
+ *   `<Icon viewBox="0 0 24 24"><path d="…" /></Icon>`. {@link createIcon} is this route with a name
+ *   attached.
+ *
+ * **A whole `svg` as a child is the one spelling that does not work.** `<Icon><HeartIcon /></Icon>`
+ * puts one `svg` inside another, and the inner one establishes its own viewport — so `size` sizes an
+ * empty box and the glyph inside resolves its `1em` against the inherited font size instead. Chakra's
+ * React version accepts it because `asChild` is its default there and `cloneElement` re-creates the
+ * child with the computed props merged in; a SolidJS child is an already-constructed DOM node, so
+ * there is nothing to re-create and no `cloneElement` to do it with. `as` is that same collapse, and
+ * it is Chakra's own second spelling of it (`icon-with-as-prop`).
+ *
+ * `size="inherit"` and `color` are the two props worth knowing: the first leaves the glyph at
+ * whatever box it draws itself at, the second is what `currentColor` inside it resolves against.
  */
 export const Icon: Component<IconProps> = (props) => {
   // Context first, local props second, so a local prop wins — Chakra's order, and the seam's.
