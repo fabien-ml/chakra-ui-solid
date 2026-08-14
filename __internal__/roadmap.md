@@ -382,7 +382,11 @@ asks, correct **both** in the same commit.
       so there is no element left to put the class on, and a client-only collapse would have the two
       sides render different trees
 - [ ] input — A:input · —/1
-      Styles Ark's `Field.Input`
+      Styles Ark's `Field.Input`. **Four Popover examples are waiting on it**: `popover-basic`,
+      `-with-sizes` and `-with-custom-bg` each ship upstream's Body minus its trailing `<Input>`,
+      and `popover-with-form` is not ported at all — it also needs `field` and `textarea`. Restore
+      all four from `__reference-impl__/chakra-ui/apps/compositions/src/examples/` when this row
+      ships, and add back the `### Form` section of `popover.mdx`
 - [ ] input-addon — A:inputAddon · —/1
       `useRecipe({ key })` directly
 - [ ] kbd — A:kbd · —/1
