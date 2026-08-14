@@ -11,11 +11,15 @@ import { Show } from "solid-js";
  * drifts silently and survives every check that exists; this cannot, because there is nothing to
  * copy.
  *
- * Every file under `src/examples/` is a deliverable rather than a file: `check:docs-examples`
- * typechecks it, asserts it imports only subpaths that exist, **mounts** it with no console error
- * and a non-empty root, and runs axe over it. That job used to belong to a story canary; it is
- * here because a story renders a component in a harness we control and an example renders it the
- * way a consumer gets it (`decisions-ledger.md` D-133).
+ * Every file under `src/examples/` is a deliverable rather than a file: `pnpm typecheck` covers it,
+ * and `examples/__tests__/examples.browser.test.tsx` **mounts** every one with no console error and
+ * a non-empty root. That job used to belong to a story canary; it is here because a story renders a
+ * component in a harness we control and an example renders it the way a consumer gets it
+ * (`decisions-ledger.md` D-133).
+ *
+ * **What nothing checks is the other direction.** The suite mounts the files that exist; no test
+ * reads the `<Example name>` in an `.mdx` page and asserts a file answers it, so a wrong name ships
+ * the fallback below instead of failing a run.
  */
 // One directory per component, and the negation is load-bearing: the suite that mounts these files
 // sits in a sibling directory that `*/*.tsx` matches, so without it the site imports a test module
@@ -60,8 +64,8 @@ export function Example(props: { name: string }) {
       <Show
         when={module()}
         fallback={
-          // Loud rather than empty. `check:docs-examples` fails the build on a missing example,
-          // but whoever is running `pnpm dev` should see which name is wrong rather than a gap.
+          // Loud rather than empty, and it is the only thing that catches a wrong name — nothing
+          // fails a build over one, so whoever is running `pnpm dev` has to be able to see it.
           <Box as="p" color="fg.error" fontSize="sm">
             No example named “{props.name}” under <code>src/examples/</code>.
           </Box>

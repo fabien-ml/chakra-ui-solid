@@ -1,6 +1,7 @@
 # Roadmap
 
-v0.1.0 is the whole port: 111 components. 35 done.
+v0.1.0 is the whole port: 110 components. 35 done. The five under *Not ported* are outside that
+count, and four of them left the utilities section after it was written.
 
 ## Done, per component
 
@@ -133,10 +134,16 @@ asks, correct **both** in the same commit.
       measured at `popover` (1500/1501): object-form `style` only on the positioner, content stays
       its `firstElementChild`, and the arrow is captured once per floating-element identity.
       The preset's `prevTrigger`/`nextTrigger` write `boxShadow: "0 0 0 2px
-      var(--colors-color-palette-focus-ring)"` as a **literal**, not a token reference, so our
-      `chakra` cssVar prefix never reaches it and the shadow resolves to nothing. The only two such
-      strings in the whole preset. The `outline-color` beside it still rings the focused trigger, so
-      this is a second ring lost, not the indicator
+      var(--colors-color-palette-focus-ring)"` as a **literal**, not a token reference, and it
+      resolves to nothing — the only two such strings in the whole preset. **The cause is upstream's
+      literal, not our prefix**, and this line claimed the opposite until it was checked: React's own
+      `cssVarsPrefix` defaults to `"chakra"` too (`styled-system/system.ts:42`,
+      `theme/index.ts:57`), so chakra-ui.com emits `--chakra-colors-color-palette-focus-ring` and the
+      unprefixed `var()` dies there the same way. That is the port rule's **second** case — both
+      wrong the same way, ship it — not the first, so **measure chakra-ui.com's date picker in a
+      browser before touching this**, and expect to record it as expected rather than fix it.
+      `switch`'s cursor is the row that looks like this one and is not. The `outline-color` beside it
+      still rings the focused trigger, so this is a second ring lost, not the indicator
 - [x] dialog — S:dialog · 7/10 · D ⚠
       `+header/body/footer`. The worked blueprint. **The duplicate `backdrop` slot is
       source-only**: `dialogSlotNames` lists eleven entries for ten slots, both `backdrop` rows
@@ -151,14 +158,27 @@ asks, correct **both** in the same commit.
       md:dialog__content--size_lg`, and the default `staticCss: ["*"]` run generates neither — the
       dialog then renders with no size rule at *any* width and nothing errors. The site's own
       `panda.config.ts` carries `responsive: { dialog: ["size"] }`. It is a fact about the opt-in
-      rather than about this recipe, so it lands the same way on the four other rows whose upstream
-      pages carry one: `button` (`size`), `drawer` (`placement`), `separator` (`orientation`) and
-      `pagination` (`size`)
+      rather than about this recipe, so it lands the same way on the three other rows whose upstream
+      pages carry a breakpoint-conditional variant — `button` (`size`), `drawer` (`placement`),
+      `separator` (`orientation`) — and each of those rows now carries the clause. **`pagination` is
+      not the same case**, and this line claimed it was: its variants are conditional on `_selected`
+      rather than on a breakpoint, and the knob does not reach those. Panda spells the two as
+      separate keys on a staticCss recipe rule (`responsive?: boolean` / `conditions?: string[]`,
+      `@pandacss/types/dist/static-css.d.ts`) and `expandResponsive` emits only the first
 - [ ] drawer — dialog · S:drawer · 7/10 · D ⚠
       Runs on `dialog`, not `@zag-js/drawer` (§2.2). Its duplicate `backdrop` slot is source-only,
-      for the reason measured on the `dialog` row — it is Panda's generator, not the recipe
+      for the reason measured on the `dialog` row — it is Panda's generator, not the recipe.
+      **Its page needs `responsive: { drawer: ["placement"] }`**, on the `dialog` row's measurement:
+      `drawer-with-conditional-variants` writes `placement={{ mdDown: "bottom", md: "end" }}`, and
+      without the line the drawer renders with no placement rule at any width and nothing errors
 - [ ] editable — S:editable · 9/10 ⚠
-      **`connect()` emits a top-level `size: 1`** when `autoResize` — collides with the `size` style prop; `styleSource` (blueprint §4.1 addition 4) is what closes it. `+textarea`
+      **`connect()` emits a top-level `size: 1`** when `autoResize` — collides with the `size` style
+      prop. **`styleSource` is not what closes it, because `styleSource` does not exist**: the
+      `dialog` ship measured `renderStyled`'s seven options as `as`, `props`, `render`, `ref`,
+      `recipeClass`, `baseStyles` and `forwardProp`, and blueprint §4.1 addition 4 was never built
+      that way (§11's preamble). `forwardProp` is the answer on paper and **nothing has exercised
+      it** — no key `dialog.connect()` or `popover.connect()` emits is a style prop, so this row is
+      the first live case and owes the measurement, not the mechanism. `+textarea`
 - [ ] file-upload — S:fileUpload · 12/15
       `+itemContent`, `+dropzoneContent`, `+fileText`. Repeated part (items)
 - [ ] floating-panel — S:floatingPanel · 11/11 · D ⚠
@@ -176,7 +196,13 @@ asks, correct **both** in the same commit.
       `firstElementChild`, and the arrow is captured once per floating-element identity
 - [ ] number-input — S:numberInput · 8/8
 - [ ] pagination — ✗pagination · 7/—
-      Key resolves to nothing in Chakra too (§2.5)
+      Key resolves to nothing in Chakra too (§2.5). **The `staticCss` declaration this page needs is
+      on the `button` recipe, not its own** — every one of its eight upstream examples writes
+      `<IconButton variant={{ base: "ghost", _selected: "outline" }}>`, which is the `dialog` row's
+      hazard conditioned on a *state* rather than a breakpoint. `defineChakraConfig({ responsive })`
+      does not reach it: Panda's staticCss recipe rule takes `responsive` and `conditions` as two
+      keys and `expandResponsive` emits only `responsive: true`. **The knob needs a `conditions`
+      sibling before this row or `toggle` ships**, and that is preset code, not a note
 - [ ] pin-input — S:pinInput · 4/4
       Repeated part (inputs, by index)
 - [x] popover — S:popover · 10/13 · Z ⚠
@@ -257,7 +283,13 @@ asks, correct **both** in the same commit.
 - [ ] steps — S:steps · 10/12
       Chakra's anatomy is its **own** `createAnatomy("steps")` with 12 parts, not Zag's 10 (`+title`, `+description`)
 - [ ] switch — S:swittch · 4/5
-      **The generated recipe function will be named `swittch`** (§1.3c). **And its `cursor: "switch"` references a token the preset registers as `swittch`, so the pointer cursor is silently lost** — one `theme.extend.tokens.cursor.switch` key in our preset restores it. `+indicator`
+      **The generated recipe function will be named `swittch`** (§1.3c). **And its `cursor: "switch"`
+      references a token the preset registers as `swittch`, so the pointer cursor is silently lost** —
+      one `theme.extend.tokens.cursor.switch` key in our preset restores it, and **that restoration is
+      the port working, not a divergence**: upstream's `theme/tokens/cursor.ts` registers the key as
+      `switch`, so the React version renders the pointer and only the Panda preset's rename drops it.
+      The port rule's **first** case, measured — where `date-picker`'s focus ring, which reads like
+      the same defect, is the second. `+indicator`
 - [ ] tabs — S:tabs · 5/6 · Z
       Chakra's own `createAnatomy("tabs")`, `+contentGroup`. **`_active` in the recipe is Panda's `:active` pseudo-class, not a Zag `data-active`** (`prior-art.md` §4.3)
 - [ ] tags-input — S:tagsInput · 10/10
@@ -276,7 +308,9 @@ asks, correct **both** in the same commit.
 ## Multi-part, no machine (15)
 
 - [ ] field — S:field · —/8
-      **The largest machine-less behavior in the library.** Ark implements it in 226 React lines; under `CLAUDE.md`, *Reference use* we read the ARIA contract, never the expression. **Duplicate slot `requiredIndicator`**
+      **The largest machine-less behavior in the library.** Ark implements it in 226 React lines; under `CLAUDE.md`, *Reference use* we read the ARIA contract, never the expression. **Duplicate slot `requiredIndicator`**.
+      `popover.mdx`'s `### Form` section waits on this row plus `input` and `textarea` — the debt is
+      written out on the `input` row
 - [ ] fieldset — S:fieldset · —/5
       Ark: 115 React lines. `+content`
 - [ ] native-select — S:nativeSelect · —/3
@@ -323,7 +357,18 @@ asks, correct **both** in the same commit.
       examples stay 1:1 and **the docs examples suite no longer runs axe** — components are still
       audited in `packages/`, where a defect would be ours
 - [x] button — A:button · —/1
-      `createRecipeContext({ key })`, read as `usePropsContext` + `createRecipeClass` because the children are wrapped when `loading`. `ButtonGroup` is the one that uses `useRecipe({ key })` directly. Also ships `IconButton`, `CloseButton`
+      `createRecipeContext({ key })`, read as `usePropsContext` + `createRecipeClass` because the children are wrapped when `loading`. `ButtonGroup` is the one that uses `useRecipe({ key })` directly. Also ships `IconButton`, `CloseButton`.
+      **The component shipped; its docs page did not** — `button.mdx` and `heading.mdx` are the two
+      upstream pages with no counterpart of ours, where `close-button` and `icon-button` have theirs.
+      That page brings both `staticCss` cases at once. `button-with-responsive-size` writes
+      `size={{ base: "md", md: "lg" }}`, which `responsive: { button: ["size"] }` closes on the
+      `dialog` row's measurement. `variant={{ base: "ghost", _selected: "outline" }}` is the other,
+      and the knob does not reach it — a state condition, not a breakpoint. **Fourteen upstream
+      examples spell it and every one is this recipe**, on a `Button` or an `IconButton`: the whole
+      `pagination` page, the whole `toggle` page, `table-with-pagination` and `rating-emoji`.
+      Measured against the docs app's own sheet — `button({ variant: { base: "ghost", _selected:
+      "outline" } })` returns `selected:button--variant_outline`, and `styles.css` has no rule for
+      that selector
 - [x] checkmark — A:checkmark · —/1
       **The generated recipe classes do not compose — the components do.** A Checkbox control never
       carries `.checkmark`; the shared styles are there because the preset inlined
@@ -365,6 +410,10 @@ asks, correct **both** in the same commit.
 - [ ] download-trigger — ✗downloadTrigger · —/1
       Key resolves to nothing in Chakra too
 - [x] heading — A:heading · —/1
+      **The component shipped; its docs page did not** — `heading.mdx` and `button.mdx` are the only
+      two upstream component pages with no counterpart of ours. Every other checked row either has a
+      page or has none upstream either (`circle`, `loader`, `quote`, `spacer`, `span`, `square`,
+      `sticky`, `strong`)
 - [x] icon — A:icon · —/1
       Plus `createIcon`, and the internal glyph module at `components/icons.tsx` — **18 glyphs, not
       the "chevron/check/close set" this note used to claim**: upstream exports 19 and 24 component
@@ -402,6 +451,9 @@ asks, correct **both** in the same commit.
       rule the dropped `.radiomark` class would have supplied. Four `variant` values, not five: no
       `plain`
 - [ ] separator — A:separator · —/1
+      **Its page needs `responsive: { separator: ["orientation"] }`**, on the `dialog` row's
+      measurement: `separator-with-responsive-orientation` writes `orientation={{ base: "vertical",
+      sm: "horizontal" }}`, which no default `staticCss` run generates
 - [ ] skeleton — A:skeleton · —/1
       Plus `SkeletonCircle`, `SkeletonText`
 - [ ] skip-nav — A:skipNavLink · —/1
@@ -410,7 +462,8 @@ asks, correct **both** in the same commit.
 - [x] text — ✗text · —/1
       Key resolves to nothing in Chakra too; styled by `textStyles` + style props
 - [ ] textarea — A:textarea · —/1
-      Styles Ark's `Field.Textarea`
+      Styles Ark's `Field.Textarea`. `popover.mdx`'s `### Form` section waits on this row plus
+      `input` and `field` — the debt is written out on the `input` row
 
 ## Styled primitives and layout (25)
 
@@ -455,7 +508,7 @@ asks, correct **both** in the same commit.
 - [x] wrap
       Plus `WrapItem`
 
-## Utilities, providers and re-exports (8)
+## Utilities, providers and re-exports (4)
 
 - [ ] client-only
       Not an exclusion — §5.2
