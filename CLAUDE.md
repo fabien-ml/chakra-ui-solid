@@ -95,6 +95,25 @@ SolidJS idioms excepted — those are what the port *is*. Adding a fix Chakra la
 is removing behavior Chakra has. **And nothing ships before what it depends on** — not its source,
 and not its docs page.
 
+**Parity is what a consumer observes, not how React arrives at it.** React redraws on any render;
+Solid redraws what a signal invalidated. Three cases fall out, and only the middle one is settled by
+"Chakra does it too":
+
+- **Ours is observably worse than the React version's.** Popover shipped a dangling
+  `aria-describedby` that chakra-ui.com does not, because Zag's correction notifies no signal and
+  React's incidental re-renders hide it. **Fixing that is the port working** — no argument owed, no
+  permission, no divergence. Never cite this rule to justify shipping it; measure both sides first,
+  in a browser if that is what it takes.
+- **Both are wrong the same way.** Ship it. A dialog leaving the page behind it reachable is
+  Chakra's behavior, and someone arriving from the React version is owed what they know, warts
+  included. Record it as *expected*, never *tolerated*, and say nothing on the docs page.
+- **Chakra has a capability Solid cannot express the same way.** Weigh what the capability is worth
+  before deciding. `asChild` is load-bearing, so it became `render`; a React-19-only escape hatch is
+  not, so it is omitted and its absence stated on the page. **"It does not port" is never the whole
+  answer for something consumers rely on** — find the Solid-native expression of it.
+
+A divergence that does land is recorded in `__internal__/`, never on a docs page.
+
 **`__reference-impl__` is what a row *is*; the roadmap only says that it exists.** A note under an
 unchecked row is a **prediction written before that component's code was read**, and all four
 component rows ported so far have found theirs wrong — expect it and budget for it rather than
