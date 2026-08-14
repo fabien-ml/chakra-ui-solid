@@ -487,11 +487,31 @@ The seam's own suite gained the test that would have caught it.
       palettes written out, because `colorPalette` is a style prop the preset deliberately keeps out
       of `staticCss` — and `blockquote-with-custom-icon` takes `StarIcon` from the docs' own set
       where upstream imports `react-icons/lu`
-- [ ] breadcrumb — S:breadcrumb · —/7
+- [x] breadcrumb — S:breadcrumb · —/7
       Repeated part (items) — which `list` measured as a non-event: the same `withContext` component
-      is reused per row and needs nothing. **Its Root carries `defaultProps: { "aria-label":
-      "breadcrumb" }`**, so it takes `list`'s shape — a `withDefaults` wrapper over the minted Root,
-      not a seam change
+      is reused per row and needs nothing. Its Root does carry `defaultProps: { "aria-label":
+      "breadcrumb" }` and takes `list`'s shape — a `withDefaults` wrapper over the minted Root, no
+      seam change. **The note stopped one part too early: three of the six parts carry defaults
+      too.** `CurrentLink` has `role="link"` + `aria-current="page"`, `Separator` has
+      `aria-hidden` + a `<ChevronRightIcon />` child, `Ellipsis` has `role="presentation"` +
+      `aria-hidden` + an `<EllpsisIcon />` child. Only the Root's fits the `withDefaults`-wrapper
+      shape; the other three are `stat`'s and `tag`'s — `withDefaults` for the attributes,
+      `merge` + a `children` getter for the glyph, `renderStyled` for the element.
+      **`Breadcrumb.Ellipsis` renders an `li` where Chakra's own type says `HTMLChakraProps<"span">`**
+      — `withContext("li", "ellipsis")` is what upstream renders, and an `ol` may hold nothing else.
+      Third row in the library to find its type lying about its element, after `Card.Title` and
+      `Tag.Root`.
+      `aria-hidden` is `"true"`, not `true`: Solid's JSX types spell it `EnumeratedPseudoBoolean`,
+      and the adapter already stringifies Zag's booleans for the same reason.
+      Docs: **7 of upstream's 9 example slots**. `Menu` waits on the unported `menu` row and
+      `Explorer` is www machinery. Two adaptations: `Routing Library` shows `render` where upstream
+      shows `asChild`, and `breadcrumb-with-separator` / `breadcrumb-with-icon` take `SlashIcon`,
+      `HouseIcon` and `ShirtIcon` from the docs' own lucide set where upstream imports
+      `react-icons/lia` and `react-icons/lu` — `badge-with-icon`'s precedent.
+      **One divergence in `breadcrumb-closed-component`, recorded here rather than on the page:**
+      upstream's snippet renders `<Item><Link>` for every crumb *and then* an extra
+      `<Item><CurrentLink>` for the last, so the last crumb appears twice. The port puts the link
+      row in the `Show` fallback, which is what the snippet obviously means
 - [x] card — S:card · —/6
       The seam's own reference recipe, and the row that proved `withProvider` carries a plain Root
       with no body at all: six slots, six components, `variantKeys: ["size", "variant"]`, one file.

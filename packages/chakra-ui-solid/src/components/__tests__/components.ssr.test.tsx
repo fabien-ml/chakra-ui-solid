@@ -20,6 +20,14 @@ import {
   BlockquotePropsProvider,
   BlockquoteRoot,
   Box,
+  BreadcrumbCurrentLink,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPropsProvider,
+  BreadcrumbRoot,
+  BreadcrumbSeparator,
   Button,
   ButtonGroup,
   ButtonPropsProvider,
@@ -291,6 +299,80 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </BlockquoteRoot>
   ),
   Box: () => <Box p="4">boxed</Box>,
+  BreadcrumbCurrentLink: () => (
+    <BreadcrumbRoot>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbCurrentLink>Props</BreadcrumbCurrentLink>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </BreadcrumbRoot>
+  ),
+  // Bare, because that is the arm whose glyph the component builds itself — a child of the
+  // consumer's own would leave the default `<EllpsisIcon />` unconstructed on the server.
+  BreadcrumbEllipsis: () => (
+    <BreadcrumbRoot>
+      <BreadcrumbList>
+        <BreadcrumbEllipsis />
+      </BreadcrumbList>
+    </BreadcrumbRoot>
+  ),
+  BreadcrumbItem: () => (
+    <BreadcrumbRoot>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="#">Docs</BreadcrumbLink>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </BreadcrumbRoot>
+  ),
+  BreadcrumbLink: () => (
+    <BreadcrumbRoot>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="#">Docs</BreadcrumbLink>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </BreadcrumbRoot>
+  ),
+  BreadcrumbList: () => (
+    <BreadcrumbRoot>
+      <BreadcrumbList gap="4">
+        <BreadcrumbItem>
+          <BreadcrumbLink href="#">Docs</BreadcrumbLink>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </BreadcrumbRoot>
+  ),
+  BreadcrumbPropsProvider: () => (
+    <BreadcrumbPropsProvider value={{ variant: "underline" }}>
+      <BreadcrumbRoot>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="#">Docs</BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </BreadcrumbRoot>
+    </BreadcrumbPropsProvider>
+  ),
+  BreadcrumbRoot: () => (
+    <BreadcrumbRoot size="lg">
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="#">Docs</BreadcrumbLink>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </BreadcrumbRoot>
+  ),
+  // Bare, for the reason `BreadcrumbEllipsis` is: the default `<ChevronRightIcon />` is built here
+  // and nowhere else.
+  BreadcrumbSeparator: () => (
+    <BreadcrumbRoot>
+      <BreadcrumbList>
+        <BreadcrumbSeparator />
+      </BreadcrumbList>
+    </BreadcrumbRoot>
+  ),
   // Loading, because that is the branch that mounts a Loader and resolves the children through
   // `children()` — the idle branch writes them straight in and would not exercise either.
   Button: () => (

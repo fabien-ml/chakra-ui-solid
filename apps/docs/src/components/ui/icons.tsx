@@ -1,12 +1,15 @@
 /**
  * @license
  * The path data below is copied from lucide-icons/lucide — the SVG sources in `icons/`, one file
- * per glyph, named in the comment above each component. Taken from `lucide-static@1.31.0`.
+ * per glyph, named in the comment above each component. Taken from `lucide-static@1.31.0`, except
+ * `house`, `package`, `pen`, `ship`, `shirt` and `slash`, whose path data comes from
+ * `lucide-react@1.21.0`'s bundled `__iconNode` — the same `icons/` source, compiled.
  * Copyright (c) 2026 Lucide Icons and Contributors. Licensed under the ISC License.
  *
- * Seventeen of these are Lucide's own derivatives of Feather, and carry a second notice:
+ * Twenty of these are Lucide's own derivatives of Feather, and carry a second notice:
  * Copyright (c) 2013-present Cole Bemis, MIT License. Both licences are reproduced in full, and the
- * seventeen named, in the LICENSE and NOTICE.md at the repository root.
+ * twenty named, in the LICENSE and NOTICE.md at the repository root. None of the six above is on
+ * that list — Lucide's LICENSE is what names it, and it names neither `home` nor `slash`.
  *
  * This file has been modified from the original.
  *
@@ -214,6 +217,16 @@ export function HeartIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   );
 }
 
+/** lucide `house` — `icons/house.svg` */
+export function HouseIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+      <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    </svg>
+  );
+}
+
 /** lucide `menu` — `icons/menu.svg` */
 export function MenuIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   return (
@@ -230,6 +243,18 @@ export function MoonIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   return (
     <svg {...base} aria-hidden="true" {...props}>
       <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+    </svg>
+  );
+}
+
+/** lucide `package` — `icons/package.svg` */
+export function PackageIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" />
+      <path d="M12 22V12" />
+      <polyline points="3.29 7 12 12 20.71 7" />
+      <path d="m7.5 4.27 9 5.15" />
     </svg>
   );
 }
@@ -259,6 +284,15 @@ export function PartyPopperIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
       <path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17" />
       <path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7" />
       <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z" />
+    </svg>
+  );
+}
+
+/** lucide `pen` — `icons/pen.svg` */
+export function PenIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
     </svg>
   );
 }
@@ -303,6 +337,28 @@ export function SearchIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   );
 }
 
+/** lucide `ship` — `icons/ship.svg` */
+export function ShipIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M12 10.189V14" />
+      <path d="M12 2v3" />
+      <path d="M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6" />
+      <path d="M19.38 20A11.6 11.6 0 0 0 21 14l-8.188-3.639a2 2 0 0 0-1.624 0L3 14a11.6 11.6 0 0 0 2.81 7.76" />
+      <path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
+    </svg>
+  );
+}
+
+/** lucide `shirt` — `icons/shirt.svg` */
+export function ShirtIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+    </svg>
+  );
+}
+
 /** lucide `shopping-cart` — `icons/shopping-cart.svg` */
 export function ShoppingCartIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
   return (
@@ -310,6 +366,15 @@ export function ShoppingCartIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
       <circle cx="8" cy="21" r="1" />
       <circle cx="19" cy="21" r="1" />
       <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+    </svg>
+  );
+}
+
+/** lucide `slash` — `icons/slash.svg` */
+export function SlashIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M22 2 2 22" />
     </svg>
   );
 }

@@ -20,6 +20,7 @@
       "bleed": "src/components/bleed/index.ts",
       "blockquote": "src/components/blockquote/index.ts",
       "box": "src/components/box/index.ts",
+      "breadcrumb": "src/components/breadcrumb/index.ts",
       "button": "src/components/button/index.ts",
       "card": "src/components/card/index.ts",
       "center": "src/components/center/index.ts",

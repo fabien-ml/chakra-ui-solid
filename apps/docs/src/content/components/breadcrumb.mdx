@@ -1,0 +1,100 @@
+---
+title: Breadcrumb
+description: Used to display a page's location within a site's hierarchical structure
+links:
+  source: packages/chakra-ui-solid/src/components/breadcrumb
+  chakra: https://chakra-ui.com/docs/components/breadcrumb
+---
+
+<Example name="breadcrumb-basic" />
+
+## Usage
+
+```tsx
+import { Breadcrumb } from "chakra-ui-solid";
+```
+
+```tsx
+<Breadcrumb.Root>
+  <Breadcrumb.List>
+    <Breadcrumb.Item>
+      <Breadcrumb.Link />
+    </Breadcrumb.Item>
+    <Breadcrumb.Separator />
+  </Breadcrumb.List>
+</Breadcrumb.Root>
+```
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the breadcrumb component
+
+<Example name="breadcrumb-with-sizes" />
+
+### Variants
+
+Use the `variant` prop to change the appearance of the breadcrumb component
+
+<Example name="breadcrumb-with-variants" />
+
+### With Separator
+
+Use the `Breadcrumb.Separator` component to add a custom separator
+
+<Example name="breadcrumb-with-separator" />
+
+### Icon
+
+Add a custom icon to the breadcrumb by rendering it within `Breadcrumb.Link`
+
+<Example name="breadcrumb-with-icon" />
+
+### Ellipsis
+
+Render the `Breadcrumb.Ellipsis` component to show an ellipsis after a breadcrumb item
+
+<Example name="breadcrumb-with-ellipsis" />
+
+### Routing Library
+
+Use the `render` prop to change the underlying breadcrumb link
+
+```tsx
+import { A } from "@solidjs/router";
+import { Breadcrumb } from "chakra-ui-solid";
+
+export default function Example() {
+  return (
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link render={(props) => <A href="/docs" {...props} />}>
+            Docs
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Separator />
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  );
+}
+```
+
+The React version spells this `asChild`, which clones the props onto an element that has already
+been built. The callback is handed the computed props — the slot's class among them — and returns
+the element it wants them on.
+
+### Closed Component
+
+Here's how to setup the Breadcrumb for a closed component composition.
+
+<Example name="breadcrumb-closed-component" />
+
+## Props
+
+### Root
+
+<PropsTable component="breadcrumb" interface="BreadcrumbRootProps" />
