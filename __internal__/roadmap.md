@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 43 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 46 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -277,7 +277,10 @@ asks, correct **both** in the same commit.
 - [ ] segment-group — radio-group · S:segmentGroup · 6/6
       Third public component on the radio-group machine
 - [ ] select — S:select · 15/16 · Z ⚠
-      `+indicatorGroup`. Hidden native `<select>` → restrictive-content-model hazard. Floating —
+      `+indicatorGroup`. Hidden native `<select>` → restrictive-content-model hazard. **No collision
+      with `native-select`**, settled on that row's ship: its anatomy is `createAnatomy("select")`
+      but Chakra applies none of the anatomy's attrs, so nothing it renders carries a `data-scope` at
+      all. Floating —
       **the seam is free**, measured at `popover` (1500/1501): object-form `style` only on the
       positioner, content stays its `firstElementChild`, and the arrow is captured once per
       floating-element identity. **This is the row P6-A's re-confirmation lands on** (the first B5
@@ -318,7 +321,9 @@ shipped with the `field` migration: `withProvider(tag, slot)` mints a Root, `wit
 mints a part, `useStyles()` is the class map a hand-written part reads, and `PropsProvider` /
 `usePropsContext` is the Root's props context. A Root that owns a store as well as an element is not
 minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvider`, which is what
-`field` does and what `fieldset` will.
+`field`, `fieldset` and `native-select` all do. A Root whose *own* props are not all the element's
+is the same case, and `native-select` is the reason: `withProvider` omits the variant keys and
+nothing else.
 
 - [x] field — S:field · —/8
       **The largest machine-less behavior in the library**, and the first machine-less multi-part
@@ -359,27 +364,67 @@ minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvid
       `field` row, so `chakra-ui-solid/field` resolved to nothing while the barrel exported it —
       nothing checks the two agree, and the browser suite is green either way. Found and fixed on the
       Phase-2 batch.
-      Docs: **9 of upstream's 12 example slots**, and three sections dropped. `Textarea` and `Native
-      Select` wait on their rows (the example *is* the section); `Horizontal` keeps its section and
-      loses its third row, a `Switch`. `Explorer` is www machinery. **`Customization` is dropped too,
-      and it sets a precedent**: its snippets are `createSystem` / `fieldSlotRecipe.extend` /
-      `@chakra-ui/cli typegen`, the runtime style system this port structurally does not have, and
-      rewriting them into Panda config would be invented content. `field` is the first page here
-      whose upstream carries one.
-      `popover.mdx`'s `### Form` section still waits on `textarea`
-- [ ] fieldset — S:fieldset · —/5
-      Ark: 115 React lines. `+content`
-      **This row owes `field` the inherited `disabled`**, measured on the `field` ship: Ark's
-      `useField` opens with `useFieldsetContext()` and resolves `disabled = Boolean(fieldset?.disabled)`
-      — a *default*, so a Field's own `disabled` wins and a Field outside any Fieldset is unaffected.
-      Shipped `createField` resolves `props.disabled ?? false` and reads no fieldset, because the row
-      does not exist; the read is this row's to add, through the non-strict reader
-      `createComponentContext` now returns
-- [ ] native-select — S:nativeSelect · —/3
-      Chakra's anatomy is `createAnatomy("select")` — **the same `data-scope` as `select`**. A hand-written selector that assumes scope uniqueness will match both
-      **The only *other* upstream `useFieldContext()` consumer**, and it reads it in its own body
-      rather than through an Ark wrapper (`native-select.tsx:59`) — so this row supplies its own
-      merge of `getSelectProps()` under the caller's props, the shape `input` now carries
+      Docs: **11 of upstream's 12 example slots**, and two sections dropped. `Textarea` and `Native
+      Select` were the two waiting on their rows and both landed with Phase 3; `Horizontal` keeps its
+      section and loses its third row, a `Switch`. `Explorer` is www machinery. **`Customization` is
+      dropped too, and it sets a precedent**: its snippets are `createSystem` /
+      `fieldSlotRecipe.extend` / `@chakra-ui/cli typegen`, the runtime style system this port
+      structurally does not have, and rewriting them into Panda config would be invented content.
+      `field` is the first page here whose upstream carries one.
+      **`FieldRoot` no longer defaults `disabled`.** It is resolved in `createField` alone, against
+      the surrounding `Fieldset` — a `withDefaults` entry here would land as `false` first and delete
+      the inheritance with nothing to say so (`fieldset` row).
+      `popover.mdx`'s `### Form` section is paid: `popover-with-form` ships with `textarea`
+- [x] fieldset — S:fieldset · —/5
+      `createFieldset` in `field`'s shape — signals and getters, no machine — and a Root that is
+      `resolveSlotClasses` + `StylesProvider` rather than `withProvider`, because it owns a store as
+      well as an element. Not exported, for `createField`'s reason: Chakra re-exports Ark's
+      `useFieldsetContext` and neither `Fieldset.RootProvider` nor `useFieldset`.
+      **`+content` is a slot and not a part.** The anatomy is `createAnatomy('fieldset').parts(root,
+      errorText, helperText, legend)`; `content` exists only in the recipe, so `Fieldset.Content`
+      carries no `data-part` — it is the one part the seam's `withContext` mints on its own, since it
+      is the one that merges no prop getter.
+      **The debt to `field` is paid.** `createField` now resolves `props.disabled ??
+      Boolean(fieldset?.disabled)` through `useOptionalFieldsetContext`. The change that made it work
+      was **not** in `createField`: `FieldRoot`'s `withDefaults` carried `disabled: false`, which
+      resolved to `false` before `createField` ever saw it and would have deleted the inheritance
+      silently. The default is gone from the Root and `createField` is the only place `disabled`
+      resolves. `invalid` / `readOnly` / `required` keep theirs — nothing above supplies them.
+      **The root's `aria-describedby` is error-first**, and both halves register their *effective*
+      ids through `createRegisteredId`, so a consumer's own `id` on `Fieldset.HelperText` still links
+      — the same divergence from upstream's `MutationObserver` + `getElementById` that `field` ships,
+      and for the same reason. `aria-labelledby` names the legend unconditionally, dangling IDREF and
+      all, which is upstream exactly: expected.
+      Two Root props are narrower than the DOM's and both are omitted from the element bag: `id`
+      seeds the id scheme and names nothing (the `fieldset` carries no `id` at all, upstream
+      included), and `invalid` is an attribute no element has.
+      One inherited axe violation invalid: `errorText` is `fg.error` at `textStyle: sm`, under AA on
+      the page background. The React version renders the identical declaration from the identical
+      preset token — both wrong the same way, so it ships and the test pins exactly that one.
+      Docs: all 3 of upstream's example slots. `Explorer` is www machinery
+- [x] native-select — S:nativeSelect · —/3
+      **The `data-scope` warning was wrong, and the correction is the stronger fact: this component
+      emits no `data-scope` or `data-part` at all.** `nativeSelectAnatomy` is
+      `createAnatomy("select")`, but Chakra only ever asks it for `keys()` — the slot list the recipe
+      is defined over. No part applies `parts.*.attrs`, so nothing here is addressable by
+      `[data-scope]` and there is no collision with the `select` row to guard against. What the
+      recipe's selectors read instead are the classes and the `_disabled` / `_invalid` conditions,
+      which is why the Root writes both states onto the two parts by hand. The `select` element does
+      wear `data-scope="field" data-part="select"` inside a `Field.Root`, but that comes off
+      `getSelectProps()` and belongs to `field`.
+      **The only *other* upstream `useFieldContext()` consumer** was right, and so was the shape:
+      `getSelectProps()` merged under the caller's props through the lazy `mergeProps`, as `input`
+      and `textarea` do. The Root reads the field too, for the `disabled` / `invalid` it publishes to
+      its own two parts — and **the field wins over the Root's own props** (`field?.disabled ??
+      props.disabled`, and a field's value is always a boolean), so a `<NativeSelect.Root disabled>`
+      inside a live `Field.Root` is live. That is upstream's resolution: expected, and pinned.
+      The Root is hand-written rather than `withProvider`, because `disabled` and `invalid` are
+      states the parts read and not the `div`'s attributes — React drops `invalid` on a `div` with a
+      warning; Solid would write `invalid=""`, so parity means omitting both.
+      `placeholder` is not a `select` attribute: it is a leading `<option value="">`.
+      Docs: 8 of upstream's 10 example slots. `Hook Form` is a third-party React package; `Explorer`
+      is www machinery. `Closed Component` keeps its section and loses the `@chakra-ui/cli snippet`
+      note, which addresses a CLI this project does not have
 - [ ] alert — S:alert · —/5
 - [ ] blockquote — S:blockquote · —/4
 - [ ] breadcrumb — S:breadcrumb · —/7
@@ -525,14 +570,15 @@ minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvid
       `packages/panda-preset/src/preset.ts` already covers it, so no preset edit was owed. The
       recipe publishes **`--input-height` per size** — the contract `input-group` reads for its
       `calc()` padding.
-      Popover's debt is paid for three examples: `popover-basic`, `-with-sizes` and
-      `-with-custom-bg` each carry their trailing `<Input>` again. `popover-with-form` and
-      `popover.mdx`'s `### Form` (upstream places it between `### Initial Focus` and `### Custom
-      Background`) remain owed to `field` + `textarea`.
-      Docs: **5 of upstream's 19 example slots**. 14 blocked — `Helper Text`, `Error Text`,
-      `Field`, `Focus and Error Color`, `Floating Label` on `field`; `Element`, `Addon`, `Button`,
-      `Character Counter`, `Card Number`, `Clear Button` on the `input-group` family; `Hook Form`
-      and `Mask` on third-party React packages, which do not port at all
+      Popover's debt is fully paid: `popover-basic`, `-with-sizes` and `-with-custom-bg` carry their
+      trailing `<Input>`, and `popover-with-form` plus `popover.mdx`'s `### Form` (upstream places it
+      between `### Initial Focus` and `### Custom Background`) landed with `textarea` in Phase 3.
+      Docs: **5 of upstream's 19 example slots**, and 14 still absent. **Five of them are no longer
+      blocked and are simply owed**: `Helper Text`, `Error Text`, `Field`, `Focus and Error Color`
+      and `Floating Label` needed `field`, which shipped, and neither the `field` batch nor Phase 3
+      wrote them — this row is the outstanding docs debt in the whole family. Six more are blocked on
+      the `input-group` family (`Element`, `Addon`, `Button`, `Character Counter`, `Card Number`,
+      `Clear Button`) and `Hook Form` and `Mask` are third-party React packages, which do not port
 - [ ] input-addon — A:inputAddon · —/1
       `useRecipe({ key })` directly — verified against the reference on the `input` ship, and it is
       the shape that does **not** port: we have no `useRecipe`, we import the generated recipe
@@ -639,14 +685,28 @@ minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvid
 - [x] spinner — A:spinner · —/1
 - [x] text — ✗text · —/1
       Key resolves to nothing in Chakra too; styled by `textStyles` + style props
-- [ ] textarea — A:textarea · —/1
-      Styles Ark's `Field.Textarea`. `popover.mdx`'s `### Form` section waits on this row plus
-      `input` and `field` — the debt is written out on the `input` row.
-      **`input`'s shape ports here unchanged**: upstream is the same `createRecipeContext({ key })`
-      + `withContext(ArkField.Textarea)`, so this is `withContext("textarea")` plus the field merge
-      — and since the `field` ship the context exists to read. `createField` already exposes
-      `getTextareaProps()`; this row layers it under the caller's props exactly as `input` does,
-      through `useOptionalFieldContext`
+- [x] textarea — A:textarea · —/1
+      `input`'s shape, as predicted — props context off the seam, `createRecipeClass` +
+      `renderStyled` called directly, `getTextareaProps()` layered underneath through the lazy
+      `mergeProps` — **plus one thing the note missed entirely: `autoresize`**. Ark's
+      `Field.Textarea` is not a bare wrapper; it takes an `autoresize` prop, sets `resize: none`
+      inline when it is on, and subscribes `autoresizeTextarea` from `@zag-js/auto-resize`. Two of
+      upstream's example slots are that prop, so dropping it would be removing behavior Chakra has.
+      `@zag-js/auto-resize@1.43.0` joins the catalog — the first Zag utility a *component* imports
+      directly rather than the adapter or `core`.
+      The subscription is the split `createEffect(compute, effect)` pair over a **ref signal**, and
+      both halves are measured: `onSettled` registers a single untracked fire, so a subtree turning
+      `autoresize` on after mount would never subscribe; and a plain `let element` is assigned after
+      the body registers the effect, so the compute captures `undefined` and nothing ever re-runs it.
+      The element grew nothing at all until the ref became a signal.
+      `resize: none` rides an inline `style` layered *under* the caller's, since `mergeProps`
+      composes `style` rather than replacing it. A `<Textarea resize="…">` style prop is a class and
+      so loses to that inline declaration — upstream has the same collision, from the same layering.
+      `textarea.variantKeys` is `["size", "variant"]`, 5 sizes and 3 variants, `md`/`outline`
+      defaults, all statically extractable under `staticCss: ["*"]` — no preset edit owed.
+      Docs: 9 of upstream's 10 example slots (`Ref` is prose, adapted — Solid has no `forwardRef`).
+      `Hook Form` is a third-party React package. Upstream's `### Field` section names
+      `input-with-field`, which is its own typo; ours renders `textarea-with-field`
 
 ## Styled primitives and layout (25)
 

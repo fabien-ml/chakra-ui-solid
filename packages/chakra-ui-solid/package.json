@@ -30,6 +30,7 @@
       "em": "src/components/em/index.ts",
       "environment": "src/components/environment/index.ts",
       "field": "src/components/field/index.ts",
+      "fieldset": "src/components/fieldset/index.ts",
       "flex": "src/components/flex/index.ts",
       "float": "src/components/float/index.ts",
       "grid": "src/components/grid/index.ts",
@@ -42,6 +43,7 @@
       "loader": "src/components/loader/index.ts",
       "locale": "src/components/locale/index.ts",
       "mark": "src/components/mark/index.ts",
+      "native-select": "src/components/native-select/index.ts",
       "popover": "src/components/popover/index.ts",
       "quote": "src/components/quote/index.ts",
       "radiomark": "src/components/radiomark/index.ts",
@@ -57,6 +59,7 @@
       "sticky": "src/components/sticky/index.ts",
       "strong": "src/components/strong/index.ts",
       "text": "src/components/text/index.ts",
+      "textarea": "src/components/textarea/index.ts",
       "visually-hidden": "src/components/visually-hidden/index.ts",
       "wrap": "src/components/wrap/index.ts"
     }
@@ -85,6 +88,7 @@
   "dependencies": {
     "@chakra-ui-solid/core": "workspace:*",
     "@chakra-ui-solid/styled-system": "workspace:*",
+    "@zag-js/auto-resize": "catalog:",
     "@zag-js/collapsible": "catalog:",
     "@zag-js/dialog": "catalog:",
     "@zag-js/popover": "catalog:"

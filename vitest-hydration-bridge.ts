@@ -130,6 +130,14 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/field/__tests__/field.ssr-entry.tsx",
   ),
+  // The first subject where a component reads a **context** the server also had to publish: a
+  // `Field.Root` inside a disabled `Fieldset.Root` inherits the group's `disabled` by absence, so
+  // the two builds have to resolve that read the same way before hydration is asked anything. Its
+  // gate is the ErrorText, valid on one root and invalid on the other.
+  fieldset: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/fieldset/__tests__/fieldset.ssr-entry.tsx",
+  ),
   "color-swatch": join(
     repoRoot,
     "packages/chakra-ui-solid/src/components/color-swatch/__tests__/color-swatch.ssr-entry.tsx",

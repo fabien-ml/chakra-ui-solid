@@ -86,6 +86,11 @@ catalog:
   # Ark, rather than reimplementations (`plan.md` §7.2).
   "@zag-js/dom-query": 1.43.0
   "@zag-js/i18n-utils": 1.43.0
+  # A third utility, and the first that a *component* imports directly: `Textarea`'s `autoresize` is
+  # `autoresizeTextarea` from here, which is what Ark's `Field.Textarea` calls too. Growing a
+  # textarea to fit its value is behavior Chakra ships and Zag owns — reimplementing the
+  # scrollHeight/ResizeObserver/font-loading dance would be inventing what we can depend on.
+  "@zag-js/auto-resize": 1.43.0
   # Storybook's warm-up imports this directly (`.storybook/preview.ts`), and every machine package
   # pulls it transitively. Two copies would mean two `setupGlobalFocusEvents` installations against
   # two module-level "already set up" flags, so the warm-up would run on one and the machines on the

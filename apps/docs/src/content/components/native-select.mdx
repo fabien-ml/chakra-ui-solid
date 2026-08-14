@@ -1,0 +1,97 @@
+---
+title: Select (Native)
+description: Used to pick a value from predefined options.
+links:
+  source: packages/chakra-ui-solid/src/components/native-select
+  chakra: https://chakra-ui.com/docs/components/native-select
+---
+
+<Example name="native-select-basic" />
+
+## Usage
+
+```tsx
+import { NativeSelect } from "chakra-ui-solid";
+```
+
+```tsx
+<NativeSelect.Root>
+  <NativeSelect.Field>
+    <option value="1">Option 1</option>
+    <option value="2">Option 2</option>
+  </NativeSelect.Field>
+  <NativeSelect.Indicator />
+</NativeSelect.Root>
+```
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the select component.
+
+<Example name="native-select-with-sizes" />
+
+### Variants
+
+Use the `variant` prop to change the appearance of the select component.
+
+<Example name="native-select-with-variants" />
+
+### Controlled
+
+Use the `value` and `onChange` props to control the select component.
+
+<Example name="native-select-controlled" />
+
+### Disabled
+
+Pass the `disabled` prop to the `NativeSelect.Root` component to disable the select component.
+
+<Example name="native-select-with-disabled" />
+
+### Invalid
+
+Compose the native and `Field` component to set the invalid set and show the error text.
+
+<Example name="native-select-with-invalid" />
+
+Alternatively, you can use the `invalid` prop on the `NativeSelect.Root` component as well.
+
+<Example name="native-select-with-invalid-root" />
+
+### Ref
+
+Here's how to access the underlying element reference. Solid has no `forwardRef`, so there is
+nothing to wrap: a `ref` is a prop like any other and reaches the element on the spread.
+
+```tsx
+import { NativeSelect } from "chakra-ui-solid";
+
+const Demo = () => {
+  let ref: HTMLSelectElement | undefined;
+  return (
+    <NativeSelect.Root>
+      <NativeSelect.Field ref={ref}>
+        <option value="1">Option 1</option>
+        <option value="2">Option 2</option>
+      </NativeSelect.Field>
+      <NativeSelect.Indicator />
+    </NativeSelect.Root>
+  );
+};
+```
+
+### Closed Component
+
+Here's how to setup the Native Select for a closed component composition.
+
+<Example name="native-select-closed-component" />
+
+## Props
+
+### Root
+
+<PropsTable component="native-select" interface="NativeSelectRootProps" />

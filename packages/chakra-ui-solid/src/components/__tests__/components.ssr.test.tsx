@@ -58,6 +58,13 @@ import {
   FieldPropsProvider,
   FieldRequiredIndicator,
   FieldRoot,
+  FieldsetContent,
+  FieldsetContext,
+  FieldsetErrorText,
+  FieldsetHelperText,
+  FieldsetLegend,
+  FieldsetPropsProvider,
+  FieldsetRoot,
   Flex,
   Float,
   Grid,
@@ -82,6 +89,10 @@ import {
   LocaleProvider,
   Mark,
   MarkPropsProvider,
+  NativeSelectField,
+  NativeSelectIndicator,
+  NativeSelectPropsProvider,
+  NativeSelectRoot,
   PopoverAnchor,
   PopoverArrow,
   PopoverArrowTip,
@@ -119,6 +130,8 @@ import {
   Sticky,
   Strong,
   Text,
+  Textarea,
+  TextareaPropsProvider,
   TextPropsProvider,
   VisuallyHidden,
   VStack,
@@ -440,6 +453,44 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
       <Icon />
     </IconPropsProvider>
   ),
+  FieldsetContent: () => (
+    <FieldsetRoot>
+      <FieldsetContent>fields</FieldsetContent>
+    </FieldsetRoot>
+  ),
+  FieldsetContext: () => (
+    <FieldsetRoot>
+      <FieldsetContext>{(fieldset) => <span>{fieldset.ids.legend}</span>}</FieldsetContext>
+    </FieldsetRoot>
+  ),
+  // `invalid`, because that is the arm with an element: a valid fieldset renders no error text.
+  FieldsetErrorText: () => (
+    <FieldsetRoot invalid>
+      <FieldsetErrorText>Some fields are invalid.</FieldsetErrorText>
+    </FieldsetRoot>
+  ),
+  FieldsetHelperText: () => (
+    <FieldsetRoot>
+      <FieldsetHelperText>Where the parcel goes.</FieldsetHelperText>
+    </FieldsetRoot>
+  ),
+  FieldsetLegend: () => (
+    <FieldsetRoot>
+      <FieldsetLegend>Shipping details</FieldsetLegend>
+    </FieldsetRoot>
+  ),
+  FieldsetPropsProvider: () => (
+    <FieldsetPropsProvider value={{ size: "lg" }}>
+      <FieldsetRoot>
+        <FieldsetLegend>Shipping details</FieldsetLegend>
+      </FieldsetRoot>
+    </FieldsetPropsProvider>
+  ),
+  FieldsetRoot: () => (
+    <FieldsetRoot>
+      <FieldsetLegend>Shipping details</FieldsetLegend>
+    </FieldsetRoot>
+  ),
   Input: () => <Input placeholder="Enter your email" size="lg" />,
   InputPropsProvider: () => (
     <InputPropsProvider value={{ size: "lg" }}>
@@ -483,6 +534,35 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <MarkPropsProvider value={{ variant: "solid" }}>
       <Mark>design system</Mark>
     </MarkPropsProvider>
+  ),
+  NativeSelectField: () => (
+    <NativeSelectRoot>
+      <NativeSelectField placeholder="Select option">
+        <option value="react">React</option>
+      </NativeSelectField>
+    </NativeSelectRoot>
+  ),
+  NativeSelectIndicator: () => (
+    <NativeSelectRoot>
+      <NativeSelectIndicator />
+    </NativeSelectRoot>
+  ),
+  NativeSelectPropsProvider: () => (
+    <NativeSelectPropsProvider value={{ size: "sm" }}>
+      <NativeSelectRoot>
+        <NativeSelectField>
+          <option value="react">React</option>
+        </NativeSelectField>
+      </NativeSelectRoot>
+    </NativeSelectPropsProvider>
+  ),
+  NativeSelectRoot: () => (
+    <NativeSelectRoot>
+      <NativeSelectField>
+        <option value="react">React</option>
+      </NativeSelectField>
+      <NativeSelectIndicator />
+    </NativeSelectRoot>
   ),
   PopoverAnchor: () => (
     <PopoverRoot>
@@ -629,6 +709,14 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   Sticky: () => <Sticky top="0">pinned</Sticky>,
   Strong: () => <Strong>bold</Strong>,
   Text: () => <Text textStyle="lg">paragraph</Text>,
+  // `autoresize`, because that is the arm with the inline `style` and the subscription — a plain
+  // one exercises neither.
+  Textarea: () => <Textarea placeholder="Comment..." size="lg" autoresize />,
+  TextareaPropsProvider: () => (
+    <TextareaPropsProvider value={{ size: "lg" }}>
+      <Textarea />
+    </TextareaPropsProvider>
+  ),
   TextPropsProvider: () => (
     <TextPropsProvider value={{ textStyle: "sm" }}>
       <Text>paragraph</Text>

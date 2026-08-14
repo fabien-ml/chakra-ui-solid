@@ -1,0 +1,86 @@
+---
+title: Textarea
+description: Used to enter multiple lines of text.
+links:
+  source: packages/chakra-ui-solid/src/components/textarea
+  chakra: https://chakra-ui.com/docs/components/textarea
+---
+
+<Example name="textarea-basic" />
+
+## Usage
+
+```tsx
+import { Textarea } from "chakra-ui-solid";
+```
+
+```tsx
+<Textarea placeholder="..." />
+```
+
+## Examples
+
+### Variants
+
+Use the `variant` prop to change the appearance of the textarea.
+
+<Example name="textarea-with-variants" />
+
+### Sizes
+
+Use the `size` prop to change the size of the textarea.
+
+<Example name="textarea-with-sizes" />
+
+### Helper Text
+
+Pair the textarea with the `Field` component to add helper text.
+
+<Example name="textarea-with-helper-text" />
+
+### Error Text
+
+Pair the textarea with the `Field` component to add error text.
+
+<Example name="textarea-with-error-text" />
+
+### Field
+
+Compose the textarea with the `Field` component to add a label, helper text, and error text.
+
+<Example name="textarea-with-field" />
+
+### Resize
+
+Use the `resize` prop to control the resize behavior of the textarea.
+
+<Example name="textarea-with-resize" />
+
+To limit the maximum height (or rows) of the textarea, we recommend using the `maxHeight` prop and
+setting the value to a `lh` unit.
+
+```tsx
+<Textarea autoresize maxH="5lh" />
+```
+
+### Autoresize
+
+Use the `autoresize` prop to make the textarea autoresize vertically as you type.
+
+<Example name="textarea-with-autoresize" />
+
+### Ref
+
+Here's how to access the underlying element reference. Solid has no `forwardRef`, so there is
+nothing to wrap: a `ref` is a prop like any other and reaches the element on the spread.
+
+```tsx
+const Demo = () => {
+  let ref: HTMLTextAreaElement | undefined;
+  return <Textarea ref={ref} />;
+};
+```
+
+## Props
+
+<PropsTable component="textarea" />

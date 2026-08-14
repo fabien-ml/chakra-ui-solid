@@ -223,6 +223,9 @@ catalogs:
     '@tanstack/solid-start':
       specifier: 2.0.0-rc.0
       version: 2.0.0-rc.0
+    '@zag-js/auto-resize':
+      specifier: 1.43.0
+      version: 1.43.0
     '@zag-js/collapsible':
       specifier: 1.43.0
       version: 1.43.0
@@ -428,6 +431,9 @@ importers:
       '@chakra-ui-solid/styled-system':
         specifier: workspace:*
         version: link:../styled-system
+      '@zag-js/auto-resize':
+        specifier: 'catalog:'
+        version: 1.43.0
       '@zag-js/collapsible':
         specifier: 'catalog:'
         version: 1.43.0
@@ -2366,6 +2372,9 @@ packages:
 
   '@zag-js/aria-hidden@1.43.0':
     resolution: {integrity: sha512-JUPIIPbcNsWW3vbPBkGBTHiPwC1jPsiYCMptyXif73J3RQpEW2DLdjen4jl7CrolSZndhVtkAUAQSfmuvWel8Q==}
+
+  '@zag-js/auto-resize@1.43.0':
+    resolution: {integrity: sha512-qbwmMwMn6HxHgDWyF6FzWWf7yJeoWmmIPRzFbNVDg1ohMI2CpSfYqxh7LHk1bO/5C5j3pZ/0VY2j27b3szckqA==}
 
   '@zag-js/collapsible@1.43.0':
     resolution: {integrity: sha512-6AqDCYLQI/AdD4gOIlg/msQUkkvdH4WknZCm4dCgJ2v9sRPu7QcCSN83Y/k/PTQqv02V4pVSRQHVHzLosGjShw==}
@@ -6243,6 +6252,10 @@ snapshots:
   '@zag-js/anatomy@1.43.0': {}
 
   '@zag-js/aria-hidden@1.43.0':
+    dependencies:
+      '@zag-js/dom-query': 1.43.0
+
+  '@zag-js/auto-resize@1.43.0':
     dependencies:
       '@zag-js/dom-query': 1.43.0
 

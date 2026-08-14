@@ -47,15 +47,19 @@ export const FieldRoot: Component<FieldRootProps> = (props) => {
   // beat the provider above it with `undefined`.
   const fromContext = withContextDefaults<FieldRootProps>(props, usePropsContext());
 
-  // The four states, resolved with `??` rather than by presence, for the same reason — and here it
-  // is the difference between a valid field and one that never stops being invalid.
+  // Three of the four states, resolved with `??` rather than by presence, for the same reason — and
+  // here it is the difference between a valid field and one that never stops being invalid.
   //
-  // `orientation` is **not** here: it is a recipe variant, and the recipe's own `defaultVariants`
-  // resolves `"vertical"` from `undefined`. Restating it would be a second source of truth that
-  // drifts on a preset bump.
+  // **`disabled` is not one of them, and that is load-bearing.** A default resolved here would land
+  // as `false` before `createField` ever sees it, and `createField` inherits a surrounding
+  // `<Fieldset.Root disabled>` by *absence* — so defaulting it here would delete the inheritance
+  // upstream ships, silently. `createField` resolves it, against the fieldset.
+  //
+  // `orientation` is **not** here either: it is a recipe variant, and the recipe's own
+  // `defaultVariants` resolves `"vertical"` from `undefined`. Restating it would be a second source
+  // of truth that drifts on a preset bump.
   const merged = withDefaults(fromContext, {
     invalid: false,
-    disabled: false,
     readOnly: false,
     required: false,
   });

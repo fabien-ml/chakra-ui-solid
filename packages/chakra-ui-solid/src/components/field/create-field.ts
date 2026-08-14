@@ -1,4 +1,5 @@
 import { type Accessor, createSignal, createUniqueId } from "solid-js";
+import { useOptionalFieldsetContext } from "../fieldset/fieldset-context";
 import type {
   CreateFieldProps,
   CreateFieldReturn,
@@ -48,6 +49,10 @@ export function createField(props: CreateFieldProps = {}): CreateFieldReturn {
   // no error.
   const generatedId = createUniqueId();
 
+  // The surrounding `<Fieldset.Root disabled>`, if there is one. Read through the **non-strict**
+  // reader: a field outside any fieldset is the ordinary case, not an error.
+  const fieldset = useOptionalFieldsetContext();
+
   // What the two texts publish on mount and clear on cleanup, through `createRegisteredId`.
   // Upstream discovers the same two facts by running a `MutationObserver` over the root subtree and
   // calling `getElementById` on every mutation; a descendant telling its ancestor "I am here" needs
@@ -63,7 +68,12 @@ export function createField(props: CreateFieldProps = {}): CreateFieldReturn {
 
   // `??` and never `merge`, which resolves a key by presence: a Root forwarding an unset
   // `invalid={props.invalid}` would otherwise win with `undefined` and delete the default.
-  const disabled = () => props.disabled ?? false;
+  // The fieldset's `disabled` is a **default**, not an override: the field's own prop still wins,
+  // so a `<Field.Root disabled={false}>` inside a disabled fieldset is live — which is upstream's
+  // resolution (`disabled = Boolean(fieldset?.disabled)` as the destructuring default) and the
+  // reason the read is `??` rather than `||`. It is a getter over the fieldset's own getter, so a
+  // group that is disabled after mount disables the fields under it.
+  const disabled = () => props.disabled ?? Boolean(fieldset?.disabled);
   const invalid = () => props.invalid ?? false;
   const readOnly = () => props.readOnly ?? false;
   const required = () => props.required ?? false;
