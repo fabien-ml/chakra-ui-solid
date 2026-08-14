@@ -1,0 +1,88 @@
+---
+title: Field
+description: Used to add labels, help text, and error messages to form fields.
+links:
+  source: packages/chakra-ui-solid/src/components/field
+  chakra: https://chakra-ui.com/docs/components/field
+---
+
+<Example name="field-basic" />
+
+## Usage
+
+```tsx
+import { Field } from "chakra-ui-solid";
+```
+
+```tsx
+<Field.Root>
+  <Field.Label>
+    <Field.RequiredIndicator />
+  </Field.Label>
+  <Input />
+  <Field.HelperText />
+  <Field.ErrorText />
+</Field.Root>
+```
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Error Text
+
+Pass the `invalid` prop to `Field.Root` and use the `Field.ErrorText` to indicate that the field is
+invalid.
+
+<Example name="field-with-error-text" />
+
+### Error Icon
+
+`Field.ErrorIcon` inherits the surrounding text color and defaults to `1em`, keeping its size
+consistent even when `Field.ErrorText` stretches full width.
+
+<Example name="field-with-error-icon" />
+
+### Helper Text
+
+Use the `Field.HelperText` to add helper text to the field.
+
+<Example name="field-with-helper-text" />
+
+### Horizontal
+
+Use the `orientation="horizontal"` prop to align the label and input horizontally.
+
+<Example name="field-horizontal" />
+
+### Disabled
+
+Use the `disabled` prop to disable the field.
+
+<Example name="field-with-disabled" />
+
+### Required
+
+Pass the `required` prop to `Field.Root` and use the `Field.RequiredIndicator` to indicate that the
+field is required.
+
+<Example name="field-with-required" />
+
+### Optional
+
+Pass the `fallback` prop to the `Field.RequiredIndicator` to add optional text.
+
+<Example name="field-with-optional" />
+
+### Closed Component
+
+Here's how to setup the Field for a closed component composition. Solid has no `forwardRef`, so
+there is nothing to wrap: a `ref` is a prop like any other and reaches `Field.Root` on the spread.
+
+<Example name="field-closed-component" />
+
+## Props
+
+### Root
+
+<PropsTable component="field" interface="FieldRootProps" />
