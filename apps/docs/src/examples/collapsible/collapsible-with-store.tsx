@@ -11,11 +11,9 @@ export default function CollapsibleWithStore() {
 
       <Button size="sm" variant="subtle" onClick={() => collapsible.setOpen(!collapsible.open)}>
         Toggle
-        <Icon>
-          <Show when={collapsible.open} fallback={<ChevronDownIcon />}>
-            <ChevronRightIcon />
-          </Show>
-        </Icon>
+        <Show when={collapsible.open} fallback={<Icon as={ChevronDownIcon} />}>
+          <Icon as={ChevronRightIcon} />
+        </Show>
       </Button>
 
       <Collapsible.RootProvider value={collapsible}>
