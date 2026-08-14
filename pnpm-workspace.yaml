@@ -71,6 +71,11 @@ catalog:
   # than as an entry here, because the trap is a machine effect (`dialog.machine.ts`) and no file of
   # ours imports it.
   "@zag-js/dialog": 1.43.0
+  # The third, and the first that positions a floating element: `@zag-js/popper` arrives underneath
+  # it and needs no entry, on the `focus-trap` rule above — the placement is a machine effect and no
+  # file of ours imports the package. `Placement` and `PositioningOptions` reach us re-exported from
+  # `@zag-js/popover` itself.
+  "@zag-js/popover": 1.43.0
   # A machine package `@chakra-ui-solid/core` depends on directly, unlike every other one: presence
   # is a *primitive* rather than a component, and `createPresence` is what nine components' exit
   # animations are built on.

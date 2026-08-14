@@ -76,7 +76,8 @@
     "@chakra-ui-solid/core": "workspace:*",
     "@chakra-ui-solid/styled-system": "workspace:*",
     "@zag-js/collapsible": "catalog:",
-    "@zag-js/dialog": "catalog:"
+    "@zag-js/dialog": "catalog:",
+    "@zag-js/popover": "catalog:"
   },
   "devDependencies": {
     "@chakra-ui-solid/internal-test-utils": "workspace:*",
