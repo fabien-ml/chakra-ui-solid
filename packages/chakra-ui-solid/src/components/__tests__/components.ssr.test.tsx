@@ -78,6 +78,7 @@ import {
   DialogRootProvider,
   DialogTitle,
   DialogTrigger,
+  DownloadTrigger,
   Em,
   EmptyStateContent,
   EmptyStateDescription,
@@ -660,6 +661,14 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <DialogRoot>
       <DialogTrigger>Open</DialogTrigger>
     </DialogRoot>
+  ),
+  // Its `data` is the one prop here that would be a problem if it reached the element: the component
+  // omits the three download props, and a server render is where an unomitted `Blob` would be
+  // stringified into an attribute rather than merely set as one.
+  DownloadTrigger: () => (
+    <DownloadTrigger data="hello" fileName="hello.txt" mimeType="text/plain">
+      Download
+    </DownloadTrigger>
   ),
   Em: () => <Em>emphasis</Em>,
   EmptyStateContent: () => (

@@ -91,6 +91,15 @@ catalog:
   # textarea to fit its value is behavior Chakra ships and Zag owns — reimplementing the
   # scrollHeight/ResizeObserver/font-loading dance would be inventing what we can depend on.
   "@zag-js/auto-resize": 1.43.0
+  # A fourth, on the same argument one step further: `DownloadTrigger`'s whole behavior is
+  # `downloadFile` from here — the function Ark's `useDownload` calls, so this is what Chakra
+  # reaches for through Ark. Handing a browser a file it did not fetch is a pile of accumulated
+  # workarounds (a BOM for UTF-8 text, an object URL revoked one tick after a synthetic click, the
+  # macOS-WebView and legacy-Edge branches that cannot use `<a download>` at all), and writing our
+  # own would be inventing what we can depend on. `FileMimeType` comes with it — the `mimeType`
+  # prop's type. `sideEffects: false`, so the 6 kB extension→MIME table nothing here imports is
+  # tree-shaken out.
+  "@zag-js/file-utils": 1.43.0
   # Storybook's warm-up imports this directly (`.storybook/preview.ts`), and every machine package
   # pulls it transitively. Two copies would mean two `setupGlobalFocusEvents` installations against
   # two module-level "already set up" flags, so the warm-up would run on one and the machines on the

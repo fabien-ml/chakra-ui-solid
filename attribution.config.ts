@@ -171,12 +171,12 @@ const docsApp: AttributionEntry[] = [
     package: null,
   },
   {
-    // One entry for twenty-five glyphs, on the reasoning that makes `apps/docs/src/content` one row
+    // One entry for thirty-eight glyphs, on the reasoning that makes `apps/docs/src/content` one row
     // rather than 111: the icon set is a single derivative of one upstream directory. `upstreamFile`
     // is that directory, and the module names the individual `icons/*.svg` above each component —
     // which is what a reader auditing the claim actually opens.
     //
-    // The only ISC entry, and the only one owing a *second* upstream: fifteen of the twenty-five are
+    // The only ISC entry, and the only one owing a *second* upstream: twenty of the thirty-eight are
     // Lucide's own derivatives of Feather, MIT. Both notices are in the root `NOTICE.md`.
     file: "apps/docs/src/components/ui/icons.tsx",
     upstreamProject: "lucide-icons/lucide",

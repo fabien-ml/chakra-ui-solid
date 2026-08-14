@@ -238,6 +238,9 @@ catalogs:
     '@zag-js/dom-query':
       specifier: 1.43.0
       version: 1.43.0
+    '@zag-js/file-utils':
+      specifier: 1.43.0
+      version: 1.43.0
     '@zag-js/focus-visible':
       specifier: 1.43.0
       version: 1.43.0
@@ -438,6 +441,9 @@ importers:
         specifier: 'catalog:'
         version: 1.43.0
       '@zag-js/dialog':
+        specifier: 'catalog:'
+        version: 1.43.0
+      '@zag-js/file-utils':
         specifier: 'catalog:'
         version: 1.43.0
       '@zag-js/popover':
@@ -2390,6 +2396,9 @@ packages:
 
   '@zag-js/dom-query@1.43.0':
     resolution: {integrity: sha512-yQDR00jJj0tgrRH43QJx7NtQH+EBxQtEdFKMzG7c88xL1ZRtqXYpqNNSmCuGj5RTsEceQjEhAxeTJikUYp9M0g==}
+
+  '@zag-js/file-utils@1.43.0':
+    resolution: {integrity: sha512-ddt5UBU1pecmiUQbWe9xymcyBop8gGCcYXRautsqPz6aAHA82O9UvJ7/FxLr6qvXQO8fmYaPsIRR4342NahIZw==}
 
   '@zag-js/focus-trap@1.43.0':
     resolution: {integrity: sha512-6JApoRanDOcrfQBd7pz/rp2YxdtBmIjRenH9+1tKscbtXRJLWUGZTtr2QiCHCkyRKZdi7kyo7309HTzM62n+OA==}
@@ -6293,6 +6302,10 @@ snapshots:
   '@zag-js/dom-query@1.43.0':
     dependencies:
       '@zag-js/types': 1.43.0
+
+  '@zag-js/file-utils@1.43.0':
+    dependencies:
+      '@zag-js/i18n-utils': 1.43.0
 
   '@zag-js/focus-trap@1.43.0':
     dependencies:

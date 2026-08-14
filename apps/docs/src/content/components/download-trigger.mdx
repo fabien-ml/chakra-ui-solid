@@ -1,0 +1,64 @@
+---
+title: Download Trigger
+description: Used to trigger a download of a file.
+links:
+  source: packages/chakra-ui-solid/src/components/download-trigger
+  chakra: https://chakra-ui.com/docs/components/download-trigger
+---
+
+<Example name="download-trigger-basic" />
+
+## Usage
+
+```tsx
+import { DownloadTrigger } from "chakra-ui-solid";
+```
+
+```tsx
+<DownloadTrigger data="..." fileName="x.png" mimeType="image/png" />
+```
+
+## Examples
+
+### Basic
+
+Pass the data you want to download to the `data` prop, and specify the `fileName` and `mimeType` of
+the file.
+
+<Example name="download-trigger-basic" />
+
+`DownloadTrigger` has no styles of its own — it renders a bare `button`. The `render` prop is how it
+gets a look: the download behaviour lands on whatever component you hand it, a [Button](/docs/components/button)
+in every example here.
+
+### Download SVG
+
+Here's an example of how to download an SVG file.
+
+<Example name="download-trigger-svg" />
+
+### Promise
+
+You can also trigger downloads from a promise that returns a `Blob`, `File`, or `string`.
+
+<Example name="download-trigger-with-promise" />
+
+A promise that rejects is left to reject — put a `catch` inside your own `data` function if a failed
+download should say something.
+
+## Props
+
+<PropsTable component="download-trigger" />
+
+Every prop is read at the moment of the click rather than when the trigger renders, so a `fileName`
+or `data` driven by a signal names and produces whatever it is by then.
+
+`createDownload` is the same behaviour without the button — call it to hang a download off anything:
+
+```tsx
+const { download } = createDownload({
+  fileName: "notes.txt",
+  mimeType: "text/plain",
+  data: () => editor.value,
+});
+```

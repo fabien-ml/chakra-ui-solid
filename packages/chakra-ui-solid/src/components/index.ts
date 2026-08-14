@@ -32,6 +32,7 @@ export * from "./color-swatch";
 export * from "./container";
 export * from "./data-list";
 export * from "./dialog";
+export * from "./download-trigger";
 export * from "./em";
 export * from "./empty-state";
 export * from "./environment";

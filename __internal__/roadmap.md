@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 55 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 60 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -92,7 +92,11 @@ asks, correct **both** in the same commit.
 - [ ] checkbox-card — checkbox · S:checkboxCard · 4/7
       Second public component on one machine
 - [ ] clipboard — ✗clipboard · 6/—
-      Recipe key resolves to nothing **in Chakra too** (§2.5). Coverage-check allow-list
+      Recipe key resolves to nothing **in Chakra too** (§2.5). **There is no coverage check to
+      allow-list into** — the four that exist are `no-runtime-css`, `attribution`,
+      `declaration-support` and `ssr-coverage`, and none enumerates recipe keys. `text` shipped
+      unstyled-by-key with nothing to register and `download-trigger` measured it; this row needs
+      nothing but the component
 - [ ] code-block — clipboard · S:codeBlock · 6/14
       14 slots, one machine part used. Shiki adapters are consumer-supplied
 - [x] collapsible — S:collapsible · 4/4 · M
@@ -807,8 +811,40 @@ The seam's own suite gained the test that would have caught it.
       the whole page (`[REACTIVITY_HALTED]`) and every later render anywhere no-ops. Measured
 - [x] container — A:container · —/1
       **The one recipe the preset is missing** (§1.3a). One preset delta, expression-tier, `@license` + `NOTICE` rows
-- [ ] download-trigger — ✗downloadTrigger · —/1
-      Key resolves to nothing in Chakra too
+- [x] download-trigger — ✗downloadTrigger · —/1
+      Key resolves to nothing in Chakra too — true, and the only clause this note had. What it did
+      not say is that this is **the one atomic row with behavior**: upstream is Ark's
+      `DownloadTrigger` + `useDownload`, so what ships is `createDownload` written here.
+      **The download itself is `downloadFile` from `@zag-js/file-utils`**, a fourth catalog entry and
+      the second Zag utility a component imports directly (`auto-resize`'s precedent). It is the
+      function Ark's own `useDownload` calls, so it is what Chakra reaches for *through* Ark;
+      writing our own would mean rediscovering the BOM for UTF-8 text, the object URL revoked one
+      task after a synthetic click, and the macOS-WebView and legacy-Edge branches that cannot use
+      `<a download>` at all. `FileMimeType` comes with it. `sideEffects: false`, so the 6 kB
+      extension→MIME table nothing imports tree-shakes out.
+      **`createDownload` reads every prop inside `download()`, never at call time** — which is the
+      Solid-native expression of a React hook that re-runs on each render, and makes a signal-driven
+      `fileName` name the file whatever it is at the moment of the click. The window comes from the
+      environment context, so a trigger rendered against another document saves from that document;
+      that is the only thing the context changes here and it has a test.
+      **`type="button"` is fixed, not defaulted.** Ark writes `<ark.button {...rest} type="button">`
+      — *after* the spread — so `<DownloadTrigger type="submit">` is a button on both sides. The
+      third hazard does not apply to it and neither does `withDefaults`; both spellings are pinned.
+      Expected, not tolerated.
+      **A rejected `data` promise is left to reject.** Ark's `.then(saveToDisk)` has no `catch` and
+      neither does ours: a dead URL surfaces as an unhandled rejection rather than as a button that
+      silently does nothing. The test asserts it by registering its own `unhandledrejection`
+      listener, which is also what keeps it off the run's error report — Vitest's browser client
+      counts user listeners and steps aside when it finds one.
+      **No `DownloadTriggerPropsProvider`**, alone among the atomic rows: upstream destructures only
+      `withContext` from `createRecipeContext`, so its props context has no writer and is dead.
+      Ours does not mint one either. And the recipe key is genuinely unclaimed — `qrCode`'s slot list
+      has a `downloadTrigger` **slot**, which is a different thing and generates `qr-code__downloadTrigger`.
+      **There is no coverage check and no allow-list to register in** (see the `clipboard` row, which
+      this settles). Docs: **3 of upstream's 4 example slots** — `### File Size` composes
+      `FormatByte`, which waits on the `format` row. Every example reaches the look through `render`
+      where upstream writes `asChild`, and `with-promise` needed one glyph (`image-down`) added to
+      the docs' Lucide set, 37→38 in `NOTICE.md`
 - [x] heading — A:heading · —/1
       **The component shipped; its docs page did not** — `heading.mdx` and `button.mdx` are the only
       two upstream component pages with no counterpart of ours. Every other checked row either has a
@@ -1061,7 +1097,9 @@ The seam's own suite gained the test that would have caught it.
       transitively under `@zag-js/dialog` and the dialog machine runs it itself, so this row is the
       standalone component only
 - [ ] format
-      `FormatNumber` / `FormatByte` over `Intl`. No machine, no recipe
+      `FormatNumber` / `FormatByte` over `Intl`. No machine, no recipe. Pays
+      `download-trigger.mdx`'s `### File Size` section, dropped there because `FormatByte` is its
+      whole subject
 - [ ] highlight
       Over `@zag-js/highlight-word`. Plus `useHighlight`
 
