@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 54 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 55 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -543,7 +543,31 @@ The seam's own suite gained the test that would have caught it.
       `react-icons/lu`. A **bare `✓` in an indicator is an axe `incomplete`**, not a pass —
       `color-contrast` reports `nonBmp` on content that is only non-text characters — so the
       fixtures put a glyph there, which is what upstream's example holds anyway
-- [ ] stat — S:stat · —/6
+- [x] stat — S:stat · —/6
+      Six slots and **nine** exports, three of which the seam does not mint.
+      **`Stat.UpIndicator` and `Stat.DownIndicator` are one component twice**: same slot, same
+      element, and the only difference between them is `data-type`, which is what the recipe's two
+      attribute selectors colour from. Both carry two defaults — the arrow and the `data-type` — so
+      neither can be `withContext`, and they take `Tag.CloseTrigger`'s shape: `withDefaults` for
+      the attribute, a `children` getter over `merge(...)` for the glyph. **The `data-type` prop is
+      declared on the interface**, where the React version leaves it to a `data-*` index signature
+      React's JSX types carry and Solid's do not.
+      **`StatGroup` is the library's second props-context writer**, after `ButtonGroup`, and takes
+      exactly its shape — a named object of getters into the provider, `omit(merged, ...VARIANT_KEYS)`
+      for the element, and the four layout properties as JSX attributes before the spread. There is
+      **no `rootProps`-style escape hatch anywhere in this row**; the prediction that there might be
+      was wrong, and the `mergeProps` carry-forward from `field` had no site here.
+      **`Stat.HelpText` is a `span` directly inside a `dl`**, which is markup a `dl` does not allow
+      — upstream renders exactly that pair, so the React version is invalid the same way. It ships,
+      the browser suite pins the one `definition-list` violation, and a consumer who needs valid
+      markup passes `as="dd"`. Nothing on the docs page says so.
+      Docs: **5 of upstream's 9 example slots**. `Format Options` and `Progress Bar` wait on the
+      `format` and `progress` rows, `Info Tip` on `toggle-tip`, and `Closed Component` on both —
+      its `formatOptions` and `info` props are the whole of what it adds. `Explorer` is www
+      machinery, and upstream's own page has no section for `stat-with-group`, so neither has
+      ours. `stat-with-trend` keeps its section with the currency written out where upstream calls
+      `FormatNumber` — the trend badge is the example, `card-basic`'s precedent — and
+      `stat-with-icon` takes `DollarSignIcon` from the docs' own lucide set
 - [x] status — S:status · —/2
       The smallest multi-part row in the library: two slots, one variant, no body. There is **no
       `Status.Label`** — the word is a plain child of the Root, which is an `inline-flex` row with a

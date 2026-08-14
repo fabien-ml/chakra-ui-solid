@@ -62,6 +62,7 @@
       "spinner": "src/components/spinner/index.ts",
       "square": "src/components/square/index.ts",
       "stack": "src/components/stack/index.ts",
+      "stat": "src/components/stat/index.ts",
       "status": "src/components/status/index.ts",
       "sticky": "src/components/sticky/index.ts",
       "strong": "src/components/strong/index.ts",

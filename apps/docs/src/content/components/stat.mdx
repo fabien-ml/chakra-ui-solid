@@ -1,0 +1,56 @@
+---
+title: Stat
+description: Used to display a statistic with a title and value.
+links:
+  source: packages/chakra-ui-solid/src/components/stat
+  chakra: https://chakra-ui.com/docs/components/stat
+---
+
+<Example name="stat-basic" />
+
+## Usage
+
+```tsx
+import { Stat } from "chakra-ui-solid";
+```
+
+```tsx
+<Stat.Root>
+  <Stat.Label />
+  <Stat.ValueText />
+  <Stat.HelpText />
+  <Stat.UpIndicator />
+</Stat.Root>
+```
+
+## Examples
+
+### Indicator
+
+Here's an example of how to display a statistic with an indicator.
+
+<Example name="stat-with-indicator" />
+
+### Value Unit
+
+Here's an example of how to display a value with a unit.
+
+<Example name="stat-with-value-unit" />
+
+### Icon
+
+Here's an example of how to display a statistic with an icon.
+
+<Example name="stat-with-icon" />
+
+### Trend
+
+Here's an example of how to display a statistic with a trend indicator.
+
+<Example name="stat-with-trend" />
+
+## Props
+
+### Root
+
+<PropsTable component="stat" interface="StatRootProps" />

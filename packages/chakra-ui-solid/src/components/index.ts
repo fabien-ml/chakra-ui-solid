@@ -62,6 +62,7 @@ export * from "./span";
 export * from "./spinner";
 export * from "./square";
 export * from "./stack";
+export * from "./stat";
 export * from "./status";
 export * from "./sticky";
 export * from "./strong";

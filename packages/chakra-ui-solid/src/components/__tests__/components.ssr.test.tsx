@@ -160,9 +160,18 @@ import {
   Square,
   Stack,
   StackSeparator,
+  StatDownIndicator,
+  StatGroup,
+  StatHelpText,
+  StatLabel,
+  StatPropsProvider,
+  StatRoot,
+  StatUpIndicator,
   StatusIndicator,
   StatusPropsProvider,
   StatusRoot,
+  StatValueText,
+  StatValueUnit,
   Sticky,
   Strong,
   TagCloseTrigger,
@@ -962,6 +971,69 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   Square: () => <Square size="10">1</Square>,
   Stack: () => <Stack gap="4">stacked</Stack>,
   StackSeparator: () => <StackSeparator />,
+  // Its default arrow is built inside the component rather than hoisted beside it — JSX at module
+  // scope is constructed at *import* time and 500s the route before anything renders.
+  StatDownIndicator: () => (
+    <StatRoot>
+      <StatHelpText>
+        <StatDownIndicator />
+        9.05%
+      </StatHelpText>
+    </StatRoot>
+  ),
+  // The one component in this family the styling seam does not mint: a plain div that writes the
+  // props context every Stat below it reads.
+  StatGroup: () => (
+    <StatGroup size="lg">
+      <StatRoot>
+        <StatLabel>Sent</StatLabel>
+        <StatValueText>345,670</StatValueText>
+      </StatRoot>
+    </StatGroup>
+  ),
+  StatHelpText: () => (
+    <StatRoot>
+      <StatHelpText>since last month</StatHelpText>
+    </StatRoot>
+  ),
+  StatLabel: () => (
+    <StatRoot>
+      <StatLabel>Unique visitors</StatLabel>
+    </StatRoot>
+  ),
+  StatPropsProvider: () => (
+    <StatPropsProvider value={{ size: "lg" }}>
+      <StatRoot>
+        <StatValueText>192.1k</StatValueText>
+      </StatRoot>
+    </StatPropsProvider>
+  ),
+  StatRoot: () => (
+    <StatRoot size="sm">
+      <StatLabel>Unique visitors</StatLabel>
+      <StatValueText>192.1k</StatValueText>
+    </StatRoot>
+  ),
+  StatUpIndicator: () => (
+    <StatRoot>
+      <StatHelpText>
+        <StatUpIndicator />
+        23.36%
+      </StatHelpText>
+    </StatRoot>
+  ),
+  StatValueText: () => (
+    <StatRoot>
+      <StatValueText>192.1k</StatValueText>
+    </StatRoot>
+  ),
+  StatValueUnit: () => (
+    <StatRoot>
+      <StatValueText>
+        3 <StatValueUnit>hr</StatValueUnit>
+      </StatValueText>
+    </StatRoot>
+  ),
   StatusIndicator: () => (
     <StatusRoot colorPalette="green">
       <StatusIndicator />
