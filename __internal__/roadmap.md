@@ -663,12 +663,15 @@ The seam's own suite gained the test that would have caught it.
       Popover's debt is fully paid: `popover-basic`, `-with-sizes` and `-with-custom-bg` carry their
       trailing `<Input>`, and `popover-with-form` plus `popover.mdx`'s `### Form` (upstream places it
       between `### Initial Focus` and `### Custom Background`) landed with `textarea` in Phase 3.
-      Docs: **5 of upstream's 19 example slots**, and 14 still absent. **Five of them are no longer
-      blocked and are simply owed**: `Helper Text`, `Error Text`, `Field`, `Focus and Error Color`
-      and `Floating Label` needed `field`, which shipped, and neither the `field` batch nor Phase 3
-      wrote them — this row is the outstanding docs debt in the whole family. Six more are blocked on
-      the `input-group` family (`Element`, `Addon`, `Button`, `Character Counter`, `Card Number`,
-      `Clear Button`) and `Hook Form` and `Mask` are third-party React packages, which do not port
+      Docs: **10 of upstream's 19 example slots**. The five that only ever needed `field` —
+      `Helper Text`, `Error Text`, `Field`, `Focus and Error Color` and `Floating Label` — landed
+      with Phase 4 and the debt is paid. `input-with-floating-label` is the one that is not a
+      transcription: upstream is `useControllableState` + `useState` + a `defineStyle` constant, and
+      ours is two signals and the style object inline in the `css` prop, because `defineStyle` is
+      the runtime style system and a `css` value has to be a literal Panda can see. Six slots stay
+      blocked on the `input-group` family (`Element`, `Addon`, `Button`, `Character Counter`,
+      `Card Number`, `Clear Button`); `Hook Form` and `Mask` are third-party React packages, which
+      do not port
 - [ ] input-addon — A:inputAddon · —/1
       `useRecipe({ key })` directly — verified against the reference on the `input` ship, and it is
       the shape that does **not** port: we have no `useRecipe`, we import the generated recipe
