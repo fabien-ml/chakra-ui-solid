@@ -71,6 +71,12 @@ import {
   DialogTitle,
   DialogTrigger,
   Em,
+  EmptyStateContent,
+  EmptyStateDescription,
+  EmptyStateIndicator,
+  EmptyStatePropsProvider,
+  EmptyStateRoot,
+  EmptyStateTitle,
   EnvironmentProvider,
   FieldContext,
   FieldErrorIcon,
@@ -545,6 +551,42 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </DialogRoot>
   ),
   Em: () => <Em>emphasis</Em>,
+  EmptyStateContent: () => (
+    <EmptyStateRoot>
+      <EmptyStateContent>
+        <EmptyStateTitle>Your cart is empty</EmptyStateTitle>
+      </EmptyStateContent>
+    </EmptyStateRoot>
+  ),
+  EmptyStateDescription: () => (
+    <EmptyStateRoot>
+      <EmptyStateDescription>Explore our products.</EmptyStateDescription>
+    </EmptyStateRoot>
+  ),
+  EmptyStateIndicator: () => (
+    <EmptyStateRoot>
+      <EmptyStateIndicator>🛒</EmptyStateIndicator>
+    </EmptyStateRoot>
+  ),
+  EmptyStatePropsProvider: () => (
+    <EmptyStatePropsProvider value={{ size: "lg" }}>
+      <EmptyStateRoot>
+        <EmptyStateTitle>Your cart is empty</EmptyStateTitle>
+      </EmptyStateRoot>
+    </EmptyStatePropsProvider>
+  ),
+  EmptyStateRoot: () => (
+    <EmptyStateRoot size="sm">
+      <EmptyStateContent>
+        <EmptyStateTitle>Your cart is empty</EmptyStateTitle>
+      </EmptyStateContent>
+    </EmptyStateRoot>
+  ),
+  EmptyStateTitle: () => (
+    <EmptyStateRoot>
+      <EmptyStateTitle>Your cart is empty</EmptyStateTitle>
+    </EmptyStateRoot>
+  ),
   // Given no `value` it renders a probe element and discovers its root node from a ref, which is a
   // client-only answer — so what this asserts is that the discovery path is deferred rather than
   // attempted where there is no `document`.

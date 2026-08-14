@@ -32,6 +32,7 @@ export * from "./container";
 export * from "./data-list";
 export * from "./dialog";
 export * from "./em";
+export * from "./empty-state";
 export * from "./environment";
 export * from "./field";
 export * from "./fieldset";

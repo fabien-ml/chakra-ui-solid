@@ -32,6 +32,7 @@
       "data-list": "src/components/data-list/index.ts",
       "dialog": "src/components/dialog/index.ts",
       "em": "src/components/em/index.ts",
+      "empty-state": "src/components/empty-state/index.ts",
       "environment": "src/components/environment/index.ts",
       "field": "src/components/field/index.ts",
       "fieldset": "src/components/fieldset/index.ts",

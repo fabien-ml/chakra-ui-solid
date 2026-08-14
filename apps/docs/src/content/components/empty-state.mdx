@@ -1,0 +1,59 @@
+---
+title: Empty State
+description: Used to indicate when a resource is empty or unavailable.
+links:
+  source: packages/chakra-ui-solid/src/components/empty-state
+  chakra: https://chakra-ui.com/docs/components/empty-state
+---
+
+<Example name="empty-state-basic" />
+
+## Usage
+
+```tsx
+import { EmptyState } from "chakra-ui-solid";
+```
+
+```tsx
+<EmptyState.Root>
+  <EmptyState.Content>
+    <EmptyState.Indicator />
+    <EmptyState.Title />
+    <EmptyState.Description />
+  </EmptyState.Content>
+</EmptyState.Root>
+```
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to set the size of the Empty state.
+
+<Example name="empty-state-sizes" />
+
+### Action
+
+Here's an example of an empty state with an action button.
+
+<Example name="empty-state-with-action" />
+
+### List
+
+Here's an example of an empty state with a list.
+
+<Example name="empty-state-with-list" />
+
+### Closed Component
+
+Here's how to setup the Empty State for a closed component composition.
+
+<Example name="empty-state-closed-component" />
+
+## Props
+
+### Root
+
+<PropsTable component="empty-state" interface="EmptyStateRootProps" />

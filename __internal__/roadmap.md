@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 53 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 54 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -507,7 +507,20 @@ The seam's own suite gained the test that would have caught it.
       `toggle-tip` row — the closed component's whole added surface is its `info` prop, which is an
       `InfoTip` — and `Explorer` is www machinery. The `:::info` admonition pointing at the closed
       component goes with it
-- [ ] empty-state — S:emptyState · —/5
+- [x] empty-state — S:emptyState · —/5
+      Five slots, one variant, no body, no default anywhere — the plainest row of the batch, and
+      the seam minted all six components unchanged. **The Root only spans and pads**: the column,
+      the centring and the gap are `EmptyState.Content`'s, which is why a full empty state is
+      always two elements deep and why a Root with the parts directly inside it renders them in a
+      row. `size` moves four things at once and the glyph moves furthest — `2xl` to `6xl` — over an
+      indicator that sizes any `svg` inside it to `1em`, so a consumer's icon needs no size.
+      Docs: **all 5 of upstream's example slots**. `Explorer` is www machinery, and the
+      `@chakra-ui/cli snippet` note under *Closed Component* addresses a CLI this project does not
+      have (`card`'s precedent). Two glyph swaps: `empty-state-basic` and `-sizes` take
+      `ShoppingCartIcon` from the docs' own lucide set where upstream imports `react-icons/lu`, and
+      `-with-action` / `-with-list` take `PaintBucketIcon` — a glyph the set already had — where
+      upstream imports `HiColorSwatch` from `react-icons/hi`, which is Heroicons rather than Lucide
+      and so has no counterpart to copy
 - [x] list — S:list · —/3
       **A repeated part costs nothing** — the same `withContext`-minted `List.Item` is reused per
       row, and the prediction that named one was naming a non-event. What the row does cost is its
