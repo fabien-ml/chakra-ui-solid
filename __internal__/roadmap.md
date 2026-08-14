@@ -118,16 +118,24 @@ asks, correct **both** in the same commit.
 - [ ] combobox — S:combobox · 14/16 · Z ⚠
       **Duplicate slot `empty`**. `+indicatorGroup`, `+empty`. Floating. Restrictive-content-model hazard (§10.4 of the blueprint)
 - [ ] date-picker — S:datePicker · 24/26 · Z
-      **Duplicate slot `view`**. `+indicatorGroup`. Floating.
+      Its duplicate `view` slot is source-only, for the reason measured on the `dialog` row — it is
+      Panda's generator, not the recipe. `+indicatorGroup`. Floating.
       The preset's `prevTrigger`/`nextTrigger` write `boxShadow: "0 0 0 2px
       var(--colors-color-palette-focus-ring)"` as a **literal**, not a token reference, so our
       `chakra` cssVar prefix never reaches it and the shadow resolves to nothing. The only two such
       strings in the whole preset. The `outline-color` beside it still rings the focused trigger, so
       this is a second ring lost, not the indicator
 - [ ] dialog — S:dialog · 7/10 · D ⚠
-      **Duplicate slot `backdrop`**. `+header/body/footer`. The worked blueprint
+      `+header/body/footer`. The worked blueprint. **The duplicate `backdrop` slot is
+      source-only**: `dialogSlotNames` lists eleven entries for ten slots, both `backdrop` rows
+      build the same class into the same key, and the `Object.fromEntries` that assembles the map
+      collapses them — nothing de-duplicates anything and the element carries the class once.
+      **`focus-trap` is not a dependency of this row**: the machine runs `@zag-js/focus-trap` itself
+      in an effect gated on `trapFocus`. The `aria-controls` gate is **presence-gated, not
+      open-gated** — while the content is mounted-but-closed the IDREF still resolves, so it stays
 - [ ] drawer — dialog · S:drawer · 7/10 · D ⚠
-      **Duplicate slot `backdrop`**. Runs on `dialog`, not `@zag-js/drawer` (§2.2)
+      Runs on `dialog`, not `@zag-js/drawer` (§2.2). Its duplicate `backdrop` slot is source-only,
+      for the reason measured on the `dialog` row — it is Panda's generator, not the recipe
 - [ ] editable — S:editable · 9/10 ⚠
       **`connect()` emits a top-level `size: 1`** when `autoResize` — collides with the `size` style prop; `styleSource` (blueprint §4.1 addition 4) is what closes it. `+textarea`
 - [ ] file-upload — S:fileUpload · 12/15
@@ -147,11 +155,17 @@ asks, correct **both** in the same commit.
 - [ ] pin-input — S:pinInput · 4/4
       Repeated part (inputs, by index)
 - [ ] popover — S:popover · 10/13 · Z ⚠
-      `+header/body/footer`. **The floating probe** (§8). Presence-gated `aria-controls`
+      `+header/body/footer`. **The floating probe** (§8). Its presence-gated `aria-controls` is not
+      its own: the `dialog` ship measured the gate as **Ark-wide, on five triggers** — dialog,
+      drawer, floating-panel, menu, popover — and ported it once, so this row inherits the shape
+      rather than deciding it
 - [ ] presence — Z
-      Headless machine, no anatomy. `chakra(ArkPresence)`. **`core` holds no `createPresence`** —
-      blueprint §7.1 does not carry hope-ui's, and what the `collapsible` ship actually put there is
-      `createRenderStrategy`, the `lazyMount`/`unmountOnExit` half over a plain `present` accessor
+      Headless machine, no anatomy. `chakra(ArkPresence)`. **`core` holds `createPresence`**, over
+      the `@zag-js/presence` machine through this package's own adapter, beside the
+      `createRenderStrategy` the `collapsible` ship put there — the `lazyMount`/`unmountOnExit` half
+      over a plain `present` accessor. The two are separate on purpose: presence answers "is the node
+      still animating out", the strategy answers "should it be in the DOM at all", and family M reads
+      the second without the first. This row is now the public `<Presence>` component alone
 - [ ] progress — S:progress · 9/9
       Machine-emitted inline `style` for the fill — legal, not a CIJ mark
 - [ ] progress-circle — progress · S:progressCircle · 9/9
@@ -376,20 +390,21 @@ asks, correct **both** in the same commit.
 - [x] wrap
       Plus `WrapItem`
 
-## Utilities, providers and re-exports (9)
+## Utilities, providers and re-exports (8)
 
-- [ ] portal
-      Not an exclusion, but only `container` + `children` + the SSR guard + the environment-aware mount. **`disabled` is not shipped** — §5.1
 - [ ] client-only
       Not an exclusion — §5.2
 - [ ] focus-trap
-      `chakra(ArkFocusTrap)` over `@zag-js/focus-trap` — a Zag **utility**, not a machine. Nothing Solid-specific
+      `chakra(ArkFocusTrap)` over `@zag-js/focus-trap` — a Zag **utility**, not a machine. Nothing
+      Solid-specific. **No machine component waits on it**: `@zag-js/focus-trap` arrives
+      transitively under `@zag-js/dialog` and the dialog machine runs it itself, so this row is the
+      standalone component only
 - [ ] format
       `FormatNumber` / `FormatByte` over `Intl`. No machine, no recipe
 - [ ] highlight
       Over `@zag-js/highlight-word`. Plus `useHighlight`
 
-## Not ported (4)
+## Not ported (5)
 
 - color-mode — relocated
       **A divergence, flagged rather than absorbed** (`decisions-ledger.md` **D-134**, reversing D-38). Chakra ships colour mode as a CLI snippet over `next-themes`, which has no SolidJS equivalent — porting that faithfully ships a wrapper around nothing. **No provider**: a pre-paint script, a module-level signal, `.light`/`.dark` plus `color-scheme` on the root. Documented on `/docs/styling/dark-mode`, not in the component tier
@@ -399,3 +414,10 @@ asks, correct **both** in the same commit.
       Same. Plus `useFilter`, which is `createFilter` from `@zag-js/i18n-utils` — the same MIT package we already take `isRTL` from. No machine
 - for / show — excluded
       Solid has `<For>` and `<Show>`; a re-export would be a wrapper around nothing
+- portal — excluded
+      `@solidjs/web` ships `<Portal>`; a re-export would be a wrapper around nothing, the same
+      reason `for / show` is here. The `dialog` ship measured the half that was in doubt: the
+      **server** version does not throw, it renders nothing, returns `undefined` and consumes
+      exactly one hydration child id — the same number its client counterpart consumes — so no `_hk`
+      after a portal shifts between the two builds. That closes the environment-aware mount and the
+      SSR guard this row used to specify, and `disabled` was already decided out (§5.1)

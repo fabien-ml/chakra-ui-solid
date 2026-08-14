@@ -63,6 +63,7 @@ export type {
   ChakraFactoryOptions,
   ChakraStylingProps,
   HTMLChakraProps,
+  UnstyledProp,
 } from "./factory/factory";
 export { chakra } from "./factory/factory";
 export { createComponentContext } from "./internal/create-component-context";

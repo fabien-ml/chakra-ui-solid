@@ -1,4 +1,10 @@
-import type { HTMLChakraProps, PropsProviderProps, PropTypes } from "@chakra-ui-solid/core";
+import type {
+  HTMLChakraProps,
+  PropsProviderProps,
+  PropTypes,
+  UnstyledProp,
+} from "@chakra-ui-solid/core";
+import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
 import type * as dialog from "@zag-js/dialog";
 
@@ -185,14 +191,47 @@ export interface DialogPresenceProps {
 }
 
 /**
+ * The slot recipe's four variants, spelled out rather than inherited from the generated
+ * `DialogVariantProps`, so each carries a description a reader can use and a type they can read — a
+ * generated type has neither. A variant renamed in the recipe is still caught: the
+ * `createSlotClasses` call on the Root is typed against the generated one, so the call, not this
+ * interface, is what stops drifting silently.
+ *
+ * **No `@default` tag on any of the four.** The recipe's `defaultVariants` is
+ * `{ size: "md", scrollBehavior: "outside", placement: "top", motionPreset: "scale" }` and it
+ * resolves them itself, so restating one here would be a second source of truth that drifts on a
+ * preset bump — the mirror of why `lazyMount` *does* carry one ({@link DialogPresenceProps}), which
+ * this component sets in its own `withDefaults` call.
+ */
+export interface DialogVariantProps {
+  /** How wide the surface is allowed to grow. `cover` and `full` also change its height. */
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | "xl" | "cover" | "full">;
+  /** Where the surface sits in the viewport. */
+  placement?: ConditionalValue<"center" | "top" | "bottom">;
+  /** Whether a dialog taller than the viewport scrolls its own body or the page behind it. */
+  scrollBehavior?: ConditionalValue<"inside" | "outside">;
+  /** Which pair of enter/exit animations the surface plays. */
+  motionPreset?: ConditionalValue<
+    "scale" | "slide-in-bottom" | "slide-in-top" | "slide-in-left" | "slide-in-right" | "none"
+  >;
+}
+
+/**
  * The Root's own props — what a `PropsProvider` above it may supply.
  *
- * `unstyled` is **not** here, where Chakra's `DialogRootBaseProps` carries it through
- * `UnstyledProp`. It is one of the three props every component in this library takes from
+ * `unstyled` arrives through `UnstyledProp` rather than as a member here, and the distinction is
+ * the props table's: it is one of the three props every component in this library takes from
  * `ChakraStylingProps` (`as`, `render`, `unstyled`), and declaring one of them on a component's own
- * interface puts it on that component's props table as though the component added it.
+ * interface lists it as a prop the component added. Collapsible inherits the same prop from
+ * `HTMLChakraProps`; a Dialog root renders no element, so it has no such surface to inherit it
+ * from and names the one interface Chakra names — `DialogRootBaseProps` there is
+ * `Assign<ArkDialog.RootProps, SlotRecipeProps<"dialog">>, UnstyledProp`.
  */
-export interface DialogRootBaseProps extends CreateDialogProps, DialogPresenceProps {}
+export interface DialogRootBaseProps
+  extends CreateDialogProps,
+    DialogPresenceProps,
+    DialogVariantProps,
+    UnstyledProp {}
 
 /**
  * Neither Root renders a host element, so neither extends `HTMLChakraProps` — `dialog.anatomy` has
@@ -204,7 +243,15 @@ export interface DialogRootProps extends DialogRootBaseProps {
   children?: JSX.Element;
 }
 
-export interface DialogRootProviderProps extends DialogPresenceProps {
+/**
+ * The variants and `unstyled` are repeated here rather than reached through
+ * {@link DialogRootBaseProps}, because this Root takes no machine props at all — it is handed a
+ * machine instead. Chakra splits the two the same way, into `DialogRootProviderBaseProps`.
+ */
+export interface DialogRootProviderProps
+  extends DialogPresenceProps,
+    DialogVariantProps,
+    UnstyledProp {
   /** A machine built by {@link createDialog}, so the consumer owns it rather than the Root. */
   value: CreateDialogReturn;
   children?: JSX.Element;

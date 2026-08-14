@@ -77,17 +77,36 @@ flat, one component doing both jobs.
 - **`RootProvider`, `PropsProvider` and `Context` ship with each component**, in its batch, never as
   a later sweep. 41 / 47 / 43 components carry them respectively. Not behind a `./hooks` subpath.
 
-## Two writers on one `style` attribute — unmeasured, and it gates Popover
+## Two writers on one `style` attribute — the dismissable half is measured; popper's is not
 
 **`@zag-js/popper` writes `--z-index` imperatively into the floating element's `style` attribute
 inside a `raf`; the dismissable layer writes `--layer-index` the same way and watches the stack with
 a `MutationObserver` — while Solid binds that same attribute reactively.** Two writers on one
 attribute, one observing the other.
 
-Nobody has measured it, and it cannot have been: hope-ui's Panda branch and its Zag branch never
-coexisted in one tree, so **no Zag machine has ever rendered through a Panda recipe in this
+Nobody had measured it, and nobody could have: hope-ui's Panda branch and its Zag branch never
+coexisted in one tree, so **no Zag machine had ever rendered through a Panda recipe in this
 lineage**. Nine components inherit whatever it costs. **FloatingPanel is not one of them** — it
 positions itself without popper, so measuring Popover does not cover it.
+
+**The dismissable half was measured at the `dialog` ship, and it costs nothing.** The layer stack
+writes `--layer-index` and `--nested-layer-count` with `setProperty`, and its `MutationObserver` on
+`style` rewrites `pointer-events` whenever anything else touches the attribute — including Solid.
+The two coexist because **Solid's `style` binding diffs per property against what it last wrote**,
+so it only ever removes a key it owns and never sees the imperative ones. Three consequences worth
+carrying to Popover:
+
+- **Bind `style` as an object, never as a string.** A `cssText` assignment wipes both custom
+  properties on every machine update, and the recipe's `z-index: calc(… + var(--layer-index, 0))`
+  silently falls back to the base token.
+- **The observer wins ties, correctly.** When the machine re-emits the same `pointer-events` value
+  Solid already wrote, Solid's diff skips the write and the layer stack's answer stands — which is
+  what keeps a dialog below a nested one from taking pointer events.
+- **A single layer reads the `var(…, 0)` fallback**, so `--layer-index: 0` is indistinguishable from
+  the property being absent. Only a nested pair can tell them apart, which is what Dialog's test
+  asserts (1500 and 1501, off the `popover` token).
+
+**Popper's `--z-index` is still unmeasured** and still gates Popover.
 
 ```bash
 sed -n '145,150p;180,205p' __reference-impl__/zag/packages/utilities/dismissable/src/layer-stack.ts

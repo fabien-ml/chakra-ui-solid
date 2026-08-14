@@ -100,6 +100,12 @@ The task brief lists `Portal` among Dialog's parts. It is not one, in Zag or in 
 standalone component** (`components/portal/index.ts` is a one-line re-export of Ark's), used *inside*
 `Dialog.Root`. §11 writes it that way, and §13 records the consequence for P6.
 
+**Corrected at the `dialog` ship: we port no `Portal` component at all.** `@solidjs/web` ships
+`<Portal>` and a consumer imports it from there. It does not throw on the server, as §11.12 assumes —
+its server version renders nothing, returns `undefined`, and consumes exactly one hydration child id,
+the same number its client counterpart consumes, so nothing after a portal shifts between the two
+builds. Dialog's round trip measures that with a probed sibling placed immediately after one.
+
 ---
 
 ## 1. The recurring floor, re-measured against Chakra
@@ -770,9 +776,14 @@ hope-ui's fix in both cases was to **strip `hidden` at the merge** and gate the 
 
 ### 6.3 The rule, written to survive either answer to P3-E
 
-Whether Panda's own `preflight: true` emits an equivalent of Chakra's rule **could not be checked**
-(Panda is installed in no checkout) and is assigned to implementation step 3 (`plan.md` §3.7,
-assumption P3-E). The rule below does not depend on the answer:
+**P3-E is answered, at the `dialog` ship: Panda's own `preflight: true` emits Chakra's rule
+verbatim** — `[hidden]:where(:not([hidden='until-found'])) { display: none !important }`, in
+`@layer reset`. Our preset owes it no `globalCss` line, and point 3 below is already paid. The one
+consequence left to state is a consumer's: Panda with `preflight: false` leaves a mounted-but-closed
+Dialog content fully visible, because `.dialog__content` declares `display: flex` and there is then
+nothing `!important` to beat it. Nothing errors.
+
+The rule below does not depend on the answer:
 
 > **Never strip Zag's `hidden` to work around a recipe's `display`.**
 >
@@ -829,6 +840,26 @@ block (`prior-art.md` §8.2). Zag's presence is the correct mechanism for this p
 transition-based kernel was never the right shape here. **Do not re-open it.**
 
 ### 7.2 The render strategy, in full
+
+> **Superseded by what shipped at step 5 — read the note, not the listing.** This section was
+> written before `createPresence` and `createRenderStrategy` were split, and the code below is one
+> function that owns both halves. What `core` actually exports is two:
+>
+> - `createPresence(props: Accessor<CreatePresenceProps>): Presence` in
+>   `core/src/presence/presence.ts` — `present`, `setNode`, `presenceProps`, and **no `unmounted`**.
+>   `CreatePresenceProps` carries no `lazyMount` or `unmountOnExit` either.
+> - `createRenderStrategy(present: Accessor<boolean>, props: Accessor<RenderStrategyProps>)` in
+>   `core/src/render-strategy/render-strategy.ts`, returning `{ unmounted }`.
+>
+> The split is what lets family **M** — `collapsible`, `accordion` — take `present` from its own
+> machine's `visible` and still get the strategy, with no `@zag-js/presence` instance in play. A
+> caller composes the two, and Dialog does it twice: once on the Root for Content and Positioner,
+> once inside Backdrop over the Root's strategy object. It also means the argument is an
+> `Accessor`, not `MaybeAccessor`.
+>
+> Everything below about `wasEverPresent`, the deleted `useEvent`, the `<Show>` gate and
+> `presenceProps` reading the **prop** rather than the machine shipped unchanged and is still the
+> reason for each line.
 
 ```tsx
 // packages/core/src/presence/presence.ts — inside `core`, so the adapter is reached relatively.
@@ -1005,7 +1036,15 @@ the `inertOthers`/`suppressOthers` pair that exists in the **source** at 1.43.0 
 consumer even with a deep import (`prior-art.md` §7; `zag-solid-adapter.md` §8.2).
 
 So background content behind an open modal gets `aria-hidden` and **stays in the tab order**. axe
-raises `aria-hidden-focus` (**serious**) on every open modal — in Chakra v3 exactly as in ours.
+flags `aria-hidden-focus` on every open modal — in Chakra v3 exactly as in ours.
+
+**Measured at the `dialog` ship, and the severity class was predicted wrong: axe returns
+`aria-hidden-focus` as `incomplete`, not as a violation**, on the trigger, with *"check that
+focusable elements are not tabbable in the current state"*. It is a rule axe ran and declined to
+decide, which is the category `expectNoA11yViolations` already has a channel for. So the whole cost
+is one `allowIncomplete: ["aria-hidden-focus"]` entry on open-state calls, and **the helper needs no
+allowance channel for violations** — the thing this section's prediction would otherwise have
+forced.
 
 **Every axe assertion taken while the Dialog is open needs an `aria-hidden-focus` allowance. That is
 the baseline, not a defect.** Each allowance cites the upstream filing `zag-solid-adapter.md` §8.2
@@ -1036,10 +1075,18 @@ reasons — and the point of listing all three is that no single one of them is 
    different failure that would look like this one.
 
 **Expected baseline for our Dialog: `aria-hidden-focus` on open-state assertions only. Closed-state
-assertions run clean.** This is **predicted from the reference sources, not measured** — no package
-exists and axe has not run. It is verified at implementation step 5, and §12 carries it as an
-assumption. If it turns out wrong, the number goes up and the DoD records it; what must not happen is
-the first `aria-hidden-focus` failure getting "fixed" by re-introducing the kernel.
+assertions run clean.** **Measured at step 5, and both halves hold** — a closed Dialog returns zero
+violations and zero incompletes, and an open one returns zero violations plus that single
+incomplete. What must not happen is the first `aria-hidden-focus` failure getting "fixed" by
+re-introducing the kernel.
+
+**One thing no prediction covered, and it is the reason an axe assertion on this family flakes.**
+While the enter animation runs, the surface is part-way through `fade-in` — at ~0.03 opacity axe
+computes a real, *failing* `color-contrast` ratio against it and reports a **violation**, which
+disappears once the animation settles and reappears on the next run. An axe call on a part that
+animates in must wait for the animation to finish (`await vi.waitFor(() =>
+expect(getComputedStyle(content).opacity).toBe("1"))`), not for a fixed number of frames. Every
+presence-family component inherits this.
 
 ### 9.3 How the definition of done has to say it
 
@@ -1170,6 +1217,19 @@ inherited.
 ---
 
 ## 11. Dialog, worked fully through
+
+> **Three things every listing below gets wrong, corrected at the `dialog` ship. Read them before
+> copying any part component out of this section.**
+>
+> 1. **`renderStyled` has no `styleSource` option.** Every part here passes one. Its seven options
+>    are `as`, `props`, `render`, `ref`, `recipeClass`, `baseStyles` and `forwardProp`; §4.1.1's
+>    addition 4 was not built that way. The collision it guards against is real but is answered by
+>    `forwardProp`, and Dialog needs no override on any part — no key `dialog.connect()` emits is a
+>    style prop.
+> 2. **The context is the machine, not `ctx.api()` / `ctx.contentPresence`.** What ships is a store
+>    of reactive getters (`ctx.getTriggerProps()`, `ctx.open`) plus `presence`, `unmounted`,
+>    `renderStrategy` and `slots`.
+> 3. **§11.12's `Portal` is not ported** — see §0.3.
 
 Against the adapter's public surface as `zag-solid-adapter.md` §3.1 states it — `useMachine`,
 `normalizeProps`, `mergeProps` and `PropTypes`, the four exports — **and nothing else.**
@@ -1370,8 +1430,19 @@ export const DialogTrigger: Component<DialogTriggerProps> = (props) => {
 
   const elementProps = mergeProps(
     () => ctx.api().getTriggerProps({ value: props.value }),
-    // Ark ships this on six components, each with its own test ("should not have aria-controls if
-    // lazy mounted"), so Chakra ships it too — porting it is parity, not an a11y improvement.
+    // ⚠ **THIS GATE DELETES NOTHING — do not copy it.** The adapter's `mergeProps` resolves a
+    // non-composing key to the last *defined* value, so a later `undefined` never wins; it is the
+    // same rule that keeps a consumer's forwarded `undefined` from wiping the machine's
+    // `type="button"`. What ships rewrites the machine's own bag instead:
+    //
+    //   mergeProps(() => {
+    //     const triggerProps = ctx.getTriggerProps({ value: props.value })
+    //     return ctx.unmounted() ? { ...triggerProps, "aria-controls": undefined } : triggerProps
+    //   }, localProps)
+    //
+    // Ark ships the gate on **five** triggers, not the six claimed here — `dialog`, `drawer`,
+    // `floating-panel`, `menu`, `popover` — each with its own test ("should not have aria-controls
+    // if lazy mounted"), so Chakra ships it too: porting it is parity, not an a11y improvement.
     // Presence-gated, not open-gated: while the content is mounted-but-closed the IDREF resolves
     // to a real element and stays.
     () => (ctx.contentPresence.unmounted() ? { "aria-controls": undefined } : {}),

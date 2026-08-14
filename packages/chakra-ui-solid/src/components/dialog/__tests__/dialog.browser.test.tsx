@@ -1,8 +1,13 @@
 import dialogServerHtml from "virtual:hydration-fixture?id=dialog";
 import { normalizeProps, useMachine } from "@chakra-ui-solid/core";
-import { hydrateFixture, type MountedComponent, mount } from "@chakra-ui-solid/internal-test-utils";
+import {
+  expectNoA11yViolations,
+  hydrateFixture,
+  type MountedComponent,
+  mount,
+} from "@chakra-ui-solid/internal-test-utils";
 import * as zagDialog from "@zag-js/dialog";
-import { untrack } from "solid-js";
+import { createSignal, untrack } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createDialog, Dialog } from "../index";
 import { Tree } from "./dialog.ssr-entry";
@@ -42,6 +47,15 @@ function partOf(container: ParentNode, part: string): HTMLElement {
 
 const partIn = (container: ParentNode, part: string) =>
   container.querySelector(`[data-part="${part}"]`);
+
+/** For the trees where `[data-part]` is ambiguous — two nested dialogs both have a `content`. */
+function probeIn(container: ParentNode, probe: string): HTMLElement {
+  const element = container.querySelector(`[data-probe="${probe}"]`);
+  if (!(element instanceof HTMLElement)) {
+    throw new Error(`expected the tree to render a [data-probe="${probe}"] element`);
+  }
+  return element;
+}
 
 /** The action trigger has no `data-part` — it is not in the anatomy — so it is found by probe. */
 function actionIn(container: ParentNode): HTMLButtonElement {
@@ -396,6 +410,172 @@ describe("Dialog — the action trigger, the one part with a handler of its own"
     mounted = mount(() => <WithAction type={undefined} />);
 
     expect(actionIn(mounted.container).type).toBe("button");
+  });
+});
+
+describe("Dialog — the styles a dialog's slot recipe really generated", () => {
+  // Computed styles, never class names: a Panda class whose CSS was never generated renders nothing
+  // and raises no error, so `classList.contains("dialog__content")` passes on a dialog with no
+  // surface, no scrim and no stacking at all (`CLAUDE.md`, *silent unstyling*).
+
+  it("hides a mounted, closed content — the slot's own `display: flex` does not win", async () => {
+    // The one configuration that can fail: a slot that sets `display`, on a part that carries
+    // `hidden`, still mounted while closed. Reaching it means opting out of *both* Chakra defaults,
+    // which is why every other test in this file passes it by.
+    //
+    // The mechanism is **not** Collapsible's. There, `display: none` is the user-agent's
+    // `[hidden]` rule, and it only wins because the `content` slot declares no `display` of its own
+    // to lose to. `.dialog__content` declares `display: flex`, which beats any UA rule — what hides
+    // a closed dialog here is Panda's preflight,
+    // `[hidden]:where(:not([hidden='until-found'])) { display: none !important }`. So blueprint
+    // §6.3's open question is answered: Panda's own `preflight: true` already emits Chakra's rule
+    // and our preset owes it no `globalCss` line. A consumer who turns preflight off gets a closed
+    // dialog that is fully visible, with no error anywhere.
+    mounted = mount(() => <Basic lazyMount={false} unmountOnExit={false} />);
+    const content = partOf(mounted.container, "content");
+
+    expect(content.hidden).toBe(true);
+    expect(getComputedStyle(content).display).toBe("none");
+
+    partOf(mounted.container, "trigger").click();
+    await settle();
+
+    // The slot's `display` was live the whole time — this is the declaration `!important` was
+    // beating, and asserting it is what stops the test passing on an unstyled element.
+    expect(getComputedStyle(content).display).toBe("flex");
+    expect(getComputedStyle(content).flexDirection).toBe("column");
+  });
+
+  it("puts the twice-listed `backdrop` slot on the element exactly once", () => {
+    // `dialogSlotNames` carries eleven entries for ten slots — `backdrop` is listed twice. Both
+    // entries build the same class into the same key, so the `Object.fromEntries` that assembles the
+    // map collapses them and nothing here has to de-duplicate anything.
+    //
+    // Read off the raw attribute: `classList` is an ordered *set*, so it would collapse a genuine
+    // duplicate before this assertion ever saw it.
+    mounted = mount(() => <Basic defaultOpen />);
+    const backdrop = partOf(mounted.container, "backdrop");
+
+    const emitted = (backdrop.getAttribute("class") ?? "")
+      .split(/\s+/)
+      .filter((name) => name === "dialog__backdrop");
+
+    expect(emitted).toHaveLength(1);
+    expect(getComputedStyle(backdrop).position).toBe("fixed");
+  });
+
+  it("keeps the layer stack's imperative properties through a machine-driven `style` update", async () => {
+    // Two writers on one attribute, which is what `decisions.md` records as unmeasured and gates
+    // Popover. `@zag-js/dismissable` writes `--layer-index` and `--nested-layer-count` into the
+    // content's `style` with `setProperty`, and it watches that same attribute with a
+    // `MutationObserver` that rewrites `pointer-events` whenever anything else touches it — while
+    // Solid binds the attribute reactively from `getContentProps().style`.
+    //
+    // They coexist because Solid's `style` binding diffs **per property** against what it last
+    // wrote, so it only ever removes a key it owns. Bind an element's `style` as a *string* and
+    // `cssText` wipes both custom properties on every machine update instead.
+    const [modal, setModal] = createSignal(false);
+    mounted = mount(() => <Basic defaultOpen lazyMount={false} modal={modal()} />);
+    const content = partOf(mounted.container, "content");
+
+    await settle();
+    await settleFrame();
+    await vi.waitFor(() => expect(content.style.getPropertyValue("--layer-index")).toBe("0"));
+
+    // A real machine-driven change to the one property Solid owns here: `getContentProps()` emits
+    // `pointerEvents: "auto"` only while the dialog is non-modal, so this makes Solid *remove* a
+    // declaration from the attribute the layer stack is also writing to.
+    setModal(true);
+    await settle();
+    await vi.waitFor(() => expect(content.getAttribute("aria-modal")).toBe("true"));
+
+    expect(content.style.getPropertyValue("--layer-index")).toBe("0");
+    expect(content.style.getPropertyValue("--nested-layer-count")).toBe("0");
+  });
+
+  it("reads `--layer-index` back out through the recipe's `z-index`", async () => {
+    // What makes the property above load-bearing rather than decorative: `.dialog__content` is
+    // `z-index: calc(var(--dialog-z-index) + var(--layer-index, 0))`, and `--dialog-z-index` is the
+    // `popover` token, 1500. One dialog reads the fallback and is indistinguishable from an element
+    // that never got the property — two stacked dialogs are what tell them apart.
+    mounted = mount(() => (
+      <Dialog.Root defaultOpen>
+        <Dialog.Content data-probe="outer">
+          <Dialog.Root defaultOpen>
+            <Dialog.Content data-probe="inner">nested</Dialog.Content>
+          </Dialog.Root>
+        </Dialog.Content>
+      </Dialog.Root>
+    ));
+
+    const outer = probeIn(mounted.container, "outer");
+    const inner = probeIn(mounted.container, "inner");
+
+    await vi.waitFor(() => expect(inner.style.getPropertyValue("--layer-index")).toBe("1"));
+
+    expect(getComputedStyle(outer).zIndex).toBe("1500");
+    expect(getComputedStyle(inner).zIndex).toBe("1501");
+  });
+});
+
+describe("Dialog — the a11y baseline of an open modal dialog", () => {
+  /**
+   * A dialog with no glyph-only control in it. Every part of `Basic` except the `✕`, which axe
+   * declines to measure for contrast ("element content contains only non-text characters") and
+   * which would otherwise buy an allowance that says nothing about the port.
+   */
+  function Labelled() {
+    return (
+      <Dialog.Root>
+        <Dialog.Trigger>Open</Dialog.Trigger>
+        <Dialog.Backdrop />
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title>Delete file</Dialog.Title>
+            </Dialog.Header>
+            <Dialog.Body>
+              <Dialog.Description>This cannot be undone.</Dialog.Description>
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Dialog.ActionTrigger>Cancel</Dialog.ActionTrigger>
+              <Dialog.CloseTrigger>Close</Dialog.CloseTrigger>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
+    );
+  }
+
+  it("runs clean closed, and carries one inherited incomplete open", async () => {
+    // Closed is clean outright — the content is unmounted, so the trigger emits no `aria-controls`
+    // and there is no dangling IDREF to flag.
+    //
+    // Open, axe returns `aria-hidden-focus` as **incomplete**, on the trigger: the machine's
+    // `@zag-js/aria-hidden` blanket marks the page behind the modal `aria-hidden` without taking it
+    // out of the tab order, and axe declines to decide whether the trigger is still tabbable. The
+    // gap is real and it is upstream's — `ariaHidden` calls `hideOthers` unconditionally and the
+    // package exports no way to reach the `inertOthers` in its own source — so Chakra v3 scores
+    // exactly this. Blueprint §9.1 predicted it as a *violation*; measured, it is an incomplete,
+    // which is why one `allowIncomplete` entry is the whole cost and the helper needs no
+    // violation channel.
+    mounted = mount(() => <Labelled />);
+    const { container } = mounted;
+
+    await expectNoA11yViolations(container);
+
+    partOf(container, "trigger").click();
+    await settle();
+
+    // Not "two frames after the click": mid-fade the surface is at ~0.03 opacity and axe computes a
+    // real, failing `color-contrast` ratio against it — a violation that comes and goes with the
+    // animation's progress. Waiting for the enter animation to finish is what makes this
+    // deterministic, and it is the first thing to reach for when an axe assertion flakes on a part
+    // that animates in.
+    const content = partOf(container, "content");
+    await vi.waitFor(() => expect(getComputedStyle(content).opacity).toBe("1"));
+
+    await expectNoA11yViolations(container, { allowIncomplete: ["aria-hidden-focus"] });
   });
 });
 

@@ -25,7 +25,9 @@ export type {
   DialogTitleProps,
   DialogTriggerProps,
   DialogTriggerValueChangeDetails,
+  DialogVariantProps,
 } from "./dialog.types";
+export type { DialogSlot } from "./dialog-context";
 export { useDialogContext } from "./dialog-context";
 export {
   DialogActionTrigger,

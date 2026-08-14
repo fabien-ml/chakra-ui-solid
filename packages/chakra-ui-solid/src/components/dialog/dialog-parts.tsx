@@ -23,7 +23,7 @@ import type {
   DialogTitleProps,
   DialogTriggerProps,
 } from "./dialog.types";
-import { useDialogContext } from "./dialog-context";
+import { type DialogSlot, useDialogContext } from "./dialog-context";
 
 type DivProps = ComponentProps<"div">;
 type ButtonProps = ComponentProps<"button">;
@@ -60,6 +60,7 @@ export const DialogTrigger: Component<DialogTriggerProps> = (props) => {
     as: (props.as ?? "button") as ValidComponent,
     props: elementProps,
     render: props.render,
+    recipeClass: () => ctx.slots().trigger,
   });
 };
 
@@ -96,6 +97,7 @@ export const DialogBackdrop: Component<DialogBackdropProps> = (props) => {
         props: elementProps,
         render: props.render,
         ref: presence.setNode,
+        recipeClass: () => ctx.slots().backdrop,
       })}
     </Show>
   );
@@ -117,6 +119,7 @@ export const DialogPositioner: Component<DialogPositionerProps> = (props) => {
         as: (props.as ?? "div") as ValidComponent,
         props: elementProps,
         render: props.render,
+        recipeClass: () => ctx.slots().positioner,
       })}
     </Show>
   );
@@ -150,6 +153,7 @@ export const DialogContent: Component<DialogContentProps> = (props) => {
         props: elementProps,
         render: props.render,
         ref: ctx.presence.setNode,
+        recipeClass: () => ctx.slots().content,
       })}
     </Show>
   );
@@ -167,6 +171,7 @@ export const DialogTitle: Component<DialogTitleProps> = (props) => {
     as: (props.as ?? "h2") as ValidComponent,
     props: elementProps,
     render: props.render,
+    recipeClass: () => ctx.slots().title,
   });
 };
 
@@ -179,6 +184,7 @@ export const DialogDescription: Component<DialogDescriptionProps> = (props) => {
     as: (props.as ?? "div") as ValidComponent,
     props: elementProps,
     render: props.render,
+    recipeClass: () => ctx.slots().description,
   });
 };
 
@@ -191,6 +197,7 @@ export const DialogCloseTrigger: Component<DialogCloseTriggerProps> = (props) =>
     as: (props.as ?? "button") as ValidComponent,
     props: elementProps,
     render: props.render,
+    recipeClass: () => ctx.slots().closeTrigger,
   });
 };
 
@@ -199,6 +206,10 @@ export const DialogCloseTrigger: Component<DialogCloseTriggerProps> = (props) =>
  * machine props to merge, the adapter's `mergeProps` (which chains `on*` handlers for free) is not
  * in play, so this is the one part in the family that composes a handler itself. The consumer's
  * handler runs first, and `event.preventDefault()` in it cancels the close.
+ *
+ * **The one part with no `recipeClass`**, and the omission is upstream's: `DialogActionTrigger` is
+ * a bare `chakra.button` where every other part goes through `withContext(…, slot)`. The recipe has
+ * no slot for it, so it inherits whatever `<Button>` a consumer nests inside it.
  */
 export const DialogActionTrigger: Component<DialogActionTriggerProps> = (props) => {
   const ctx = useDialogContext();
@@ -227,21 +238,29 @@ export const DialogActionTrigger: Component<DialogActionTriggerProps> = (props) 
 /**
  * Header / Body / Footer have a recipe slot and no machine part — the slot recipe carries ten names
  * where the machine's anatomy carries seven. There is nothing from the machine to merge, so the
- * consumer's props *are* the element props.
+ * consumer's props *are* the element props, and the slot class is the only thing this adds.
+ *
+ * They also carry no `data-part`: nothing in the anatomy names them, so the slot class is the only
+ * handle anything — a stylesheet, a snapshot, a test — has on one.
  */
-function renderSlotPart(props: HTMLChakraProps<"div">): JSX.Element {
+function renderSlotPart(props: HTMLChakraProps<"div">, slot: DialogSlot): JSX.Element {
+  const ctx = useDialogContext();
+
   return renderStyled<DivProps, HTMLDivElement>({
     as: (props.as ?? "div") as ValidComponent,
     props: props as DivProps,
     render: props.render,
+    recipeClass: () => ctx.slots()[slot],
   });
 }
 
-export const DialogHeader: Component<DialogHeaderProps> = (props) => renderSlotPart(props);
+export const DialogHeader: Component<DialogHeaderProps> = (props) =>
+  renderSlotPart(props, "header");
 
-export const DialogBody: Component<DialogBodyProps> = (props) => renderSlotPart(props);
+export const DialogBody: Component<DialogBodyProps> = (props) => renderSlotPart(props, "body");
 
-export const DialogFooter: Component<DialogFooterProps> = (props) => renderSlotPart(props);
+export const DialogFooter: Component<DialogFooterProps> = (props) =>
+  renderSlotPart(props, "footer");
 
 /**
  * Hands the machine to a render prop, for reading its state without writing a component:

@@ -43,14 +43,27 @@ const exceptionPropMap: Record<string, readonly string[]> = {
   stop: ["offset", "stopOpacity"],
 };
 
+/**
+ * The recipe opt-out on its own, so a component that renders **no** element of its own can still
+ * take it — a Dialog root has no `HTMLChakraProps` to inherit it from, and declaring `unstyled` on
+ * its own interface would put it on that component's props table as a prop the component added.
+ *
+ * Chakra v3's own name for this type, and it is spelled the same way there: one interface mixed
+ * into every `*BaseProps` that needs it.
+ */
+export interface UnstyledProp {
+  /** Drop the recipe's styles. Style props and the `css` prop still apply. */
+  unstyled?: boolean;
+}
+
 /** The styling surface the factory adds to whatever props the underlying element already takes. */
-export interface ChakraStylingProps<ElementProps extends object> extends JsxStyleProps {
+export interface ChakraStylingProps<ElementProps extends object>
+  extends JsxStyleProps,
+    UnstyledProp {
   /** Render as a different element/component. Defaults to the element the factory was called with. */
   as?: ValidComponent;
   /** Render-prop override that receives the computed DOM props. */
   render?: RenderProp<ElementProps>;
-  /** Drop the recipe's styles. Style props and the `css` prop still apply. */
-  unstyled?: boolean;
 }
 
 /**
