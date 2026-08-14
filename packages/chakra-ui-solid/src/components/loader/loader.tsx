@@ -17,7 +17,8 @@ export interface LoaderProps extends HTMLChakraProps<"span"> {
   visible?: boolean;
   /**
    * What to spin. Defaults to a {@link Spinner} sized and coloured off the surrounding text;
-   * `spinner={false}` opts out of one entirely.
+   * `spinner={false}` and `spinner={null}` both opt out of one entirely, so a slot computed as
+   * `{cond() ? <MySpinner /> : null}` renders no spinner rather than the default.
    */
   spinner?: JSX.Element;
   /**
@@ -73,9 +74,18 @@ export const Loader: Component<LoaderProps> = (props) => {
   // every Loader, including the ones the caller gave a spinner to and the ones that are not
   // visible. Module scope is not the alternative either: JSX there runs at import time and 500s
   // the SSR route.
-  const spinner = children(
-    () => merged.spinner ?? <Spinner size="inherit" borderWidth="0.125em" color="inherit" />,
-  );
+  //
+  // `!== undefined` rather than `??`, because `??` swallows `null` as well and upstream's
+  // destructuring default does not: `spinner={null}` is a slot the consumer opted out of, and it
+  // renders the bare wrapper below exactly as `spinner={false}` does.
+  const spinner = children(() => {
+    const provided = merged.spinner;
+    return provided !== undefined ? (
+      provided
+    ) : (
+      <Spinner size="inherit" borderWidth="0.125em" color="inherit" />
+    );
+  });
   const text = children(() => merged.text);
 
   // `merged.children` is deliberately **not** resolved this way: `Switch` reads the selected
@@ -91,8 +101,9 @@ export const Loader: Component<LoaderProps> = (props) => {
           <Show when={merged.spinnerPlacement === "end"}>{spinner()}</Show>
         </Span>
       </Match>
-      {/* `??` falls back on `null` too, so only a present-and-falsy `spinner={false}` gets past
-          this gate to the bare wrapper below — an element is always truthy. */}
+      {/* Only a present-and-falsy slot — `spinner={false}` or `spinner={null}` — gets past this
+          gate to the bare wrapper below; an element is always truthy. Upstream's `if (spinner)` is
+          the same gate over the same two values. */}
       <Match when={spinner()}>
         <Span {...wrapperProps}>
           <AbsoluteCenter display="inline-flex">{spinner()}</AbsoluteCenter>

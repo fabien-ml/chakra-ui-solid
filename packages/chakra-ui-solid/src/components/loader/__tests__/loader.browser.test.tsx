@@ -110,6 +110,34 @@ describe("Loader", () => {
     expect(getComputedStyle(queryElement(mounted.element, "span")).visibility).toBe("visible");
   });
 
+  it("opts out of the spinner for a `null` slot, and still draws one for an omitted slot", () => {
+    // `{cond() ? <MySpinner/> : null}` is ordinary Solid, and upstream's destructuring default
+    // yields only to `undefined` — so a `null` slot falls through its `if (spinner)` to the bare
+    // wrapper. `??` swallowed the `null` and put the default spinner back.
+    mounted = mountElement(() => (
+      <Loader spinner={null}>
+        <span data-testid="label">Save</span>
+      </Loader>
+    ));
+
+    expect(contentOrder(mounted.element)).toEqual(["span"]);
+    expect(mounted.element.querySelector("div")).toBeNull();
+    expect(getComputedStyle(queryElement(mounted.element, "span")).visibility).toBe("visible");
+
+    mounted.dispose();
+    mounted = mountElement(() => (
+      <Loader>
+        <span data-testid="label">Save</span>
+      </Loader>
+    ));
+
+    // The omitted slot still centres the default spinner over the hidden children.
+    expect(mounted.element.querySelector("div")).not.toBeNull();
+    expect(
+      getComputedStyle(queryElement(mounted.element, "[data-testid='label']")).visibility,
+    ).toBe("hidden");
+  });
+
   it("stays `display: contents` when a wrapper forwards an unset `display`", () => {
     // Spelled `merge({ display: "contents" }, props)` the default resolved by presence, so this
     // gave the Loader a box of its own — an inline element between the button and its label, which

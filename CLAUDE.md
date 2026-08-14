@@ -72,12 +72,14 @@ neither is `<Button type="button" {...props} />`: a wrapper forwarding an unset 
 - **`merged` is the only props object after that.** It copies nothing, so `omit(props, …)` drops
   every default.
 - **A props context is a default too**: `withContextDefaults(props, usePropsContext())`.
-- **Two defaults live elsewhere**: a recipe variant in `defaultVariants`, and a JSX-valued slot in
-  `children(() => props.spinner ?? <Spinner />)`. **A style prop as a JSX attribute before the
-  spread is not a third** — the compiled spread is a presence merge, so a forwarded `undefined`
-  deletes it exactly as it deletes `<Button type="button" {...props} />`. It is only how a value
-  stays statically extractable: a real style-prop default is `withDefaults` **plus** a
-  `staticCss.css` row in `packages/panda-preset/src/preset.ts`, or it ships silently unstyled.
+- **Two defaults live elsewhere**: a recipe variant in `defaultVariants`, and a JSX-valued slot
+  resolved inside `children()` — read the prop into a local and test it `!== undefined`, never with
+  `??`, which swallows `null` where Chakra's own defaults do not, so `spinner={null}` renders
+  nothing rather than the default. **A style prop as a JSX attribute before the spread is not a
+  third** — the compiled spread is a presence merge, so a forwarded `undefined` deletes it exactly
+  as it deletes `<Button type="button" {...props} />`. It is only how a value stays statically
+  extractable: a real style-prop default is `withDefaults` **plus** a `staticCss.css` row in
+  `packages/panda-preset/src/preset.ts`, or it ships silently unstyled.
 - **Each fix owes the forwarded-`undefined` test**, spelled `<X prop={undefined} />`.
 
 → `solid-2.0-notes.md`, *where a default may live*.
