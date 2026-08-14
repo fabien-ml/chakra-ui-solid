@@ -4,7 +4,7 @@
  * way to import half of what they need (`plan.md` §3.3).
  */
 
-export type { ChakraConfigOverrides, ResponsiveGrain } from "./config";
+export type { ChakraConfigOverrides, ConditionalGrain, ResponsiveGrain } from "./config";
 export { defineChakraConfig } from "./config";
 export { chakraSolidPreset, chakraSolidPreset as default } from "./preset";
 export { defaultVariantsFor, recipeKeys, slotRecipeKeys, variantKeysFor } from "./recipe-registry";

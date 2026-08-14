@@ -1,6 +1,6 @@
 import type { Config } from "@pandacss/dev";
 import { chakraSolidPreset } from "./preset";
-import { variantKeysFor } from "./recipe-registry";
+import { recipeKeys, slotRecipeKeys, variantKeysFor } from "./recipe-registry";
 
 /**
  * Which recipe variants should also be generated at every breakpoint, so a consumer can write
@@ -15,6 +15,27 @@ import { variantKeysFor } from "./recipe-registry";
  * - `true` — every variant key on all 75
  */
 export type ResponsiveGrain = true | string[] | Record<string, string[]>;
+
+/**
+ * Which recipe variants should also be generated under a **state** condition, so a consumer can
+ * write `<IconButton variant={{ base: "ghost", _selected: "outline" }}>`.
+ *
+ * A separate knob from {@link ResponsiveGrain} because Panda keeps the two separate: a `staticCss`
+ * recipe rule carries `responsive?: boolean` for breakpoints and `conditions?: string[]` for
+ * everything else, and neither implies the other. `responsive` on `button.variant` generates
+ * `md:button--variant_outline` and never `selected:button--variant_outline` — and a class with no
+ * rule renders nothing and reports nothing, so the selected item just looks like the others.
+ *
+ * Condition names are Panda's own, spelled without the underscore a prop uses: `_selected` is
+ * `"selected"`. Two grains:
+ *
+ * - `{ button: ["selected"] }` — every variant key on Button, under `_selected`
+ * - `{ button: { variant: ["selected", "pressed"] } }` — one variant key, under two conditions
+ *
+ * No `true` grain, where `responsive` has one: breakpoints are a closed set this package can
+ * enumerate and conditions are not, since a consumer's own `conditions` block adds to them.
+ */
+export type ConditionalGrain = Record<string, string[] | Record<string, string[]>>;
 
 /**
  * The keys that decide a class *name* on both sides of the published-runtime boundary.
@@ -78,6 +99,7 @@ export type ChakraConfigOverrides = Omit<Config, LockedKey | "theme" | "staticCs
     theme?: ExtendOnly<ThemeOption, "theme">;
     staticCss?: StaticCssOption;
     responsive?: ResponsiveGrain;
+    conditional?: ConditionalGrain;
   };
 
 /** Every knob a consumer's stylesheet has to agree with our published runtime on. */
@@ -159,8 +181,15 @@ const LOCKED = {
  * this function exists to supply.
  */
 export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
-  const { responsive, presets, theme, staticCss, plugins, ...rest } = overrides;
-  const responsiveRecipes = expandResponsive(responsive);
+  const { responsive, conditional, presets, theme, staticCss, plugins, ...rest } = overrides;
+  const { extend, ...bareStaticCss } = staticCss ?? {};
+  // Both opt-ins and the consumer's own `staticCss.recipes`, in one list per recipe. Ours first, so
+  // two writers on one recipe read as two rules and neither replaces the other.
+  const requested = mergeRecipeRules(
+    mergeRecipeRules(expandResponsive(responsive), expandConditional(conditional)),
+    mergeRecipeRules(extend?.recipes, bareStaticCss.recipes),
+  );
+  const placed = placeRecipeRules(requested);
 
   return {
     // Before their keys, so `preflight: false` and `preflight: { scope }` both win. After their
@@ -170,11 +199,119 @@ export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
     ...LOCKED,
     // Ours first, so a consumer's preset is later and therefore wins on a conflict.
     presets: [chakraSolidPreset, ...(presets ?? [])],
-    theme: theme as Config["theme"],
-    staticCss: chakraStaticCss(responsiveRecipes, staticCss),
+    theme: themeWithRecipeRules(theme, placed.bodies),
+    staticCss: chakraStaticCss(placed.unplaceable, { extend, ...bareStaticCss }),
     // Last, so it corrects after a consumer's own plugins have had their say.
     plugins: [...(plugins ?? []), lockedKeysPlugin],
   };
+}
+
+type RecipeRuleList = Exclude<RecipeRules, "*">[string];
+type PlacedRules = {
+  bodies: { recipes: Record<string, RecipeRuleList>; slotRecipes: Record<string, RecipeRuleList> };
+  unplaceable: RecipeRules | undefined;
+};
+
+/**
+ * Which recipe each rule list belongs to — and the reason this function exists rather than the rules
+ * going where Panda's own docs put them.
+ *
+ * **A config's `staticCss.recipes` is dead on arrival for every recipe this package ships.** Panda's
+ * `StaticCss.process()` walks `theme.recipes` and `theme.slotRecipes` and, for any recipe whose
+ * *body* carries a `staticCss` key, assigns that value over whatever the config asked for:
+ * `staticCss.recipes[name] = recipe.staticCss`. Our preset gives all 75 bodies `staticCss: ["*"]`
+ * (`preset.ts`, `staticCssForEvery`), so all 75 overwrite it.
+ *
+ * Measured, and the measurement is why `responsive` moved here: `responsive: { button: ["variant"] }`
+ * generated no `md:button--variant_*` rule at all, and the `dialog` opt-in that appeared to work
+ * generated nothing either — the docs app writes `size={{ mdDown: "full", md: "lg" }}` in
+ * `dialog-with-responsive-size.tsx` and Panda extracted the literal out of its own source. Deleting
+ * the opt-in left both classes in the sheet.
+ *
+ * A rule appended to the body's own list lands, because `["*", rule]` is a list Panda already
+ * iterates. `"*"` stays first: it is the 488 values the whole library resolves through, and the
+ * body's array is replaced rather than merged.
+ */
+function placeRecipeRules(requested: RecipeRules | undefined): PlacedRules {
+  const bodies: PlacedRules["bodies"] = { recipes: {}, slotRecipes: {} };
+
+  // `"*"` names no recipe, so there is nothing to place. Every body already carries it.
+  if (requested === undefined || requested === "*") {
+    return { bodies, unplaceable: requested };
+  }
+
+  const unplaceable: Record<string, RecipeRuleList> = {};
+  for (const [name, rules] of Object.entries(requested)) {
+    const target = recipeKeys.includes(name)
+      ? bodies.recipes
+      : slotRecipeKeys.includes(name)
+        ? bodies.slotRecipes
+        : undefined;
+
+    // A name no registry knows cannot be written into `theme.extend` — that declares a recipe with
+    // no body rather than extending one. It goes back to `staticCss.recipes`, where Panda skips it
+    // for want of a recipe node, which is the same nothing it did before and is visible in the
+    // config a consumer is debugging.
+    if (target === undefined) {
+      unplaceable[name] = rules;
+      continue;
+    }
+    target[name] = rules;
+  }
+
+  return {
+    bodies,
+    unplaceable: Object.keys(unplaceable).length > 0 ? unplaceable : undefined,
+  };
+}
+
+type ThemeExtend = NonNullable<ThemeOption["extend"]>;
+
+/**
+ * The consumer's `theme.extend` with each placed rule list appended to its recipe's own `staticCss`.
+ *
+ * Merged into their body rather than assigned over it, so a consumer who extends `recipes.button`
+ * with a `base` keeps it. The preset's `jsx` hint survives on its own — it is a different key on a
+ * body Panda deep-merges, and only the `staticCss` array is replaced.
+ */
+function themeWithRecipeRules(
+  theirs: ChakraConfigOverrides["theme"],
+  bodies: PlacedRules["bodies"],
+): Config["theme"] {
+  if (Object.keys(bodies.recipes).length === 0 && Object.keys(bodies.slotRecipes).length === 0) {
+    return theirs as Config["theme"];
+  }
+
+  const extend = (theirs?.extend ?? {}) as ThemeExtend;
+
+  return {
+    ...(theirs as Config["theme"]),
+    extend: {
+      ...extend,
+      ...withStaticCssBodies("recipes", extend.recipes, bodies.recipes),
+      ...withStaticCssBodies("slotRecipes", extend.slotRecipes, bodies.slotRecipes),
+    },
+  };
+}
+
+function withStaticCssBodies<Key extends "recipes" | "slotRecipes">(
+  key: Key,
+  theirs: ThemeExtend[Key],
+  rulesByRecipe: Record<string, RecipeRuleList>,
+) {
+  if (Object.keys(rulesByRecipe).length === 0) {
+    return {};
+  }
+
+  const merged = { ...theirs } as Record<string, { staticCss?: unknown }>;
+  for (const [name, rules] of Object.entries(rulesByRecipe)) {
+    // `"*"` leads and appears once: it is already what the body says, and a consumer who spelled it
+    // themselves should not turn the list into `["*", "*"]`.
+    const rest = rules.filter((rule) => rule !== "*");
+    merged[name] = { ...merged[name], staticCss: ["*", ...rest] };
+  }
+
+  return { [key]: merged } as { [K in Key]: ThemeExtend[Key] };
 }
 
 /**
@@ -192,11 +329,12 @@ export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
  * was going to drop one of the two either way, and ours is the one whose absence unstyles Chakra's
  * own components.
  *
- * `recipes` needs the same treatment for the same reason, because `responsive` writes that key and
- * a consumer may write it too.
+ * `recipes` is no longer merged here at all — every rule that names a recipe we ship is placed in
+ * that recipe's own body instead, where Panda actually reads it (`placeRecipeRules`). What arrives
+ * here is only what could not be placed.
  */
 function chakraStaticCss(
-  responsiveRecipes: ResponsiveStaticCss | undefined,
+  unplaceableRecipes: RecipeRules | undefined,
   theirs: StaticCssOption | undefined,
 ): StaticCssOption {
   // `extend` is **folded in here rather than passed through**, and that is the whole subtlety of
@@ -211,19 +349,22 @@ function chakraStaticCss(
   // consumer following Panda's own documentation is the case this branch exists for, not an exotic
   // one.
   const { extend, ...rest } = theirs ?? {};
+  // `recipes` is dropped from both spellings rather than carried: every rule that names a recipe we
+  // ship has already been placed in that recipe's body, and re-emitting it here would put a dead
+  // copy in the config beside the live one.
+  const { css: extendCss, recipes: _placedFromExtend, ...extendRest } = extend ?? {};
+  const { css: bareCss, recipes: _placedFromBare, ...bareRest } = rest;
 
   return {
     // `patterns` and `themes` from whichever spelling carried them; theirs wins on a clash.
-    ...extend,
-    ...rest,
-    css: [...(chakraSolidPreset.staticCss?.css ?? []), ...(extend?.css ?? []), ...(rest.css ?? [])],
-    ...withRecipes(
-      mergeRecipeRules(mergeRecipeRules(responsiveRecipes, extend?.recipes), rest.recipes),
-    ),
+    ...extendRest,
+    ...bareRest,
+    css: [...(chakraSolidPreset.staticCss?.css ?? []), ...(extendCss ?? []), ...(bareCss ?? [])],
+    ...withRecipes(unplaceableRecipes),
   };
 }
 
-/** Omit the key entirely when nobody asked for a recipe, so `responsive`'s default stays "off". */
+/** Omit the key entirely when nothing is left for it, so `responsive`'s default stays "off". */
 function withRecipes(recipes: RecipeRules | undefined) {
   return recipes === undefined ? {} : { recipes };
 }
@@ -324,4 +465,51 @@ function expandResponsive(grain: ResponsiveGrain | undefined): ResponsiveStaticC
       [{ ...Object.fromEntries(keys.map((key) => [key, ["*"]])), responsive: true }],
     ]),
   );
+}
+
+/**
+ * `{ button: { variant: ["selected"] } }` → `{ button: [{ variant: ["*"], conditions: ["selected"] }] }`
+ * — the other half of the form Panda already understands, so this opt-in asks nothing new of it
+ * either.
+ *
+ * **One rule per variant key**, where {@link expandResponsive} emits one rule per recipe: a
+ * condition set belongs to the key that is conditioned, and `{ variant: ["hover"], size: ["open"] }`
+ * has no single-rule spelling. Panda reads a recipe's rules as a list, so two entries under one name
+ * is a shape it already handles.
+ */
+type ConditionalStaticCss = Record<string, Array<Record<string, string[]>>>;
+
+function expandConditional(grain: ConditionalGrain | undefined): ConditionalStaticCss | undefined {
+  if (grain === undefined) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    Object.entries(grain).map(([recipe, forRecipe]) => [
+      recipe,
+      Object.entries(conditionsPerKey(recipe, forRecipe)).map(([key, conditions]) => ({
+        [key]: ["*"],
+        conditions,
+      })),
+    ]),
+  );
+}
+
+/**
+ * An array names conditions for every variant key the recipe has; a record names them per key.
+ *
+ * A recipe with no variant keys yields no rules rather than an empty one — there is nothing for a
+ * condition to multiply, and `responsive`'s `[{ responsive: true }]` counterpart only exists because
+ * its `true` grain reaches all 75 whether or not a consumer meant them.
+ */
+function conditionsPerKey(
+  recipe: string,
+  grain: string[] | Record<string, string[]>,
+): Record<string, string[]> {
+  if (!Array.isArray(grain)) {
+    return grain;
+  }
+
+  const keys = variantKeysFor().find((entry) => entry.recipe === recipe)?.keys ?? [];
+  return Object.fromEntries(keys.map((key) => [key, grain]));
 }

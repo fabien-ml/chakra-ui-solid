@@ -162,9 +162,14 @@ asks, correct **both** in the same commit.
       pages carry a breakpoint-conditional variant — `button` (`size`), `drawer` (`placement`),
       `separator` (`orientation`) — and each of those rows now carries the clause. **`pagination` is
       not the same case**, and this line claimed it was: its variants are conditional on `_selected`
-      rather than on a breakpoint, and the knob does not reach those. Panda spells the two as
-      separate keys on a staticCss recipe rule (`responsive?: boolean` / `conditions?: string[]`,
-      `@pandacss/types/dist/static-css.d.ts`) and `expandResponsive` emits only the first
+      rather than on a breakpoint, which is the `conditional` knob rather than this one.
+      **And the opt-in was inert when this row shipped.** Panda's `StaticCss.process()` resolves
+      `staticCss.recipes[name]` from the recipe *body* whenever the body declares one, and
+      `preset.ts` declares `staticCss: ["*"]` on all 75 — so a config-level rule was overwritten
+      before it was read, for every recipe we ship. What generated the two classes here was ordinary
+      source extraction of `dialog-with-responsive-size.tsx`: deleting the opt-in leaves both in the
+      sheet. The rules now go into the recipe body as `["*", …]`, measured on `button`, which had no
+      extraction to hide behind and went from zero `md:button--size_lg` rules to two
 - [ ] drawer — dialog · S:drawer · 7/10 · D ⚠
       Runs on `dialog`, not `@zag-js/drawer` (§2.2). Its duplicate `backdrop` slot is source-only,
       for the reason measured on the `dialog` row — it is Panda's generator, not the recipe.
@@ -199,10 +204,11 @@ asks, correct **both** in the same commit.
       Key resolves to nothing in Chakra too (§2.5). **The `staticCss` declaration this page needs is
       on the `button` recipe, not its own** — every one of its eight upstream examples writes
       `<IconButton variant={{ base: "ghost", _selected: "outline" }}>`, which is the `dialog` row's
-      hazard conditioned on a *state* rather than a breakpoint. `defineChakraConfig({ responsive })`
-      does not reach it: Panda's staticCss recipe rule takes `responsive` and `conditions` as two
-      keys and `expandResponsive` emits only `responsive: true`. **The knob needs a `conditions`
-      sibling before this row or `toggle` ships**, and that is preset code, not a note
+      hazard conditioned on a *state* rather than a breakpoint. `responsive` does not reach it —
+      Panda keeps breakpoints and conditions as two keys on a staticCss rule — so the sibling knob
+      **`conditional` shipped for this row**: `conditional: { button: { variant: ["selected"] } }`,
+      one declaration that covers this page, `toggle`, `table-with-pagination` and `rating-emoji`.
+      Its ship also found that neither knob had ever worked (see the `dialog` row)
 - [ ] pin-input — S:pinInput · 4/4
       Repeated part (inputs, by index)
 - [x] popover — S:popover · 10/13 · Z ⚠

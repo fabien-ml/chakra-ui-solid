@@ -149,19 +149,68 @@ Three grains, so nobody pays for conditions they do not use:
 | `["button", "heading"]` | Every variant key on those recipes |
 | `true` | Every variant key on all 75 |
 
-Each expands to the `staticCss` block Panda already understands, so the opt-in asks nothing new of
-Panda:
+Each expands to a rule Panda already understands, appended to that recipe's own `staticCss` list:
 
 ```ts
-defineChakraConfig({ responsive: { button: ["size"] }, include: [] }).staticCss.recipes;
-// => { button: [{ size: ["*"], responsive: true }] }
+defineChakraConfig({ responsive: { button: ["size"] }, include: [] }).theme.extend.recipes.button
+  .staticCss;
+// => ["*", { size: ["*"], responsive: true }]
 ```
 
-If you also write `staticCss.recipes` yourself, the two are merged per recipe rather than one
-replacing the other — so `responsive` and a custom `staticCss` can both be set.
+The recipe's own list is the only address that works, and it is worth knowing why if you ever write
+`staticCss` by hand. Panda resolves `staticCss.recipes[name]` from the recipe **body** whenever the
+body declares one, discarding what the config asked for — and this preset gives all 75 recipes
+`staticCss: ["*"]`, so a config-level rule for any Chakra recipe is dropped before it is read. Rules
+you write under `staticCss.recipes` are moved here for you, so both spellings work:
+
+```ts title="panda.config.ts"
+export default defineChakraConfig({
+  responsive: { button: ["size"] },
+  staticCss: { recipes: { button: [{ variant: ["*"] }] } },
+  include: [...],
+});
+// button's staticCss => ["*", { size: ["*"], responsive: true }, { variant: ["*"] }]
+```
 
 Off by default because the stylesheet already carries 488 recipe-variant values, and turning
 responsive on for all of them multiplies that by six — `base` plus five breakpoints.
+
+## conditional
+
+The sibling knob, for a variant that changes on a **state** rather than a breakpoint — which is what
+`<IconButton variant={{ base: "ghost", _selected: "outline" }}>` needs:
+
+```ts title="panda.config.ts"
+export default defineChakraConfig({
+  conditional: { button: { variant: ["selected"] } },
+  include: [...],
+});
+```
+
+`responsive` does not cover this and cannot: Panda keeps breakpoints and conditions as two separate
+keys on a static-css rule, so a `responsive` opt-in on `button.variant` generates
+`md:button--variant_outline` and never `selected:button--variant_outline`. A class with no rule
+renders nothing and reports nothing, so the selected item simply looks like the others.
+
+Condition names are Panda's own, written without the underscore a prop uses — `_selected` in JSX,
+`"selected"` here. Two grains:
+
+| Grain | Meaning |
+| --- | --- |
+| `{ button: { variant: ["selected"] } }` | One variant key, under one condition |
+| `{ button: ["selected"] }` | Every variant key on that recipe, under it |
+
+There is no `true`: breakpoints are a closed set, and conditions are not — your own `conditions`
+block adds to them. Both knobs can name the same recipe, and the rules stack:
+
+```ts
+defineChakraConfig({
+  responsive: { button: ["size"] },
+  conditional: { button: { variant: ["selected"] } },
+  include: [],
+}).theme.extend.recipes.button.staticCss;
+// => ["*", { size: ["*"], responsive: true }, { variant: ["*"], conditions: ["selected"] }]
+```
 
 ## The recipe registry
 
@@ -177,5 +226,6 @@ variantKeysFor().find((entry) => entry.recipe === "button");
 // => { recipe: "button", keys: ["size", "variant"] }
 ```
 
-`variantKeysFor()` is what expands the two coarser `responsive` grains: `["button"]` means every
-variant key on Button, and nothing else knows which those are.
+`variantKeysFor()` is what expands the coarser grains of both opt-ins: `responsive: ["button"]` and
+`conditional: { button: ["selected"] }` each mean every variant key on Button, and nothing else knows
+which those are.

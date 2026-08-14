@@ -30,11 +30,17 @@ export default defineChakraConfig({
     // directly, and a style prop Panda never scanned renders nothing and raises no error.
     "./src/**/*.{ts,tsx,mdx}",
   ],
-  // The one opt-in this site actually needs, and the `responsive` knob's own worked example:
+  // The one opt-in this site needs, and the `responsive` knob's own worked example:
   // `dialog-with-responsive-size` writes `size={{ mdDown: "full", md: "lg" }}`, and the recipe
   // runtime answers that with `mdDown:dialog__content--size_full md:dialog__content--size_lg` —
-  // classes no default `staticCss` run generates. Without this line the example renders with no
-  // size rules at any width and nothing errors (`CLAUDE.md`, *silent unstyling*).
+  // classes no default `staticCss` run generates (`CLAUDE.md`, *silent unstyling*).
+  //
+  // **This app would survive without the line and a consumer's would not**, which is why it stays.
+  // The literal is in *this* app's own scanned source, so Panda extracts it from the example file
+  // and both classes appear either way — measured by deleting the line. That rescue is the `jsx`
+  // tracking hint doing its job on `<Dialog.Root size={…}>`, and `preset.ts` writes out why it
+  // cannot be relied on: a hint is a component *name*, so an alias, a wrapper or a re-export breaks
+  // it silently. The opt-in is what holds in all four cases.
   //
   // It is a knob a consumer writes too, so the file stays the shape the install page documents.
   responsive: { dialog: ["size"] },
