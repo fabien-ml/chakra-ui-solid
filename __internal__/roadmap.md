@@ -530,6 +530,11 @@ The seam's own suite gained the test that would have caught it.
       palettes written out, because `colorPalette` is a style prop the preset deliberately keeps out
       of `staticCss` — and `blockquote-with-custom-icon` takes `StarIcon` from the docs' own set
       where upstream imports `react-icons/lu`
+      **One namespace divergence, deliberate.** `namespace.ts` exports `BlockquoteIconProps as
+      IconProps`; upstream exports it *unaliased* (`blockquote/namespace.ts:13`), so its spelling is
+      `Blockquote.BlockquoteIconProps` beside five short names. Reproducing a typo helps nobody, so
+      ours is the consistent name — a consumer porting `Blockquote.BlockquoteIconProps` needs the
+      shorter one. Nothing on the docs page.
 - [x] breadcrumb — S:breadcrumb · —/7
       Repeated part (items) — which `list` measured as a non-event: the same `withContext` component
       is reused per row and needs nothing. Its Root does carry `defaultProps: { "aria-label":
@@ -626,6 +631,11 @@ The seam's own suite gained the test that would have caught it.
       `react-icons/lu`. A **bare `✓` in an indicator is an axe `incomplete`**, not a pass —
       `color-contrast` reports `nonBmp` on content that is only non-text characters — so the
       fixtures put a glyph there, which is what upstream's example holds anyway
+      **One namespace divergence, deliberate.** `namespace.ts` exports `ListIndicatorProps as
+      IndicatorProps`; upstream aliases the **component binding** instead — `ListIndicator as
+      IndicatorProps` (`list/namespace.ts:9`) — which makes `List.IndicatorProps` a value in type
+      position and unusable. Ours is the working name; a consumer porting it gets the same spelling
+      and an actual type. Nothing on the docs page.
 - [x] stat — S:stat · —/6
       Six slots and **nine** exports, three of which the seam does not mint.
       **`Stat.UpIndicator` and `Stat.DownIndicator` are one component twice**: same slot, same
