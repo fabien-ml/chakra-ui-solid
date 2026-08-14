@@ -1,5 +1,5 @@
 import { Portal } from "@solidjs/web";
-import { Button, type ButtonProps, Popover, Stack, Text } from "chakra-ui-solid";
+import { Button, type ButtonProps, Input, Popover, Stack, Text } from "chakra-ui-solid";
 import { For } from "solid-js";
 
 export default function PopoverWithSizes() {
@@ -25,6 +25,7 @@ export default function PopoverWithSizes() {
                       Naruto is a Japanese manga series written and illustrated by Masashi
                       Kishimoto.
                     </Text>
+                    <Input placeholder="Your fav. character" size={size} />
                   </Popover.Body>
                 </Popover.Content>
               </Popover.Positioner>

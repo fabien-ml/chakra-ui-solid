@@ -58,6 +58,8 @@ import {
   Icon,
   IconButton,
   IconPropsProvider,
+  Input,
+  InputPropsProvider,
   Loader,
   LoaderOverlay,
   LocaleProvider,
@@ -355,6 +357,12 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <IconPropsProvider value={{ size: "sm" }}>
       <Icon />
     </IconPropsProvider>
+  ),
+  Input: () => <Input placeholder="Enter your email" size="lg" />,
+  InputPropsProvider: () => (
+    <InputPropsProvider value={{ size: "lg" }}>
+      <Input />
+    </InputPropsProvider>
   ),
   Loader: () => <Loader text="Saving…">Save</Loader>,
   LoaderOverlay: () => <LoaderOverlay>loading</LoaderOverlay>,

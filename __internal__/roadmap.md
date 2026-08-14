@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 35 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 36 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -316,7 +316,13 @@ asks, correct **both** in the same commit.
 - [ ] field — S:field · —/8
       **The largest machine-less behavior in the library.** Ark implements it in 226 React lines; under `CLAUDE.md`, *Reference use* we read the ARIA contract, never the expression. **Duplicate slot `requiredIndicator`**.
       `popover.mdx`'s `### Form` section waits on this row plus `input` and `textarea` — the debt is
-      written out on the `input` row
+      written out on the `input` row.
+      **This row owes the `getInputProps()` wiring `Input` cannot do for itself.** Shipped `Input`
+      is `withContext("input")` with no field-context read, because Ark — which is where upstream's
+      merge lives — is not a dependency. When `field` lands it supplies the merge itself:
+      id/disabled/required/`aria-invalid`/`aria-describedby` under the caller's props, and the
+      context must be **non-strict** so a standalone `<Input>` outside a `Field.Root` keeps
+      working. Same for `textarea`
 - [ ] fieldset — S:fieldset · —/5
       Ark: 115 React lines. `+content`
 - [ ] native-select — S:nativeSelect · —/3
@@ -436,14 +442,33 @@ asks, correct **both** in the same commit.
       repaired by resolving the child: on the server a resolved child is already an HTML **string**,
       so there is no element left to put the class on, and a client-only collapse would have the two
       sides render different trees
-- [ ] input — A:input · —/1
-      Styles Ark's `Field.Input`. **Four Popover examples are waiting on it**: `popover-basic`,
-      `-with-sizes` and `-with-custom-bg` each ship upstream's Body minus its trailing `<Input>`,
-      and `popover-with-form` is not ported at all — it also needs `field` and `textarea`. Restore
-      all four from `__reference-impl__/chakra-ui/apps/compositions/src/examples/` when this row
-      ships, and add back the `### Form` section of `popover.mdx`
+- [x] input — A:input · —/1
+      **21 lines upstream**: `createRecipeContext({ key: "input" })` plus
+      `withContext(ArkField.Input)` — structurally `badge`'s `withContext("span")`, no component
+      logic. "Styles Ark's `Field.Input`" was right, and it is the one thing that did not port: Ark
+      is not a dependency. `ArkField.Input` merges a **non-strict** field context's
+      `getInputProps()` under the caller's props (`field?.getInputProps()`; non-strict is why a
+      bare `<Input>` works outside a `Field.Root`). No `field` row ships, so there is no context to
+      read and nothing observable is lost — ours is a plain `input` through the factory. That merge
+      is the **`field`** row's debt, recorded there.
+      `input.variantKeys` is `["size", "variant"]` — the reverse of badge's order. 7 sizes, 3
+      variants, `md`/`outline` defaults, fully statically extractable; `staticCss: ["*"]` in
+      `packages/panda-preset/src/preset.ts` already covers it, so no preset edit was owed. The
+      recipe publishes **`--input-height` per size** — the contract `input-group` reads for its
+      `calc()` padding.
+      Popover's debt is paid for three examples: `popover-basic`, `-with-sizes` and
+      `-with-custom-bg` each carry their trailing `<Input>` again. `popover-with-form` and
+      `popover.mdx`'s `### Form` (upstream places it between `### Initial Focus` and `### Custom
+      Background`) remain owed to `field` + `textarea`.
+      Docs: **5 of upstream's 19 example slots**. 14 blocked — `Helper Text`, `Error Text`,
+      `Field`, `Focus and Error Color`, `Floating Label` on `field`; `Element`, `Addon`, `Button`,
+      `Character Counter`, `Card Number`, `Clear Button` on the `input-group` family; `Hook Form`
+      and `Mask` on third-party React packages, which do not port at all
 - [ ] input-addon — A:inputAddon · —/1
-      `useRecipe({ key })` directly
+      `useRecipe({ key })` directly — verified against the reference on the `input` ship, and it is
+      the shape that does **not** port: we have no `useRecipe`, we import the generated recipe
+      function. Not `input`'s `createRecipeContext` shape either, since the body splits variant
+      props and honours `unstyled` by hand
 - [ ] kbd — A:kbd · —/1
 - [ ] link — A:link · —/1
 - [ ] mark — A:mark · —/1
@@ -469,7 +494,10 @@ asks, correct **both** in the same commit.
       Key resolves to nothing in Chakra too; styled by `textStyles` + style props
 - [ ] textarea — A:textarea · —/1
       Styles Ark's `Field.Textarea`. `popover.mdx`'s `### Form` section waits on this row plus
-      `input` and `field` — the debt is written out on the `input` row
+      `input` and `field` — the debt is written out on the `input` row.
+      **`input`'s shape ports here unchanged**: upstream is the same `createRecipeContext({ key })`
+      + `withContext(ArkField.Textarea)`, so this is `withContext("textarea")` and the field merge
+      is `field`'s to supply
 
 ## Styled primitives and layout (25)
 
@@ -495,9 +523,14 @@ asks, correct **both** in the same commit.
       Already writes `--group-count`/`--group-index` inline — route 3, legal
 - [ ] image
 - [ ] input-element
-      Part of the input-group family
+      Part of the input-group family. Upstream is `chakra("div", { base, variants: { placement } })`
+      — no recipe key, no `Field` context; it is also the identity `input-group` compares against
 - [ ] input-group — ●
-      `calc(var(--input-height) - ${offset})` (§3.1)
+      `calc(var(--input-height) - ${offset})` (§3.1) — **`--input-height` is real and already
+      generated**: the `input` recipe publishes it per size, one value per the 7 sizes.
+      Upstream's body is `Children.only` + `cloneElement` + `skip={(el) => el.type === InputElement}`
+      — React element identity, the same pattern the `icon` row already found does not port to
+      Solid. The port has to reach the offsets another way; it is not a `cloneElement` translation
 - [x] loader
       Composition of `Spinner` + `AbsoluteCenter`
 - [x] quote

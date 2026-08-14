@@ -34,6 +34,7 @@ export * from "./grid";
 export * from "./group";
 export * from "./heading";
 export * from "./icon";
+export * from "./input";
 export * from "./loader";
 export * from "./locale";
 export * from "./popover";

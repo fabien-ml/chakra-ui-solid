@@ -34,6 +34,7 @@
       "group": "src/components/group/index.ts",
       "heading": "src/components/heading/index.ts",
       "icon": "src/components/icon/index.ts",
+      "input": "src/components/input/index.ts",
       "loader": "src/components/loader/index.ts",
       "locale": "src/components/locale/index.ts",
       "popover": "src/components/popover/index.ts",
