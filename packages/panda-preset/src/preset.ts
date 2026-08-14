@@ -48,6 +48,19 @@ const justifyContent = [
 const displays = ["flex", "inline-flex", "grid", "inline-grid"];
 
 /**
+ * `Table.Caption`'s side, and the narrowest row in this list: one property, one value.
+ *
+ * HTML puts a caption above its table and Chakra puts it below, so the component supplies
+ * `captionSide: "bottom"` when the consumer names none. The obvious spelling — a literal JSX
+ * attribute before the props spread — is extractable and **wrong**: a JSX spread is a presence
+ * merge, so a wrapper forwarding an unset `captionSide` beats the literal with `undefined` and the
+ * caption silently moves back to the top, where the React version's `mergeProps` resolves the same
+ * default by value and keeps it. `withDefaults` is the fix, and it puts the value in an object
+ * literal no extractor reads — which is what this row is for.
+ */
+const captionSides = ["bottom"];
+
+/**
  * One `staticCss: ["*"]` key per recipe, merged into the inherited recipe body by `theme.extend`.
  *
  * This is the answer to the question the whole styling layer turns on: Panda generates CSS by
@@ -148,6 +161,7 @@ export const chakraSolidPreset = definePreset({
       { properties: { flexWrap: flexWraps } },
       { properties: { alignItems: alignItems } },
       { properties: { justifyContent: justifyContent } },
+      { properties: { captionSide: captionSides } },
       { properties: { borderTopWidth: separatorBorderWidths }, responsive: true },
       { properties: { borderInlineStartWidth: separatorBorderWidths }, responsive: true },
     ],

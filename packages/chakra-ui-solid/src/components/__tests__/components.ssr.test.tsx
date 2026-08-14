@@ -181,6 +181,18 @@ import {
   StatValueUnit,
   Sticky,
   Strong,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableColumn,
+  TableColumnGroup,
+  TableColumnHeader,
+  TableFooter,
+  TableHeader,
+  TableRoot,
+  TableRootPropsProvider,
+  TableRow,
+  TableScrollArea,
   TagCloseTrigger,
   TagEndElement,
   TagLabel,
@@ -1137,6 +1149,118 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   ),
   Sticky: () => <Sticky top="0">pinned</Sticky>,
   Strong: () => <Strong>bold</Strong>,
+  TableBody: () => (
+    <TableRoot>
+      <TableBody>
+        <TableRow>
+          <TableCell>Laptop</TableCell>
+        </TableRow>
+      </TableBody>
+    </TableRoot>
+  ),
+  // `captionSide` is the family's one default, and it is a style prop written before the spread —
+  // so what the server has to get right is a class, not an attribute.
+  TableCaption: () => (
+    <TableRoot>
+      <TableCaption>Product inventory</TableCaption>
+    </TableRoot>
+  ),
+  TableCell: () => (
+    <TableRoot>
+      <TableBody>
+        <TableRow>
+          <TableCell>Laptop</TableCell>
+        </TableRow>
+      </TableBody>
+    </TableRoot>
+  ),
+  TableColumn: () => (
+    <TableRoot>
+      <TableColumnGroup>
+        <TableColumn htmlWidth="50%" />
+      </TableColumnGroup>
+    </TableRoot>
+  ),
+  // The two slotless parts: `withContext` with no slot reads no context at all, so this is the
+  // arm that would throw the "no Root" error if it ever did.
+  TableColumnGroup: () => (
+    <TableRoot>
+      <TableColumnGroup>
+        <TableColumn htmlWidth="50%" />
+      </TableColumnGroup>
+    </TableRoot>
+  ),
+  TableColumnHeader: () => (
+    <TableRoot>
+      <TableHeader>
+        <TableRow>
+          <TableColumnHeader>Product</TableColumnHeader>
+        </TableRow>
+      </TableHeader>
+    </TableRoot>
+  ),
+  TableFooter: () => (
+    <TableRoot>
+      <TableFooter>
+        <TableRow>
+          <TableCell>Total</TableCell>
+        </TableRow>
+      </TableFooter>
+    </TableRoot>
+  ),
+  TableHeader: () => (
+    <TableRoot>
+      <TableHeader>
+        <TableRow>
+          <TableColumnHeader>Product</TableColumnHeader>
+        </TableRow>
+      </TableHeader>
+    </TableRoot>
+  ),
+  // Every boolean variant at once, because each one is a separate `sva()` input and a class the
+  // server has to compute the same way the client will.
+  TableRoot: () => (
+    <TableRoot variant="outline" size="lg" interactive stickyHeader striped showColumnBorder>
+      <TableBody>
+        <TableRow>
+          <TableCell>Laptop</TableCell>
+        </TableRow>
+      </TableBody>
+    </TableRoot>
+  ),
+  TableRootPropsProvider: () => (
+    <TableRootPropsProvider value={{ size: "sm" }}>
+      <TableRoot>
+        <TableBody>
+          <TableRow>
+            <TableCell>Laptop</TableCell>
+          </TableRow>
+        </TableBody>
+      </TableRoot>
+    </TableRootPropsProvider>
+  ),
+  TableRow: () => (
+    <TableRoot>
+      <TableBody>
+        <TableRow>
+          <TableCell>Laptop</TableCell>
+        </TableRow>
+      </TableBody>
+    </TableRoot>
+  ),
+  // The one part of this family with no Root above it, which is the whole point of it: it wraps the
+  // table rather than belonging to it.
+  TableScrollArea: () => (
+    <TableScrollArea maxW="xl">
+      <TableRoot>
+        <TableBody>
+          <TableRow>
+            <TableCell>Laptop</TableCell>
+          </TableRow>
+        </TableBody>
+      </TableRoot>
+    </TableScrollArea>
+  ),
   // Its default ✕ is built inside the component rather than hoisted beside it — JSX at module scope
   // is constructed at *import* time and 500s the route before anything renders.
   TagCloseTrigger: () => (

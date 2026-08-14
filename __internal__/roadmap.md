@@ -616,11 +616,46 @@ The seam's own suite gained the test that would have caught it.
       error. It is the first example blocked by that decision rather than by an unported row;
       `code-with-colors` and its two Phase-4 counterparts could be written out literally, and a
       closed component that takes the palette as a parameter cannot. `Explorer` is www machinery
-- [ ] table — S:table · —/8
-      Repeated parts (rows, cells) — a non-event, per `list`. The row's one default is **not** on the
-      Root: `Table.Caption` is `withContext("caption", "caption", { defaultProps: { captionSide:
-      "bottom" } })`, a *style* prop, so it is a JSX attribute before the spread rather than a
-      `withDefaults` entry
+- [x] table — S:table · —/8
+      Repeated parts (rows, cells) — a non-event, per `list`. The row's one default is indeed not on
+      the Root: `Table.Caption` carries `defaultProps: { captionSide: "bottom" }`, a *style* prop.
+      **The note's conclusion from that is wrong, and measuring it is this row's finding.** A JSX
+      attribute before the spread does *not* survive a forwarded `undefined`: a Solid JSX spread is
+      a presence merge, so `<Circle borderRadius={props.borderRadius} />` with `borderRadius`
+      unset computes `0px`, not `9999px` (measured directly on `Circle`). The style prop reaches
+      `css()` as `undefined` and no class is emitted at all. Chakra keeps the same default —
+      `packages/react/src/merge-props.ts` resolves by *value* — so the JSX spelling is a divergence,
+      not parity.
+      `withDefaults` fixes the deletion and creates the other half of the problem: the value moves
+      into an object literal, which Panda's extractor never reads, and a deleted default becomes a
+      silently unstyled one. **Both halves are needed**, so the row also adds
+      `{ properties: { captionSide: ["bottom"] } }` to the preset's `staticCss.css` — the list whose
+      stated bar is "a value a *component's* own logic picks", which this is exactly.
+      Three other components still use the lossy spelling for a real default (`Circle`'s
+      `borderRadius`, `ColorSwatch`'s `overflow`, `StatGroup`'s four layout props — those four
+      values are already in `staticCss`), and `CLAUDE.md`'s *third hazard* still lists the spelling
+      as a place a default may live. Both are open.
+      **`Table.Root` is `withProvider("table", "root")` with no body**, where upstream hand-writes
+      it for one reason: the `native` prop. **`native` is not ported.** It takes each slot's
+      resolved *style object* and re-hangs it on `& thead`, `& tr`, `& td`; a slot here is a class
+      name whose rules were generated in the consumer's build, so there is nothing to compose, and
+      composing it would mean re-emitting the recipe body. Upstream's own page states its value as
+      performance — "eliminating the runtime styling and React Context overhead" — and neither cost
+      exists here. Absence stated on the docs page, under upstream's own *Native Mode* heading.
+      **`Table.ScrollArea` drops one of its five base declarations**: `WebkitOverflowScrolling:
+      "touch"` is obsolete (Chromium never implemented it, modern WebKit ignores it) and
+      `check:declaration-support` rejects it, with no allowance available for a declaration our own
+      source emits. The preset's own ScrollArea recipe still ships it, under an existing allowance
+      row.
+      `TableColumnGroup` and `TableColumn` are the library's first `withContext` calls with **no
+      slot** — they read no context, so they render with no Root above them, which is the arm the
+      SSR subjects and one browser test cover.
+      Docs: **13 of upstream's 18 example slots**. `Pagination`, `Selection` and `Action Bar` wait
+      on the unported `pagination`, `checkbox` and `action-bar` rows — `table-with-pagination` also
+      needs the `conditional: { button: { variant: ["selected"] } }` knob when it lands — `TanStack
+      Table` is a React-only dependency, `Native Mode` is the divergence above, and `Explorer` is
+      www machinery. `Caption Top` says `captionSide` where upstream's prose says `side`; upstream's
+      own example already passes `captionSide`, so the prose was wrong about its own code
 - [x] tag — S:tag · —/5
       The `badge` row's prediction, verified: `tagSlotRecipe` reuses `badgeRecipe.variants.variant`
       and nothing else, the installed preset ships it inlined, and no preset edit was owed.

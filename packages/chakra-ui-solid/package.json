@@ -67,6 +67,7 @@
       "status": "src/components/status/index.ts",
       "sticky": "src/components/sticky/index.ts",
       "strong": "src/components/strong/index.ts",
+      "table": "src/components/table/index.ts",
       "tag": "src/components/tag/index.ts",
       "text": "src/components/text/index.ts",
       "textarea": "src/components/textarea/index.ts",

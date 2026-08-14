@@ -67,6 +67,7 @@ export * from "./stat";
 export * from "./status";
 export * from "./sticky";
 export * from "./strong";
+export * from "./table";
 export * from "./tag";
 export * from "./text";
 export * from "./textarea";

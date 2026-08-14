@@ -1,0 +1,33 @@
+export * as Table from "./namespace";
+export type {
+  TableBodyProps,
+  TableCaptionProps,
+  TableCellProps,
+  TableColumnGroupProps,
+  TableColumnHeaderProps,
+  TableColumnProps,
+  TableFooterProps,
+  TableHeaderProps,
+  TablePropsProviderProps,
+  TableRootBaseProps,
+  TableRootProps,
+  TableRowProps,
+  TableScrollAreaProps,
+  TableSlot,
+  TableVariantProps,
+} from "./table";
+export {
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableColumn,
+  TableColumnGroup,
+  TableColumnHeader,
+  TableFooter,
+  TableHeader,
+  TableRoot,
+  TableRootPropsProvider,
+  TableRow,
+  TableScrollArea,
+  useTableStyles,
+} from "./table";
