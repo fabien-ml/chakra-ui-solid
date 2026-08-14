@@ -254,7 +254,14 @@ describe("createField", () => {
         expect(field.getSelectProps()["data-part"]).toBe("select");
         expect(field.getHelperTextProps()["data-part"]).toBe("helper-text");
         expect(field.getErrorTextProps()["data-part"]).toBe("error-text");
-        expect(field.getRequiredIndicatorProps()["data-part"]).toBe("required-indicator");
+      });
+    });
+
+    it("leaves the required indicator unscoped, as the React version's is", () => {
+      // The one part Chakra hand-writes rather than taking from Ark, so the pair Ark would have
+      // supplied never reaches the DOM there either.
+      withField({ id: "email" }, (field) => {
+        expect(field.getRequiredIndicatorProps()).toEqual({ "aria-hidden": "true" });
       });
     });
 

@@ -95,14 +95,21 @@ export const Separator: Component<SeparatorProps> = (props) => {
     return typeof orientation === "string" ? orientation : undefined;
   };
 
-  const elementProps = merge(omit(merged, ...VARIANT_KEYS), {
-    get role() {
-      return plainOrientation() === undefined ? "presentation" : "separator";
+  // The two computed attributes come **first**, so a consumer's own `role="presentation"` or
+  // `aria-orientation` lands last and wins — upstream writes them before its props spread for the
+  // same reason. `merge` resolves by presence, so an unpassed `role` is not a key on the omitted bag
+  // and the getter below still answers.
+  const elementProps = merge(
+    {
+      get role() {
+        return plainOrientation() === undefined ? "presentation" : "separator";
+      },
+      get "aria-orientation"() {
+        return plainOrientation();
+      },
     },
-    get "aria-orientation"() {
-      return plainOrientation();
-    },
-  });
+    omit(merged, ...VARIANT_KEYS),
+  );
 
   return renderStyled<SeparatorElementProps>({
     as: (merged.as ?? "span") as ValidComponent,

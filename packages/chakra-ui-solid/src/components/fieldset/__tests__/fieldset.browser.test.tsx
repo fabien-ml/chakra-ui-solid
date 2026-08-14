@@ -284,36 +284,20 @@ describe("Fieldset — styling", () => {
     expect(style.width).toBe("200px");
   });
 
-  it("takes props from a provider above it, and lets a local prop win", () => {
+  it("resolves its own defaults when a wrapper forwards an unset `disabled` and `invalid`", () => {
+    // The Root's `withDefaults` resolves each key with `??`. Spelled `merge({ disabled: false }, …)`
+    // it would resolve by presence instead, and a wrapper's `disabled={props.disabled}` with nothing
+    // set would delete the default with `undefined`.
     mounted = mount(() => (
-      <Fieldset.PropsProvider value={{ size: "lg" }}>
-        <Fieldset.Root>
-          <Fieldset.Legend data-probe="from-provider">A</Fieldset.Legend>
-        </Fieldset.Root>
-        <Fieldset.Root size="sm">
-          <Fieldset.Legend data-probe="from-local">B</Fieldset.Legend>
-        </Fieldset.Root>
-      </Fieldset.PropsProvider>
+      <Fieldset.Root disabled={undefined} invalid={undefined}>
+        <Fieldset.Legend>Shipping</Fieldset.Legend>
+      </Fieldset.Root>
     ));
+    const root = rootOf(mounted.container);
 
-    expect(getComputedStyle(probeIn(mounted.container, "from-provider")).fontSize).not.toBe(
-      getComputedStyle(probeIn(mounted.container, "from-local")).fontSize,
-    );
-  });
-
-  it("keeps the provider's state when a wrapper forwards an unset `disabled`", () => {
-    // The seam's merge resolves by *value*, not by presence. Spelled `merge(context, props)` it
-    // resolves by presence, and a wrapper's `disabled={props.disabled}` with nothing set would beat
-    // the provider with `undefined` — a live control in a group that says it is disabled.
-    mounted = mount(() => (
-      <Fieldset.PropsProvider value={{ disabled: true }}>
-        <Fieldset.Root disabled={undefined}>
-          <Fieldset.Legend>Shipping</Fieldset.Legend>
-        </Fieldset.Root>
-      </Fieldset.PropsProvider>
-    ));
-
-    expect(rootOf(mounted.container).disabled).toBe(true);
+    expect(root.disabled).toBe(false);
+    expect(root.dataset.disabled).toBeUndefined();
+    expect(root.dataset.invalid).toBeUndefined();
   });
 });
 

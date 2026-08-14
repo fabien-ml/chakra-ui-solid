@@ -7,8 +7,8 @@ import {
   AlertContent,
   AlertDescription,
   AlertIndicator,
+  AlertPropsProvider,
   AlertRoot,
-  AlertRootPropsProvider,
   AlertTitle,
   AspectRatio,
   Badge,
@@ -92,7 +92,6 @@ import {
   FieldsetErrorText,
   FieldsetHelperText,
   FieldsetLegend,
-  FieldsetPropsProvider,
   FieldsetRoot,
   Flex,
   Float,
@@ -237,18 +236,18 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   ),
   // Responsive, because that is the arm where the status names no single glyph and the indicator
   // draws nothing — the branch a server has to take the same way the client will.
+  AlertPropsProvider: () => (
+    <AlertPropsProvider value={{ variant: "solid" }}>
+      <AlertRoot>
+        <AlertTitle>Heads up</AlertTitle>
+      </AlertRoot>
+    </AlertPropsProvider>
+  ),
   AlertRoot: () => (
     <AlertRoot status={{ base: "info", md: "warning" }}>
       <AlertIndicator />
       <AlertTitle>Heads up</AlertTitle>
     </AlertRoot>
-  ),
-  AlertRootPropsProvider: () => (
-    <AlertRootPropsProvider value={{ variant: "solid" }}>
-      <AlertRoot>
-        <AlertTitle>Heads up</AlertTitle>
-      </AlertRoot>
-    </AlertRootPropsProvider>
   ),
   AlertTitle: () => (
     <AlertRoot>
@@ -716,13 +715,6 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <FieldsetRoot>
       <FieldsetLegend>Shipping details</FieldsetLegend>
     </FieldsetRoot>
-  ),
-  FieldsetPropsProvider: () => (
-    <FieldsetPropsProvider value={{ size: "lg" }}>
-      <FieldsetRoot>
-        <FieldsetLegend>Shipping details</FieldsetLegend>
-      </FieldsetRoot>
-    </FieldsetPropsProvider>
   ),
   FieldsetRoot: () => (
     <FieldsetRoot>

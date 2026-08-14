@@ -114,7 +114,7 @@ export const AlertRoot = withProvider("div", "root", {
  * Supplies props to every {@link AlertRoot} below it. A Root that passes the prop itself still
  * wins.
  */
-export const AlertRootPropsProvider: Component<AlertPropsProviderProps> = PropsProvider;
+export const AlertPropsProvider: Component<AlertPropsProviderProps> = PropsProvider;
 
 /** The column holding the title and the description. Only needed when there are both. */
 export const AlertContent = withContext<AlertContentProps>("div", "content");

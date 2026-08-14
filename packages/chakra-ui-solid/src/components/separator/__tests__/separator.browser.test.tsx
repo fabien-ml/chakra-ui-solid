@@ -55,6 +55,18 @@ describe("Separator", () => {
     expect(mounted.element.hasAttribute("aria-orientation")).toBe(false);
   });
 
+  it("lets a consumer's own `role` and `aria-orientation` win", () => {
+    // Both are written before the props spread, upstream included, so the component's answer is a
+    // starting point rather than the last word — a `role="presentation"` that type-checks and does
+    // nothing would be the defect.
+    mounted = mountElement(() => (
+      <Separator role="presentation" aria-orientation="horizontal" orientation="vertical" />
+    ));
+
+    expect(mounted.element.getAttribute("role")).toBe("presentation");
+    expect(mounted.element.getAttribute("aria-orientation")).toBe("horizontal");
+  });
+
   it("tracks an orientation that changes, in the role as well as the styles", () => {
     const [orientation, setOrientation] = createSignal<"horizontal" | "vertical">("horizontal");
     mounted = mountElement(() => <Separator orientation={orientation()} height="4" />);

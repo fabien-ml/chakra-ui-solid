@@ -1,4 +1,4 @@
-import { mergeProps, renderStyled, withContextDefaults, withDefaults } from "@chakra-ui-solid/core";
+import { mergeProps, renderStyled, withDefaults } from "@chakra-ui-solid/core";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, omit } from "solid-js";
 import { createFieldset } from "./create-fieldset";
@@ -6,9 +6,7 @@ import type { FieldsetRootProps } from "./fieldset.types";
 import {
   FieldsetProvider,
   FieldsetStylesProvider,
-  PropsProvider,
   resolveFieldsetSlotClasses,
-  usePropsContext,
 } from "./fieldset-context";
 
 type FieldsetElementProps = ComponentProps<"fieldset">;
@@ -34,15 +32,13 @@ const ROOT_ONLY_KEYS = ["id", "invalid", "size"] as const;
  * texts `::helper-text` and `::error-text`.
  */
 export const FieldsetRoot: Component<FieldsetRootProps> = (props) => {
-  // Context first, local props second, so a local prop wins — Chakra's order — and resolved by
-  // value, not by presence: a wrapper forwarding an unset `invalid={props.invalid}` would otherwise
-  // beat the provider above it with `undefined`.
-  const fromContext = withContextDefaults<FieldsetRootProps>(props, usePropsContext());
-
-  // `size` is **not** here: it is a recipe variant, and the recipe's own `defaultVariants` resolves
-  // `"md"` from `undefined`. Restating it would be a second source of truth that drifts on a preset
-  // bump.
-  const merged = withDefaults(fromContext, { disabled: false, invalid: false });
+  // No props context above this: upstream mints no `FieldsetPropsProvider`, so there is nothing to
+  // read from and adding one would be an invention.
+  //
+  // `size` is **not** defaulted here: it is a recipe variant, and the recipe's own `defaultVariants`
+  // resolves `"md"` from `undefined`. Restating it would be a second source of truth that drifts on
+  // a preset bump.
+  const merged = withDefaults(props, { disabled: false, invalid: false });
 
   // Once, here — never per part: the seam resolves the recipe against these props and publishes one
   // class per slot to everything below, including the Root-level `unstyled` opt-out.
@@ -68,9 +64,3 @@ export const FieldsetRoot: Component<FieldsetRootProps> = (props) => {
     </FieldsetProvider>
   );
 };
-
-/**
- * Supplies props to every {@link FieldsetRoot} below it — `<Fieldset.PropsProvider value={{ size:
- * "lg" }}>` sizes a whole form the same way. A Root that passes the prop itself still wins.
- */
-export const FieldsetPropsProvider = PropsProvider;

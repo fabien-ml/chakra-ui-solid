@@ -36,8 +36,6 @@ export const {
   useStyles: useFieldsetStyles,
   withContext: withFieldsetContext,
   resolveSlotClasses: resolveFieldsetSlotClasses,
-  PropsProvider,
-  usePropsContext,
 } = createSlotRecipeContext<FieldsetSlot, FieldsetRootBaseProps, FieldsetRecipeVariants>({
   name: "Fieldset",
   recipe: fieldsetRecipe,

@@ -37,6 +37,15 @@ function probeIn(container: ParentNode, probe: string): HTMLElement {
   return element;
 }
 
+/**
+ * The required indicator is the one part with no `data-part` to find it by — upstream hand-writes it
+ * as a plain span — so every fixture below marks it and these two read the mark. A slot class would
+ * not do: `classList.contains` passes on a completely unstyled element.
+ */
+const INDICATOR = "indicator";
+const indicatorIn = (container: ParentNode) =>
+  container.querySelector(`[data-probe="${INDICATOR}"]`);
+
 /** A component that records how many times it was really constructed — Button's fixture. */
 function countingComponent(): { component: () => JSX.Element; builds: () => number } {
   let builds = 0;
@@ -283,22 +292,26 @@ describe("Field — the required indicator", () => {
       <Field.Root required={required()}>
         <Field.Label>
           Email
-          <Field.RequiredIndicator />
+          <Field.RequiredIndicator data-probe={INDICATOR} />
         </Field.Label>
       </Field.Root>
     ));
-    const indicator = partOf(mounted.container, "required-indicator");
+    const indicator = probeIn(mounted.container, INDICATOR);
 
     expect(indicator.textContent).toBe("*");
     // Decoration: `required` on the control is what a screen reader announces.
     expect(indicator.getAttribute("aria-hidden")).toBe("true");
+    // No `data-scope` / `data-part`: the React version hand-writes this part rather than taking it
+    // from Ark, so the pair never reaches the DOM there either.
+    expect(indicator.dataset.scope).toBeUndefined();
+    expect(indicator.dataset.part).toBeUndefined();
     // The recipe's own colour, which is the only reason this element is styled at all.
     expect(getComputedStyle(indicator).color).not.toBe(
       getComputedStyle(partOf(mounted.container, "label")).color,
     );
 
     flush(() => setRequired(false));
-    expect(partIn(mounted.container, "required-indicator")).toBeNull();
+    expect(indicatorIn(mounted.container)).toBeNull();
   });
 
   it("renders `fallback` instead while the field is optional", () => {
@@ -306,13 +319,16 @@ describe("Field — the required indicator", () => {
       <Field.Root>
         <Field.Label>
           Email
-          <Field.RequiredIndicator fallback={<span data-probe="optional">Optional</span>} />
+          <Field.RequiredIndicator
+            data-probe={INDICATOR}
+            fallback={<span data-probe="optional">Optional</span>}
+          />
         </Field.Label>
       </Field.Root>
     ));
 
     expect(probeIn(mounted.container, "optional").textContent).toBe("Optional");
-    expect(partIn(mounted.container, "required-indicator")).toBeNull();
+    expect(indicatorIn(mounted.container)).toBeNull();
   });
 
   it("builds the `children` slot once, and not at all while the field is optional", () => {
@@ -373,7 +389,7 @@ describe("Field — a forwarded `undefined` deletes no default", () => {
       >
         <Field.Label>
           Email
-          <Field.RequiredIndicator />
+          <Field.RequiredIndicator data-probe={INDICATOR} />
         </Field.Label>
         <Field.Context>
           {(field) => <input {...field.getControlProps()} data-probe="control" />}
@@ -389,7 +405,7 @@ describe("Field — a forwarded `undefined` deletes no default", () => {
     expect(control.required).toBe(false);
     expect(root.dataset.invalid).toBeUndefined();
     expect(root.dataset.disabled).toBeUndefined();
-    expect(partIn(mounted.container, "required-indicator")).toBeNull();
+    expect(indicatorIn(mounted.container)).toBeNull();
   });
 
   it("keeps a PropsProvider's value when a Root forwards the same prop unset", () => {
@@ -400,13 +416,13 @@ describe("Field — a forwarded `undefined` deletes no default", () => {
         <Field.Root required={undefined} orientation={undefined}>
           <Field.Label>
             Email
-            <Field.RequiredIndicator />
+            <Field.RequiredIndicator data-probe={INDICATOR} />
           </Field.Label>
         </Field.Root>
       </Field.PropsProvider>
     ));
 
-    expect(partOf(mounted.container, "required-indicator").textContent).toBe("*");
+    expect(probeIn(mounted.container, INDICATOR).textContent).toBe("*");
     expect(getComputedStyle(partOf(mounted.container, "root")).flexDirection).toBe("row");
   });
 });

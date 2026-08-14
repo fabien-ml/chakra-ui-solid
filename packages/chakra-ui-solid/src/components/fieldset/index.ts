@@ -8,7 +8,6 @@ export type {
   FieldsetHelperTextProps,
   FieldsetIds,
   FieldsetLegendProps,
-  FieldsetPropsProviderProps,
   FieldsetRootBaseProps,
   FieldsetRootProps,
   FieldsetVariantProps,
@@ -24,5 +23,5 @@ export {
   FieldsetHelperText,
   FieldsetLegend,
 } from "./fieldset-parts";
-export { FieldsetPropsProvider, FieldsetRoot } from "./fieldset-root";
+export { FieldsetRoot } from "./fieldset-root";
 export * as Fieldset from "./namespace";

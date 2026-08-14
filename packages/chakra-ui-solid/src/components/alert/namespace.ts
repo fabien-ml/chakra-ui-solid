@@ -11,7 +11,7 @@ export {
   AlertContent as Content,
   AlertDescription as Description,
   AlertIndicator as Indicator,
+  AlertPropsProvider as RootPropsProvider,
   AlertRoot as Root,
-  AlertRootPropsProvider as RootPropsProvider,
   AlertTitle as Title,
 } from "./alert";

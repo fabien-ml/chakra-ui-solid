@@ -167,10 +167,10 @@ export function createField(props: CreateFieldProps = {}): CreateFieldReturn {
       id: ids.errorText,
       "aria-live": "polite",
     }),
-    getRequiredIndicatorProps: () => ({
-      ...partAttributes("required-indicator"),
-      "aria-hidden": "true",
-    }),
+    // **No `data-scope` / `data-part` here, and that is upstream's own surface.** Every other part
+    // takes its attributes from Ark's component; this is the one Chakra hand-writes as a plain
+    // `chakra.span`, so Ark's pair never reaches the DOM there. Parity is what a consumer observes.
+    getRequiredIndicatorProps: () => ({ "aria-hidden": "true" }),
     getItemIds: itemIds,
     registerHelperText: setHelperTextId,
     registerErrorText: setErrorTextId,

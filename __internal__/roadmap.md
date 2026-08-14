@@ -370,6 +370,11 @@ The seam's own suite gained the test that would have caught it.
       each part reads its own slot with `useFieldStyles()`.
       **RequiredIndicator owes no `children()`.** Its `fallback` and `children` are read exactly once
       per branch, measured with Button's counting fixture; the counting tests stay in as the proof.
+      **And it carries no `data-scope` / `data-part`, alone among the parts here.** It is the one
+      element Chakra hand-writes as a `chakra.span` instead of wrapping Ark's component, so Ark's
+      attributes never reach the DOM upstream — `aria-hidden="true"` plus the slot class is the whole
+      surface. The port emitted the pair until it was corrected; the browser tests locate it by a
+      fixture's `data-probe` now, since a slot class is not a handle a test may assert on.
       One inherited axe violation: `errorText` is `fg.error` (`red.500`) at `textStyle: xs`, 3.76:1
       on white and under AA. The React version renders the identical declaration from the identical
       preset token — both wrong the same way, so it ships and the invalid-state test pins exactly
@@ -412,6 +417,11 @@ The seam's own suite gained the test that would have caught it.
       Two Root props are narrower than the DOM's and both are omitted from the element bag: `id`
       seeds the id scheme and names nothing (the `fieldset` carries no `id` at all, upstream
       included), and `invalid` is an attribute no element has.
+      **There is no `Fieldset.PropsProvider`, and adding one would be an invention.** Upstream
+      destructures `const { withProvider, withContext } = createSlotRecipeContext({ key: "fieldset" })`
+      and never mints one — this is the one shipped family without it. The port had one and it was
+      dropped, props context and all: nothing else populates that context, so `withContextDefaults`
+      on the Root was reading a bag that could only ever be empty.
       One inherited axe violation invalid: `errorText` is `fg.error` at `textStyle: sm`, under AA on
       the page background. The React version renders the identical declaration from the identical
       preset token — both wrong the same way, so it ships and the test pins exactly that one.
@@ -452,6 +462,10 @@ The seam's own suite gained the test that would have caught it.
       share the triangle, `success` is the circled check. A **responsive** `status` names no single
       glyph and draws nothing, which is upstream's `Fragment` one indirection later. Read exactly
       once through `??`, so no `children()` is owed.
+      **The flat export is `AlertPropsProvider`**, not `AlertRootPropsProvider` — the port shipped
+      the wrong spelling and it is corrected. The namespace alias *is* `Alert.RootPropsProvider`,
+      which reads as an inconsistency and is upstream's own: `AlertPropsProvider as RootPropsProvider`
+      in its `namespace.ts`. (`Tag` is the other way round — `TagRootPropsProvider` flat there too.)
       Its hydration entry is the batch's only one, and it is earned: three roots give three
       indicator shapes — the default glyph, nothing at all, and a consumer's own spinner — each
       spending a different number of hydration keys, over a context the Root opened around its own
@@ -487,7 +501,9 @@ The seam's own suite gained the test that would have caught it.
       **No part carries `data-scope` or `data-part`, and none of the five in this batch does.**
       Chakra's `withContext` writes a class and nothing else, so nothing here is addressable by
       `[data-scope]` — the recipe's selectors read the classes. (`native-select` found the same
-      thing from the other direction; `field` and `fieldset` carry theirs off prop getters.)
+      thing from the other direction; `field` and `fieldset` carry theirs off prop getters, with the
+      one exception the `field` row records — `RequiredIndicator` is hand-written upstream and
+      carries none.)
       Docs: **4 of upstream's 7 example slots**. *With Image* and *Horizontal* wait on the `image`
       row and *With Avatar* on `avatar`; `Customization` is dropped on `field`'s precedent — its
       snippets are `defineSlotRecipe` / `createSystem` / `ChakraProvider`, the runtime style system
@@ -812,6 +828,10 @@ The seam's own suite gained the test that would have caught it.
       `withContext` does, and Separator is the one component that calls `useRecipeResult` directly. So
       on the React side the provider changes nothing at all, styles included. Ours reads it through
       `withContextDefaults`, which is the same one line every other row in the batch spends.
+      **`role` and `aria-orientation` are written *before* the props spread**, upstream and here, so
+      a consumer's own `role="presentation"` wins. The port had them in getters merged last, which
+      made both props type-check and do nothing; they now sit in the first `merge` source with the
+      omitted bag second.
       Docs: all 6 of upstream's example slots, plus the config snippet the responsive one needs
 - [x] skeleton — A:skeleton · —/1
       Plus `SkeletonCircle`, `SkeletonText` — right, and both are composition rather than recipe.

@@ -175,9 +175,11 @@ export interface FieldErrorTextAttributes extends FieldPartAttributes<"error-tex
   "aria-live": "polite";
 }
 
-/** What `getRequiredIndicatorProps()` returns. */
-export interface FieldRequiredIndicatorAttributes
-  extends FieldPartAttributes<"required-indicator"> {
+/**
+ * What `getRequiredIndicatorProps()` returns — one attribute, with no `data-scope` / `data-part`
+ * pair: this is the one part Chakra hand-writes rather than taking from Ark, so it carries none.
+ */
+export interface FieldRequiredIndicatorAttributes {
   /** The asterisk is decoration — `required` on the control is what a screen reader announces. */
   "aria-hidden": "true";
 }

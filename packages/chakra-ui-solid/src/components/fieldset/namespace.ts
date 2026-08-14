@@ -4,7 +4,6 @@ export type {
   FieldsetErrorTextProps as ErrorTextProps,
   FieldsetHelperTextProps as HelperTextProps,
   FieldsetLegendProps as LegendProps,
-  FieldsetPropsProviderProps as PropsProviderProps,
   FieldsetRootBaseProps as RootBaseProps,
   FieldsetRootProps as RootProps,
 } from "./fieldset.types";
@@ -15,4 +14,4 @@ export {
   FieldsetHelperText as HelperText,
   FieldsetLegend as Legend,
 } from "./fieldset-parts";
-export { FieldsetPropsProvider as PropsProvider, FieldsetRoot as Root } from "./fieldset-root";
+export { FieldsetRoot as Root } from "./fieldset-root";

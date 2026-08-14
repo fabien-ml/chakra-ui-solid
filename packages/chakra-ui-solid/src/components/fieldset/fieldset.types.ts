@@ -1,4 +1,4 @@
-import type { HTMLChakraProps, PropsProviderProps } from "@chakra-ui-solid/core";
+import type { HTMLChakraProps } from "@chakra-ui-solid/core";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
 
@@ -118,7 +118,7 @@ export interface FieldsetVariantProps {
   size?: ConditionalValue<"sm" | "md" | "lg">;
 }
 
-/** The Root's own props, without the `fieldset`'s — what a `Fieldset.PropsProvider` may supply. */
+/** The Root's own props, without the `fieldset`'s — the recipe's variant plus the store's inputs. */
 export interface FieldsetRootBaseProps extends CreateFieldsetProps, FieldsetVariantProps {}
 
 /**
@@ -132,8 +132,6 @@ export interface FieldsetRootBaseProps extends CreateFieldsetProps, FieldsetVari
 export interface FieldsetRootProps
   extends Omit<HTMLChakraProps<"fieldset">, "id" | "disabled">,
     FieldsetRootBaseProps {}
-
-export interface FieldsetPropsProviderProps extends PropsProviderProps<FieldsetRootBaseProps> {}
 
 export interface FieldsetLegendProps extends HTMLChakraProps<"legend"> {}
 

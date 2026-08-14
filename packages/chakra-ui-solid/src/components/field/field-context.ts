@@ -8,9 +8,10 @@ import type { CreateFieldReturn, FieldRootBaseProps } from "./field.types";
 /**
  * The eight names the slot recipe carries, one per anatomy part.
  *
- * `helperText`, `errorText` and `requiredIndicator` are the *slot* keys. The DOM attributes the
- * matching elements wear are `data-part="helper-text"`, `"error-text"` and `"required-indicator"`,
- * and the two are not interchangeable.
+ * `helperText` and `errorText` are the *slot* keys; the DOM attributes the matching elements wear
+ * are `data-part="helper-text"` and `"error-text"`, and the two are not interchangeable.
+ * `requiredIndicator` is a slot key with no part attribute at all — upstream hand-writes that one
+ * element rather than taking it from Ark, so nothing scopes it.
  *
  * `input`, `textarea` and `select` have slots and prop getters but no part component: upstream
  * exports none — a consumer puts a plain `<Input>` inside `<Field.Root>` — so the port exports none
