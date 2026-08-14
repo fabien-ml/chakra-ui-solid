@@ -17,28 +17,43 @@ import { Show } from "solid-js";
  * here because a story renders a component in a harness we control and an example renders it the
  * way a consumer gets it (`decisions-ledger.md` D-133).
  */
-const exampleModules = import.meta.glob<{ default: Component }>("../examples/*.tsx", {
-  eager: true,
-});
+// One directory per component, and the negation is load-bearing: the suite that mounts these files
+// sits in a sibling directory that `*/*.tsx` matches, so without it the site imports a test module
+// at startup and every route 500s on a `describe()` called outside a runner. The pair is written
+// out twice rather than shared, because `import.meta.glob` is compiled away — it reads its
+// arguments off the AST, so a `const` holding them is a build error rather than a refactor.
+const exampleModules = import.meta.glob<{ default: Component }>(
+  ["../examples/*/*.tsx", "!../examples/__tests__/**"],
+  { eager: true },
+);
 
-const exampleSources = import.meta.glob<string>("../examples/*.tsx", {
-  eager: true,
-  query: "?highlight",
-  import: "default",
-});
+const exampleSources = import.meta.glob<string>(
+  ["../examples/*/*.tsx", "!../examples/__tests__/**"],
+  { eager: true, query: "?highlight", import: "default" },
+);
 
-const keyFor = (name: string) => `../examples/${name}.tsx`;
+// Examples live in a directory per component (`examples/dialog/dialog-basic.tsx`), but a page still
+// names one by its file name alone — the directory is for whoever opens the folder, not part of the
+// address. Basenames are unique across the tree because each one already carries its component.
+const byName = <T,>(modules: Record<string, T>): Record<string, T> =>
+  Object.fromEntries(
+    Object.entries(modules).map(([key, value]) => [
+      key.replace(/^.*\//, "").replace(/\.tsx$/, ""),
+      value,
+    ]),
+  );
 
-export const exampleNames = Object.keys(exampleModules)
-  .map((key) => key.replace("../examples/", "").replace(/\.tsx$/, ""))
-  .sort();
+const modulesByName = byName(exampleModules);
+const sourcesByName = byName(exampleSources);
+
+export const exampleNames = Object.keys(modulesByName).sort();
 
 export const exampleComponent = (name: string): Component | undefined =>
-  exampleModules[keyFor(name)]?.default;
+  modulesByName[name]?.default;
 
 export function Example(props: { name: string }) {
-  const module = () => exampleModules[keyFor(props.name)];
-  const source = () => exampleSources[keyFor(props.name)];
+  const module = () => modulesByName[props.name];
+  const source = () => sourcesByName[props.name];
 
   return (
     <Box my="6">

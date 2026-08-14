@@ -3,8 +3,8 @@ import { afterEach, describe, expect, it } from "vitest";
 // The docs app's **own** generated stylesheet, which is where both sides of the collision live: the
 // prose classes, and the atomic classes the examples' style props compile to.
 import "../../../styled-system/styles.css";
-import SpinnerWithLabel from "../../examples/spinner-with-label";
-import SpinnerWithOverlay from "../../examples/spinner-with-overlay";
+import SpinnerWithLabel from "../../examples/spinner/spinner-with-label";
+import SpinnerWithOverlay from "../../examples/spinner/spinner-with-overlay";
 import { proseClass, proseTagClasses } from "../prose";
 
 /**

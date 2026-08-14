@@ -34,7 +34,13 @@ import "../../../styled-system/styles.css";
  * clears APCA at 12px anyway. The port rule leaves us nothing to do with that but diverge from the
  * content we are copying, so the check was only ever able to produce friction here.
  */
-const exampleModules = import.meta.glob<{ default: Component }>("../*.tsx", { eager: true });
+// One directory per component, and the negation is load-bearing: this file sits in a sibling
+// directory that `../*/*.tsx` matches, so without it the suite eagerly imports itself and asserts
+// that a test module has a default export.
+const exampleModules = import.meta.glob<{ default: Component }>(
+  ["../*/*.tsx", "!../__tests__/**"],
+  { eager: true },
+);
 
 const examples = Object.entries(exampleModules)
   .map(([key, module]) => ({ name: key.replace("../", "").replace(/\.tsx$/, ""), module }))
