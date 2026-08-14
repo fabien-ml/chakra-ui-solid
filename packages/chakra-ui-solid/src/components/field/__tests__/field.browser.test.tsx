@@ -338,6 +338,34 @@ describe("Field — the required indicator", () => {
     expect(indicatorIn(mounted.container)).toBeNull();
   });
 
+  it("renders no `*` for a `null` child, and still renders one for an omitted child", () => {
+    // `{cond() ? <Glyph/> : null}` is ordinary Solid, and upstream's `children = "*"` is a
+    // destructuring default that yields only to `undefined` — so a `null` child renders an empty
+    // span there. `??` put the `*` back and quietly overruled what the consumer wrote.
+    mounted = mount(() => (
+      <Field.Root required>
+        <Field.Label>
+          Email
+          <Field.RequiredIndicator data-probe={INDICATOR}>{null}</Field.RequiredIndicator>
+        </Field.Label>
+      </Field.Root>
+    ));
+
+    expect(probeIn(mounted.container, INDICATOR).textContent).toBe("");
+
+    mounted.dispose();
+    mounted = mount(() => (
+      <Field.Root required>
+        <Field.Label>
+          Email
+          <Field.RequiredIndicator data-probe={INDICATOR} />
+        </Field.Label>
+      </Field.Root>
+    ));
+
+    expect(probeIn(mounted.container, INDICATOR).textContent).toBe("*");
+  });
+
   it("renders `fallback` instead while the field is optional", () => {
     mounted = mount(() => (
       <Field.Root>

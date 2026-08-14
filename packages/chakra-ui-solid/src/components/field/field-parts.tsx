@@ -166,7 +166,9 @@ export const FieldErrorIcon: Component<FieldErrorIconProps> = (props) => {
  *
  * The `*` default sits in the merged bag's own getter for the same reason it would otherwise sit
  * inside a `children()` call: a `withDefaults` bag builds its defaults eagerly, for every indicator
- * including the ones that already have children.
+ * including the ones that already have children. It resolves with `!== undefined` rather than `??`,
+ * because upstream's `children = "*"` is a destructuring default and yields only to `undefined`, so
+ * `<Field.RequiredIndicator>{null}</Field.RequiredIndicator>` renders an empty span there.
  */
 export const FieldRequiredIndicator: Component<FieldRequiredIndicatorProps> = (props) => {
   const ctx = useFieldContext();
@@ -174,7 +176,8 @@ export const FieldRequiredIndicator: Component<FieldRequiredIndicatorProps> = (p
 
   const elementProps = mergeProps(() => ctx.getRequiredIndicatorProps(), omit(props, "fallback"), {
     get children() {
-      return props.children ?? "*";
+      const provided = props.children;
+      return provided !== undefined ? provided : "*";
     },
   }) as SpanProps;
 
