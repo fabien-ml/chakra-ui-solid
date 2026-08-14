@@ -1,0 +1,103 @@
+---
+title: Link
+description: Used to provide accessible navigation
+links:
+  source: packages/chakra-ui-solid/src/components/link
+  chakra: https://chakra-ui.com/docs/components/link
+---
+
+<Example name="link-basic" />
+
+## Usage
+
+```tsx
+import { Link } from "chakra-ui-solid";
+```
+
+```tsx
+<Link href="...">Click here</Link>
+```
+
+## Examples
+
+### Variants
+
+Use the `variant` prop to change the appearance of the `Link` component.
+
+<Example name="link-with-variants" />
+
+### Within Text
+
+Use `Link` within a text to create a hyperlink.
+
+<Example name="link-within-text" />
+
+### External
+
+Add an external link icon to the `Link` component.
+
+<Example name="link-with-external" />
+
+## Guides
+
+### Routing Library
+
+Use the `render` prop to compose `Link` with a routing library's own link.
+
+```tsx
+import { Link as ChakraLink } from "chakra-ui-solid";
+import { A } from "@solidjs/router";
+
+function Demo() {
+  return <ChakraLink href="/about" render={(props) => <A {...props} />}>Click here</ChakraLink>;
+}
+```
+
+`render` is handed the anchor's fully computed props — class, `href` and all — and places them
+itself. The React version spells this `asChild`, which clones the props onto an element that has
+already been built; Solid has no `cloneElement`, so a function is what the same composition looks
+like here.
+
+### Styling Active Links
+
+Use the `_currentPage` condition to style active links when using `aria-current="page"`.
+
+```tsx
+<Link
+  href="/home"
+  aria-current="page"
+  _currentPage={{ color: "blue.500", fontWeight: "bold" }}
+>
+  Home
+</Link>
+```
+
+With a routing library, set `aria-current` from the current route:
+
+```tsx
+import { Link as ChakraLink } from "chakra-ui-solid";
+import { A, useLocation } from "@solidjs/router";
+
+function NavLink(props: { href: string; children: JSX.Element }) {
+  const location = useLocation();
+
+  return (
+    <ChakraLink
+      href={props.href}
+      aria-current={location.pathname === props.href ? "page" : undefined}
+      _currentPage={{ color: "blue.500", fontWeight: "bold" }}
+      render={(anchorProps) => <A {...anchorProps} />}
+    >
+      {props.children}
+    </ChakraLink>
+  );
+}
+```
+
+## Props
+
+<PropsTable component="link" interface="LinkProps" />
+
+The link names no colour of its own. Both variants resolve against `colorPalette`, which is an
+inherited style prop — so `<Link colorPalette="teal">` and a `colorPalette` on any ancestor pick the
+palette, and `variant` decides only whether the underline is there at rest or on hover.

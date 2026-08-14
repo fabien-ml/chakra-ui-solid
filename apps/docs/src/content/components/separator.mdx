@@ -1,0 +1,70 @@
+---
+title: Separator
+description: Used to visually separate content
+links:
+  source: packages/chakra-ui-solid/src/components/separator
+  chakra: https://chakra-ui.com/docs/components/separator
+---
+
+<Example name="separator-basic" />
+
+## Usage
+
+```tsx
+import { Separator } from "chakra-ui-solid";
+```
+
+```tsx
+<Separator />
+```
+
+## Examples
+
+### Variants
+
+Use the `variant` prop to change the appearance of the separator.
+
+<Example name="separator-with-variants" />
+
+### Sizes
+
+Use the `size` prop to change the size of the separator.
+
+<Example name="separator-with-sizes" />
+
+### Label
+
+Use the `label` prop to add a label to the separator.
+
+<Example name="separator-with-label" />
+
+### Vertical
+
+Use the `orientation` prop to change the orientation of the separator.
+
+<Example name="separator-vertical" />
+
+A vertical separator has no height of its own — give it one, as the example does, or let a
+stretching flex row supply it.
+
+### Responsive Orientation
+
+Here's an example of how to change the `orientation` property based on the screen size.
+
+<Example name="separator-with-responsive-orientation" />
+
+When the `orientation` prop is a responsive value, the separator is rendered without
+`aria-orientation` and the role is set to `presentation`.
+
+A responsive recipe variant needs one line in your Panda config, because no default `staticCss` run
+generates the per-breakpoint classes:
+
+```ts
+export default defineChakraConfig({
+  responsive: { separator: ["orientation"] },
+});
+```
+
+## Props
+
+<PropsTable component="separator" />

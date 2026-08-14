@@ -1,0 +1,50 @@
+---
+title: Code
+description: Used to display inline code
+links:
+  source: packages/chakra-ui-solid/src/components/code
+  chakra: https://chakra-ui.com/docs/components/code
+---
+
+<Example name="code-basic" />
+
+## Usage
+
+```tsx
+import { Code } from "chakra-ui-solid";
+```
+
+```tsx
+<Code>Hello world</Code>
+```
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the code component.
+
+<Example name="code-with-sizes" />
+
+### Variants
+
+Use the `variant` prop to change the appearance of the code component.
+
+<Example name="code-with-variants" />
+
+### Colors
+
+Use the `colorPalette` prop to change the color scheme of the component.
+
+<Example name="code-with-colors" />
+
+The palette is written out per row rather than looped over. `colorPalette` is a style prop, so its
+value has to be one this library's build could see: passed as a variable it computes a class with no
+rule behind it, and the snippet renders with no colour and no error.
+
+## Props
+
+<PropsTable component="code" />
+
+Code shares its five variants and four sizes with [Badge](/docs/components/badge) — the recipe is
+Badge's, over a monospace base — so a `variant` means the same thing on both.

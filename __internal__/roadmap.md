@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 36 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 43 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -355,6 +355,10 @@ minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvid
       on white and under AA. The React version renders the identical declaration from the identical
       preset token — both wrong the same way, so it ships and the invalid-state test pins exactly
       that one violation.
+      **Its subpath export was missing and is now there.** `package.json#chakraUiSolid.entries` had no
+      `field` row, so `chakra-ui-solid/field` resolved to nothing while the barrel exported it —
+      nothing checks the two agree, and the browser suite is green either way. Found and fixed on the
+      Phase-2 batch.
       Docs: **9 of upstream's 12 example slots**, and three sections dropped. `Textarea` and `Native
       Select` wait on their rows (the example *is* the section); `Horizontal` keeps its section and
       loses its third row, a `Switch`. `Explorer` is www machinery. **`Customization` is dropped too,
@@ -441,10 +445,19 @@ minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvid
       bearing prop for B4 is `unstyled`, not the recipe key. Still must land before B4. Its glyphs
       are its own, not `components/icons.tsx`'s: Chakra draws them as direct children of the styled
       element, where a glyph from that module is a nested `svg`
-- [ ] code — A:code · —/1
-      Settled by the `badge` port: `codeRecipe` destructures `badgeRecipe`'s **whole** `variants` and
-      `defaultVariants`, so the two share five variants and four sizes and differ only in a base
-      (`fontFamily: mono`). Already inlined in the installed preset — this row waits on nothing
+- [x] code — A:code · —/1
+      The `badge` row's prediction, verified: `codeRecipe` destructures `badgeRecipe`'s **whole**
+      `variants` and `defaultVariants`, the two share five variants and four sizes, and the base adds
+      `fontFamily: mono` plus a radius. Already inlined in the installed preset, so no preset edit was
+      owed. `withContext("code")`, `variantKeys: ["variant", "size"]`, no body — badge's file with
+      three words changed.
+      Docs: **all 4 of upstream's example slots**, and `code-with-colors` is the one that could not be
+      copied. Upstream maps over a `colorPalettes` array; `colorPalette` is a **style prop**, which
+      `preset.ts` deliberately keeps out of `staticCss` (measured there at 8 kB for a rescue nothing
+      uses), so a loop variable computes a class with no rule and the row renders colourless with no
+      error. Ten palettes are written out literally instead — same page, extractable source. A recipe
+      **variant** in a loop is fine and `mark-with-variants` uses one: `staticCss: ["*"]` covers all 75
+      recipe bodies
 - [x] color-swatch — A:colorSwatch · —/1
       **The recipes compose; the components do not** — the inverse of the two rows above, and this
       line read "Composed into `colorPicker` — must land before B8" until it was measured.
@@ -525,9 +538,39 @@ minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvid
       the shape that does **not** port: we have no `useRecipe`, we import the generated recipe
       function. Not `input`'s `createRecipeContext` shape either, since the body splits variant
       props and honours `unstyled` by hand
-- [ ] kbd — A:kbd · —/1
-- [ ] link — A:link · —/1
-- [ ] mark — A:mark · —/1
+- [x] kbd — A:kbd · —/1
+      `withContext("kbd")`, four variants and three sizes, `raised`/`md` defaults. The base's
+      `wordSpacing: -0.5em` is the load-bearing rule: one element carries a whole chord, so
+      `<Kbd>Shift + Tab</Kbd>` reads as a single cap rather than three spaced words.
+      **`KbdPropsProvider` is exported here and unreachable upstream** — `kbd.tsx` declares it,
+      `kbd/index.ts` re-exports only `Kbd`, and `components/index.ts` re-exports that. A declared
+      export a consumer cannot import is an oversight rather than a decision, and shipping it keeps
+      every atomic row in this package one shape. Recorded as a divergence; the docs page says nothing.
+      Docs: all 6 of upstream's example slots
+- [x] link — A:link · —/1
+      **Three components, not one, and the roadmap row named only the first**: upstream's directory is
+      `link.tsx` **plus `link-box.tsx`**, whose `LinkBox` and `LinkOverlay` are exported from the same
+      barrel and documented on their own page (`link-overlay.mdx`). Both ship here.
+      `Link` is `withContext("a")` with one variant (`underline`/`plain`, `plain` by default) — the
+      plainest row in the batch. The pair is not: they carry **two inline style objects and no recipe
+      at all**, because there is no `linkBox` key in `@chakra-ui/panda-preset` and none upstream
+      either. Those declarations are upstream's expression, so `link-box.tsx` is the batch's one
+      derivative — `attribution.config.ts`, `@license`, both `NOTICE.md` tables.
+      The mechanism is one class name: `LinkBox` lifts every anchor inside it above the overlay's
+      `::before` with `& a[href]:not(.chakra-linkbox__overlay)`, so the overlay must really carry
+      `chakra-linkbox__overlay`. `cx` puts a consumer's own class beside it.
+      **`asChild` appears in three upstream places here and `render` answers all three** —
+      `link-overlay-basic`, the `link.mdx` routing-library guide, and `link-overlay.mdx`'s custom-link
+      guide.
+      Docs: **two pages**. `link.mdx` is all 3 example slots plus both `## Guides` sections, and
+      `link-overlay.mdx` is a page `docs-config.ts` had no nav entry for — chakra-ui.com carries
+      *Link Overlay* between *Link* and *List* in Typography, and ours dropped it. Added
+- [x] mark — A:mark · —/1
+      `withContext("mark")`, one variant, and **the only recipe in this batch with no
+      `defaultVariants`** — so `MarkProps.variant` carries no `@default` tag and a bare `<Mark>` is the
+      base alone. That base is what earns the component: it neutralises the UA sheet's yellow
+      highlight, so every colour comes from `colorPalette` and an `unstyled` Mark goes yellow again.
+      Docs: both of upstream's example slots
 - [x] radiomark — A:radiomark · —/1
       **Both compose, differently.** The preset's `radioGroup`/`radioCard` slot recipes inline
       `radiomarkRecipe.base` and its size/variant objects, so those styles are already in our
@@ -537,14 +580,62 @@ minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvid
       site. `class="dot"` is the seam that survives `unstyled` — the slot recipes carry the `& .dot`
       rule the dropped `.radiomark` class would have supplied. Four `variant` values, not five: no
       `plain`
-- [ ] separator — A:separator · —/1
-      **Its page needs `responsive: { separator: ["orientation"] }`**, on the `dialog` row's
-      measurement: `separator-with-responsive-orientation` writes `orientation={{ base: "vertical",
-      sm: "horizontal" }}`, which no default `staticCss` run generates
-- [ ] skeleton — A:skeleton · —/1
-      Plus `SkeletonCircle`, `SkeletonText`
-- [ ] skip-nav — A:skipNavLink · —/1
-      `SkipNavLink` + `SkipNavContent`
+- [x] separator — A:separator · —/1
+      **Its page needs `responsive: { separator: ["orientation"] }`**, and the prediction held:
+      `separator-with-responsive-orientation` writes `orientation={{ base: "vertical", sm:
+      "horizontal" }}`, which no default `staticCss` run generates. One line in `apps/docs/
+      panda.config.ts` beside `dialog`'s; the rule lands in the recipe **body** as `["*", …]`, which
+      is `defineChakraConfig`'s own doing and needed no code change here.
+      **The one row in this batch with a body of its own.** `orientation` is a recipe variant *and* a
+      decision the component makes: a plain value gives `role="separator"` + `aria-orientation`, a
+      responsive one has no single orientation to announce and drops to `role="presentation"`. A
+      `withContext` component has no seam for a computed `role`, so this is Button's shape —
+      `createRecipeContext()` for the props context alone, then `createRecipeClass` + `renderStyled`.
+      `variantKeys` is `["variant", "orientation", "size"]`, in that order.
+      **`SeparatorPropsProvider` is inert upstream and works here** — a divergence, and the repairing
+      kind. `createRecipeContext`'s `useRecipeResult` never reads the props context; only its
+      `withContext` does, and Separator is the one component that calls `useRecipeResult` directly. So
+      on the React side the provider changes nothing at all, styles included. Ours reads it through
+      `withContextDefaults`, which is the same one line every other row in the batch spends.
+      Docs: all 6 of upstream's example slots, plus the config snippet the responsive one needs
+- [x] skeleton — A:skeleton · —/1
+      Plus `SkeletonCircle`, `SkeletonText` — right, and both are composition rather than recipe.
+      `Skeleton` itself is `withContext("div")` over `loading` + `variant`; `SkeletonCircle` is
+      upstream's `<Circle asChild><Skeleton/></Circle>`, which ports as **`render`** — one element
+      wearing both, where nesting would put the recipe's radius on the inner block and animate a
+      square inside a round box. `SkeletonText` is a `<Stack>` over a `<For>` whose length is
+      `noOfLines`, or 1 when `loading` is false.
+      **Two Solid-specific traps, both measured on this row.** A JSX spread of a **member
+      expression** (`{...merged.rootProps}`) compiles to a memo, and the untracked read then fires in
+      the *receiving* component: four `STRICT_READ_UNTRACKED` diagnostics from one spread, naming
+      `<Anonymous>`. Binding it to a name is not enough either — `merge(() => …)` fails the same way,
+      because any bag with a **dynamic key set** is enumerated by `renderStyled`'s `Object.keys` in
+      the receiving body. The adapter's `mergeProps` is the one proxy whose `ownKeys` is untracked, so
+      `mergeProps(() => merged.rootProps ?? {})` is the spelling that works.
+      **`rootProps` cannot carry a style value.** `SkeletonText` is not a name Panda tracks (only
+      recipe *keys* get a jsx hint, so `Skeleton` is tracked and `SkeletonText` is not), and a style
+      prop nested inside an object prop is not extractable anyway — `rootProps={{ maxW: "xs" }}`
+      computes a class with no rule. No upstream example uses it that way; its test asserts an `id`.
+      The batch's one **hydration entry**: the `<For>`'s length is a prop, so two lines, three lines
+      and a `loading={false}` collapse are three different `_hk` counts — `color-swatch`'s question
+      asked of a component whose count a consumer sets.
+      Docs: **7 of upstream's 8 example slots**. `skeleton-text-with-children` is referenced by no
+      page upstream and is not ported. `skeleton-with-children`'s `asChild` arm is `render`
+- [x] skip-nav — A:skipNavLink · —/1
+      `SkipNavLink` + `SkipNavContent`, right. Neither goes through `createRecipeContext`: upstream's
+      link calls `useRecipe({ key })` directly — the shape the `input-addon` row's note already names
+      as the one that does **not** port, since we import the generated recipe function instead — and
+      the content is a bare `chakra.div`. So the link is `createRecipeClass(skipNavLink, …)` +
+      `renderStyled` with no variants at all, and no props context on either half, which is upstream.
+      `skipNavLink` is the batch's only variantless recipe, and the generated function is `skipNavLink`
+      over a `skip-nav` class.
+      **`id` names the target, not the element.** The link consumes it into `href={`#${id}`}` and
+      carries no `id` of its own; the content wears it. Both spell it through `withDefaults`, because a
+      JSX attribute before the spread loses to a forwarded `undefined` and the failure is silent — the
+      anchor still renders and still takes focus, pointing at `#undefined`.
+      Docs: all 3 of upstream's example slots. **A `## Props` section where upstream has none**, on the
+      standing divergence — both halves declare an `id` of their own, with a default and a meaning the
+      DOM attribute does not have
 - [x] spinner — A:spinner · —/1
 - [x] text — ✗text · —/1
       Key resolves to nothing in Chakra too; styled by `textStyles` + style props

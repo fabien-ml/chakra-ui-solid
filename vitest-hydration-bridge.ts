@@ -134,6 +134,15 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/color-swatch/__tests__/color-swatch.ssr-entry.tsx",
   ),
+  // `ColorSwatchMix`'s question asked of a component whose count is a *prop*: `SkeletonText` renders
+  // a `<For>` over `noOfLines`, and `loading={false}` collapses that list to one — so the same
+  // subject spends two, three or one hydration key depending on props the server read. Its other
+  // half is `SkeletonCircle`, the only element in the library built by handing one component's
+  // computed props to another through `render`, which both sides have to resolve identically.
+  skeleton: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/skeleton/__tests__/skeleton.ssr-entry.tsx",
+  ),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

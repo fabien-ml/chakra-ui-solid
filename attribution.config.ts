@@ -124,6 +124,18 @@ const chakraReact: AttributionEntry[] = [
     package: "chakra-ui-solid",
   },
   {
+    // Two inline style objects — the overlay's zero-inset `::before` and the box's
+    // `:not(.chakra-linkbox__overlay)` rule that lifts every other link above it. There is no
+    // `linkBox` recipe anywhere in the preset, so unlike every other styled component here these
+    // declarations have to live in our source, and they are upstream's expression rather than ours.
+    // `link.tsx` beside it is API shape and owes nothing.
+    file: "packages/chakra-ui-solid/src/components/link/link-box.tsx",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "packages/react/src/components/link/link-box.tsx",
+    license: "MIT",
+    package: "chakra-ui-solid",
+  },
+  {
     // One path — the alert circle `Field.ErrorIcon` draws — in a file of part components that are
     // API shape and owe nothing. `icons.tsx` declines to carry it: nothing upstream imports Chakra's
     // own `ErrorIcon`, so `Field` builds its own from the glyph `field.tsx` inlines.

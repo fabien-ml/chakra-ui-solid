@@ -16,6 +16,8 @@ import {
   Checkmark,
   Circle,
   CloseButton,
+  Code,
+  CodePropsProvider,
   CollapsibleContent,
   CollapsibleContext,
   CollapsibleIndicator,
@@ -69,9 +71,17 @@ import {
   IconPropsProvider,
   Input,
   InputPropsProvider,
+  Kbd,
+  KbdPropsProvider,
+  Link,
+  LinkBox,
+  LinkOverlay,
+  LinkPropsProvider,
   Loader,
   LoaderOverlay,
   LocaleProvider,
+  Mark,
+  MarkPropsProvider,
   PopoverAnchor,
   PopoverArrow,
   PopoverArrowTip,
@@ -90,7 +100,15 @@ import {
   PopoverTrigger,
   Quote,
   Radiomark,
+  Separator,
+  SeparatorPropsProvider,
   SimpleGrid,
+  Skeleton,
+  SkeletonCircle,
+  SkeletonPropsProvider,
+  SkeletonText,
+  SkipNavContent,
+  SkipNavLink,
   Spacer,
   Span,
   Spinner,
@@ -226,6 +244,12 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <ColorSwatchPropsProvider value={{ shape: "circle" }}>
       <ColorSwatch value="#bada55" />
     </ColorSwatchPropsProvider>
+  ),
+  Code: () => <Code>console.log()</Code>,
+  CodePropsProvider: () => (
+    <CodePropsProvider value={{ size: "lg" }}>
+      <Code>console.log()</Code>
+    </CodePropsProvider>
   ),
   Container: () => <Container>page</Container>,
   // Chakra defaults `lazyMount` and `unmountOnExit` to `true` on Dialog, so a closed dialog's
@@ -422,6 +446,26 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
       <Input />
     </InputPropsProvider>
   ),
+  Kbd: () => <Kbd>Shift + Tab</Kbd>,
+  KbdPropsProvider: () => (
+    <KbdPropsProvider value={{ size: "lg" }}>
+      <Kbd>⌘</Kbd>
+    </KbdPropsProvider>
+  ),
+  Link: () => <Link href="#target">Visit</Link>,
+  // The pair, because the box's rule is written *about* the overlay's class name — rendered apart
+  // they would each produce an element and prove nothing about the selector that joins them.
+  LinkBox: () => (
+    <LinkBox as="article">
+      <LinkOverlay href="#target">Chakra V3 Workshop</LinkOverlay>
+    </LinkBox>
+  ),
+  LinkOverlay: () => <LinkOverlay href="#target">Read more</LinkOverlay>,
+  LinkPropsProvider: () => (
+    <LinkPropsProvider value={{ variant: "underline" }}>
+      <Link href="#target">Visit</Link>
+    </LinkPropsProvider>
+  ),
   Loader: () => <Loader text="Saving…">Save</Loader>,
   LoaderOverlay: () => <LoaderOverlay>loading</LoaderOverlay>,
   LocaleProvider: () => (
@@ -434,6 +478,12 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   // `false`/`false` stand and a closed popover's positioner and content are in the served markup
   // from the first render. Bare roots are the real default shape here; the lazy one is
   // `popover.ssr.test.tsx`'s subject instead.
+  Mark: () => <Mark variant="subtle">design system</Mark>,
+  MarkPropsProvider: () => (
+    <MarkPropsProvider value={{ variant: "solid" }}>
+      <Mark>design system</Mark>
+    </MarkPropsProvider>
+  ),
   PopoverAnchor: () => (
     <PopoverRoot>
       <PopoverAnchor>anchored</PopoverAnchor>
@@ -536,11 +586,35 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   // Checked, because that is the arm that renders a child — the unchecked one is an empty `span`
   // and would pass the "did any element come back" check with the dot never built.
   Radiomark: () => <Radiomark checked />,
+  // Responsive, because that is the arm whose `role` is decided rather than fixed: a conditional
+  // orientation has no single `aria-orientation`, so the element drops to `presentation` — and the
+  // server is where that decision has to be made, since no effect runs to correct it later.
+  Separator: () => <Separator orientation={{ base: "vertical", sm: "horizontal" }} />,
+  SeparatorPropsProvider: () => (
+    <SeparatorPropsProvider value={{ size: "lg" }}>
+      <Separator />
+    </SeparatorPropsProvider>
+  ),
   SimpleGrid: () => (
     <SimpleGrid columns={3}>
       <div>cell</div>
     </SimpleGrid>
   ),
+  Skeleton: () => <Skeleton height="5" />,
+  // One element built from two components — the Circle's computed props handed to the Skeleton
+  // through `render` — so a server that resolved the composition differently would send a different
+  // element rather than a differently-styled one.
+  SkeletonCircle: () => <SkeletonCircle size="10" />,
+  SkeletonPropsProvider: () => (
+    <SkeletonPropsProvider value={{ variant: "shine" }}>
+      <Skeleton height="5" />
+    </SkeletonPropsProvider>
+  ),
+  // Loading, because that is the arm whose `<For>` really has a length — `loading={false}` collapses
+  // it to one line and would exercise neither the count nor the short last line.
+  SkeletonText: () => <SkeletonText noOfLines={3} />,
+  SkipNavContent: () => <SkipNavContent>main</SkipNavContent>,
+  SkipNavLink: () => <SkipNavLink>Skip to content</SkipNavLink>,
   Spacer: () => <Spacer />,
   Span: () => <Span>inline</Span>,
   Spinner: () => <Spinner size="lg" />,

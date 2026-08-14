@@ -43,6 +43,12 @@ export default defineChakraConfig({
   // it silently. The opt-in is what holds in all four cases.
   //
   // It is a knob a consumer writes too, so the file stays the shape the install page documents.
-  responsive: { dialog: ["size"] },
+  //
+  // `separator-with-responsive-orientation` is the second, and it needs the same line for the same
+  // reason: `orientation={{ base: "vertical", sm: "horizontal" }}` resolves to
+  // `separator--orientation_vertical sm:separator--orientation_horizontal`, and the rule goes into
+  // the recipe *body* as `["*", …]` — a config-level `staticCss.recipes` entry is overwritten by
+  // the body's own before Panda reads it, for every recipe this preset ships.
+  responsive: { dialog: ["size"], separator: ["orientation"] },
   outdir: "styled-system",
 });

@@ -1,6 +1,6 @@
 # Third-party notices — `chakra-ui-solid`
 
-This package contains two files derived from another project, listed in the table below.
+This package contains the files derived from another project listed in the table below.
 
 Reading a reference for its reasoning, its public API shape, or an ARIA pattern owes nothing and
 does not appear here. Only a file that reproduces an upstream's **expression** gets a row, and
@@ -21,13 +21,17 @@ naming, none of which owes anything. What is derived is a set of **SVG paths**: 
 glyphs a component renders when the caller passes no icon of their own — the ✕ on a `CloseButton`,
 the chevron on an `Accordion`, the tick on a selected `Menu` item — plus the two `Checkmark` draws
 itself, a tick and an indeterminate dash, and the alert circle `Field.ErrorIcon` draws. A copied
-path is expression however few bytes it takes; the components around them are not.
+path is expression however few bytes it takes; the components around them are not. `LinkBox` and
+`LinkOverlay` are the other kind: the pair is styled by two inline style objects rather than by a
+recipe — there is no `linkBox` key in the preset — so those declarations live in our source and are
+upstream's expression.
 
 | File | Derived from |
 | ---- | ------------ |
 | `src/components/icons.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
 | `src/components/checkmark/checkmark.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/checkmark/checkmark.tsx` |
 | `src/components/field/field-parts.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/field/field.tsx` |
+| `src/components/link/link-box.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/link/link-box.tsx` |
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and

@@ -1,0 +1,59 @@
+---
+title: Kbd
+description: Used to show key combinations for an action
+links:
+  source: packages/chakra-ui-solid/src/components/kbd
+  chakra: https://chakra-ui.com/docs/components/kbd
+---
+
+<Example name="kbd-basic" />
+
+## Usage
+
+```tsx
+import { Kbd } from "chakra-ui-solid";
+```
+
+```tsx
+<Kbd>F12</Kbd>
+```
+
+## Examples
+
+### Combinations
+
+Render `Kbd` to showcase key combinations.
+
+<Example name="kbd-with-combinations" />
+
+### Function Keys
+
+Here's an example of using `Kbd` to showcase function keys.
+
+<Example name="kbd-function-keys" />
+
+### Variants
+
+Use the `variant` prop to change the appearance of the `Kbd` component.
+
+<Example name="kbd-with-variants" />
+
+### Sizes
+
+Use the `size` prop to change the size of the `Kbd` component.
+
+<Example name="kbd-with-sizes" />
+
+### Within Text
+
+Use `Kbd` within text to highlight key combinations.
+
+<Example name="kbd-within-text" />
+
+## Props
+
+<PropsTable component="kbd" />
+
+A whole chord fits in one `Kbd`. The recipe tightens `word-spacing`, so `Shift + Tab` reads as a
+single cap rather than as three spaced words — the separate elements above are for when the keys are
+pressed one at a time.

@@ -1,0 +1,37 @@
+---
+title: Mark
+description: Used to mark text for emphasis.
+links:
+  source: packages/chakra-ui-solid/src/components/mark
+  chakra: https://chakra-ui.com/docs/components/mark
+---
+
+<Example name="mark-basic" />
+
+## Usage
+
+```tsx
+import { Mark } from "chakra-ui-solid";
+```
+
+```tsx
+<Text>
+  The <Mark>design system</Mark> is a collection of UI elements
+</Text>
+```
+
+## Examples
+
+### Variants
+
+Use the `variant` prop to change the color of the mark.
+
+<Example name="mark-with-variants" />
+
+## Props
+
+<PropsTable component="mark" />
+
+`Mark` has no default variant, which is why the bare `<Mark>` above looks like the text around it:
+the recipe neutralises the browser's own yellow highlight, and every colour comes from
+`colorPalette` instead.
