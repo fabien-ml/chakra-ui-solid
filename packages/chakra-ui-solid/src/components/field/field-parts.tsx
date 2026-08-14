@@ -20,6 +20,7 @@ import {
   mergeProps,
   type RenderProp,
   renderStyled,
+  withDefaults,
 } from "@chakra-ui-solid/core";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { type Component, merge, omit, Show } from "solid-js";
@@ -136,14 +137,18 @@ const ErrorCircleIcon = createIcon({
  * with `boxSize: "1em"` alone — so it takes the surrounding text's size and inherits the `ErrorText`
  * slot's `fg.error` colour, exactly like an {@link Icon} anywhere else.
  */
-export const FieldErrorIcon: Component<FieldErrorIconProps> = (props) => (
-  // A literal JSX attribute, where upstream passes `boxSize` through `createIcon`'s `defaultProps`.
-  // Panda extracts a style prop from JSX; a value sitting in a plain function call reaches no
-  // extractor at all, so the class would be computed, the rule never generated, and the icon would
-  // render at the browser's default `svg` size with nothing to say so (`CLAUDE.md`, *silent
-  // unstyling*). Before the spread, so a caller's own size still wins.
-  <ErrorCircleIcon boxSize="1em" {...props} />
-);
+export const FieldErrorIcon: Component<FieldErrorIconProps> = (props) => {
+  // A `withDefaults` entry, where upstream passes `boxSize` through `createIcon`'s `defaultProps`.
+  // Not a JSX attribute before the spread: that spelling is a presence merge, so a wrapper
+  // forwarding an unset `boxSize` deletes it and the icon renders at the browser's default `svg`
+  // size (`CLAUDE.md`, *The third hazard*). A value in an object literal inside a function call
+  // reaches no extractor either, so the preset carries a `boxSize: ["1em"]` `staticCss` row.
+  const merged = withDefaults(props, {
+    boxSize: "1em",
+  } satisfies Partial<FieldErrorIconProps>);
+
+  return <ErrorCircleIcon {...merged} />;
+};
 
 /**
  * The `*` after a required field's label — decoration, since `required` on the control is what a

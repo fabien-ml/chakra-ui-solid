@@ -100,10 +100,15 @@ describe("the preset's own chain and atomic staticCss", () => {
     // `borderInlineStartWidth` in a row one, which is why they alone carry `responsive: true` — a
     // responsive `direction` makes the mapped value responsive too.
     //
-    // `captionSide` is the same bar reached from the other direction: `Table.Caption` supplies
-    // `bottom` through `withDefaults`, because the extractable spelling — a JSX attribute before
-    // the props spread — is deleted by a wrapper forwarding the prop unset (measured). The value
-    // then lives only in an object literal, which no extractor reads.
+    // Everything from `captionSide` down is the same bar reached from the other direction: a
+    // component supplies the value through `withDefaults`, because the extractable spelling — a
+    // JSX attribute before the props spread — is deleted by a wrapper forwarding the prop unset
+    // (measured). The value then lives only in an object literal, which no extractor reads. Eight
+    // rows, seven components: `Table.Caption`'s side, `Circle`'s radius, `ColorSwatch.Mix`'s
+    // clipping, `IconButton`'s two paddings and its `_icon` font size, `Field.ErrorIcon`'s
+    // `boxSize`, `LinkBox`'s `position`, and `SkeletonText`'s stack width. `Stat.Group`'s four
+    // moved the same way and needed no row — `display`, `flexWrap`, `justifyContent` and
+    // `alignItems` are already in the lists above.
     //
     // **A component picking the value is the bar, and the list is exhaustive on purpose.** There is
     // no row for `colorPalette`: no component in this library defaults or forwards one, and a
@@ -134,6 +139,14 @@ describe("the preset's own chain and atomic staticCss", () => {
         },
       },
       { properties: { captionSide: ["bottom"] } },
+      { properties: { borderRadius: ["9999px"] } },
+      { properties: { overflow: ["hidden"] } },
+      { properties: { paddingInline: ["0"] } },
+      { properties: { paddingBlock: ["0"] } },
+      { properties: { fontSize: ["1.2em"] }, conditions: ["icon"] },
+      { properties: { boxSize: ["1em"] } },
+      { properties: { position: ["relative"] } },
+      { properties: { width: ["full"] } },
       { properties: { borderTopWidth: ["1px", "0"] }, responsive: true },
       { properties: { borderInlineStartWidth: ["1px", "0"] }, responsive: true },
     ]);

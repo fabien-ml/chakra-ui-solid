@@ -182,8 +182,11 @@ export const StatDownIndicator: Component<StatDownIndicatorProps> = createTrendI
  * a named object of getters into the provider, `omit` for the element — rather than through Panda's
  * `splitVariantProps`, which destructures eagerly and would stop a changed `size` re-resolving.
  *
- * Its four layout properties are JSX attributes **before** the spread, which is where a style-prop
- * default belongs: the consumer overrides any of them by passing their own.
+ * Its four layout properties are defaults the consumer overrides by passing their own, and they sit
+ * in the same `withDefaults` bag as `role` rather than as JSX attributes before the spread — that
+ * spelling is a presence merge, so a wrapper forwarding an unset `display` would flatten the row to
+ * a block (`CLAUDE.md`, *The third hazard*). All four values are already in the preset's
+ * `staticCss.css`, which is what keeps them reachable now that no extractor sees them.
  */
 export const StatGroup: Component<StatGroupProps> = (props) => {
   // A named object of getters, never an inline `value={{ size: props.size }}`: the provider
@@ -194,20 +197,20 @@ export const StatGroup: Component<StatGroupProps> = (props) => {
     },
   };
 
-  const merged = withDefaults(props, { role: "group" } satisfies Partial<StatGroupProps>);
+  const merged = withDefaults(props, {
+    role: "group",
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-around",
+    alignItems: "flex-start",
+  } satisfies Partial<StatGroupProps>);
   // Named, and spread as an identifier — a call expression in a JSX spread compiles to a memo the
   // receiving component then reads untracked.
   const groupProps = omit(merged, ...VARIANT_KEYS);
 
   return (
     <StatPropsProvider value={variantProps}>
-      <chakra.div
-        display="flex"
-        flexWrap="wrap"
-        justifyContent="space-around"
-        alignItems="flex-start"
-        {...groupProps}
-      />
+      <chakra.div {...groupProps} />
     </StatPropsProvider>
   );
 };

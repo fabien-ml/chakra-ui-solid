@@ -188,6 +188,39 @@ describe("Stat — the group, props context and a11y", () => {
     expect(getComputedStyle(probe(container, "local")).fontSize).toBe("20px");
   });
 
+  it("keeps the four layout defaults when a wrapper forwards them unset", () => {
+    // The measurement behind the `withDefaults` bag. Written as `display="flex" … {...props}` the
+    // defaults are *gone* here: a JSX spread is a presence merge, so each forwarded `undefined`
+    // wins, `css()` receives `undefined`, no rule is emitted, and the row flattens to a block
+    // (`CLAUDE.md`, *The third hazard*).
+    const Forwarding = (props: {
+      display?: "flex" | "block";
+      flexWrap?: "wrap" | "nowrap";
+      justifyContent?: "space-around" | "center";
+      alignItems?: "flex-start" | "center";
+    }) => (
+      <StatGroup
+        data-probe="group"
+        display={props.display}
+        flexWrap={props.flexWrap}
+        justifyContent={props.justifyContent}
+        alignItems={props.alignItems}
+      >
+        <Stat.Root>
+          <Stat.ValueText>345,670</Stat.ValueText>
+        </Stat.Root>
+      </StatGroup>
+    );
+
+    mounted = mount(() => <Forwarding />);
+    const group = probe(mounted.container, "group");
+
+    expect(getComputedStyle(group).display).toBe("flex");
+    expect(getComputedStyle(group).flexWrap).toBe("wrap");
+    expect(getComputedStyle(group).justifyContent).toBe("space-around");
+    expect(getComputedStyle(group).alignItems).toBe("flex-start");
+  });
+
   it("re-resolves every Stat below the group when its size changes", () => {
     const [size, setSize] = createSignal<"sm" | "lg">("sm");
     mounted = mount(() => (

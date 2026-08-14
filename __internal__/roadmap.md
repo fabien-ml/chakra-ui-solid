@@ -363,7 +363,9 @@ The seam's own suite gained the test that would have caught it.
       observes. `ErrorText` is gated on `invalid` upstream, which is what makes `aria-errormessage`
       need both halves for free. And `boxSize: "1em"` cannot go through `createIcon`'s `defaultProps`:
       Panda extracts style props from JSX only, so inside a call it generates no rule and the icon
-      rendered at 58px — it is a literal JSX attribute before the spread.
+      rendered at 58px. It shipped as a literal JSX attribute before the spread and is now a
+      `withDefaults` entry plus a `boxSize: ["1em"]` `staticCss` row — the `table` row measured that
+      the attribute spelling loses the default to a forwarded `undefined`.
       **The slot classes travel through the styling seam, not the field context.** `FieldContextValue`
       is `CreateFieldReturn` and nothing else, so `<Field.Context>` hands a consumer the field alone —
       which is what Chakra's hands them. The Root publishes the class map with `StylesProvider` and
@@ -590,7 +592,9 @@ The seam's own suite gained the test that would have caught it.
       React's JSX types carry and Solid's do not.
       **`StatGroup` is the library's second props-context writer**, after `ButtonGroup`, and takes
       exactly its shape — a named object of getters into the provider, `omit(merged, ...VARIANT_KEYS)`
-      for the element, and the four layout properties as JSX attributes before the spread. There is
+      for the element, and the four layout properties in the same `withDefaults` bag as `role` —
+      they shipped as JSX attributes before the spread until the `table` row measured that spelling
+      losing a default to a forwarded `undefined`. All four values were already in `staticCss`. There is
       **no `rootProps`-style escape hatch anywhere in this row**; the prediction that there might be
       was wrong, and the `mergeProps` carry-forward from `field` had no site here.
       **`Stat.HelpText` is a `span` directly inside a `dl`**, which is markup a `dl` does not allow
@@ -631,10 +635,15 @@ The seam's own suite gained the test that would have caught it.
       silently unstyled one. **Both halves are needed**, so the row also adds
       `{ properties: { captionSide: ["bottom"] } }` to the preset's `staticCss.css` — the list whose
       stated bar is "a value a *component's* own logic picks", which this is exactly.
-      Three other components still use the lossy spelling for a real default (`Circle`'s
-      `borderRadius`, `ColorSwatch`'s `overflow`, `StatGroup`'s four layout props — those four
-      values are already in `staticCss`), and `CLAUDE.md`'s *third hazard* still lists the spelling
-      as a place a default may live. Both are open.
+      Both follow-ups are closed. `CLAUDE.md`'s *third hazard* now names the spelling as a way to
+      keep a value extractable and never as a place a default may live, and the eight sites a grep
+      of `components/` turned up were converted with it: `Circle`'s `borderRadius`, `ColorSwatchMix`'s
+      `overflow`, `IconButton`'s two paddings and `_icon` font size, `Field.ErrorIcon`'s `boxSize`,
+      `LinkBox`'s `position`, `SkeletonText`'s stack width, `StatGroup`'s four layout props (already
+      covered by `staticCss`) and `SkipNavContent`'s `tabindex` + inline `outline` (neither a style
+      prop, so neither owes a row). The literals left standing are not defaults: `checkmark.tsx` and
+      `icons.tsx` set an SVG glyph's own drawing attributes, and `ColorSwatchMix`'s inner cells carry
+      no spread behind them to delete anything.
       **`Table.Root` is `withProvider("table", "root")` with no body**, where upstream hand-writes
       it for one reason: the `native` prop. **`native` is not ported.** It takes each slot's
       resolved *style object* and re-hangs it on `& thead`, `& tr`, `& td`; a slot here is a class
@@ -916,10 +925,14 @@ The seam's own suite gained the test that would have caught it.
       because any bag with a **dynamic key set** is enumerated by `renderStyled`'s `Object.keys` in
       the receiving body. The adapter's `mergeProps` is the one proxy whose `ownKeys` is untracked, so
       `mergeProps(() => merged.rootProps ?? {})` is the spelling that works.
-      **`rootProps` cannot carry a style value.** `SkeletonText` is not a name Panda tracks (only
-      recipe *keys* get a jsx hint, so `Skeleton` is tracked and `SkeletonText` is not), and a style
-      prop nested inside an object prop is not extractable anyway — `rootProps={{ maxW: "xs" }}`
+      **`rootProps` cannot carry an arbitrary style value.** `SkeletonText` is not a name Panda tracks
+      (only recipe *keys* get a jsx hint, so `Skeleton` is tracked and `SkeletonText` is not), and a
+      style prop nested inside an object prop is not extractable anyway — `rootProps={{ maxW: "xs" }}`
       computes a class with no rule. No upstream example uses it that way; its test asserts an `id`.
+      The stack's own `width: "full"` is the one style value that bag does carry, and it needs both
+      halves: `withDefaults` over the bag, because `rootProps={{ width: props.width }}` deletes the
+      default in a presence merge, plus a `width: ["full"]` `staticCss` row, because that is exactly
+      the unextractable case this paragraph describes.
       The batch's one **hydration entry**: the `<For>`'s length is a prop, so two lines, three lines
       and a `loading={false}` collapse are three different `_hk` counts — `color-swatch`'s question
       asked of a component whose count a consumer sets.

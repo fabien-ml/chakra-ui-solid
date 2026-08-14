@@ -163,7 +163,7 @@ describe("LinkBox", () => {
     expect(getComputedStyle(overlayOf(mounted.element)).position).toBe("static");
   });
 
-  it("lets a consumer's own `position` win, because it is a style prop before the spread", () => {
+  it("lets a consumer's own `position` win, because it is a default rather than a base style", () => {
     mounted = mountElement(() => (
       <LinkBox position="absolute">
         <LinkOverlay href="#target">Read more</LinkOverlay>
@@ -171,6 +171,22 @@ describe("LinkBox", () => {
     ));
 
     expect(getComputedStyle(mounted.element).position).toBe("absolute");
+  });
+
+  it("keeps the default when a wrapper forwards `position` unset", () => {
+    // The measurement behind the `withDefaults` call. Written as `position="relative" {...props}`
+    // the default is *gone* here: a JSX spread is a presence merge, so the forwarded `undefined`
+    // wins, `css()` receives `undefined`, no rule is emitted, and the overlay grows to whatever is
+    // positioned further up the page (`CLAUDE.md`, *The third hazard*).
+    const Forwarding = (props: { position?: "relative" | "absolute" }) => (
+      <LinkBox position={props.position}>
+        <LinkOverlay href="#target">Read more</LinkOverlay>
+      </LinkBox>
+    );
+
+    mounted = mountElement(() => <Forwarding />);
+
+    expect(getComputedStyle(mounted.element).position).toBe("relative");
   });
 
   it("lifts an inner link above the overlay, and leaves the overlay itself alone", () => {

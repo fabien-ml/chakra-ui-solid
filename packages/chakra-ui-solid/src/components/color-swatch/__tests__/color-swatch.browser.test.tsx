@@ -292,6 +292,20 @@ describe("ColorSwatchMix", () => {
     expect(getComputedStyle(gridOf(mounted.element)).gridTemplateColumns).toBe("24px 24px");
   });
 
+  it("keeps the clipping when a wrapper forwards `overflow` unset", () => {
+    // The measurement behind the `withDefaults` call. Written as `overflow="hidden" {...props}` the
+    // default is *gone* here: a JSX spread is a presence merge, so the forwarded `undefined` wins,
+    // `css()` receives `undefined`, no rule is emitted, and the mix spills over everything beside
+    // it (`CLAUDE.md`, *The third hazard*).
+    const Forwarding = (props: { overflow?: "hidden" | "visible" }) => (
+      <ColorSwatchMix items={["red", "pink"]} size="lg" overflow={props.overflow} />
+    );
+
+    mounted = mountElement(() => <Forwarding />);
+
+    expect(getComputedStyle(mounted.element).overflow).toBe("hidden");
+  });
+
   it("gives every cell its own colour and no ring of its own", () => {
     mounted = mountElement(() => <ColorSwatchMix items={["red", "pink"]} size="lg" />);
     const cells = cellsOf(mounted.element);

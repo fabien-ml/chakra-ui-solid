@@ -187,6 +187,27 @@ describe("SkeletonText", () => {
     expect(mounted.element.id).toBe("lines");
     expect(mounted.element.children).toHaveLength(2);
   });
+
+  it("keeps the stack full-width when `rootProps` carries an unset `width`", () => {
+    // The measurement behind the `withDefaults` call around `rootProps`. Written as `width="full"
+    // {...rootProps}` the default is *gone* here: `rootProps` is a bag whose key set is the union
+    // of its sources' own keys, so a `width` present with `undefined` wins the presence merge,
+    // `css()` receives `undefined`, no rule is emitted, and the stack shrinks to its content
+    // (`CLAUDE.md`, *The third hazard*). The `width: ["full"]` preset row is what keeps the rule
+    // reachable now that no extractor sees the value.
+    // A flex row 400px wide, so the stack's own width is observable: a flex item sizes to its
+    // content, and these lines have no intrinsic width at all.
+    const Forwarding = (props: { width?: string }) => (
+      <div style={{ display: "flex", width: "400px" }}>
+        <SkeletonText noOfLines={2} rootProps={{ width: props.width }} />
+      </div>
+    );
+
+    mounted = mountElement(() => <Forwarding />);
+    const stack = mounted.element.firstElementChild as Element;
+
+    expect(getComputedStyle(stack).width).toBe("400px");
+  });
 });
 
 describe("Skeleton — server render, then hydrate", () => {

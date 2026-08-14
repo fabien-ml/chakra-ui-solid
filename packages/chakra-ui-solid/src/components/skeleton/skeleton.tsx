@@ -130,10 +130,19 @@ export const SkeletonText: Component<SkeletonTextProps> = (props) => {
   // legal: any bag with a **dynamic key set** is enumerated by `renderStyled`'s `Object.keys` in the
   // receiving component's body, and only this proxy answers a structural question without
   // subscribing to it (`merge-props.ts`, *the union of every source's own enumerable keys*).
-  const rootProps = mergeProps(() => merged.rootProps ?? {});
+  //
+  // `width: "full"` is a default *of that bag*, so it is resolved with `withDefaults` here rather
+  // than written as a JSX attribute before the spread: `rootProps={{ width: props.width }}` puts
+  // the key on the bag with `undefined`, and a presence merge would drop the stack to its content's
+  // width (`CLAUDE.md`, *The third hazard*). The preset carries a `width: ["full"]` `staticCss` row
+  // for the value now that it reaches no extractor.
+  const rootProps = withDefaults(
+    mergeProps(() => merged.rootProps ?? {}),
+    { width: "full" },
+  );
 
   return (
-    <Stack gap={merged.gap} width="full" {...rootProps}>
+    <Stack gap={merged.gap} {...rootProps}>
       <For each={lines()}>
         {(index) => (
           <Skeleton

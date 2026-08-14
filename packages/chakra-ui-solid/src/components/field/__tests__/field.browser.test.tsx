@@ -283,6 +283,30 @@ describe("Field — the two texts, and the IDREFs they own", () => {
     const { fontSize } = getComputedStyle(partOf(mounted.container, "error-text"));
     expect(getComputedStyle(icon).width).toBe(fontSize);
   });
+
+  it("keeps the ErrorIcon's size when a wrapper forwards `boxSize` unset", () => {
+    // The measurement behind the `withDefaults` call. Written as `boxSize="1em" {...props}` the
+    // default is *gone* here: a JSX spread is a presence merge, so the forwarded `undefined` wins,
+    // `css()` receives `undefined`, no rule is emitted, and the glyph falls back to the browser's
+    // default `svg` size (`CLAUDE.md`, *The third hazard*).
+    const Forwarding = (props: { boxSize?: string }) => (
+      <Field.Root invalid>
+        <Field.ErrorText>
+          <Field.ErrorIcon boxSize={props.boxSize} />
+          Too short
+        </Field.ErrorText>
+      </Field.Root>
+    );
+
+    mounted = mount(() => <Forwarding />);
+    const icon = partOf(mounted.container, "error-text").querySelector("svg");
+    if (!(icon instanceof SVGElement)) {
+      throw new Error("expected the error text to render an svg");
+    }
+
+    const { fontSize } = getComputedStyle(partOf(mounted.container, "error-text"));
+    expect(getComputedStyle(icon).width).toBe(fontSize);
+  });
 });
 
 describe("Field — the required indicator", () => {

@@ -285,6 +285,27 @@ describe("IconButton", () => {
     // a condition our generated types do not carry would emit nothing at all.
     expect(getComputedStyle(querySvg(mounted.element)).fontSize).toBe("16.8px");
   });
+
+  it("keeps all three defaults when a wrapper forwards them unset", () => {
+    // The measurement behind the `withDefaults` bag. Written as `px="0" py="0" _icon={…}
+    // {...props}` the defaults are *gone* here: a JSX spread is a presence merge, so each forwarded
+    // `undefined` wins, `css()` receives `undefined`, no rule is emitted, and the button comes back
+    // with a text button's padding (`CLAUDE.md`, *The third hazard*).
+    const Forwarding = (props: { px?: string; py?: string; _icon?: { fontSize: string } }) => (
+      <IconButton aria-label="Search" px={props.px} py={props.py} _icon={props._icon}>
+        <svg viewBox="0 0 24 24" />
+      </IconButton>
+    );
+
+    mounted = mountElement(() => <Forwarding />);
+    const style = getComputedStyle(mounted.element);
+
+    expect(style.paddingLeft).toBe("0px");
+    expect(style.paddingRight).toBe("0px");
+    expect(style.paddingTop).toBe("0px");
+    expect(style.paddingBottom).toBe("0px");
+    expect(getComputedStyle(querySvg(mounted.element)).fontSize).toBe("16.8px");
+  });
 });
 
 describe("CloseButton", () => {

@@ -87,10 +87,26 @@ describe("SkipNavContent", () => {
     expect(mounted.element.getAttribute("id")).toBe("chakra-skip-nav");
   });
 
-  it("lets a consumer override the tab index it sets before the spread", () => {
-    mounted = mountElement(() => <SkipNavContent tabindex={0} />);
+  it("lets a consumer override the tab index and the outline it defaults", () => {
+    mounted = mountElement(() => <SkipNavContent tabindex={0} style={{ outline: "1px solid" }} />);
 
     expect(mounted.element.getAttribute("tabindex")).toBe("0");
+    expect(getComputedStyle(mounted.element).outlineStyle).toBe("solid");
+  });
+
+  it("keeps both when a wrapper forwards `tabindex` and `style` unset", () => {
+    // The measurement behind the `withDefaults` bag. Written as `tabindex={-1} style={…}
+    // {...merged}` both defaults are *gone* here: a JSX spread is a presence merge, so each
+    // forwarded `undefined` wins and the jump lands on an element that cannot take focus
+    // (`CLAUDE.md`, *The third hazard*).
+    const Forwarding = (props: { tabindex?: number; style?: { outline: string } }) => (
+      <SkipNavContent tabindex={props.tabindex} style={props.style} />
+    );
+
+    mounted = mountElement(() => <Forwarding />);
+
+    expect(mounted.element.getAttribute("tabindex")).toBe("-1");
+    expect(getComputedStyle(mounted.element).outlineStyle).toBe("none");
   });
 
   it("wraps the main content when it is given some", () => {

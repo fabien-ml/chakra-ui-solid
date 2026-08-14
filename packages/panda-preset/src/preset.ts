@@ -61,6 +61,29 @@ const displays = ["flex", "inline-flex", "grid", "inline-grid"];
 const captionSides = ["bottom"];
 
 /**
+ * The style-prop defaults seven components supply when the consumer names none — one entry each,
+ * and every one of them arrived here for the same reason `captionSides` did.
+ *
+ * The obvious spelling is a literal JSX attribute before the props spread, which is extractable and
+ * **wrong**: a Solid JSX spread is a presence merge, so a wrapper forwarding the prop unset beats
+ * the literal with `undefined` and the default is gone, where the React version's `mergeProps`
+ * resolves the same key by value and keeps it. `withDefaults` fixes the deletion and puts the value
+ * in an object literal no extractor reads — which is what these rows are for (`CLAUDE.md`, *The
+ * third hazard*).
+ *
+ * `Stat.Group`'s four — `display`, `flexWrap`, `justifyContent`, `alignItems` — moved the same way
+ * and are already covered by the lists above, which is why nothing here names them. `SkipNavContent`
+ * moved `tabindex` and an inline `outline` and owes nothing either: neither is a style prop.
+ */
+const circleBorderRadii = ["9999px"];
+const colorSwatchMixOverflows = ["hidden"];
+const iconButtonPaddings = ["0"];
+const iconButtonIconFontSizes = ["1.2em"];
+const fieldErrorIconSizes = ["1em"];
+const linkBoxPositions = ["relative"];
+const skeletonTextWidths = ["full"];
+
+/**
  * One `staticCss: ["*"]` key per recipe, merged into the inherited recipe body by `theme.extend`.
  *
  * This is the answer to the question the whole styling layer turns on: Panda generates CSS by
@@ -162,6 +185,14 @@ export const chakraSolidPreset = definePreset({
       { properties: { alignItems: alignItems } },
       { properties: { justifyContent: justifyContent } },
       { properties: { captionSide: captionSides } },
+      { properties: { borderRadius: circleBorderRadii } },
+      { properties: { overflow: colorSwatchMixOverflows } },
+      { properties: { paddingInline: iconButtonPaddings } },
+      { properties: { paddingBlock: iconButtonPaddings } },
+      { properties: { fontSize: iconButtonIconFontSizes }, conditions: ["icon"] },
+      { properties: { boxSize: fieldErrorIconSizes } },
+      { properties: { position: linkBoxPositions } },
+      { properties: { width: skeletonTextWidths } },
       { properties: { borderTopWidth: separatorBorderWidths }, responsive: true },
       { properties: { borderInlineStartWidth: separatorBorderWidths }, responsive: true },
     ],

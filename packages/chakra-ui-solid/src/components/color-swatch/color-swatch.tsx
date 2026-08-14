@@ -5,6 +5,7 @@ import {
   type HTMLChakraProps,
   renderStyled,
   withContextDefaults,
+  withDefaults,
 } from "@chakra-ui-solid/core";
 import { type ColorSwatchVariantProps, colorSwatch } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -146,28 +147,33 @@ const TOO_MANY_COLORS = "ColorSwatchMix doesn't support more than 4 colors";
  * there and only counts the cells here. Nothing is invented to cover the difference.
  */
 export const ColorSwatchMix: Component<ColorSwatchMixProps> = (props) => {
+  // `overflow: "hidden"` is what makes the whole layout work, and it is a `withDefaults` entry
+  // rather than a JSX attribute before the spread: that spelling is deleted by a wrapper forwarding
+  // an unset `overflow`, because a Solid JSX spread is a presence merge (`CLAUDE.md`, *The third
+  // hazard*). `withDefaults` also hides the value from Panda's extractor, so the preset carries an
+  // `overflow: ["hidden"]` `staticCss` row for it. A caller passing their own still wins.
+  const merged = withDefaults(props, {
+    overflow: "hidden",
+  } satisfies Partial<ColorSwatchMixProps>);
+
   // `untrack` because the read really is untracked and Solid is right to say so: this is a
   // construction-time check, and the alternative is the halted graph described above.
-  if (untrack(() => props.items.length) > 4) {
+  if (untrack(() => merged.items.length) > 4) {
     throw new Error(TOO_MANY_COLORS);
   }
 
   const spansTwoColumns = (index: number) =>
-    props.items.length === 3 && index === props.items.length - 1;
+    merged.items.length === 3 && index === merged.items.length - 1;
 
   // Named rather than spread inline. A **call expression** in a JSX spread is compiled to a memo,
   // and the receiving component then reads a reactive value in its own body — `STRICT_READ_UNTRACKED`,
   // reported against `<Anonymous>` with nothing pointing back here.
-  const swatchProps = omit(props, "items");
+  const swatchProps = omit(merged, "items");
 
-  // `overflow="hidden"` is a JSX attribute before the spread, not a `merge` default: a style prop in
-  // an object literal inside a function call is not statically extractable, and this one is what
-  // makes the whole layout work (`CLAUDE.md`, *The hazard*, and *The third hazard*'s second home for
-  // a default). Before the spread is also Chakra's order, so a caller can still override it.
   return (
-    <ColorSwatch overflow="hidden" {...swatchProps} value="transparent">
+    <ColorSwatch {...swatchProps} value="transparent">
       <Grid templateColumns="var(--swatch-size) var(--swatch-size)">
-        <For each={props.items}>
+        <For each={merged.items}>
           {(item, index) => (
             <ColorSwatch
               size="inherit"

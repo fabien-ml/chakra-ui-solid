@@ -11,7 +11,7 @@
  * This file has been modified from the original.
  */
 
-import { chakra, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import { chakra, type HTMLChakraProps, withDefaults } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import { type Component, merge, omit } from "solid-js";
 
@@ -78,16 +78,24 @@ const StyledLinkBox = chakra("div", {
  * LinkBox — the container a {@link LinkOverlay} stretches over, so a whole card can be a link
  * without nesting interactive elements inside an anchor.
  *
- * `position="relative"` is a style prop **before** the spread rather than part of the base config,
- * which is the precedence Chakra gives it: it is what the overlay's `::before` resolves against, and
- * a consumer who wants `absolute` or `sticky` instead overrides it by passing one.
+ * `position: "relative"` is a style-prop default rather than part of the base config, which is the
+ * precedence Chakra gives it: it is what the overlay's `::before` resolves against, and a consumer
+ * who wants `absolute` or `sticky` instead overrides it by passing one. It is a `withDefaults`
+ * entry, not a JSX attribute before the spread — that spelling is a presence merge, so a wrapper
+ * forwarding an unset `position` deletes it and the overlay grows to whatever is positioned further
+ * up the page (`CLAUDE.md`, *The third hazard*). The preset carries a `position: ["relative"]`
+ * `staticCss` row, because no extractor reads the object literal it now lives in.
  */
 export const LinkBox: Component<LinkBoxProps> = (props) => {
-  const elementProps = merge(omit(props, "class"), {
+  const merged = withDefaults(props, {
+    position: "relative",
+  } satisfies Partial<LinkBoxProps>);
+
+  const elementProps = merge(omit(merged, "class"), {
     get class() {
-      return cx("chakra-linkbox", props.class as string | undefined);
+      return cx("chakra-linkbox", merged.class as string | undefined);
     },
   });
 
-  return <StyledLinkBox position="relative" {...elementProps} />;
+  return <StyledLinkBox {...elementProps} />;
 };

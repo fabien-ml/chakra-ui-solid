@@ -76,11 +76,18 @@ export interface SkipNavContentProps extends HTMLChakraProps<"div"> {
  *
  * `tabindex={-1}` is what makes a `div` focusable by the jump without putting it in the tab order,
  * and the inline `outline: 0` is there because that focus is programmatic — a visible ring on a
- * whole content region would read as a bug rather than as feedback. Both sit before the spread, so
- * a consumer can override either.
+ * whole content region would read as a bug rather than as feedback. Both are defaults a consumer
+ * can override, so both live in the bag beside `id` rather than as JSX attributes before the
+ * spread: a wrapper forwarding an unset `tabindex` would beat the literal with `undefined` and the
+ * jump would land on an element that cannot take focus (`CLAUDE.md`, *The third hazard*). Neither
+ * is a style prop — `outline` goes out as the DOM `style` attribute — so neither owes a preset row.
  */
 export const SkipNavContent: Component<SkipNavContentProps> = (props) => {
-  const merged = withDefaults(props, { id: FALLBACK_ID } satisfies Partial<SkipNavContentProps>);
+  const merged = withDefaults(props, {
+    id: FALLBACK_ID,
+    tabindex: -1,
+    style: { outline: "0" },
+  } satisfies Partial<SkipNavContentProps>);
 
-  return <chakra.div tabindex={-1} style={{ outline: "0" }} {...merged} />;
+  return <chakra.div {...merged} />;
 };

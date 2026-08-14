@@ -20,8 +20,22 @@ describe("Circle", () => {
   });
 
   it("lets a consumer's `borderRadius` override it", () => {
-    // `borderRadius` sits before the spread, so this is the precedence Chakra gives it.
+    // A `withDefaults` entry resolves by value, so this is the precedence Chakra gives it.
     mounted = mountElement(() => <Circle size="10" borderRadius="0" />);
     expect(getComputedStyle(mounted.element).borderRadius).toBe("0px");
+  });
+
+  it("keeps the default when a wrapper forwards `borderRadius` unset", () => {
+    // The measurement behind the `withDefaults` call. Written as `borderRadius="9999px"
+    // {...props}` the default is *gone* here: a JSX spread is a presence merge, so the forwarded
+    // `undefined` wins, `css()` receives `undefined`, and no rule is emitted (`CLAUDE.md`, *The
+    // third hazard*).
+    const Forwarding = (props: { borderRadius?: string }) => (
+      <Circle size="10" borderRadius={props.borderRadius} />
+    );
+
+    mounted = mountElement(() => <Forwarding />);
+
+    expect(getComputedStyle(mounted.element).borderRadius).toBe("9999px");
   });
 });
