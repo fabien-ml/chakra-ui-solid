@@ -20,4 +20,20 @@ export interface CollapsibleContextValue extends CreateCollapsibleReturn {
 export const [CollapsibleProvider, useCollapsibleContext] =
   createComponentContext<CollapsibleContextValue>("Collapsible");
 
+/**
+ * The slot classes the Root resolved, for an element of your own inside a Collapsible:
+ *
+ * ```tsx
+ * const styles = useCollapsibleStyles();
+ * <Box class={styles().content}>…</Box>
+ * ```
+ *
+ * A machine component publishes its class map on the component context rather than through
+ * `createSlotRecipeContext`, so this reads `slots` off that context. The value is the accessor the
+ * machine-less rows' `useStyles` hands back, and it throws outside a `Collapsible.Root` for the
+ * same reason they do.
+ */
+export const useCollapsibleStyles = (): Accessor<Record<CollapsibleSlot, string>> =>
+  useCollapsibleContext().slots;
+
 export const { PropsProvider, usePropsContext } = createPropsContext<CollapsibleRootBaseProps>();

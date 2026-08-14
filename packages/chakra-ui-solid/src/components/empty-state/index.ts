@@ -6,6 +6,7 @@ export type {
   EmptyStateRootBaseProps,
   EmptyStateRootProps,
   EmptyStateSlot,
+  EmptyStateTitleProps,
   EmptyStateVariantProps,
 } from "./empty-state";
 export {

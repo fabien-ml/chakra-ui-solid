@@ -20,7 +20,7 @@ export type {
 export type { FieldContextValue, FieldSlot } from "./field-context";
 // `useOptionalFieldContext` stays package-internal: upstream exports one reader, and the second one
 // exists for the form controls in this package that adopt a surrounding field without requiring one.
-export { useFieldContext } from "./field-context";
+export { useFieldContext, useFieldStyles } from "./field-context";
 export {
   FieldContext,
   FieldErrorIcon,

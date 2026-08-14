@@ -60,4 +60,19 @@ export interface DialogContextValue extends CreateDialogReturn {
 export const [DialogProvider, useDialogContext] =
   createComponentContext<DialogContextValue>("Dialog");
 
+/**
+ * The slot classes the Root resolved, for an element of your own inside a Dialog:
+ *
+ * ```tsx
+ * const styles = useDialogStyles();
+ * <Box class={styles().body}>…</Box>
+ * ```
+ *
+ * A machine component publishes its class map on the component context rather than through
+ * `createSlotRecipeContext`, so this reads `slots` off that context. The value is the accessor the
+ * machine-less rows' `useStyles` hands back, and it throws outside a `Dialog.Root` for the same
+ * reason they do.
+ */
+export const useDialogStyles = (): Accessor<Record<DialogSlot, string>> => useDialogContext().slots;
+
 export const { PropsProvider, usePropsContext } = createPropsContext<DialogRootBaseProps>();

@@ -12,7 +12,8 @@ export type {
   CreateCollapsibleProps,
   CreateCollapsibleReturn,
 } from "./collapsible.types";
-export { useCollapsibleContext } from "./collapsible-context";
+export type { CollapsibleSlot } from "./collapsible-context";
+export { useCollapsibleContext, useCollapsibleStyles } from "./collapsible-context";
 export {
   CollapsibleContent,
   CollapsibleContext,

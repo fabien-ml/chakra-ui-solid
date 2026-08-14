@@ -130,6 +130,8 @@ asks, correct **both** in the same commit.
       `<Collapsible.Context>`'s render prop is called once in the part's **body**, so a callback
       returning a plain string reads untracked and freezes at mount. It must return JSX — the same
       holds for the 42 other components with a `Context` part (blueprint §3.2)
+      **`useCollapsibleStyles` was missing and now ships**, with `useDialogStyles` and
+      `usePopoverStyles` — see the `dialog` row for the shape all three take.
 - [ ] color-picker — S:colorPicker · 24/26 · Z
       Largest anatomy in the library. `+channelText`. Floating — **the seam is free**, measured at
       `popover` (1500/1501): object-form `style` only on the positioner, content stays its
@@ -181,6 +183,14 @@ asks, correct **both** in the same commit.
       source extraction of `dialog-with-responsive-size.tsx`: deleting the opt-in leaves both in the
       sheet. The rules now go into the recipe body as `["*", …]`, measured on `button`, which had no
       extraction to hide behind and went from zero `md:button--size_lg` rules to two
+      **`useDialogStyles` was missing, and so were `usePopoverStyles` / `useCollapsibleStyles`.**
+      Upstream gets one free — `createSlotRecipeContext({ key: "dialog" })` returns `useStyles` and
+      `dialog.tsx:19,23` re-exports it — where a machine Root here resolves the class map with
+      `createSlotClasses` and publishes it on the component context as `slots`, so nothing was
+      exported under that name. The hook is now the accessor off that context
+      (`useDialogContext().slots`), which is the same `Accessor<Record<Slot, string>>` the 13
+      machine-less rows' `use*Styles` already hand back. Upstream's yields `SystemStyleObject`s and
+      ours yields class strings, which is the seam's standing difference, not this row's.
 - [ ] drawer — dialog · S:drawer · 7/10 · D ⚠
       Runs on `dialog`, not `@zag-js/drawer` (§2.2). Its duplicate `backdrop` slot is source-only,
       for the reason measured on the `dialog` row — it is Panda's generator, not the recipe.
@@ -257,6 +267,7 @@ asks, correct **both** in the same commit.
       (`decisions.md` §*A Zag correction that notifies nothing*). **The axe finding was wrong in
       both directions** — `aria-hidden-focus` never fires, and `aria-valid-attr-value` fires in all
       three states (`definition-of-done.md` §5)
+      **`usePopoverStyles` was missing and now ships** — see the `dialog` row for the shape
 - [ ] presence — Z
       Headless machine, no anatomy. `chakra(ArkPresence)`. **`core` holds `createPresence`**, over
       the `@zag-js/presence` machine through this package's own adapter, beside the
@@ -385,7 +396,9 @@ The seam's own suite gained the test that would have caught it.
       **The slot classes travel through the styling seam, not the field context.** `FieldContextValue`
       is `CreateFieldReturn` and nothing else, so `<Field.Context>` hands a consumer the field alone —
       which is what Chakra's hands them. The Root publishes the class map with `StylesProvider` and
-      each part reads its own slot with `useFieldStyles()`.
+      each part reads its own slot with `useFieldStyles()` — **which the barrel did not export, and
+      now does.** Upstream's `field/index.ts:9` exports it; ours had the hook and kept it internal.
+      (`fieldset` is not the same case — upstream exports no `useFieldsetStyles` either.)
       **RequiredIndicator owes no `children()`.** Its `fallback` and `children` are read exactly once
       per branch, measured with Button's counting fixture; the counting tests stay in as the proof.
       **And it carries no `data-scope` / `data-part`, alone among the parts here.** It is the one
@@ -587,6 +600,10 @@ The seam's own suite gained the test that would have caught it.
       `-with-action` / `-with-list` take `PaintBucketIcon` — a glyph the set already had — where
       upstream imports `HiColorSwatch` from `react-icons/hi`, which is Heroicons rather than Lucide
       and so has no counterpart to copy
+      **`EmptyStateTitleProps` was the one type the barrel dropped** — declared, aliased as
+      `TitleProps` in `namespace.ts`, and absent from `index.ts`, so the flat import upstream
+      resolves (`empty-state/index.ts:15`) failed here. Fixed. A sweep of every component found no
+      second instance.
 - [x] list — S:list · —/3
       **A repeated part costs nothing** — the same `withContext`-minted `List.Item` is reused per
       row, and the prediction that named one was naming a non-event. What the row does cost is its

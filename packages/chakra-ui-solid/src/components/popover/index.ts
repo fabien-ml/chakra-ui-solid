@@ -33,7 +33,7 @@ export type {
   PopoverVariantProps,
 } from "./popover.types";
 export type { PopoverSlot } from "./popover-context";
-export { usePopoverContext } from "./popover-context";
+export { usePopoverContext, usePopoverStyles } from "./popover-context";
 export {
   PopoverAnchor,
   PopoverArrow,

@@ -57,4 +57,20 @@ export interface PopoverContextValue extends CreatePopoverReturn {
 export const [PopoverProvider, usePopoverContext] =
   createComponentContext<PopoverContextValue>("Popover");
 
+/**
+ * The slot classes the Root resolved, for an element of your own inside a Popover:
+ *
+ * ```tsx
+ * const styles = usePopoverStyles();
+ * <Box class={styles().body}>…</Box>
+ * ```
+ *
+ * A machine component publishes its class map on the component context rather than through
+ * `createSlotRecipeContext`, so this reads `slots` off that context. The value is the accessor the
+ * machine-less rows' `useStyles` hands back, and it throws outside a `Popover.Root` for the same
+ * reason they do.
+ */
+export const usePopoverStyles = (): Accessor<Record<PopoverSlot, string>> =>
+  usePopoverContext().slots;
+
 export const { PropsProvider, usePropsContext } = createPropsContext<PopoverRootBaseProps>();
