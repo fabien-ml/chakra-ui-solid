@@ -2,7 +2,7 @@ import { type MountedElement, mountElement } from "@chakra-ui-solid/internal-tes
 import { container } from "@chakra-ui-solid/styled-system/recipes";
 import { createSignal, flush } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
-import { Container } from "../container";
+import { Container, ContainerPropsProvider } from "../container";
 
 let mounted: MountedElement | undefined;
 
@@ -79,9 +79,9 @@ describe("Container", () => {
 
     expect(mounted.element.hasAttribute("centerContent")).toBe(false);
     expect(mounted.element.hasAttribute("centercontent")).toBe(false);
-    // The component omits those keys by literal name, because `omit` narrows by the keys it is
-    // handed and a `string[]` narrows nothing. This is what keeps the two lists one list: a variant
-    // added to the recipe and not to the component would reach the DOM as an attribute.
+    // The seam omits those keys by literal name, because `omit` narrows by the keys it is handed
+    // and a `string[]` narrows nothing. This is what keeps the two lists one list: a variant added
+    // to the recipe and not to the tuple would reach the DOM as an attribute.
     expect(container.variantKeys).toEqual(["centerContent", "fluid"]);
   });
 
@@ -90,5 +90,38 @@ describe("Container", () => {
 
     expect(mounted.element.tagName).toBe("MAIN");
     expect(getComputedStyle(mounted.element).position).toBe("relative");
+  });
+
+  it("takes props from a provider above it", () => {
+    mounted = mountElement(() => (
+      <ContainerPropsProvider value={{ fluid: true }}>
+        <Container>content</Container>
+      </ContainerPropsProvider>
+    ));
+
+    expect(getComputedStyle(mounted.element).maxWidth).toBe("100%");
+  });
+
+  it("lets a local prop beat the provider", () => {
+    mounted = mountElement(() => (
+      <ContainerPropsProvider value={{ fluid: true }}>
+        <Container fluid={false}>content</Container>
+      </ContainerPropsProvider>
+    ));
+
+    expect(getComputedStyle(mounted.element).maxWidth).toBe("1440px");
+  });
+
+  it("keeps the provider's value when a wrapper forwards an unset `fluid`", () => {
+    // The seam's merge resolves by *value*, not by presence. Spelled `merge(context, props)` it
+    // resolves by presence, and `<Container fluid={props.fluid}>` in a wrapper with nothing set
+    // beats the provider with `undefined` — the subtree silently gets its maximum width back.
+    mounted = mountElement(() => (
+      <ContainerPropsProvider value={{ fluid: true }}>
+        <Container fluid={undefined}>content</Container>
+      </ContainerPropsProvider>
+    ));
+
+    expect(getComputedStyle(mounted.element).maxWidth).toBe("100%");
   });
 });

@@ -55,6 +55,7 @@ import {
   ColorSwatchMix,
   ColorSwatchPropsProvider,
   Container,
+  ContainerPropsProvider,
   createCollapsible,
   createDialog,
   createPopover,
@@ -525,6 +526,11 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </CodePropsProvider>
   ),
   Container: () => <Container>page</Container>,
+  ContainerPropsProvider: () => (
+    <ContainerPropsProvider value={{ fluid: true }}>
+      <Container>page</Container>
+    </ContainerPropsProvider>
+  ),
   DataListItem: () => (
     <DataListRoot>
       <DataListItem>

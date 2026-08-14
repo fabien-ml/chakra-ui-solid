@@ -840,6 +840,12 @@ The seam's own suite gained the test that would have caught it.
       the whole page (`[REACTIVITY_HALTED]`) and every later render anywhere no-ops. Measured
 - [x] container — A:container · —/1
       **The one recipe the preset is missing** (§1.3a). One preset delta, expression-tier, `@license` + `NOTICE` rows
+      **It shipped without `ContainerPropsProvider`, which is behaviour Chakra has** — upstream is
+      `createRecipeContext({ key: "container" })` and exports the `PropsProvider` it destructures
+      (`container/container.tsx:24-25`, `index.ts:1`). Ours was a hand-written `createRecipeClass` +
+      `renderStyled` body with no props context at all, so a subtree could not be given `fluid` or
+      `centerContent` from above. Corrected to `badge`'s shape — `createRecipeContext` mints both
+      halves, the body is gone, and the forwarded-`undefined` test the pattern owes is in.
 - [x] download-trigger — ✗downloadTrigger · —/1
       Key resolves to nothing in Chakra too — true, and the only clause this note had. What it did
       not say is that this is **the one atomic row with behavior**: upstream is Ark's
