@@ -1,5 +1,8 @@
-import { createComponentContext, createPropsContext } from "@chakra-ui-solid/core";
-import type { Accessor } from "solid-js";
+import { createComponentContext, createSlotRecipeContext } from "@chakra-ui-solid/core";
+import {
+  type FieldVariantProps as FieldRecipeVariants,
+  field as fieldRecipe,
+} from "@chakra-ui-solid/styled-system/recipes";
 import type { CreateFieldReturn, FieldRootBaseProps } from "./field.types";
 
 /**
@@ -25,16 +28,13 @@ export type FieldSlot =
   | "select";
 
 /**
- * What a part reads: the field, plus the slot classes the Root resolved once.
+ * What a part reads: the field's state, ids and prop getters.
  *
- * Composition rather than inheritance — the context value **holds** the field (as
- * {@link CreateFieldReturn}'s getters) instead of spreading it, so every read goes back to the live
- * signals.
+ * The slot classes are **not** here — they travel through the styling seam below, which is what
+ * every other machine-less multi-part component uses. So `<Field.Context>` hands a consumer the
+ * field and nothing else, which is what Chakra's hands them too.
  */
-export interface FieldContextValue extends CreateFieldReturn {
-  /** One class string per slot, resolved once on the Root. */
-  slots: Accessor<Record<FieldSlot, string>>;
-}
+export type FieldContextValue = CreateFieldReturn;
 
 /**
  * Three members where every other component here destructures two, and the third is the point.
@@ -48,4 +48,22 @@ export interface FieldContextValue extends CreateFieldReturn {
 export const [FieldProvider, useFieldContext, useOptionalFieldContext] =
   createComponentContext<FieldContextValue>("Field");
 
-export const { PropsProvider, usePropsContext } = createPropsContext<FieldRootBaseProps>();
+/**
+ * The styling half — one slot recipe resolved on the Root, one class per part below.
+ *
+ * `withProvider` is unused here and cannot be: this Root owns `createField` as well as an element,
+ * so it resolves the classes with `resolveSlotClasses` and publishes them with `StylesProvider`
+ * itself. The parts stay hand-written for the same reason — each one merges a prop getter off the
+ * field — and read their slot through `useFieldStyles`.
+ */
+export const {
+  StylesProvider: FieldStylesProvider,
+  useStyles: useFieldStyles,
+  resolveSlotClasses: resolveFieldSlotClasses,
+  PropsProvider,
+  usePropsContext,
+} = createSlotRecipeContext<FieldSlot, FieldRootBaseProps, FieldRecipeVariants>({
+  name: "Field",
+  recipe: fieldRecipe,
+  variantKeys: ["orientation"],
+});

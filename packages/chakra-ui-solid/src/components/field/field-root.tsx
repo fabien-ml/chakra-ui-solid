@@ -1,19 +1,15 @@
-import {
-  createSlotClasses,
-  mergeProps,
-  renderStyled,
-  withContextDefaults,
-  withDefaults,
-} from "@chakra-ui-solid/core";
-import {
-  type FieldVariantProps as FieldRecipeVariants,
-  field as fieldRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import { mergeProps, renderStyled, withContextDefaults, withDefaults } from "@chakra-ui-solid/core";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, omit } from "solid-js";
 import { createField } from "./create-field";
 import type { FieldRootProps } from "./field.types";
-import { FieldProvider, type FieldSlot, PropsProvider, usePropsContext } from "./field-context";
+import {
+  FieldProvider,
+  FieldStylesProvider,
+  PropsProvider,
+  resolveFieldSlotClasses,
+  usePropsContext,
+} from "./field-context";
 
 type DivProps = ComponentProps<"div">;
 
@@ -64,21 +60,13 @@ export const FieldRoot: Component<FieldRootProps> = (props) => {
     required: false,
   });
 
-  // Once, here — never per part. Five part components each calling `sva()` is five times the work
-  // for one answer, and it puts five copies of the variant-reading logic in the tree where they can
-  // disagree. A memo, because a variant prop is a prop like any other and `orientation` can change.
-  const slots = createSlotClasses<FieldSlot, FieldRecipeVariants>(fieldRecipe, {
-    variantProps: () => ({ orientation: merged.orientation }),
-    // The Root-level opt-out, which empties every slot. A part opting out for itself is
-    // `renderStyled`'s job, and it already suppresses its own `recipeClass` on `unstyled`.
-    unstyled: () => merged.unstyled,
-  });
+  // Once, here — never per part: the seam resolves the recipe against these props and publishes one
+  // class per slot to everything below, including the Root-level `unstyled` opt-out, which empties
+  // every one of them. A part opting out for itself is `renderStyled`'s job, and it already
+  // suppresses its own `recipeClass` on `unstyled`.
+  const slots = resolveFieldSlotClasses(merged);
 
   const store = createField(merged);
-
-  // `merge`, never `{ ...store, slots }`: the store is an object of getters over live signals, and a
-  // spread would read every one of them here and freeze the context at the initial state.
-  const value = merge(store, { slots });
 
   const elementProps = mergeProps(
     () => store.getRootProps(),
@@ -86,13 +74,15 @@ export const FieldRoot: Component<FieldRootProps> = (props) => {
   ) as DivProps;
 
   return (
-    <FieldProvider value={value}>
-      {renderStyled<DivProps, HTMLDivElement>({
-        as: (merged.as ?? "div") as ValidComponent,
-        props: elementProps,
-        render: merged.render,
-        recipeClass: () => slots().root,
-      })}
+    <FieldProvider value={store}>
+      <FieldStylesProvider value={slots}>
+        {renderStyled<DivProps, HTMLDivElement>({
+          as: (merged.as ?? "div") as ValidComponent,
+          props: elementProps,
+          render: merged.render,
+          recipeClass: () => slots().root,
+        })}
+      </FieldStylesProvider>
     </FieldProvider>
   );
 };

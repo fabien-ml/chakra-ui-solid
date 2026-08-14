@@ -36,7 +36,7 @@ import type {
   FieldLabelProps,
   FieldRequiredIndicatorProps,
 } from "./field.types";
-import { FieldProvider, type FieldSlot, useFieldContext } from "./field-context";
+import { FieldProvider, type FieldSlot, useFieldContext, useFieldStyles } from "./field-context";
 
 type LabelProps = ComponentProps<"label">;
 type SpanProps = ComponentProps<"span">;
@@ -48,13 +48,14 @@ type SpanProps = ComponentProps<"span">;
  */
 export const FieldLabel: Component<FieldLabelProps> = (props) => {
   const ctx = useFieldContext();
+  const styles = useFieldStyles();
   const elementProps = mergeProps(() => ctx.getLabelProps(), props) as LabelProps;
 
   return renderStyled<LabelProps, HTMLLabelElement>({
     as: (props.as ?? "label") as ValidComponent,
     props: elementProps,
     render: props.render,
-    recipeClass: () => ctx.slots().label,
+    recipeClass: () => styles().label,
   });
 };
 
@@ -77,7 +78,7 @@ function renderTextPart(
   register: (id: string | undefined) => void,
   slot: FieldSlot,
 ): JSX.Element {
-  const ctx = useFieldContext();
+  const styles = useFieldStyles();
   const elementProps = mergeProps(attributes, props) as SpanProps;
 
   createRegisteredId({ id: () => elementProps.id, register });
@@ -86,7 +87,7 @@ function renderTextPart(
     as: (props.as ?? "span") as ValidComponent,
     props: elementProps,
     render: props.render as RenderProp<SpanProps>,
-    recipeClass: () => ctx.slots()[slot],
+    recipeClass: () => styles()[slot],
   });
 }
 
@@ -164,6 +165,7 @@ export const FieldErrorIcon: Component<FieldErrorIconProps> = (props) => (
  */
 export const FieldRequiredIndicator: Component<FieldRequiredIndicatorProps> = (props) => {
   const ctx = useFieldContext();
+  const styles = useFieldStyles();
 
   const elementProps = mergeProps(() => ctx.getRequiredIndicatorProps(), omit(props, "fallback"), {
     get children() {
@@ -177,7 +179,7 @@ export const FieldRequiredIndicator: Component<FieldRequiredIndicatorProps> = (p
         as: (props.as ?? "span") as ValidComponent,
         props: elementProps,
         render: props.render,
-        recipeClass: () => ctx.slots().requiredIndicator,
+        recipeClass: () => styles().requiredIndicator,
       })}
     </Show>
   );

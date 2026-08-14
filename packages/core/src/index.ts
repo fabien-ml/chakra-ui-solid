@@ -80,6 +80,12 @@ export type { RecipeClassOptions, RecipeFn, SlotRecipeFn } from "./recipe/recipe
 export { createRecipeClass, createSlotClasses } from "./recipe/recipe";
 export type { RecipeContext, RecipeContextOptions } from "./recipe/recipe-context";
 export { createRecipeContext } from "./recipe/recipe-context";
+export type {
+  SlotRecipeContext,
+  SlotRecipeContextOptions,
+  WithProviderOptions,
+} from "./recipe/slot-recipe-context";
+export { createSlotRecipeContext } from "./recipe/slot-recipe-context";
 export type { RenderElementOptions, RenderProp } from "./render/render";
 export { renderElement } from "./render/render";
 export type { RenderStrategy, RenderStrategyProps } from "./render-strategy/render-strategy";

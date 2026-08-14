@@ -313,6 +313,13 @@ asks, correct **both** in the same commit.
 
 ## Multi-part, no machine (15)
 
+**The seam these rows are made of is `createSlotRecipeContext` in `packages/core/src/recipe/`**,
+shipped with the `field` migration: `withProvider(tag, slot)` mints a Root, `withContext(tag, slot?)`
+mints a part, `useStyles()` is the class map a hand-written part reads, and `PropsProvider` /
+`usePropsContext` is the Root's props context. A Root that owns a store as well as an element is not
+minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvider`, which is what
+`field` does and what `fieldset` will.
+
 - [x] field — S:field · —/8
       **The largest machine-less behavior in the library**, and the first machine-less multi-part
       component to ship: `createField` is a hand-written store of signals and prop getters, in the
@@ -338,6 +345,10 @@ asks, correct **both** in the same commit.
       need both halves for free. And `boxSize: "1em"` cannot go through `createIcon`'s `defaultProps`:
       Panda extracts style props from JSX only, so inside a call it generates no rule and the icon
       rendered at 58px — it is a literal JSX attribute before the spread.
+      **The slot classes travel through the styling seam, not the field context.** `FieldContextValue`
+      is `CreateFieldReturn` and nothing else, so `<Field.Context>` hands a consumer the field alone —
+      which is what Chakra's hands them. The Root publishes the class map with `StylesProvider` and
+      each part reads its own slot with `useFieldStyles()`.
       **RequiredIndicator owes no `children()`.** Its `fallback` and `children` are read exactly once
       per branch, measured with Button's counting fixture; the counting tests stay in as the proof.
       One inherited axe violation: `errorText` is `fg.error` (`red.500`) at `textStyle: xs`, 3.76:1
