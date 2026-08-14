@@ -43,6 +43,7 @@
       "input": "src/components/input/index.ts",
       "kbd": "src/components/kbd/index.ts",
       "link": "src/components/link/index.ts",
+      "list": "src/components/list/index.ts",
       "loader": "src/components/loader/index.ts",
       "locale": "src/components/locale/index.ts",
       "mark": "src/components/mark/index.ts",

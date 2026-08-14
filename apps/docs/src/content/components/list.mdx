@@ -1,0 +1,52 @@
+---
+title: List
+description: Used to display a list of items
+links:
+  source: packages/chakra-ui-solid/src/components/list
+  chakra: https://chakra-ui.com/docs/components/list
+---
+
+<Example name="list-basic" />
+
+## Usage
+
+```tsx
+import { List } from "chakra-ui-solid";
+```
+
+```tsx
+<List.Root>
+  <List.Item>Item 1</List.Item>
+  <List.Item>Item 2</List.Item>
+</List.Root>
+```
+
+## Examples
+
+### Ordered
+
+Pass the `as="ol"` prop to create an ordered list
+
+<Example name="list-ordered" />
+
+### Icon
+
+Use the `List.Indicator` component to add an icon to the list
+
+<Example name="list-with-icon" />
+
+### Nested
+
+Here's an example of a nested list
+
+<Example name="list-nested" />
+
+### Marker Style
+
+Use the `_marker` prop to style the marker of the list
+
+<Example name="list-with-marker-style" />
+
+## Props
+
+<PropsTable component="list" interface="ListRootProps" />

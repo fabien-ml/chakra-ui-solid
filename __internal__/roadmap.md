@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 51 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 52 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -474,7 +474,10 @@ The seam's own suite gained the test that would have caught it.
       of `staticCss` — and `blockquote-with-custom-icon` takes `StarIcon` from the docs' own set
       where upstream imports `react-icons/lu`
 - [ ] breadcrumb — S:breadcrumb · —/7
-      Repeated part (items)
+      Repeated part (items) — which `list` measured as a non-event: the same `withContext` component
+      is reused per row and needs nothing. **Its Root carries `defaultProps: { "aria-label":
+      "breadcrumb" }`**, so it takes `list`'s shape — a `withDefaults` wrapper over the minted Root,
+      not a seam change
 - [x] card — S:card · —/6
       The seam's own reference recipe, and the row that proved `withProvider` carries a plain Root
       with no body at all: six slots, six components, `variantKeys: ["size", "variant"]`, one file.
@@ -493,8 +496,28 @@ The seam's own suite gained the test that would have caught it.
 - [ ] data-list — S:dataList · —/4
       Repeated part (items)
 - [ ] empty-state — S:emptyState · —/5
-- [ ] list — S:list · —/3
-      Repeated part (items)
+- [x] list — S:list · —/3
+      **A repeated part costs nothing** — the same `withContext`-minted `List.Item` is reused per
+      row, and the prediction that named one was naming a non-event. What the row does cost is its
+      Root: `ListRoot` is `withProvider("ul", "root", { defaultProps: { role: "list" } })` upstream,
+      and our `withProvider` has no `defaultProps`. Rather than grow the seam, the Root is a
+      three-line component over the minted one — `withDefaults(props, { role: "list" })` spread into
+      it — which is the same fix the third hazard already prescribes and leaves the seam untouched.
+      The role is not redundant: Safari drops list semantics from a `ul` whose `list-style` is
+      `none`, which `variant="plain"` is.
+      Two variant keys, `variant` and `align`; `align` has **no** `defaultVariants` entry, so it is
+      the batch's one variant that resolves to nothing at all.
+      **`--list-gap` is defined nowhere, in Chakra either.** The root's `gap` and a nested list's
+      `margin-top` both read it with no fallback, so both are invalid at computed-value time and
+      take their initial value until a consumer passes `gap` — which is what upstream's own icon
+      example does. Both wrong the same way; it ships, and the docs page says nothing.
+      Docs: **all 5 of upstream's example slots**, `Explorer` dropped as www machinery. Two
+      adaptations: `list-with-icon` writes `render` where upstream writes `asChild`, so the
+      indicator's slot class lands on the glyph rather than on a span around it; and it takes
+      `CircleCheckIcon` / `CircleDashedIcon` from the docs' own lucide set where upstream imports
+      `react-icons/lu`. A **bare `✓` in an indicator is an axe `incomplete`**, not a pass —
+      `color-contrast` reports `nonBmp` on content that is only non-text characters — so the
+      fixtures put a glyph there, which is what upstream's example holds anyway
 - [ ] stat — S:stat · —/6
 - [x] status — S:status · —/2
       The smallest multi-part row in the library: two slots, one variant, no body. There is **no
@@ -509,7 +532,10 @@ The seam's own suite gained the test that would have caught it.
       `code-with-colors` and its two Phase-4 counterparts could be written out literally, and a
       closed component that takes the palette as a parameter cannot. `Explorer` is www machinery
 - [ ] table — S:table · —/8
-      Repeated parts (rows, cells)
+      Repeated parts (rows, cells) — a non-event, per `list`. The row's one default is **not** on the
+      Root: `Table.Caption` is `withContext("caption", "caption", { defaultProps: { captionSide:
+      "bottom" } })`, a *style* prop, so it is a JSX attribute before the spread rather than a
+      `withDefaults` entry
 - [x] tag — S:tag · —/5
       The `badge` row's prediction, verified: `tagSlotRecipe` reuses `badgeRecipe.variants.variant`
       and nothing else, the installed preset ships it inlined, and no preset edit was owed.
@@ -533,7 +559,8 @@ The seam's own suite gained the test that would have caught it.
       **unlabelled**, 1:1 with upstream, on `badge`'s precedent that the docs examples suite carries
       upstream's content rather than our corrections
 - [ ] timeline — S:timeline · —/8
-      Repeated part (items)
+      Repeated part (items) — a non-event, per `list`. **Its Root carries the same `defaultProps: {
+      role: "list" }` `list`'s does**, so it takes the same `withDefaults` wrapper
 
 ## Atomic-recipe components (21)
 

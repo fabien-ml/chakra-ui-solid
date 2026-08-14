@@ -102,6 +102,10 @@ import {
   LinkBox,
   LinkOverlay,
   LinkPropsProvider,
+  ListIndicator,
+  ListItem,
+  ListRoot,
+  ListRootPropsProvider,
   Loader,
   LoaderOverlay,
   LocaleProvider,
@@ -649,6 +653,33 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <LinkPropsProvider value={{ variant: "underline" }}>
       <Link href="#target">Visit</Link>
     </LinkPropsProvider>
+  ),
+  ListIndicator: () => (
+    <ListRoot variant="plain">
+      <ListItem>
+        <ListIndicator>✓</ListIndicator>
+        Shipped
+      </ListItem>
+    </ListRoot>
+  ),
+  ListItem: () => (
+    <ListRoot>
+      <ListItem>First</ListItem>
+    </ListRoot>
+  ),
+  // `as="ol"` rather than the default `ul`, because the tag is the one thing about this Root a
+  // consumer chooses and the `role="list"` default has to survive it.
+  ListRoot: () => (
+    <ListRoot as="ol" align="center">
+      <ListItem>First</ListItem>
+    </ListRoot>
+  ),
+  ListRootPropsProvider: () => (
+    <ListRootPropsProvider value={{ variant: "plain" }}>
+      <ListRoot>
+        <ListItem>First</ListItem>
+      </ListRoot>
+    </ListRootPropsProvider>
   ),
   Loader: () => <Loader text="Saving…">Save</Loader>,
   LoaderOverlay: () => <LoaderOverlay>loading</LoaderOverlay>,

@@ -43,6 +43,7 @@ export * from "./icon";
 export * from "./input";
 export * from "./kbd";
 export * from "./link";
+export * from "./list";
 export * from "./loader";
 export * from "./locale";
 export * from "./mark";
