@@ -77,11 +77,11 @@ describe("solid-js contract", () => {
   });
 
   describe("useContext throws when no Provider is mounted", () => {
-    // Depended on by `createComponentContext` in `@chakra-ui-solid/core` (step 3;
-    // `component-blueprint.md` §3.3), whose `try/catch` relies on the throw to reword it as
-    // "Dialog sub-components must be rendered inside a Dialog root component." If stable returns
-    // `undefined` instead, that friendly error stops firing and every part component fails later
-    // with a null-deref on the machine api.
+    // Why `createComponentContext` in `@chakra-ui-solid/core` (step 3; `component-blueprint.md`
+    // §3.3) cannot read a default-less context: the throw carries no component name, and it is
+    // indistinguishable from a throw raised inside a provider's own value — so a reader that
+    // wanted to answer `undefined` outside a root could not tell the two apart. It passes a
+    // private sentinel as the default instead, which is the half pinned below.
     it("throws for a context created without a default value", () => {
       const NoDefault = createContext<string>(undefined, { name: "NoDefault" });
 
@@ -92,8 +92,9 @@ describe("solid-js contract", () => {
     });
 
     it("returns the default value, without throwing, when the context has one", () => {
-      // The other half of the contract: `createComponentContext` passes `undefined` as the default
-      // *on purpose*. Were it to pass a real default, the catch would never run.
+      // The half `createComponentContext` stands on: its sentinel default reaches the reader
+      // untouched, which is what turns "no provider above me" into a value both of its readers can
+      // branch on — a named error, or `undefined`.
       const WithDefault = createContext<string>("fallback", { name: "WithDefault" });
 
       createRoot((dispose) => {

@@ -20,13 +20,14 @@ tarball and the only one a consumer who never visits the repository will see.
 naming, none of which owes anything. What is derived is a set of **SVG paths**: the 18 internal
 glyphs a component renders when the caller passes no icon of their own — the ✕ on a `CloseButton`,
 the chevron on an `Accordion`, the tick on a selected `Menu` item — plus the two `Checkmark` draws
-itself, a tick and an indeterminate dash. A copied path is expression however few bytes it takes;
-the components around them are not.
+itself, a tick and an indeterminate dash, and the alert circle `Field.ErrorIcon` draws. A copied
+path is expression however few bytes it takes; the components around them are not.
 
 | File | Derived from |
 | ---- | ------------ |
 | `src/components/icons.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
 | `src/components/checkmark/checkmark.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/checkmark/checkmark.tsx` |
+| `src/components/field/field-parts.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/field/field.tsx` |
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and

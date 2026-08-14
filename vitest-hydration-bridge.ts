@@ -120,6 +120,16 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
   // `style` attribute — `--color` is an arbitrary runtime colour, so it cannot be a class — and a
   // server and client that write that string differently leave the swatch painted by whichever side
   // won, with nothing to say so.
+  // The first subject with **no machine at all**, and the one whose two gates are read straight off
+  // props: a required field renders its indicator where an optional one renders the caller's
+  // fallback, and an invalid field renders an error text where a valid one renders nothing. It is
+  // also the first subject where a descendant registers its id with an ancestor — `onSettled` does
+  // not run on the server, so the served control carries no `aria-describedby` and the hydrated one
+  // grows it, against nodes the server sent.
+  field: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/field/__tests__/field.ssr-entry.tsx",
+  ),
   "color-swatch": join(
     repoRoot,
     "packages/chakra-ui-solid/src/components/color-swatch/__tests__/color-swatch.ssr-entry.tsx",

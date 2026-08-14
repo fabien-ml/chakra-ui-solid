@@ -123,6 +123,16 @@ const chakraReact: AttributionEntry[] = [
     license: "MIT",
     package: "chakra-ui-solid",
   },
+  {
+    // One path — the alert circle `Field.ErrorIcon` draws — in a file of part components that are
+    // API shape and owe nothing. `icons.tsx` declines to carry it: nothing upstream imports Chakra's
+    // own `ErrorIcon`, so `Field` builds its own from the glyph `field.tsx` inlines.
+    file: "packages/chakra-ui-solid/src/components/field/field-parts.tsx",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "packages/react/src/components/field/field.tsx",
+    license: "MIT",
+    package: "chakra-ui-solid",
+  },
 ];
 
 const docsApp: AttributionEntry[] = [

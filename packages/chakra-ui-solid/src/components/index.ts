@@ -28,6 +28,7 @@ export * from "./container";
 export * from "./dialog";
 export * from "./em";
 export * from "./environment";
+export * from "./field";
 export * from "./flex";
 export * from "./float";
 export * from "./grid";

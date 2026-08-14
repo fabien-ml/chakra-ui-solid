@@ -112,6 +112,11 @@ element the recipe styles, where the glyph module's are each a nested `svg`. The
 same three points either way; the dash has no counterpart there. Same reasoning, so the same row:
 the two shapes are Chakra's, the component around them is API shape and owes nothing.
 
+**And one more, for the same reason.** `Field.ErrorIcon` is an alert circle Chakra inlines in
+`field.tsx` rather than taking from the glyph module — its own `ErrorIcon` there is imported by
+nothing — so the path is copied from where Chakra actually draws it, and the part components beside
+it in our file are API shape and owe nothing.
+
 **The documentation content is different, and it is a derivative.** `apps/docs/src/content` follows
 chakra-ui.com's page structure, section order, example set and — where our API has not changed the
 claim — its sentences. Chakra's docs are covered by the same single MIT grant as their code: one
@@ -137,6 +142,7 @@ fold on the docs home and in every page's footer.
 | `packages/core/src/factory/factory.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/styled-system/factory.tsx` |
 | `packages/chakra-ui-solid/src/components/icons.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
 | `packages/chakra-ui-solid/src/components/checkmark/checkmark.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/checkmark/checkmark.tsx` |
+| `packages/chakra-ui-solid/src/components/field/field-parts.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/field/field.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/ui/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |

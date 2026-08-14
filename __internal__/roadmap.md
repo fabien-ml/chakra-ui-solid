@@ -313,20 +313,58 @@ asks, correct **both** in the same commit.
 
 ## Multi-part, no machine (15)
 
-- [ ] field — S:field · —/8
-      **The largest machine-less behavior in the library.** Ark implements it in 226 React lines; under `CLAUDE.md`, *Reference use* we read the ARIA contract, never the expression. **Duplicate slot `requiredIndicator`**.
-      `popover.mdx`'s `### Form` section waits on this row plus `input` and `textarea` — the debt is
-      written out on the `input` row.
-      **This row owes the `getInputProps()` wiring `Input` cannot do for itself.** Shipped `Input`
-      is `withContext("input")` with no field-context read, because Ark — which is where upstream's
-      merge lives — is not a dependency. When `field` lands it supplies the merge itself:
-      id/disabled/required/`aria-invalid`/`aria-describedby` under the caller's props, and the
-      context must be **non-strict** so a standalone `<Input>` outside a `Field.Root` keeps
-      working. Same for `textarea`
+- [x] field — S:field · —/8
+      **The largest machine-less behavior in the library**, and the first machine-less multi-part
+      component to ship: `createField` is a hand-written store of signals and prop getters, in the
+      shape `createPopover` has over a machine. Ark's is 226 React lines, read for the ARIA contract
+      and never the expression. It is not exported — upstream ships no `Field.RootProvider` and no
+      `useField`, only `useFieldContext`.
+      The **duplicate `requiredIndicator`** is real and it is in the *preset's slot list*, not the
+      anatomy: generated `FieldSlot` reads `… | "requiredIndicator" | "requiredIndicator"`. 8 unique
+      slots, and `errorIcon` is not one of them — upstream styles it with `createIcon` alone.
+      **Ark's `MutationObserver` does not port.** It discovers whether the two texts are rendered by
+      observing the root subtree for their generated ids; ours is `createRegisteredId`, the primitive
+      Dialog's labelling IDREF already uses — each text publishes its **effective** id on mount and
+      clears it on cleanup. Neither side emits `aria-describedby` in server markup (`onSettled` does
+      not run there, and React's `useState(false)` + layout effect does not either): expected.
+      **Two divergences, both fixes upstream lacks.** `ids.root` renames the root and `ids.control`
+      the control — Ark reads `ids.control` for the *root* and never reads `ids.root` at all, which
+      leaves the control id unoverridable and breaks the item/label derivation. And the two IDREFs
+      point at the id the text part registered, so a consumer's own `id` on `Field.HelperText` still
+      links where upstream drops the link entirely.
+      **Three notes the reference falsified.** HelperText and ErrorText render `span`, not the `div`
+      Chakra's type claims — the element it wraps is `ark.span`, and parity is what a consumer
+      observes. `ErrorText` is gated on `invalid` upstream, which is what makes `aria-errormessage`
+      need both halves for free. And `boxSize: "1em"` cannot go through `createIcon`'s `defaultProps`:
+      Panda extracts style props from JSX only, so inside a call it generates no rule and the icon
+      rendered at 58px — it is a literal JSX attribute before the spread.
+      **RequiredIndicator owes no `children()`.** Its `fallback` and `children` are read exactly once
+      per branch, measured with Button's counting fixture; the counting tests stay in as the proof.
+      One inherited axe violation: `errorText` is `fg.error` (`red.500`) at `textStyle: xs`, 3.76:1
+      on white and under AA. The React version renders the identical declaration from the identical
+      preset token — both wrong the same way, so it ships and the invalid-state test pins exactly
+      that one violation.
+      Docs: **9 of upstream's 12 example slots**, and three sections dropped. `Textarea` and `Native
+      Select` wait on their rows (the example *is* the section); `Horizontal` keeps its section and
+      loses its third row, a `Switch`. `Explorer` is www machinery. **`Customization` is dropped too,
+      and it sets a precedent**: its snippets are `createSystem` / `fieldSlotRecipe.extend` /
+      `@chakra-ui/cli typegen`, the runtime style system this port structurally does not have, and
+      rewriting them into Panda config would be invented content. `field` is the first page here
+      whose upstream carries one.
+      `popover.mdx`'s `### Form` section still waits on `textarea`
 - [ ] fieldset — S:fieldset · —/5
       Ark: 115 React lines. `+content`
+      **This row owes `field` the inherited `disabled`**, measured on the `field` ship: Ark's
+      `useField` opens with `useFieldsetContext()` and resolves `disabled = Boolean(fieldset?.disabled)`
+      — a *default*, so a Field's own `disabled` wins and a Field outside any Fieldset is unaffected.
+      Shipped `createField` resolves `props.disabled ?? false` and reads no fieldset, because the row
+      does not exist; the read is this row's to add, through the non-strict reader
+      `createComponentContext` now returns
 - [ ] native-select — S:nativeSelect · —/3
       Chakra's anatomy is `createAnatomy("select")` — **the same `data-scope` as `select`**. A hand-written selector that assumes scope uniqueness will match both
+      **The only *other* upstream `useFieldContext()` consumer**, and it reads it in its own body
+      rather than through an Ark wrapper (`native-select.tsx:59`) — so this row supplies its own
+      merge of `getSelectProps()` under the caller's props, the shape `input` now carries
 - [ ] alert — S:alert · —/5
 - [ ] blockquote — S:blockquote · —/4
 - [ ] breadcrumb — S:breadcrumb · —/7
@@ -448,9 +486,16 @@ asks, correct **both** in the same commit.
       logic. "Styles Ark's `Field.Input`" was right, and it is the one thing that did not port: Ark
       is not a dependency. `ArkField.Input` merges a **non-strict** field context's
       `getInputProps()` under the caller's props (`field?.getInputProps()`; non-strict is why a
-      bare `<Input>` works outside a `Field.Root`). No `field` row ships, so there is no context to
-      read and nothing observable is lost — ours is a plain `input` through the factory. That merge
-      is the **`field`** row's debt, recorded there.
+      bare `<Input>` works outside a `Field.Root`). No `field` row shipped at the time, so there was
+      no context to read and nothing observable was lost — ours was a plain `input` through the
+      factory. **Paid on the `field` ship**: the body is now Button's shape — props context off the
+      seam, `createRecipeClass` + `renderStyled` called directly — with the field layered underneath
+      through the adapter's lazy `mergeProps`, which resolves by value and re-calls `getInputProps()`
+      on each read. `withDefaults` cannot express it: it enumerates `Object.keys(defaults)` at
+      construction, which would snapshot the field's state. Ark's own Solid package spells the same
+      merge, arrived at independently. The field recipe's `input` slot class stays unapplied — the
+      element carries the `input` recipe class plus `data-scope="field" data-part="input"`, which is
+      upstream exactly.
       `input.variantKeys` is `["size", "variant"]` — the reverse of badge's order. 7 sizes, 3
       variants, `md`/`outline` defaults, fully statically extractable; `staticCss: ["*"]` in
       `packages/panda-preset/src/preset.ts` already covers it, so no preset edit was owed. The
@@ -496,8 +541,10 @@ asks, correct **both** in the same commit.
       Styles Ark's `Field.Textarea`. `popover.mdx`'s `### Form` section waits on this row plus
       `input` and `field` — the debt is written out on the `input` row.
       **`input`'s shape ports here unchanged**: upstream is the same `createRecipeContext({ key })`
-      + `withContext(ArkField.Textarea)`, so this is `withContext("textarea")` and the field merge
-      is `field`'s to supply
+      + `withContext(ArkField.Textarea)`, so this is `withContext("textarea")` plus the field merge
+      — and since the `field` ship the context exists to read. `createField` already exposes
+      `getTextareaProps()`; this row layers it under the caller's props exactly as `input` does,
+      through `useOptionalFieldContext`
 
 ## Styled primitives and layout (25)
 

@@ -47,6 +47,15 @@ import {
   DialogTrigger,
   Em,
   EnvironmentProvider,
+  FieldContext,
+  FieldErrorIcon,
+  FieldErrorText,
+  FieldHelperText,
+  FieldItem,
+  FieldLabel,
+  FieldPropsProvider,
+  FieldRequiredIndicator,
+  FieldRoot,
   Flex,
   Float,
   Grid,
@@ -319,6 +328,55 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <EnvironmentProvider>
       <span>scoped</span>
     </EnvironmentProvider>
+  ),
+  FieldContext: () => (
+    <FieldRoot>
+      <FieldContext>{(field) => <span>{field.ids.control}</span>}</FieldContext>
+    </FieldRoot>
+  ),
+  FieldErrorIcon: () => <FieldErrorIcon />,
+  // `invalid`, because that is the arm with an element: a valid field renders no error text at all,
+  // and the subject would come back as its Root's empty `div`.
+  FieldErrorText: () => (
+    <FieldRoot invalid>
+      <FieldErrorText>Enter an email address</FieldErrorText>
+    </FieldRoot>
+  ),
+  FieldHelperText: () => (
+    <FieldRoot>
+      <FieldHelperText>We never share it.</FieldHelperText>
+    </FieldRoot>
+  ),
+  FieldItem: () => (
+    <FieldRoot target="red">
+      <FieldItem value="red">
+        <FieldLabel>Red</FieldLabel>
+      </FieldItem>
+    </FieldRoot>
+  ),
+  FieldLabel: () => (
+    <FieldRoot>
+      <FieldLabel>Email</FieldLabel>
+    </FieldRoot>
+  ),
+  FieldPropsProvider: () => (
+    <FieldPropsProvider value={{ required: true }}>
+      <FieldRoot>
+        <FieldRequiredIndicator />
+      </FieldRoot>
+    </FieldPropsProvider>
+  ),
+  // `required`, because that is the arm that renders the indicator — an optional field renders its
+  // `fallback`, which is nothing unless the caller passed one.
+  FieldRequiredIndicator: () => (
+    <FieldRoot required>
+      <FieldRequiredIndicator />
+    </FieldRoot>
+  ),
+  FieldRoot: () => (
+    <FieldRoot>
+      <FieldLabel>Email</FieldLabel>
+    </FieldRoot>
   ),
   Flex: () => <Flex direction="column">row</Flex>,
   Float: () => <Float placement="top-end">3</Float>,
