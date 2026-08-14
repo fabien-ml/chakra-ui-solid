@@ -308,6 +308,18 @@ asks, correct **both** in the same commit.
       the same defect, is the second. `+indicator`
 - [ ] tabs — S:tabs · 5/6 · Z
       Chakra's own `createAnatomy("tabs")`, `+contentGroup`. **`_active` in the recipe is Panda's `:active` pseudo-class, not a Zag `data-active`** (`prior-art.md` §4.3)
+      **`tabs.trigger`'s `currentBg` is already resolved, measured**, and the row inherits it: it and
+      `timeline.indicator` are the only two uses of the keyword in the whole preset, and
+      `panda-preset/src/current-bg-utilities.ts` compiles both. The trigger is the harder half — it
+      is a `button`, and Panda's preflight declares `background: transparent` on every form control
+      *through the same utility*, so a faithful port of upstream's transform would publish
+      `--bg-currentcolor: transparent` on the trigger itself and a selected `outline` tab would come
+      out transparent. chakra-ui.com does not: measured there, a bare `<button>` inherits
+      `#09090B` from the page and a selected `outline` trigger computes `rgb(9, 9, 11)`, because
+      their preflight emits that reset as plain CSS and never reaches the transform. Our one delta —
+      a `transparent` background publishes nothing — reproduces that, and a bare `<button>` in the
+      docs now reads `#09090B` too. `generated-css.test.ts` pins the emitted rule for this recipe,
+      which is as far as the assertion can go before the component exists.
 - [ ] tags-input — S:tagsInput · 10/10
       Repeated part (tags)
 - [ ] toast — S:toast · 6/6
@@ -698,6 +710,15 @@ The seam's own suite gained the test that would have caught it.
       variant whose whole effect is `--timeline-separator-display` on the last item — the separator's
       own `display` reads it, which is why the test asserts `display` there and nowhere else in this
       family.
+      **`variant="outline"` shipped with no background at all, and the cause was the preset.**
+      `timeline.indicator` writes `bg: "currentBg"`, a Chakra keyword meaning "the background of the
+      nearest ancestor that set one"; `@chakra-ui/panda-preset` uses it and ships no utility
+      resolving it, so Panda emitted `background: currentBg` and the browser dropped the
+      declaration. Measured in a browser on both sides: `rgba(0, 0, 0, 0)` here against
+      `rgb(255, 255, 255)` on chakra-ui.com, with the absolutely-positioned separator painting
+      straight through the circles on *Alternating Content*. Fixed in
+      `panda-preset/src/current-bg-utilities.ts`, not in this component — the port rule's first
+      case. Now `rgb(17, 17, 17)` against the docs card it sits on.
       Docs: **all 6 of upstream's example slots**, `Explorer` dropped as www machinery. Three
       adaptations: `timeline-with-sizes`, `timeline-with-variants` and `timeline-composition` put a
       `Circle` with an initial where upstream puts an `Avatar` — the `float-with-avatar` precedent,

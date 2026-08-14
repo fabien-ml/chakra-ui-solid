@@ -39,9 +39,13 @@ describe("the `chakra` factory reaches a consumer's extractor", () => {
     // `chakra.div` is lowercase, so `matchTag`'s `isUpperCase` fallback declines it. This case
     // passes only because `jsxFactory: "chakra"` and `importMap.jsx` are both set — it is the one
     // that fails first when either goes.
+    // `--bg-currentcolor` beside the background is the preset's `currentBg` utility, and it belongs
+    // in a consumer's sheet: it is how `bg: "currentBg"` — which two of the preset's own recipes
+    // write — finds a value to resolve to.
     expect(consumerDeclarations(css({ marginTop: "7", background: "teal.400" }))).toEqual({
       "margin-top": "var(--chakra-spacing-7)",
       background: "var(--chakra-colors-teal-400)",
+      "--bg-currentcolor": "var(--chakra-colors-teal-400)",
     });
   });
 

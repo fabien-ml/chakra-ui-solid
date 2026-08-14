@@ -97,6 +97,13 @@ resolved against the dependency would compute a class with no rule behind it. It
 into `packages/panda-preset/src/container-recipe.ts` with one modification — the `className` — and
 no other recipe or token table is re-emitted anywhere in this repository.
 
+**One utility transform is reproduced, for the same reason.** `currentBg` is a Chakra keyword that
+two of the preset's own recipes write, and the transform compiling it — the keyword to a custom
+property, plus that property published beside every ordinary background declaration — lives in
+`@chakra-ui/react`'s runtime config rather than in the published preset. It is ported into
+`packages/panda-preset/src/current-bg-utilities.ts` with one modification: a `transparent`
+background publishes nothing.
+
 **A set of SVG paths is copied.** Chakra keeps an internal glyph module — the ✕ a `CloseButton`
 shows, the chevron an `Accordion` points with, the tick a `Menu` marks a selection with — and 24 of
 its components render one when the caller passes no icon of their own. Those 18 glyphs' path data
@@ -145,6 +152,7 @@ fold on the docs home and in every page's footer.
 | `packages/chakra-ui-solid/src/components/field/field-parts.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/field/field.tsx` |
 | `packages/chakra-ui-solid/src/components/link/link-box.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/link/link-box.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
+| `packages/panda-preset/src/current-bg-utilities.ts` | `chakra-ui/chakra-ui` — `packages/react/src/preset-base.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/ui/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
 | `apps/docs/src/examples/decorative-box.tsx` | `chakra-ui/chakra-ui` — `apps/compositions/src/lib/decorative-box.tsx` |

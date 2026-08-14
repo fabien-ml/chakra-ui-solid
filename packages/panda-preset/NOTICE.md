@@ -1,6 +1,6 @@
 # Third-party notices — `@chakra-ui-solid/panda-preset`
 
-This package contains **one file derived from another project**, listed in the table below.
+This package contains **two files derived from another project**, listed in the table below.
 
 - **Project:** https://github.com/chakra-ui/chakra-ui (`@chakra-ui/react`)
 - **License:** MIT License
@@ -15,9 +15,13 @@ does not appear here. Only a file that reproduces an upstream's **expression** g
 of it: `staticCss` declarations, `jsx` tracking hints, one `cursor` token, and any shorthand alias
 Panda does not already provide.
 
-**The one exception is `container`**, a recipe `@chakra-ui/react`'s own theme defines and the preset
-does not ship. Its body is reproduced from that theme, with the `className` changed to the
-unprefixed form every other recipe here uses. No other recipe body and no token table is re-emitted.
+**The two exceptions are `container` and the `currentBg` transform.** `container` is a recipe
+`@chakra-ui/react`'s own theme defines and the preset does not ship; its body is reproduced from that
+theme, with the `className` changed to the unprefixed form every other recipe here uses.
+`currentBg` is a Chakra keyword two of the preset's own recipes write and no shipped utility
+resolves, because the transform compiling it lives in `@chakra-ui/react`'s runtime config; it is
+reproduced with one modification — a `transparent` background publishes nothing. No recipe body
+beyond `container` and no token table is re-emitted.
 
 The repository-wide notice is [`NOTICE.md`](https://github.com/fabien-ml/chakra-ui-solid/blob/main/NOTICE.md);
 this file lists only this package's own derived files, because it is the one that travels in the npm
@@ -26,3 +30,4 @@ tarball and the only one a consumer who never visits the repository will see.
 | File | Derived from |
 | ---- | ------------ |
 | `src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
+| `src/current-bg-utilities.ts` | `chakra-ui/chakra-ui` — `packages/react/src/preset-base.ts` |

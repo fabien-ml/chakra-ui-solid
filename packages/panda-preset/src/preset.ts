@@ -1,6 +1,7 @@
 import chakraPreset from "@chakra-ui/panda-preset";
 import { definePreset } from "@pandacss/dev";
 import { aliasUtilities } from "./alias-utilities";
+import { currentBgUtilities } from "./current-bg-utilities";
 import { componentNameFor, recipeBodyFor, recipeKeys, slotRecipeKeys } from "./recipe-registry";
 
 /**
@@ -158,7 +159,11 @@ export const chakraSolidPreset = definePreset({
   },
 
   utilities: {
-    extend: aliasUtilities,
+    // Two disjoint sets: `aliasUtilities` adds a *name* to a utility Panda already has,
+    // `currentBgUtilities` adds a *transform* to the two background utilities so that Chakra's
+    // `currentBg` keyword — which two of the preset's own recipes write and no shipped utility
+    // resolves — compiles to something a browser accepts.
+    extend: { ...aliasUtilities, ...currentBgUtilities },
   },
 
   // The atomic half of the same problem: values **a component's own logic picks**, which no

@@ -35,7 +35,7 @@ export interface DeclarationAllowance {
   value: string;
   /**
    * Substrings of the selectors this declaration is forgiven under — one per emitting rule. They
-   * scope the allowance: `background: currentBg` is forgiven inside two upstream recipes and
+   * scope the allowance: `font-feature-settings: pnum` is forgiven inside two upstream recipes and
    * nowhere else.
    */
   selectors: string[];
@@ -113,15 +113,6 @@ export const declarationAllowances: DeclarationAllowance[] = [
       'the property takes quoted OpenType feature tags — `"pnum"` — and the preset writes the tag ' +
       "bare in both recipes. Proportional numerals are simply not applied",
     expiresWhen: "the preset quotes the tag",
-  },
-  {
-    property: "background",
-    value: "currentBg",
-    selectors: [".tabs__trigger--variant_outline", ".timeline__indicator--variant_outline"],
-    reason:
-      "`currentBg` is a Chakra runtime-theme value with no Panda token behind it. It is neither a " +
-      "colour nor a token reference, so the selected tab keeps whatever background it already had",
-    expiresWhen: "the preset resolves it to a token or a colour",
   },
   {
     property: "not-last",

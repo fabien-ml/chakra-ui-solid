@@ -89,6 +89,19 @@ const chakraReact: AttributionEntry[] = [
     package: "panda-preset",
   },
   {
+    // The `background`/`backgroundColor` transform that makes Chakra's `currentBg` keyword mean
+    // something: the keyword compiles to `var(--bg-currentcolor)`, and every ordinary background
+    // declaration publishes that property alongside itself. `@chakra-ui/panda-preset` uses the
+    // keyword in two recipes and ships no utility resolving it, because this half lives in
+    // `@chakra-ui/react`'s own runtime config. One delta — a `transparent` background publishes
+    // nothing, which is what keeps Panda's preflight from putting the property on every control.
+    file: "packages/panda-preset/src/current-bg-utilities.ts",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "packages/react/src/preset-base.ts",
+    license: "MIT",
+    package: "panda-preset",
+  },
+  {
     // One table — `exceptionPropMap`, the seven SVG tags whose geometry attributes must reach the
     // DOM rather than become a class. A verbatim data table is expression, where the factory's
     // API shape around it is not.

@@ -67,6 +67,41 @@ describe("the generated stylesheet", () => {
     expect(css).toMatch(/--chakra-cursor-switch:/);
     expect(css).not.toMatch(/cursor:\s*switch\s*[;}]/);
   });
+
+  it("compiles Chakra's `currentBg` keyword instead of emitting it verbatim", () => {
+    // `currentBg` is a Chakra keyword, not CSS: it means "the background of the nearest ancestor
+    // that set one". `@chakra-ui/panda-preset` **uses** it and ships no utility resolving it, so
+    // Panda emitted `background: currentBg` and the browser dropped the declaration — measured as
+    // `rgba(0, 0, 0, 0)` on a Timeline's outline indicator, against `rgb(255, 255, 255)` on
+    // chakra-ui.com, with the separator painting straight through the circles.
+    expect(css).not.toMatch(/:\s*currentBg\s*[;}]/);
+
+    // The two recipes in the whole preset that write it, and the reference both now carry.
+    expect(css).toMatch(
+      /\.timeline__indicator--variant_outline\s*\{[^}]*background:\s*var\(--bg-currentcolor\)/,
+    );
+    expect(css).toMatch(
+      /\.tabs__trigger--variant_outline[^{]*\{[^}]*background:\s*var\(--bg-currentcolor\)/,
+    );
+  });
+
+  it("publishes `--bg-currentcolor` beside the page background and not on a form control", () => {
+    // The other half of the keyword: every ordinary background declaration publishes what it
+    // resolved to, custom properties inherit, and `currentBg` reads the nearest published value.
+    // Chakra's own `globalCss` puts a background on `html`, which is what the two recipes above
+    // ultimately read.
+    expect(css).toMatch(/\bhtml\s*\{[^}]*--bg-currentcolor:\s*var\(--chakra-colors-bg\)/);
+
+    // **`transparent` publishes nothing**, and this is the assertion that pins why. Panda's
+    // preflight declares `background: transparent` on every form control, and it goes through the
+    // same utility — so publishing unconditionally would give a `tabs.trigger`, which is a
+    // `button`, its own transparent value instead of the page's. chakra-ui.com emits that reset as
+    // plain CSS and never reaches its transform: measured, a bare `<button>` there inherits the
+    // page background where ours would have read `transparent`.
+    const formControlReset = css.match(/\bbutton,input,optgroup,select,textarea[^{]*\{[^}]*\}/);
+    expect(formControlReset?.[0]).toMatch(/background:\s*var\(--chakra-colors-transparent\)/);
+    expect(formControlReset?.[0]).not.toMatch(/--bg-currentcolor/);
+  });
 });
 
 describe("the generated `isCssProperty` vocabulary", () => {

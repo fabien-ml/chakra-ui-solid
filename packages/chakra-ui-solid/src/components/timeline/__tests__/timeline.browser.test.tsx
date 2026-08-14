@@ -163,6 +163,32 @@ describe("Timeline — the recipe", () => {
     expect(getComputedStyle(probe(container, "indicator")).borderTopWidth).toBe("1px");
   });
 
+  it("paints an `outline` indicator opaque, so the separator does not show through it", () => {
+    // The recipe writes `bg: "currentBg"`, a Chakra keyword meaning "the background of the nearest
+    // ancestor that set one" — CSS has no equivalent, and `@chakra-ui/panda-preset` ships no
+    // utility resolving it, so Panda emitted `background: currentBg` and the browser dropped the
+    // declaration. Measured before the preset fix: `rgba(0, 0, 0, 0)` here against
+    // `rgb(255, 255, 255)` on chakra-ui.com, with the absolutely-positioned separator painting
+    // straight through the circles.
+    mounted = mount(() => (
+      <Timeline.Root variant="outline">
+        <Timeline.Item>
+          <Timeline.Connector>
+            <Timeline.Indicator data-probe="indicator" />
+          </Timeline.Connector>
+        </Timeline.Item>
+      </Timeline.Root>
+    ));
+    const container = mounted.container;
+
+    // Against the page's own background rather than `not.toBe("rgba(0, 0, 0, 0)")`: the point is
+    // *which* colour it takes. Nothing between here and `html` sets one, and `html` is where
+    // Chakra's `globalCss` publishes the custom property the keyword reads.
+    expect(getComputedStyle(probe(container, "indicator")).backgroundColor).toBe(
+      getComputedStyle(document.documentElement).backgroundColor,
+    );
+  });
+
   it("hides the last item's separator unless `showLastSeparator`", () => {
     const [showLastSeparator, setShowLastSeparator] = createSignal(false);
     mounted = mount(() => (
