@@ -1,5 +1,5 @@
 import { AbsoluteCenter, Box } from "chakra-ui-solid";
-import { HeartIcon } from "../../components/site/icons";
+import { HeartIcon } from "../../components/ui/icons";
 
 export default function AbsoluteCenterWithContent() {
   return (

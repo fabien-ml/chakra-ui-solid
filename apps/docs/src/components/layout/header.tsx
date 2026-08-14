@@ -1,11 +1,11 @@
 import { Link, useLocation } from "@tanstack/solid-router";
 import { Box, IconButton } from "chakra-ui-solid";
 import { For } from "solid-js";
-import { ColorModeToggle } from "~/components/color-mode-toggle";
-import { Container } from "~/components/container";
-import { DocLink } from "~/components/doc-link";
-import { LogoIcon } from "~/components/site/logo";
-import { GithubIcon } from "~/components/site/project-marks";
+import { ColorModeToggle } from "~/components/layout/color-mode-toggle";
+import { Container } from "~/components/ui/container";
+import { DocLink } from "~/components/ui/doc-link";
+import { LogoIcon } from "~/components/ui/logo";
+import { GithubIcon } from "~/components/ui/project-marks";
 import { SITE_NAME } from "~/config";
 import { repoUrl } from "~/lib/docs-config";
 import { firstPageOf, liveSections } from "~/lib/site-map";
@@ -26,7 +26,7 @@ import { firstPageOf, liveSections } from "~/lib/site-map";
  *
  * The mark is Chakra's bolt glyph beside **our** wordmark: the logotype next to it reads
  * `chakra-ui-solid`, never `chakra`. The glyph is MIT like the rest of their source and is
- * attributed in `~/components/site/logo` and the root `NOTICE.md`.
+ * attributed in `~/components/ui/logo` and the root `NOTICE.md`.
  */
 export function SiteHeader() {
   const location = useLocation();

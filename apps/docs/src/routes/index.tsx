@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { Box } from "chakra-ui-solid";
-import { Blob } from "~/components/site/blob";
-import { DesignSystemSection } from "~/components/site/design-system-section";
-import { FrameworkSection } from "~/components/site/framework-section";
-import { HeroSection } from "~/components/site/hero-section";
-import { BlitzIcon } from "~/components/site/logo";
-import { NextStepsSection } from "~/components/site/next-steps-section";
-import { ParitySection } from "~/components/site/parity-section";
-import { SiteFooter } from "~/components/site-footer";
+import { Blob } from "~/components/home/blob";
+import { DesignSystemSection } from "~/components/home/design-system-section";
+import { FrameworkSection } from "~/components/home/framework-section";
+import { HeroSection } from "~/components/home/hero-section";
+import { NextStepsSection } from "~/components/home/next-steps-section";
+import { ParitySection } from "~/components/home/parity-section";
+import { SiteFooter } from "~/components/layout/footer";
+import { BlitzIcon } from "~/components/ui/logo";
 
 export const Route = createFileRoute("/")({ component: DocsHome });
 
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({ component: DocsHome });
  *
  * **The bolt is Chakra's, used deliberately.** Their `BlitzIcon`, `BlitzFillIcon` and `LogoIcon`
  * come across under the same MIT grant as the rest of their source, attributed in
- * `~/components/site/logo` and in the root `NOTICE.md`. The wordmark still reads
+ * `~/components/ui/logo` and in the root `NOTICE.md`. The wordmark still reads
  * `chakra-ui-solid`, and the disclaimer above the fold is what says whose project this is not.
  *
  * **Every element on it is `Box` and style props**, not `css()` beside a `<div>`. This site is the
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/")({ component: DocsHome });
  * highlight mark, the eyebrows, the washes — reads `colorPalette.*`, and chakra-ui.com accents whole
  * marketing pages the same way, with one `colorPalette="teal"` at the page root. It cannot go on
  * `<body>`: `--chakra-colors-color-palette-*` inherits, so from there it also reaches the component
- * previews inside every docs example (`~/components/layout`).
+ * previews inside every docs example (`~/components/layout/shell`).
  */
 function DocsHome() {
   return (
@@ -53,7 +53,7 @@ function DocsHome() {
         <AmbientLights />
 
         {/* The bolt behind the hero, at chakra-ui.com's own offsets. It brings its own colour — the
-          gradient names `fg.inverted` itself (`~/components/site/logo`), so this Box only places it. */}
+          gradient names `fg.inverted` itself (`~/components/ui/logo`), so this Box only places it. */}
         <Box position="absolute" top="58px" right="67px" hideBelow="md" pointerEvents="none">
           <BlitzIcon />
         </Box>

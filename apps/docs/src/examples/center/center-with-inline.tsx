@@ -1,6 +1,6 @@
 import type { JSX } from "@solidjs/web";
 import { Box, Center } from "chakra-ui-solid";
-import { ArrowRightIcon } from "../../components/site/icons";
+import { ArrowRightIcon } from "../../components/ui/icons";
 
 export default function CenterWithInline() {
   return (

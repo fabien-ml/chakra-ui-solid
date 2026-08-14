@@ -24,8 +24,8 @@
  * `<svg>` have no such failure mode.
  *
  * Add a glyph by pasting its paths from `lucide-static`'s `icons/` — never by inlining an `<svg>`
- * somewhere else. The marks are the other two files: ours in `~/components/site/logo`, GitHub's and
- * React's in `~/components/site/project-marks`.
+ * somewhere else. The marks are the other two files: ours in `~/components/ui/logo`, GitHub's and
+ * React's in `~/components/ui/project-marks`.
  */
 
 import type { JSX } from "@solidjs/web";

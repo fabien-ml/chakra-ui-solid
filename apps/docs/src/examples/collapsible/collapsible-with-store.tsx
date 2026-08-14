@@ -1,6 +1,6 @@
 import { Box, Button, Collapsible, createCollapsible, Icon, Stack } from "chakra-ui-solid";
 import { Show } from "solid-js";
-import { ChevronDownIcon, ChevronRightIcon } from "../../components/site/icons";
+import { ChevronDownIcon, ChevronRightIcon } from "../../components/ui/icons";
 
 export default function CollapsibleWithStore() {
   const collapsible = createCollapsible();

@@ -1,5 +1,5 @@
 import { Badge, Box, HStack, Icon, Text } from "chakra-ui-solid";
-import { StarIcon } from "../../components/site/icons";
+import { StarIcon } from "../../components/ui/icons";
 
 export default function BoxPropertyCard() {
   return (

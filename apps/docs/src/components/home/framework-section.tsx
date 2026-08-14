@@ -1,11 +1,11 @@
 import type { JSX } from "@solidjs/web";
 import { Box } from "chakra-ui-solid";
 import { For, Show } from "solid-js";
-import { Container } from "~/components/container";
-import { DocLink } from "~/components/doc-link";
-import { Blob } from "~/components/site/blob";
-import { BlitzIcon } from "~/components/site/logo";
-import { HighlightHeading, Subheading } from "~/components/site/typography";
+import { Blob } from "~/components/home/blob";
+import { HighlightHeading, Subheading } from "~/components/home/typography";
+import { Container } from "~/components/ui/container";
+import { DocLink } from "~/components/ui/doc-link";
+import { BlitzIcon } from "~/components/ui/logo";
 
 /**
  * chakra-ui.com's framework grid, ported — and it is **two cells rather than their five**, because
@@ -75,7 +75,7 @@ export function FrameworkSection() {
           textAlign="center"
         >
           {/* The `\n` is a hard break — a `<br />` here would make the highlight split silently
-            miss and the phrase would render unhighlighted (`~/components/site/typography`).
+            miss and the phrase would render unhighlighted (`~/components/home/typography`).
 
             **The highlight is the last phrase, and it is what the reader gets** — the same shape as
             the parity heading, which ends on *without the runtime headache* rather than on the

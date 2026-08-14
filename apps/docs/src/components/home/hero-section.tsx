@@ -1,11 +1,11 @@
 import type { JSX } from "@solidjs/web";
 import { Badge, Box, Checkmark, ColorSwatch, Spinner, Stack } from "chakra-ui-solid";
-import { Container } from "~/components/container";
-import { DocLink } from "~/components/doc-link";
-import { DemoFrame, DemoStrip } from "~/components/site/demo-frame";
-import { ArrowRightIcon, PartyPopperIcon, TerminalIcon } from "~/components/site/icons";
-import { DocLinkButton } from "~/components/site/link-button";
-import { HighlightHeading, Subheading } from "~/components/site/typography";
+import { DemoFrame, DemoStrip } from "~/components/home/demo-frame";
+import { DocLinkButton } from "~/components/home/link-button";
+import { HighlightHeading, Subheading } from "~/components/home/typography";
+import { Container } from "~/components/ui/container";
+import { DocLink } from "~/components/ui/doc-link";
+import { ArrowRightIcon, PartyPopperIcon, TerminalIcon } from "~/components/ui/icons";
 import { DISCLAIMER } from "~/config";
 import { sidebarGroups } from "~/lib/site-map";
 

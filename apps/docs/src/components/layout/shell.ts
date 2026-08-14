@@ -5,7 +5,7 @@ import { css } from "@chakra-ui-solid/styled-system/css";
  *
  * **The one place on this site that is still `css()` beside a raw element, and it has to be**: the
  * element is `<body>`, which the root layout renders itself. Everything a component owns is `Box`
- * and style props — see `~/components/container`, which is what the old `containerClass` became.
+ * and style props — see `~/components/ui/container`, which is what the old `containerClass` became.
  *
  * chakra-ui.com's shell is a sticky header of a known height with two sticky columns beside the
  * article, and every one of those three pieces measures itself against the header. Their theme

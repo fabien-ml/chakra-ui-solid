@@ -1,5 +1,5 @@
 import { HStack, Icon } from "chakra-ui-solid";
-import { BellIcon, BoxIcon, TerminalIcon } from "../../components/site/icons";
+import { BellIcon, BoxIcon, TerminalIcon } from "../../components/ui/icons";
 
 export default function IconWithIconLibrary() {
   return (

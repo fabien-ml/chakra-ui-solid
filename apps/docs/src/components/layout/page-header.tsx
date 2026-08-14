@@ -1,8 +1,8 @@
 import type { JSX } from "@solidjs/web";
 import { Box } from "chakra-ui-solid";
 import { For, Show } from "solid-js";
-import { ArrowUpRightIcon } from "~/components/site/icons";
-import { GithubIcon, ReactIcon } from "~/components/site/project-marks";
+import { ArrowUpRightIcon } from "~/components/ui/icons";
+import { GithubIcon, ReactIcon } from "~/components/ui/project-marks";
 import type { DocPage } from "~/lib/site-map";
 
 /**

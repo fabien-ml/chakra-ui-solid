@@ -101,7 +101,7 @@ const chakraReact: AttributionEntry[] = [
   {
     // The internal glyph set — 18 SVG paths, the defaults component recipes render when the caller
     // passes no icon. A copied path is expression however few bytes it takes
-    // (`apps/docs/src/components/decorative-box.tsx` is here for the same reason), where the
+    // (`apps/docs/src/examples/decorative-box.tsx` is here for the same reason), where the
     // components around them are API shape and owe nothing. The ✕ lived in `close-button.tsx` while
     // it was the only one; it moved here with the rest rather than earning a second row.
     file: "packages/chakra-ui-solid/src/components/icons.tsx",
@@ -129,7 +129,7 @@ const docsApp: AttributionEntry[] = [
   {
     // The brand marks — the bolt and the logotype glyph. They were `site/icons.tsx` until the
     // Lucide set arrived and each file was made to owe exactly one upstream.
-    file: "apps/docs/src/components/site/logo.tsx",
+    file: "apps/docs/src/components/ui/logo.tsx",
     upstreamProject: "chakra-ui/chakra-ui",
     upstreamFile: "apps/www/components/site/icons.tsx",
     license: "MIT",
@@ -143,7 +143,7 @@ const docsApp: AttributionEntry[] = [
     //
     // The only ISC entry, and the only one owing a *second* upstream: fifteen of the twenty-five are
     // Lucide's own derivatives of Feather, MIT. Both notices are in the root `NOTICE.md`.
-    file: "apps/docs/src/components/site/icons.tsx",
+    file: "apps/docs/src/components/ui/icons.tsx",
     upstreamProject: "lucide-icons/lucide",
     upstreamFile: "icons/",
     license: "ISC",
@@ -161,7 +161,7 @@ const docsApp: AttributionEntry[] = [
   {
     // The hatched surface every layout example stands on. Its declarations are ordinary and its
     // data-URI pattern is not — a copied SVG path is expression however few bytes it takes.
-    file: "apps/docs/src/components/decorative-box.tsx",
+    file: "apps/docs/src/examples/decorative-box.tsx",
     upstreamProject: "chakra-ui/chakra-ui",
     upstreamFile: "apps/compositions/src/lib/decorative-box.tsx",
     license: "MIT",
@@ -197,7 +197,7 @@ export const noticeOnlyPaths: NoticeOnlyPath[] = [
     reason: "As `icon-192.png`, at the size an install prompt uses.",
   },
   {
-    path: "apps/docs/src/components/site/project-marks.tsx",
+    path: "apps/docs/src/components/ui/project-marks.tsx",
     reason:
       "Not our derivative. Two other projects' marks — GitHub's and React's — naming what a page " +
       "header's links cross to. Nominative use, as the framework logos are. Inline rather than " +

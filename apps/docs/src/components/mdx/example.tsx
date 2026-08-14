@@ -23,12 +23,12 @@ import { Show } from "solid-js";
 // out twice rather than shared, because `import.meta.glob` is compiled away — it reads its
 // arguments off the AST, so a `const` holding them is a build error rather than a refactor.
 const exampleModules = import.meta.glob<{ default: Component }>(
-  ["../examples/*/*.tsx", "!../examples/__tests__/**"],
+  ["../../examples/*/*.tsx", "!../../examples/__tests__/**"],
   { eager: true },
 );
 
 const exampleSources = import.meta.glob<string>(
-  ["../examples/*/*.tsx", "!../examples/__tests__/**"],
+  ["../../examples/*/*.tsx", "!../../examples/__tests__/**"],
   { eager: true, query: "?highlight", import: "default" },
 );
 

@@ -1,6 +1,6 @@
 import { Box, type BoxProps } from "chakra-ui-solid";
 import { omit, Show } from "solid-js";
-import { BlitzFillIcon } from "~/components/site/logo";
+import { BlitzFillIcon } from "~/components/ui/logo";
 
 /**
  * The three type shapes chakra-ui.com's landing page repeats in every section: a heading with one

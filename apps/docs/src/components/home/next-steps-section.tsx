@@ -1,8 +1,8 @@
 import { Box } from "chakra-ui-solid";
-import { Container } from "~/components/container";
-import { Blob } from "~/components/site/blob";
-import { DocLinkButton } from "~/components/site/link-button";
-import { Eyebrow, HighlightHeading, Subheading } from "~/components/site/typography";
+import { Blob } from "~/components/home/blob";
+import { DocLinkButton } from "~/components/home/link-button";
+import { Eyebrow, HighlightHeading, Subheading } from "~/components/home/typography";
+import { Container } from "~/components/ui/container";
 
 /**
  * Where chakra-ui.com closes on a product tier, this page closes on what is missing — the positive

@@ -1,10 +1,10 @@
 import { Dynamic } from "@solidjs/web";
 import { Box } from "chakra-ui-solid";
 import { For } from "solid-js";
-import { Container } from "~/components/container";
-import { CodeTabs } from "~/components/site/code-tabs";
-import { BoxIcon, PaintBucketIcon, TypeIcon } from "~/components/site/icons";
-import { Eyebrow, HighlightHeading, Subheading } from "~/components/site/typography";
+import { CodeTabs } from "~/components/home/code-tabs";
+import { Eyebrow, HighlightHeading, Subheading } from "~/components/home/typography";
+import { Container } from "~/components/ui/container";
+import { BoxIcon, PaintBucketIcon, TypeIcon } from "~/components/ui/icons";
 
 // Highlighted at build time by the `?highlight` plugin, the same way an example's source pane is —
 // a snippet nobody can run is a snippet that drifts, so these are real files that `tsc --noEmit`
@@ -79,7 +79,7 @@ export function DesignSystemSection() {
 
           {/* Broken explicitly so “Build your design system” always survives as one line — left to
             wrap, the column splits it mid-phrase. The `\n` is a hard break rather than a `<br />`,
-            which would make the highlight split miss (`~/components/site/typography`). */}
+            which would make the highlight split miss (`~/components/home/typography`). */}
           <HighlightHeading level="h2" query="chakra-ui-solid">
             {"Build your design system\non top of chakra-ui-solid"}
           </HighlightHeading>

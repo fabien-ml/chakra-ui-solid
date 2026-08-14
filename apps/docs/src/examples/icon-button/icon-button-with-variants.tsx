@@ -1,6 +1,6 @@
 import { HStack, IconButton, Text, VStack } from "chakra-ui-solid";
 import { For } from "solid-js";
-import { VoicemailIcon } from "../../components/site/icons";
+import { VoicemailIcon } from "../../components/ui/icons";
 
 export default function IconButtonWithVariants() {
   return (

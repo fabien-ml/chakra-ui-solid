@@ -1,5 +1,5 @@
 import { CloseButton } from "chakra-ui-solid";
-import { XIcon } from "../../components/site/icons";
+import { XIcon } from "../../components/ui/icons";
 
 export default function CloseButtonWithCustomIcon() {
   return (

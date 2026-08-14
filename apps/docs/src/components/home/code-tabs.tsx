@@ -9,7 +9,7 @@ export interface CodeTab {
   /**
    * The glyph beside the label, as a *component* rather than an element. A JSX element built at
    * module scope is evaluated on import and breaks SSR; holding the function defers it to render.
-   * Typed to match `~/components/site/icons` — every attribute there is optional, so `Dynamic`
+   * Typed to match `~/components/ui/icons` — every attribute there is optional, so `Dynamic`
    * mounting it with no props is well-formed.
    */
   icon?: (props: JSX.SvgSVGAttributes<SVGSVGElement>) => JSX.Element;

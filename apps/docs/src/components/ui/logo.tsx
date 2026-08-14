@@ -31,7 +31,7 @@
  * translates them.
  *
  * These are the brand marks, and they are the whole of this file. The site's UI icons are Lucide's
- * and live in `~/components/site/icons` under a different licence — the split is what keeps each
+ * and live in `~/components/ui/icons` under a different licence — the split is what keeps each
  * file owing exactly one upstream.
  */
 

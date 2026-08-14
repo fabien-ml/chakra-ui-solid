@@ -2,13 +2,13 @@ import { type MountedComponent, mount } from "@chakra-ui-solid/internal-test-uti
 import { afterEach, describe, expect, it } from "vitest";
 // The docs app's **own** generated stylesheet — the caption's own declarations live in it, and
 // without it `captionSide` and `display` read UA defaults and assert nothing.
-import "../../../styled-system/styles.css";
-import { propsTables } from "../../generated/props-tables";
+import "../../../../styled-system/styles.css";
+import { propsTables } from "../../../generated/props-tables";
 import { PropsTable } from "../props-table";
 
 /** The Composition page's source, so the link check reads its real headings rather than a copy. */
 const compositionSource = Object.values(
-  import.meta.glob<string>("../../content/components/concepts/composition.mdx", {
+  import.meta.glob<string>("../../../content/components/concepts/composition.mdx", {
     eager: true,
     query: "?raw",
     import: "default",

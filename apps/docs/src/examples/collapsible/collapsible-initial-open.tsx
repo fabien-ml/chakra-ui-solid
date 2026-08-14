@@ -1,5 +1,5 @@
 import { Collapsible, Stack, Text } from "chakra-ui-solid";
-import { ChevronRightIcon } from "../../components/site/icons";
+import { ChevronRightIcon } from "../../components/ui/icons";
 
 export default function CollapsibleInitialOpen() {
   return (

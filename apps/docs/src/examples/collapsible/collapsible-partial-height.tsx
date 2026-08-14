@@ -1,6 +1,6 @@
 import { Button, type ButtonProps, Collapsible, Stack, Text } from "chakra-ui-solid";
 import { Show } from "solid-js";
-import { ChevronDownIcon } from "../../components/site/icons";
+import { ChevronDownIcon } from "../../components/ui/icons";
 
 export default function CollapsiblePartialHeight() {
   return (

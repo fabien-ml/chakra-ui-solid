@@ -1,5 +1,5 @@
 import { Box, IconButton } from "chakra-ui-solid";
-import { MoonIcon, SunIcon } from "~/components/site/icons";
+import { MoonIcon, SunIcon } from "~/components/ui/icons";
 import { colorMode, toggleColorMode } from "~/lib/color-mode";
 
 /**

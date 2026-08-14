@@ -1,5 +1,5 @@
 import { Box, Center, HStack } from "chakra-ui-solid";
-import { PhoneIcon } from "../../components/site/icons";
+import { PhoneIcon } from "../../components/ui/icons";
 
 export default function CenterWithIcons() {
   return (

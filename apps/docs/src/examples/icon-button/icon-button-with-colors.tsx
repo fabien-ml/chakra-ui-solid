@@ -1,5 +1,5 @@
 import { HStack, IconButton } from "chakra-ui-solid";
-import { SearchIcon } from "../../components/site/icons";
+import { SearchIcon } from "../../components/ui/icons";
 
 /**
  * The ten palettes written out, where the React version maps over a list.

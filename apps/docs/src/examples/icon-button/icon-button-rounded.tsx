@@ -1,5 +1,5 @@
 import { IconButton } from "chakra-ui-solid";
-import { VoicemailIcon } from "../../components/site/icons";
+import { VoicemailIcon } from "../../components/ui/icons";
 
 export default function IconButtonRounded() {
   return (

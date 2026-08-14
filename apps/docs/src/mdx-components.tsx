@@ -2,12 +2,12 @@ import { cx } from "@chakra-ui-solid/styled-system/css";
 import { Dynamic } from "@solidjs/web";
 import { Box, type BoxProps } from "chakra-ui-solid";
 import type { Component } from "solid-js";
-import { codePaneClass } from "~/components/code-pane";
-import { Example } from "~/components/example";
 import { Card, CardGroup } from "~/components/mdx/card";
+import { codePaneClass } from "~/components/mdx/code-pane";
+import { Example } from "~/components/mdx/example";
+import { PropsTable } from "~/components/mdx/props-table";
+import { mdxInlineCodeClass, mdxTableClass, proseTagClasses } from "~/components/mdx/prose";
 import { Step, Steps } from "~/components/mdx/steps";
-import { PropsTable } from "~/components/props-table";
-import { mdxInlineCodeClass, mdxTableClass, proseTagClasses } from "~/components/prose";
 
 /**
  * MDX funnels every intrinsic element through `_components.<tag>` and **calls it as a component**.
@@ -18,7 +18,7 @@ import { mdxInlineCodeClass, mdxTableClass, proseTagClasses } from "~/components
  * It is also where an article's typography lands. Every rule that used to be a descendant selector
  * on the prose wrapper is now a class on the element rendered here, because the wrapper contains
  * more than prose — an `<Example>`'s live preview and the props table sit inside it, and a
- * descendant selector beat both (`~/components/prose`).
+ * descendant selector beat both (`~/components/mdx/prose`).
  */
 type AnyProps = Record<string, unknown>;
 

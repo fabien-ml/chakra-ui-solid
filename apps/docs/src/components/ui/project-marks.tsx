@@ -11,13 +11,13 @@
  * take `currentColor`, and the links are a muted colour that brightens on hover. **That monochrome
  * is the only departure from each mark as its project publishes it.**
  *
- * They are solid, where `~/components/site/icons` is Lucide's 2px strokes, and that is not an
+ * They are solid, where `~/components/ui/icons` is Lucide's 2px strokes, and that is not an
  * inconsistency: a mark is a mark, and chakra-ui.com sets the same two weights side by side —
  * `react-icons/io5`'s filled `IoLogoGithub` beside `react-icons/lu`'s stroked arrow
  * (`__reference-impl__/chakra-ui/apps/www/components/resource-icon.tsx`).
  *
  * The third glyph file, and the split is the point: Lucide's set is ISC, our bolt in
- * `~/components/site/logo` is MIT, and these two are licensed to nobody here.
+ * `~/components/ui/logo` is MIT, and these two are licensed to nobody here.
  */
 
 import type { JSX } from "@solidjs/web";

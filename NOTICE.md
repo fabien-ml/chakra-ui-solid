@@ -139,8 +139,8 @@ fold on the docs home and in every page's footer.
 | `packages/chakra-ui-solid/src/components/checkmark/checkmark.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/checkmark/checkmark.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
-| `apps/docs/src/components/site/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
-| `apps/docs/src/components/decorative-box.tsx` | `chakra-ui/chakra-ui` — `apps/compositions/src/lib/decorative-box.tsx` |
+| `apps/docs/src/components/ui/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
+| `apps/docs/src/examples/decorative-box.tsx` | `chakra-ui/chakra-ui` — `apps/compositions/src/lib/decorative-box.tsx` |
 | `apps/docs/public/favicon.ico` | `chakra-ui/chakra-ui` — `apps/www/app/favicon.ico` |
 | `apps/docs/public/icon.svg` | `chakra-ui/chakra-ui` — `apps/www/components/logo.tsx` |
 | `apps/docs/public/apple-touch-icon.png` | `apps/docs/public/icon.svg`, rasterized |
@@ -165,7 +165,7 @@ component, and that is what an audit opens.
 
 | File | Derived from |
 | ---- | ------------ |
-| `apps/docs/src/components/site/icons.tsx` | `lucide-icons/lucide` — `icons/` |
+| `apps/docs/src/components/ui/icons.tsx` | `lucide-icons/lucide` — `icons/` |
 
 ### Feather
 
@@ -209,8 +209,8 @@ framework compiles the app, and `solid.svg` is the mark that replaced both.
 
 | File | Source | Mark held by |
 | ---- | ------ | ------------ |
-| `apps/docs/src/components/site/project-marks.tsx` | `primer/octicons` — `icons/mark-github-16.svg`, monochrome | GitHub, Inc. |
-| `apps/docs/src/components/site/project-marks.tsx` | `facebook/react` — `fixtures/dom/public/react-logo.svg`, monochrome, stroke 1.6 | Meta Platforms, Inc. |
+| `apps/docs/src/components/ui/project-marks.tsx` | `primer/octicons` — `icons/mark-github-16.svg`, monochrome | GitHub, Inc. |
+| `apps/docs/src/components/ui/project-marks.tsx` | `facebook/react` — `fixtures/dom/public/react-logo.svg`, monochrome, stroke 1.6 | Meta Platforms, Inc. |
 | `apps/docs/public/logos/solid.svg` | `solidjs/solid-site` — `public/img/logo/without-wordmark/logo.svg` | The SolidJS project |
 | `apps/docs/public/logos/tanstack-light.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-emblem-charcoal.svg` | Tanner Linsley / TanStack |
 | `apps/docs/public/logos/tanstack-dark.svg` | `TanStack/tanstack.com` — `public/images/brand/tanstack-emblem-white.svg` | Tanner Linsley / TanStack |

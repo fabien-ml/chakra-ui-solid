@@ -1,5 +1,5 @@
 import { Badge, Stack } from "chakra-ui-solid";
-import { AtSignIcon, StarIcon } from "../../components/site/icons";
+import { AtSignIcon, StarIcon } from "../../components/ui/icons";
 
 export default function BadgeWithIcon() {
   return (

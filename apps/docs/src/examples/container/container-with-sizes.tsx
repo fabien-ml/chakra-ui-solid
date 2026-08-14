@@ -1,5 +1,5 @@
 import { Container, Stack } from "chakra-ui-solid";
-import { DecorativeBox } from "../../components/decorative-box";
+import { DecorativeBox } from "../decorative-box";
 
 /**
  * The four written out, where the React version maps over a list.

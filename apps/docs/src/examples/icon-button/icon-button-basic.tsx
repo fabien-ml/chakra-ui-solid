@@ -1,5 +1,5 @@
 import { IconButton } from "chakra-ui-solid";
-import { SearchIcon } from "../../components/site/icons";
+import { SearchIcon } from "../../components/ui/icons";
 
 export default function IconButtonBasic() {
   return (

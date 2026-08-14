@@ -1,7 +1,7 @@
 import { Box } from "chakra-ui-solid";
 import { For } from "solid-js";
-import { Container } from "~/components/container";
-import { Eyebrow, HighlightHeading, Subheading } from "~/components/site/typography";
+import { Eyebrow, HighlightHeading, Subheading } from "~/components/home/typography";
+import { Container } from "~/components/ui/container";
 import { PARITY_SENTENCE } from "~/config";
 
 /**

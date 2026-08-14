@@ -1,5 +1,5 @@
 import { Circle } from "chakra-ui-solid";
-import { PhoneForwardedIcon } from "../../components/site/icons";
+import { PhoneForwardedIcon } from "../../components/ui/icons";
 
 export default function CenterWithCircle() {
   return (

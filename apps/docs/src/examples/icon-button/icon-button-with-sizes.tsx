@@ -1,6 +1,6 @@
 import { HStack, IconButton, Text, VStack } from "chakra-ui-solid";
 import { For } from "solid-js";
-import { PhoneIcon } from "../../components/site/icons";
+import { PhoneIcon } from "../../components/ui/icons";
 
 export default function IconButtonWithSizes() {
   return (

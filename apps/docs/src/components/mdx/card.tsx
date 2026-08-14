@@ -1,7 +1,7 @@
 import type { JSX } from "@solidjs/web";
 import { Box } from "chakra-ui-solid";
 import { Show } from "solid-js";
-import { DocLink } from "~/components/doc-link";
+import { DocLink } from "~/components/ui/doc-link";
 
 /**
  * The framework card grid chakra-ui.com puts at the top of its install page, so a reader picks

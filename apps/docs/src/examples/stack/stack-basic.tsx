@@ -1,5 +1,5 @@
 import { Stack } from "chakra-ui-solid";
-import { DecorativeBox } from "../../components/decorative-box";
+import { DecorativeBox } from "../decorative-box";
 
 export default function StackBasic() {
   return (

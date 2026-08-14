@@ -1,6 +1,6 @@
 import { Button, type ButtonProps } from "chakra-ui-solid";
 import { omit } from "solid-js";
-import { DocLink } from "~/components/doc-link";
+import { DocLink } from "~/components/ui/doc-link";
 
 /**
  * The landing page's call to action: our own `Button`, pointed at a docs page.
