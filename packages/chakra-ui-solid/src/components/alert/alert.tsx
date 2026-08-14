@@ -161,10 +161,14 @@ export const AlertIndicator: Component<AlertIndicatorProps> = (props) => {
   const styles = useStyles();
 
   const elementProps = merge(props, {
-    // Read exactly once, so no `children()` is owed — `??` evaluates its left side one time, and
-    // the glyph is built only when there is nothing to fall back from.
+    // `!== undefined` rather than `??`: Chakra applies a part's default children through
+    // `mergeProps`, which yields only to a value that is not `undefined`, so
+    // `<Alert.Indicator>{null}</Alert.Indicator>` renders an empty box there — and `{cond() ? <X/>
+    // : null}` is ordinary Solid. Read into a local first, because the prop is a getter that
+    // rebuilds its element on every read and the test plus the result would be two constructions.
     get children() {
-      return props.children ?? <AlertStatusIcon />;
+      const provided = props.children;
+      return provided !== undefined ? provided : <AlertStatusIcon />;
     },
   }) as SpanProps;
 

@@ -89,6 +89,22 @@ describe("Tag — anatomy", () => {
     expect(close.textContent).toBe("×");
   });
 
+  it("draws no ✕ for a `null` child, and still draws one for an omitted child", () => {
+    // `{cond() ? <Icon/> : null}` is ordinary Solid, and Chakra's `mergeProps` yields a default
+    // only to `undefined` — so a `null` child renders an empty button upstream. `??` would put the
+    // ✕ back and quietly overrule what the consumer wrote.
+    mounted = mount(() => (
+      <Tag.Root>
+        <Tag.CloseTrigger data-probe="null">{null}</Tag.CloseTrigger>
+        <Tag.CloseTrigger data-probe="omitted" />
+      </Tag.Root>
+    ));
+    const container = mounted.container;
+
+    expect(probe(container, "null").querySelector("svg")).toBeNull();
+    expect(probe(container, "omitted").querySelector("svg")).not.toBeNull();
+  });
+
   it("dismisses through the consumer's own handler", async () => {
     let closed = 0;
     mounted = mount(() => <Closable onClose={() => (closed += 1)} />);

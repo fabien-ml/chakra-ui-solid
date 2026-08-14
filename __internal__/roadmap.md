@@ -479,7 +479,19 @@ The seam's own suite gained the test that would have caught it.
       to a glyph chosen from the status: `info`/`neutral` share the circle-i, `error`/`warning`
       share the triangle, `success` is the circled check. A **responsive** `status` names no single
       glyph and draws nothing, which is upstream's `Fragment` one indirection later. Read exactly
-      once through `??`, so no `children()` is owed.
+      once, so no `children()` is owed.
+      **A defaulted child yields to `undefined` and to nothing else**, and the note here said `??`,
+      which is wrong. Chakra applies a part's `defaultProps` through `merge-props.ts:49`
+      (`props[key] !== undefined ? … : …`) and `utils/compact.ts:4` (deletes only `undefined`), so
+      `<Alert.Indicator>{null}</Alert.Indicator>` renders an empty box upstream where `??` put the
+      glyph back — and `{cond() ? <X/> : null}` is ordinary Solid, so it is a real case. Each getter
+      reads the prop into a local first, because the check plus the result would be two
+      `createComponent` calls. **The same measurement settles it for `breadcrumb` (Separator,
+      Ellipsis), `stat` (both trend indicators, one helper), `tag` (CloseTrigger) and `popover`
+      (Arrow's tip, inside its `children()`)** — all fixed together, each with its own test.
+      `native-select` and `close-button` are *not* in the set: upstream writes `props.children ??
+      <Icon/>` in the body for both, so ours already matches. `withDefaults` is untouched — its
+      nullish semantics are the library-wide rule.
       **The flat export is `AlertPropsProvider`**, not `AlertRootPropsProvider` — the port shipped
       the wrong spelling and it is corrected. The namespace alias *is* `Alert.RootPropsProvider`,
       which reads as an inconsistency and is upstream's own: `AlertPropsProvider as RootPropsProvider`

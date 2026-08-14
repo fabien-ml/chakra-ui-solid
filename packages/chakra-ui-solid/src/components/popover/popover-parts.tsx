@@ -175,7 +175,15 @@ export const PopoverArrow: Component<PopoverArrowProps> = (props) => {
   // module scope is worse — JSX there runs at import time and 500s the SSR route. Resolving through
   // `children()` also collapses the prop's repeated reads (the merged bag's `children` getter is
   // re-read by every spread pass) to a single construction.
-  const arrowTip = children(() => props.children ?? <PopoverArrowTip />);
+  //
+  // `!== undefined` rather than `??`: Chakra hands this default to `mergeProps`, which yields only
+  // to a value that is not `undefined`, so `<Popover.Arrow>{null}</Popover.Arrow>` renders an empty
+  // arrow there — and `{cond() ? <X/> : null}` is ordinary Solid. The local keeps the prop read
+  // once per memo run, which is the whole point of resolving here.
+  const arrowTip = children(() => {
+    const provided = props.children;
+    return provided !== undefined ? provided : <PopoverArrowTip />;
+  });
 
   const elementProps = mergeProps(() => ctx.getArrowProps(), props, {
     get children() {

@@ -155,10 +155,17 @@ export const BreadcrumbSeparator: Component<BreadcrumbSeparatorProps> = (props) 
   const elementProps = merge(merged, {
     // A **getter**, not a `withDefaults` entry: `withDefaults` evaluates its defaults object where
     // it is written, so a JSX-valued default there would construct the chevron on every render and
-    // throw it away whenever the consumer passed their own. Read exactly once from here, so no
-    // `children()` is owed — `??` evaluates its left side one time.
+    // throw it away whenever the consumer passed their own.
+    //
+    // `!== undefined` rather than `??`: Chakra applies a part's default children through
+    // `mergeProps`, which yields only to a value that is not `undefined`, so
+    // `<Breadcrumb.Separator>{null}</Breadcrumb.Separator>` renders an empty `li` there — and
+    // `{cond() ? <X/> : null}` is ordinary Solid. Read into a local first, because the prop is a
+    // getter that rebuilds its element on every read and the test plus the result would be two
+    // constructions.
     get children() {
-      return merged.children ?? <ChevronRightIcon />;
+      const provided = merged.children;
+      return provided !== undefined ? provided : <ChevronRightIcon />;
     },
   }) as ListItemProps;
 
@@ -185,7 +192,8 @@ export const BreadcrumbEllipsis: Component<BreadcrumbEllipsisProps> = (props) =>
 
   const elementProps = merge(merged, {
     get children() {
-      return merged.children ?? <EllpsisIcon />;
+      const provided = merged.children;
+      return provided !== undefined ? provided : <EllpsisIcon />;
     },
   }) as ListItemProps;
 

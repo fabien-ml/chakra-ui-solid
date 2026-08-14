@@ -317,6 +317,25 @@ describe("Popover — a real popover machine through the adapter", () => {
     expect(partIn(mounted.container, "arrow-tip")).toBeNull();
   });
 
+  it("draws no tip for a `null` child on the Arrow", async () => {
+    // `{cond() ? <Tip/> : null}` is ordinary Solid, and Chakra's `mergeProps` yields a default only
+    // to `undefined` — so a `null` child renders a bare arrow upstream. `??` would put the tip back
+    // and quietly overrule what the consumer wrote.
+    mounted = mount(() => (
+      <Popover.Root defaultOpen>
+        <Popover.Trigger>Open</Popover.Trigger>
+        <Popover.Positioner>
+          <Popover.Content>
+            <Popover.Arrow>{null}</Popover.Arrow>
+          </Popover.Content>
+        </Popover.Positioner>
+      </Popover.Root>
+    ));
+
+    expect(partIn(mounted.container, "arrow")).not.toBeNull();
+    expect(partIn(mounted.container, "arrow-tip")).toBeNull();
+  });
+
   it("closes only the inner popover when Escape is pressed inside a nested pair", async () => {
     // The layer stack's own rule — `onEscapeKeyDown` returns early unless the layer is topmost — and
     // the reason a nested pair is worth building at all: two independent machines, one keyboard.

@@ -15,8 +15,8 @@ import { Alert } from "../index";
  * - **success** — the default glyph, drawn from the status map;
  * - **responsive** — a `status` that is an object rather than a string, which names no single glyph,
  *   so the `Show` renders nothing at all and the whole `svg` is absent from the markup;
- * - **spinner** — a consumer's own child, so the `??` never reaches its right side and the default
- *   glyph is never built.
+ * - **spinner** — a consumer's own child, so the indicator's getter returns it and the default glyph
+ *   is never built.
  *
  * The status also travels through a **context the Root opens around its own element**, which is a
  * context read on the server: the two builds have to agree about it before hydration is asked the

@@ -146,6 +146,22 @@ describe("Alert — the indicator's glyph", () => {
     expect(indicator.children).toHaveLength(1);
   });
 
+  it("draws no glyph for a `null` child, and still draws one for an omitted child", () => {
+    // `{cond() ? <Icon/> : null}` is ordinary Solid, and Chakra's `mergeProps` yields a default
+    // only to `undefined` — so a `null` child empties the box upstream. `??` would put the status
+    // glyph back and quietly overrule what the consumer wrote.
+    mounted = mount(() => (
+      <Alert.Root>
+        <Alert.Indicator data-probe="null">{null}</Alert.Indicator>
+        <Alert.Indicator data-probe="omitted" />
+      </Alert.Root>
+    ));
+    const container = mounted.container;
+
+    expect(probe(container, "null").querySelector("svg")).toBeNull();
+    expect(probe(container, "omitted").querySelector("svg")).not.toBeNull();
+  });
+
   it("falls back to `info` when the Root supplies no status, and when one forwards it unset", () => {
     mounted = mount(() => (
       <>

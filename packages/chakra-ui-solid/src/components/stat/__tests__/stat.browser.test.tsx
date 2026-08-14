@@ -105,6 +105,29 @@ describe("Stat — anatomy", () => {
     expect(up.textContent).toBe("▲");
   });
 
+  it("draws no arrow for a `null` child, and still draws one for an omitted child", () => {
+    // `{cond() ? <Icon/> : null}` is ordinary Solid, and Chakra's `mergeProps` yields a default
+    // only to `undefined` — so a `null` child empties the span upstream. `??` would put the arrow
+    // back and quietly overrule what the consumer wrote. One helper mints both indicators, so the
+    // down arrow is the same getter.
+    mounted = mount(() => (
+      <Stat.Root>
+        <Stat.HelpText>
+          <Stat.UpIndicator data-probe="null-up">{null}</Stat.UpIndicator>
+          <Stat.UpIndicator data-probe="omitted-up" />
+          <Stat.DownIndicator data-probe="null-down">{null}</Stat.DownIndicator>
+          <Stat.DownIndicator data-probe="omitted-down" />
+        </Stat.HelpText>
+      </Stat.Root>
+    ));
+    const container = mounted.container;
+
+    expect(probe(container, "null-up").querySelector("svg")).toBeNull();
+    expect(probe(container, "omitted-up").querySelector("svg")).not.toBeNull();
+    expect(probe(container, "null-down").querySelector("svg")).toBeNull();
+    expect(probe(container, "omitted-down").querySelector("svg")).not.toBeNull();
+  });
+
   it("sizes an arrow's glyph to the text it sits in", () => {
     mounted = mount(() => (
       <Stat.Root>

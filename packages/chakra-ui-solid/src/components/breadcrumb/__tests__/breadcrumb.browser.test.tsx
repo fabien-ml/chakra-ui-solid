@@ -199,6 +199,28 @@ describe("Breadcrumb — the defaults each part carries", () => {
     expect(getComputedStyle(ellipsis).justifyContent).toBe("center");
   });
 
+  it("draws no glyph for a `null` child, and still draws one for an omitted child", () => {
+    // `{cond() ? <Icon/> : null}` is ordinary Solid, and Chakra's `mergeProps` yields a default
+    // only to `undefined` — so a `null` child empties both parts upstream. `??` would put the
+    // chevron and the ellipsis back and quietly overrule what the consumer wrote.
+    mounted = mount(() => (
+      <Breadcrumb.Root>
+        <Breadcrumb.List>
+          <Breadcrumb.Separator data-probe="null-separator">{null}</Breadcrumb.Separator>
+          <Breadcrumb.Separator data-probe="omitted-separator" />
+          <Breadcrumb.Ellipsis data-probe="null-ellipsis">{null}</Breadcrumb.Ellipsis>
+          <Breadcrumb.Ellipsis data-probe="omitted-ellipsis" />
+        </Breadcrumb.List>
+      </Breadcrumb.Root>
+    ));
+    const container = mounted.container;
+
+    expect(probe(container, "null-separator").querySelector("svg")).toBeNull();
+    expect(probe(container, "omitted-separator").querySelector("svg")).toBeInstanceOf(SVGElement);
+    expect(probe(container, "null-ellipsis").querySelector("svg")).toBeNull();
+    expect(probe(container, "omitted-ellipsis").querySelector("svg")).toBeInstanceOf(SVGElement);
+  });
+
   it("keeps each part's default when a wrapper forwards it unset", () => {
     // Spelled through real wrappers rather than as `role={undefined}`, which the a11y lint reads as
     // an invalid role.
