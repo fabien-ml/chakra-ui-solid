@@ -36,6 +36,7 @@ export * from "./heading";
 export * from "./icon";
 export * from "./loader";
 export * from "./locale";
+export * from "./popover";
 export * from "./quote";
 export * from "./radiomark";
 export * from "./simple-grid";

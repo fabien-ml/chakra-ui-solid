@@ -1,0 +1,52 @@
+export { createPopover } from "./create-popover";
+export * as Popover from "./namespace";
+export type {
+  CreatePopoverProps,
+  CreatePopoverReturn,
+  PopoverAnchorProps,
+  PopoverArrowProps,
+  PopoverArrowTipProps,
+  PopoverBodyProps,
+  PopoverCloseTriggerProps,
+  PopoverContentProps,
+  PopoverContextProps,
+  PopoverDescriptionProps,
+  PopoverElementIds,
+  PopoverFocusOutsideEvent,
+  PopoverFooterProps,
+  PopoverHeaderProps,
+  PopoverInteractOutsideEvent,
+  PopoverIntlTranslations,
+  PopoverOpenChangeDetails,
+  PopoverPlacement,
+  PopoverPointerDownOutsideEvent,
+  PopoverPositionerProps,
+  PopoverPositioningOptions,
+  PopoverPresenceProps,
+  PopoverPropsProviderProps,
+  PopoverRootBaseProps,
+  PopoverRootProps,
+  PopoverRootProviderProps,
+  PopoverTitleProps,
+  PopoverTriggerProps,
+  PopoverTriggerValueChangeDetails,
+  PopoverVariantProps,
+} from "./popover.types";
+export type { PopoverSlot } from "./popover-context";
+export { usePopoverContext } from "./popover-context";
+export {
+  PopoverAnchor,
+  PopoverArrow,
+  PopoverArrowTip,
+  PopoverBody,
+  PopoverCloseTrigger,
+  PopoverContent,
+  PopoverContext,
+  PopoverDescription,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverPositioner,
+  PopoverTitle,
+  PopoverTrigger,
+} from "./popover-parts";
+export { PopoverPropsProvider, PopoverRoot, PopoverRootProvider } from "./popover-root";

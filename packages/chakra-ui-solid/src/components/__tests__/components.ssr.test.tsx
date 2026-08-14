@@ -29,6 +29,7 @@ import {
   Container,
   createCollapsible,
   createDialog,
+  createPopover,
   DialogActionTrigger,
   DialogBackdrop,
   DialogBody,
@@ -60,6 +61,22 @@ import {
   Loader,
   LoaderOverlay,
   LocaleProvider,
+  PopoverAnchor,
+  PopoverArrow,
+  PopoverArrowTip,
+  PopoverBody,
+  PopoverCloseTrigger,
+  PopoverContent,
+  PopoverContext,
+  PopoverDescription,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverPositioner,
+  PopoverPropsProvider,
+  PopoverRoot,
+  PopoverRootProvider,
+  PopoverTitle,
+  PopoverTrigger,
   Quote,
   Radiomark,
   SimpleGrid,
@@ -345,6 +362,109 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <LocaleProvider locale="ar-AE">
       <span>مرحبا</span>
     </LocaleProvider>
+  ),
+  // The inversion of the Dialog block above, and the reason none of these carries a render-strategy
+  // prop: `popover.tsx` hands `withRootProvider` no options object, so `createRenderStrategy`'s own
+  // `false`/`false` stand and a closed popover's positioner and content are in the served markup
+  // from the first render. Bare roots are the real default shape here; the lazy one is
+  // `popover.ssr.test.tsx`'s subject instead.
+  PopoverAnchor: () => (
+    <PopoverRoot>
+      <PopoverAnchor>anchored</PopoverAnchor>
+    </PopoverRoot>
+  ),
+  // Given no child it resolves its default `<PopoverArrowTip />` through `children()`, which is the
+  // one arm that constructs JSX inside the component body — hoisted beside the export it would run
+  // at import time and 500 the route.
+  PopoverArrow: () => (
+    <PopoverRoot>
+      <PopoverArrow />
+    </PopoverRoot>
+  ),
+  PopoverArrowTip: () => (
+    <PopoverRoot>
+      <PopoverArrowTip />
+    </PopoverRoot>
+  ),
+  PopoverBody: () => (
+    <PopoverRoot>
+      <PopoverBody>body</PopoverBody>
+    </PopoverRoot>
+  ),
+  PopoverCloseTrigger: () => (
+    <PopoverRoot>
+      <PopoverCloseTrigger>✕</PopoverCloseTrigger>
+    </PopoverRoot>
+  ),
+  PopoverContent: () => (
+    <PopoverRoot>
+      <PopoverContent>body</PopoverContent>
+    </PopoverRoot>
+  ),
+  PopoverContext: () => (
+    <PopoverRoot>
+      <PopoverContext>
+        {(popover) => <span>{popover.open ? "open" : "closed"}</span>}
+      </PopoverContext>
+    </PopoverRoot>
+  ),
+  PopoverDescription: () => (
+    <PopoverRoot>
+      <PopoverDescription>This cannot be undone.</PopoverDescription>
+    </PopoverRoot>
+  ),
+  PopoverFooter: () => (
+    <PopoverRoot>
+      <PopoverFooter>actions</PopoverFooter>
+    </PopoverRoot>
+  ),
+  PopoverHeader: () => (
+    <PopoverRoot>
+      <PopoverHeader>head</PopoverHeader>
+    </PopoverRoot>
+  ),
+  PopoverPositioner: () => (
+    <PopoverRoot>
+      <PopoverPositioner>placed</PopoverPositioner>
+    </PopoverRoot>
+  ),
+  PopoverPropsProvider: () => (
+    <PopoverPropsProvider value={{ size: "sm" }}>
+      <PopoverRoot>
+        <PopoverContent>body</PopoverContent>
+      </PopoverRoot>
+    </PopoverPropsProvider>
+  ),
+  // The Root renders no element of its own — `popover.anatomy` has no `root` part — so the trigger is
+  // what makes this subject produce markup at all.
+  PopoverRoot: () => (
+    <PopoverRoot>
+      <PopoverTrigger>Open</PopoverTrigger>
+    </PopoverRoot>
+  ),
+  // The one subject that starts its machine outside the component that renders it, and the one open
+  // popover in this file: `defaultOpen` is the state the presence machine has to reach on a server
+  // where no effect ever runs.
+  PopoverRootProvider: () => {
+    const Subject = () => {
+      const popover = createPopover({ defaultOpen: true });
+      return (
+        <PopoverRootProvider value={popover}>
+          <PopoverContent>body</PopoverContent>
+        </PopoverRootProvider>
+      );
+    };
+    return <Subject />;
+  },
+  PopoverTitle: () => (
+    <PopoverRoot>
+      <PopoverTitle>Delete file</PopoverTitle>
+    </PopoverRoot>
+  ),
+  PopoverTrigger: () => (
+    <PopoverRoot>
+      <PopoverTrigger>Open</PopoverTrigger>
+    </PopoverRoot>
   ),
   Quote: () => <Quote>quoted</Quote>,
   // Checked, because that is the arm that renders a child — the unchecked one is an empty `span`

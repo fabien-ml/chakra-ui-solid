@@ -105,6 +105,15 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/dialog/__tests__/dialog.ssr-entry.tsx",
   ),
+  // The first **floating** subject, and the inverse of `dialog` above: Popover's render strategy
+  // defaults to `false`/`false`, so the served markup carries a whole closed popover and the *lazy*
+  // root is the opt-in. Its extra half is `@zag-js/popper`, which writes eight CSS custom properties
+  // imperatively into the positioner's `style` inside a `raf` — against nodes the server sent and
+  // `hydrate()` claimed, which is what the post-hydration open in the browser test measures.
+  popover: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/popover/__tests__/popover.ssr-entry.tsx",
+  ),
   // Conditional on a **count** rather than a boolean: `ColorSwatchMix` renders a `<For>` over two,
   // three or four colours, so each subject consumes a different number of hydration keys and a
   // miscount shifts every sibling after it. It is also the first subject styled through an inline

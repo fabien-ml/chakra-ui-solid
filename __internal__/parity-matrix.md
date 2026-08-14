@@ -789,6 +789,11 @@ grep -rn 'z-index\|layer-index' __reference-impl__/zag/packages/utilities/popper
 Neither hope-ui spike built a floating component, so nobody has measured what a Solid reactive `style`
 binding does when a `raf` callback writes into the same attribute between renders.
 
+**Measured at 5b, and it is free** (`decisions.md` §*Two writers on one `style` attribute*): Solid's
+object-form binding diffs per property, so it never touches popper's eight. The sequencing argument
+below is kept as written because it is what put the measurement here; the two rules it produced are
+in `component-blueprint.md` §14 and on every floating roadmap row.
+
 **Ten machines pull `@zag-js/popper`:**
 
 ```bash
@@ -829,6 +834,15 @@ popover→Popover/ActionBar) rather than discovering.
 **What step 5b must produce, either way:** a number. If the seam is free, that is one sentence in the
 blueprint and B1 proceeds. If it is not, the fix lands in one component before nine inherit it, and
 `component-blueprint.md` gains the rule the way it gained the `hidden`-vs-`display` one.
+
+**The number is 1500 / 1501** — a stacked pair, outer content and inner. It bought both outcomes: the
+sentence *and* two rules, because a free seam is only free while the object form of `style` is what
+reaches the positioner and content stays its `firstElementChild`. B1 proceeds.
+
+**One candidate in the table above was mis-scoped**, and only reading the code settles it:
+`action-bar`'s positioner is `withContext("div", "positioner")` — a plain styled div with no machine
+props — so it does not test the seam on *a fraction* of the surface, it does not test it at all. The
+placement decision is unaffected; the reason given for it was wrong.
 
 ---
 
@@ -925,7 +939,7 @@ them is a `useX` machine hook. So:
 | **`Context`** — `<Dialog.Context>{(api) => …}</Dialog.Context>`, a render prop over the component's own context | **43** components | **Per-component row.** One line, no recipe, no machine props — and a constraint on every *example* that uses one: the render prop is called in the part's body, so it must **return JSX** or the read is untracked and freezes at mount (`component-blueprint.md` §3.2) | **With the component's batch.** No separate work item |
 | **`useX` / `useXContext`** — the machine hook and its context reader | one per machine family | **Per-component row**, exported from the component's own subpath (`chakra-ui-solid/dialog`), **not** from `./hooks` | With the component's batch. `useX` is what `RootProvider` consumes |
 | **`RootProvider`** — `<Dialog.RootProvider value={useDialog(...)}>` | **41** components | **Per-component row**, but it needs `useX` first | With the component's batch |
-| **`PropsProvider`** — a defaults-injection context | **47** components | **One cross-cutting mechanism in `@chakra-ui-solid/core`**, then one thin row per component | **Mechanism at step 5b** (the first batch with two components on one machine, which is where injected defaults first earn their keep); rows with each batch |
+| **`PropsProvider`** — a defaults-injection context | **47** components | **One cross-cutting mechanism in `@chakra-ui-solid/core`**, then one thin row per component | **The mechanism landed at step 5, not 5b**: `createPropsContext` (`recipe/props-context.tsx`) and `withContextDefaults` (`utils/defaults.ts`) shipped in `core` with Dialog, which exports `DialogPropsProvider`. Popover consumed it in three lines. Rows with each batch |
 | **`./hooks`** — the fourteen standalone hooks | 7 ship, 7 excluded (§5.8) | **A `plan.md` §5.5 subpath obligation**, independent of any component | **Step 6.** `useBreakpoint`/`useMediaQuery` are needed by the responsive story, and `useListCollection` by B5 |
 
 ```bash
@@ -987,7 +1001,7 @@ Two shapes the matrix makes measurable that were not before:
 
 | # | Assumption | Blocks if wrong | Verified at |
 |---|---|---|---|
-| **P6-A** | The popper `--z-index` seam is priceable in one component, and the price is the same for the other eight | §8's whole sequencing argument. If Popover is cheap and Select is not, the seam is per-machine and B5/B8 each owe their own probe | **Step 5b**, then re-confirmed at the first B5 component |
+| **P6-A** | The popper `--z-index` seam is priceable in one component, and the price is the same for the other eight | §8's whole sequencing argument. If Popover is cheap and Select is not, the seam is per-machine and B5/B8 each owe their own probe | **Half closed at step 5b: priceable, and free — 1500 / 1501.** The mechanism is Solid's per-property `style` diff and popper's `zIndexComputed`/approximate-equality guards, neither of which knows what machine it is under, so *the same price for the other eight* is now an argument rather than a guess. Still **re-confirmed at the first B5 component** (`select`), because that is what would catch a collection component holding the seam differently |
 | **P6-B** | Ark's `useCollapsible` shape (§6.2) is the *only* second presence source — no other machine exposes visibility that Ark wraps this way | §6's two families become three, and the render strategy needs a third source | **B2**. Cheap: `grep -rl 'isUnmounted' ark-ui/packages/react/src/` |
 | **P6-C** | The six components whose recipe key resolves to nothing (§2.5) are unstyled **by intent** upstream, not by a bug about to be fixed | The coverage-check allow-list, and whether `Container`'s preset delta is a port or a divergence | **Step 4**, when the coverage check first runs; and a standing check on each Chakra minor (`testing.md` §11) |
 | **P6-D** | Chakra's own `anatomy.ts` — not the preset's `slots` arrays — is the authoritative slot list, so the seven duplicates are transcription artifacts with no runtime meaning | The coverage check's dedupe step, and any generated per-slot type | **Step 4**. If a duplicated slot turns out to emit two classes, the dedupe is wrong and the preset needs a delta |

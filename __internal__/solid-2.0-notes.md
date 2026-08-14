@@ -214,6 +214,28 @@ hydrated, every `*.ssr.test.tsx` really renders.
   `clientBuildAlias` beside `serverBuildAlias`. The cheap way to tell which build a project got:
   `Object.keys(await import("solid-js")).length` — 75 is the client, 76 is the server.
 
+## `onSettled` registration order decides what a frame callback can see
+
+**`onSettled` callbacks run in registration order, and a `requestAnimationFrame` queued from inside
+one lands behind every frame callback the earlier ones queued.** That is the whole mechanism, and it
+is the difference between a working component-local fix and a silent no-op.
+
+`useMachine` starts the machine in its own `onSettled` (`core/src/zag/machine.ts`), which is where
+the machine's entry actions run and where they queue their `raf` work. A component body that calls
+`useMachine` first and registers its own `onSettled` after it therefore gets a frame callback queued
+**behind** the machine's, and reads state the machine has already written that frame. `createPopover`
+depends on exactly this: Zag's `checkRenderedElements` mutates a bindable in place and notifies
+nothing, so the component forces one re-read of `connect` from a `raf` inside `onSettled`
+(`decisions.md`, *A Zag correction that notifies nothing*).
+
+- **A body-level `requestAnimationFrame` fires first and does nothing.** It is queued during the
+  render, before `onSettled` has run at all, so it lands ahead of the machine's own frame callback
+  and reads the value it was written to observe changing. Nothing errors and no test that only waits
+  on the DOM can distinguish it from the fix working.
+- **Put the `isServer` guard inside the callback, never around the registration.** Both builds must
+  make the same calls in the same order; skipping the registration on the server is the quieter bug.
+  `onSettled` does not run there anyway.
+
 ## Two more 2.0 facts that touch props
 
 - **A signal write is not visible to a plain read until the next flush — in the *client* build

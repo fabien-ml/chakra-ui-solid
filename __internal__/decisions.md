@@ -77,7 +77,7 @@ flat, one component doing both jobs.
 - **`RootProvider`, `PropsProvider` and `Context` ship with each component**, in its batch, never as
   a later sweep. 41 / 47 / 43 components carry them respectively. Not behind a `./hooks` subpath.
 
-## Two writers on one `style` attribute — the dismissable half is measured; popper's is not
+## Two writers on one `style` attribute — measured on both halves, and free
 
 **`@zag-js/popper` writes `--z-index` imperatively into the floating element's `style` attribute
 inside a `raf`; the dismissable layer writes `--layer-index` the same way and watches the stack with
@@ -93,8 +93,8 @@ positions itself without popper, so measuring Popover does not cover it.
 writes `--layer-index` and `--nested-layer-count` with `setProperty`, and its `MutationObserver` on
 `style` rewrites `pointer-events` whenever anything else touches the attribute — including Solid.
 The two coexist because **Solid's `style` binding diffs per property against what it last wrote**,
-so it only ever removes a key it owns and never sees the imperative ones. Three consequences worth
-carrying to Popover:
+so it only ever removes a key it owns and never sees the imperative ones. Three consequences, all of
+which held when Popover re-measured them against popper:
 
 - **Bind `style` as an object, never as a string.** A `cssText` assignment wipes both custom
   properties on every machine update, and the recipe's `z-index: calc(… + var(--layer-index, 0))`
@@ -106,13 +106,80 @@ carrying to Popover:
   the property being absent. Only a nested pair can tell them apart, which is what Dialog's test
   asserts (1500 and 1501, off the `popover` token).
 
-**Popper's `--z-index` is still unmeasured** and still gates Popover.
-
 ```bash
 sed -n '145,150p;180,205p' __reference-impl__/zag/packages/utilities/dismissable/src/layer-stack.ts
 ```
 
-This is why Popover comes immediately after Dialog and before volume.
+This is why Popover came immediately after Dialog and before volume.
+
+**Popper's half was measured at the `popover` ship, and it costs nothing either.** `@zag-js/popper`
+writes **eight** custom properties into the positioner's `style` attribute inside a `raf` — `--x`,
+`--y`, `--z-index`, `--transform-origin`, `--reference-width/height`, `--available-width/height` —
+and the same per-property diff that saved the dismissable half saves these. Measured against three
+interleaves in one open window: a consumer's signal-valued `style` on the positioner, the machine
+re-emitting its own style object with a key *removed* (`sameWidth` drops `minWidth`, adds `width`),
+and an `autoUpdate` pass on a window resize. **A stacked pair reads 1500 on the outer content and
+1501 on the inner**, and each positioner takes its own number by `var(--z-index)`.
+
+Three rules for the eight remaining floating components, none enforced by a type:
+
+- **Only the object form of `style` may reach a positioner.** A string binding rewrites the whole
+  attribute and erases all eight. Popper does not notice: `zIndexComputed` is a per-identity flag and
+  the position writes are guarded by approximate equality, so both believe the attribute is already
+  correct.
+- **An ordinary update will not resurrect a wipe, but `reposition()` will.** It sends
+  `POSITIONING.SET`, whose action builds a whole new `getPlacement` closure with `zIndexComputed`
+  back to `false` — proven by deleting `--z-index` and watching it come back. That is the escape
+  hatch, and it is the only one; a prop change is not enough, because this machine's `watch` tracks
+  `open` alone and `trackPositioning` is an open-state effect that never restarts.
+- **Content must stay the positioner's `firstElementChild`.** `--z-index` is a *copy*, taken once per
+  floating-element identity off `getComputedStyle(positioner.firstElementChild).zIndex`, which is
+  where the recipe puts the number. A wrapper between the two silently unsets it. The arrow is
+  resolved the same once-only way, by `querySelector("[data-part=arrow]")`.
+
+**The one order-dependent cell, recorded rather than hidden**: the inner positioner of a nested pair
+reads `1501`, stably across a dozen runs, because popper's copy sits behind `await computePosition`
+and lands after the layer stack has written `--layer-index: 1`. Were the order to reverse it would
+read `1500` under a content reading `1501`, and the two surfaces would still paint in the same order
+— they are separate stacking contexts — so the observable stack does not depend on the race.
+
+**`hideWhenDetached` is the one genuine two-writer *property*** (`pointer-events`, written by both
+popper and the layer stack's observer). Non-default, deliberately untested, recorded as residue.
+
+## A Zag correction that notifies nothing — and why the fix is ours to make
+
+**Zag's `checkRenderedElements` writes with `Object.assign(context.get("renderedElements"), …)`.** It
+mutates the bindable's value in place, notifies no subscriber, and so no memo that reads `connect`
+re-runs. The machine's `renderedElements` starts optimistic — `{ title: true, description: true }` —
+and that DOM sniff a frame after start is the only thing that corrects it. **Measured on Popover: a
+`defaultOpen` root with a Title and no Description kept a dangling `aria-describedby` for its entire
+open window**, and only a later transition cleared it.
+
+**This is our defect, not inherited residue**, and the distinction is the point. The React version
+ships no such attribute — six popovers on chakra-ui.com, none with a Description, every
+`aria-describedby` absent — because React re-renders the root for incidental reasons and any one of
+them recomputes `connect`. Nothing gives us one. **Parity is observable behavior; React's re-render
+cadence is an implementation artifact and porting it is not available to us**, so a component that
+reproduces the cadence's *output* is the faithful port and a component that reproduces its *absence*
+is a broken one.
+
+The fix is component-local, in `create-popover.ts`: one `createSignal` the `connect` memo reads, set
+from a `requestAnimationFrame` inside `onSettled`. **The ordering is load-bearing** — our `onSettled`
+must be registered after `useMachine`'s, so our frame callback queues behind the machine entry
+action's and lands after the mutation (`solid-2.0-notes.md`, *`onSettled` registration order*). Three
+browser tests cover it: both dangling cases and an over-correction guard, which is the one that
+matters — a forced re-read that dropped a *live* IDREF would leave the surface unlabelled, a worse
+failure than the dangle.
+
+**The server half is left dangling on purpose.** A server runs no frames and has no DOM to sniff, so
+both IDREFs go out optimistically — and React's server render emits exactly the same two, from the
+same initial context. Suppressing ours would diverge from the React version and change what hydration
+reconciles, to buy nothing a reader can perceive: nothing reads the page before hydration. Pinned by
+an assertion in `popover.ssr.test.tsx` so the server half is not later "fixed".
+
+Every machine whose `connect` depends on a bindable Zag mutates in place inherits this shape. Reach
+for the same one-frame nudge only with a measurement in hand — the cost is a forced recompute of
+`connect` on every instance.
 
 ## Presence
 

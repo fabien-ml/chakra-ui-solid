@@ -141,7 +141,7 @@ Four lines, from `roadmap.md` §9.2:
 | **3b** The visual surfaces | **Two surfaces, one gate — discharged at S3b.** Storybook is a **local playground** — `pnpm storybook` renders `Box` and nothing automated opens it, so it contributes no gate line (`testing.md` §7.1; **D-133**). **The whole proof is the docs app**: its shell, its route map, `docs-plan.md` §8's component-page template applied once to `Box`, and its own `panda.config.ts` — a **standing consumer instance** from here rather than after B8 (`docs-site.md` §1.1), and from S3b the only place a component is validated as a real app uses it. Closes **P8-B** (MDX under Solid 2.0) and **P8-C1** (the generator's own-part-props half); **P8-C splits** and its other two thirds move to steps 4 and 5 (**D-142**); **P7-B is retired unclosed** — measured, then withdrawn, because nothing depends on it (**D-130**, **D-133**) | the `docs` job — `check:docs-inventory`, `check:docs-consumer-config`, `check:docs-examples`, `check:no-runtime-sheet` over `apps/docs/src`, and the docs build itself. **`check:css-coverage` against the docs sheet is not here** — it does not exist until step 4 and has no buildinfo to read until then (**D-139**) |
 | **4** One slot recipe | The component styles correctly **in a throwaway consumer whose own source never names the variant**, wired per `plan.md` §4.1. `check:css-coverage` green *there*; then flipping `hash` makes it exit `E_CONFIG_MISMATCH` rather than green or noisy; `check:data-attr-vocab` runs for the first time. **And the same check runs a second time against the docs app's own generated sheet** — the permanent instance of this gate (`docs-site.md` §1.1, §6.1), which is the step it first has a buildinfo to read (**D-139**) | `check:css-coverage`, in the throwaway consumer **and** in `apps/docs`; `check:hash-config`; `check:responsive-grain`; `check:data-attr-vocab` |
 | **5** Dialog | `component-blueprint.md` §11 compiles; axe clean on closed-state assertions with `aria-hidden-focus` allowed on open only; SSR→hydrate round-trip; `Portal`'s `isServer` guard tested in the `ssr` project; **the render strategy split so `present` can come from a machine as well as a presence** (`roadmap.md` §6.2) — tested against both sources before Collapsible needs it | §2's full bar; §5's register |
-| **5b** Popover | **The popper `--z-index` seam is measured**: a browser test asserting the computed `z-index`/`--z-index` on the floating element survives interleaved reactive re-renders and `raf` writes, with a recorded number. Either a sentence in the blueprint or a rule (`roadmap.md` §8.2) | `check:floating-zindex` — new at 5b, re-run at the first B5 component (**P6-A**) |
+| **5b** Popover | **The popper `--z-index` seam is measured, and it is free — 1500 / 1501.** `popover.browser.test.tsx`'s *seam* block asserts the computed `z-index` and the four imperative custom properties survive a consumer's signal-valued `style`, a machine re-emit that removes a key, and an `autoUpdate` pass; a nested pair pins the number on both contents and both positioners. It bought a sentence **and** two rules (`component-blueprint.md` §14): object-form `style` only, content stays the positioner's `firstElementChild` | **The browser test is the gate.** `check:floating-zindex` is **not built and is not going to be** — it appears in the corpus, never in `package.json`, and a script cannot see a seam that only exists inside a mounted component. Re-run at the first B5 component means re-asserting it there, in that component's own suite (**P6-A**) |
 | **6a** Atomic recipes | 18 components. The atomic recipe layer at volume; `splitVariantProps` exercised by the first `Button` (**P5-B**); `container`'s expression-tier preset delta lands **with its attribution in the same commit**. The three composed primitives (`checkmark`, `radiomark`, `colorSwatch`) exist, which is what unblocks B3/B4/B8 | `check:style-contract`; `check:css-coverage`; §2's bar |
 | **6b** Primitives & layout | 22 components. **The eight CIJ route-3 conversions** of `roadmap.md` §3.1 land — `aspect-ratio`, `float`, `grid`, `simple-grid` among them — and rule 1 is what keeps them converted. Panda `/patterns` composed where one exists | `check:style-contract` rule 1; `check:css-coverage`; §2's bar |
 | **6c** Utilities & presence | 4 utilities + `Presence` + the 7 surviving hooks. **The presence render strategy standalone**, exercised against both families before any component depends on it | Unit tests of the render strategy; §2's bar |
@@ -194,7 +194,23 @@ construction, and a correct port must not read as a regression (`component-bluep
 |---|---|---|---|---|---|
 | `dialog` | `aria-hidden-focus` | **open-state assertions only** | `zag-solid-adapter.md` §8.2; `component-blueprint.md` §9.2 | `@zag-js/aria-hidden`'s entry exports one function, which calls `hideOthers` unconditionally; `dialog.machine.ts:201` cannot redirect it; the published `exports` map makes `suppressOthers` unreachable even by deep import. **Chakra v3 has the identical defect** — `inert` appears zero times in both `chakra-ui/packages/react/src/` and `ark-ui/packages/react/src/` | **Predicted, not measured** (**P5-C**). Verified at step 5 |
 | `drawer` | `aria-hidden-focus` | open-state only | same | Runs on the **`dialog`** machine, not `@zag-js/drawer` (`roadmap.md` §2.2) | Predicted. Verified in B1 |
-| `popover` | `aria-hidden-focus` | open **and** `modal` | same | `popover.machine.ts` reaches the same call site (`zag-solid-adapter.md` §8.2). **Whether it fires only under `modal: true` is measured at 5b** | Predicted, narrower than the other two. **If it never fires, the entry is deleted at 5b** — the register fails on an unused allowance, which is how that decision gets made rather than forgotten |
+| `popover` | `aria-valid-attr-value` | **all three states** — closed, open, open + `modal` | here; `popover.browser.test.tsx`, *the a11y baseline* | **Bought by the trigger, in every state.** Zag puts `aria-haspopup="dialog"` and `aria-controls` on one button, and axe's `aria-valid-attr-value` runs a `controlsWithinPopup` pre-check that declines to judge an `aria-controls` on any element carrying a live `aria-haspopup` — *"unable to determine if the referenced ID exists on the page"* — whatever the referenced element is doing. **Inherited, not ours**: `@zag-js/dialog`'s trigger emits the identical pair and scores the identical incomplete (reproduced on an open non-modal Dialog). The IDREF itself is verified directly, by the `aria-controls` tests | **Measured at 5b, and the prediction was wrong in both directions** — the two paragraphs below carry it |
+
+**`popover` was predicted to carry `aria-hidden-focus` open + `modal`, and it never fires there.**
+Both components call `@zag-js/aria-hidden`'s `hideOthers`, which marks the page outside the kept
+elements `aria-hidden` without taking it out of the tab order — but `dialog`'s `hideContentBelow`
+keeps only the content, leaving its still-tabbable trigger inside the blanket, while `popover`'s keeps
+`[contentEl, activeTriggerEl]`. The trigger axe could not adjudicate on a Dialog is outside the
+blanket here, so the rule has no subject at all. **The entry is not deleted; it is rewritten around
+the rule that does fire.**
+
+**And the same cause reaches Dialog without reaching its register entry.** The `aria-haspopup` +
+`aria-controls` pair is Ark-wide, so a Dialog scores `aria-valid-attr-value` too — but neither state
+Dialog's own axe run checks can reach it: closed has no content mounted and therefore no
+`aria-controls`, and open is modal, where the trigger sits under the `aria-hidden` blanket and axe
+skips it. Popover's defaults mount the content and its blanket keeps the trigger out, so both escape
+routes are closed at once. A future component that is non-modal **and** mounts its content while
+closed inherits the same incomplete; that is a row citing this cause, not a new finding.
 
 **That is the whole list.** Every other component starts at zero, and `prior-art.md` §7's other
 finding is why that is credible rather than optimistic: **the cost does not generalise** — it belongs
@@ -206,12 +222,15 @@ pulls no `@zag-js/aria-hidden` at all.
 
 | Retired | Why it does not transfer |
 |---|---|
-| `aria-valid-attr-value` on closed-state assertions ×3 | Three independent reasons, no one of them load-bearing: we port Ark's presence-gated `aria-controls` override, so a closed trigger emits no IDREF to dangle; Chakra's Dialog defaults `lazyMount: true` and `unmountOnExit: true`, so closed *is* unmounted unless a consumer opts out; and A1 is fixed in the fork's `normalize-props.ts`, which stringifies boolean `aria-*` in both directions |
+| `aria-valid-attr-value` on closed-state assertions ×3 | Three independent reasons, no one of them load-bearing: we port Ark's presence-gated `aria-controls` override, so a closed trigger emits no IDREF to dangle; Chakra's Dialog defaults `lazyMount: true` and `unmountOnExit: true`, so closed *is* unmounted unless a consumer opts out; and A1 is fixed in the fork's `normalize-props.ts`, which stringifies boolean `aria-*` in both directions. **Still retired, and the `popover` row above does not reverse it** — that row is the same rule name from a *different* cause. This one is a **dangling IDREF**, which the override and the defaults really do prevent; that one is axe's `controlsWithinPopup` pre-check refusing to judge a perfectly live IDREF because the same button carries `aria-haspopup`. Tell them apart by whether the referenced element exists |
 
 **Two failures this register must not absorb**, because both would look like a row that belongs here:
 
 - **`aria-valid-attr-value` appearing on *open*-state calls** means a re-sync dropped the A1 fix. The
-  repair is `normalize-props.ts`, not an entry.
+  repair is `normalize-props.ts`, not an entry. **The discriminator, since 5b:** read the node axe
+  names. A boolean `aria-*` written as `""` is the A1 regression; an `aria-controls` on a button that
+  also carries `aria-haspopup`, pointing at an element that exists, is the `popover` row's cause and
+  needs neither a repair nor a new entry.
 - **A new open-modal component failing `aria-hidden-focus`** is a row citing the same sections —
   **never** a reason to re-introduce `createHideOutside`. The kernel is struck by the port rule and
   the retained set is 12 lines that are not accessibility (`component-blueprint.md` §8).
@@ -447,7 +466,7 @@ them as pass/fail.
 
 | # | Assumption | Gate | Runs at |
 |---|---|---|---|
-| **P6-A** | The popper `--z-index` seam is priceable in one component and costs the same for the other eight | `check:floating-zindex` — the computed value survives interleaved reactive renders and `raf` writes | Step 5b, re-confirmed at the first B5 component |
+| **P6-A** | The popper `--z-index` seam is priceable in one component and costs the same for the other eight | **`popover.browser.test.tsx`'s *seam* block, not a script** — `check:floating-zindex` is not built (§3.1). The computed value survives interleaved reactive renders and `raf` writes | **Priceable and free, at step 5b (1500 / 1501).** Re-confirmed in `select`'s own suite at the first B5 component |
 | **P6-B** | `useCollapsible` is the only second presence source | `grep -rl 'isUnmounted' ark-ui/packages/react/src/` pinned as a fixture with an expected file list | B2 |
 | **P6-C** | The six unstyled-by-key components are unstyled **by intent** upstream | `check:coverage-allowlist` re-derives the "absent from both registries" set from the checkouts | Step 4, then every Chakra minor |
 | **P6-D** | The seven duplicated slots are transcription artifacts with no runtime meaning | `check:css-coverage`'s dedupe assertion: each duplicated slot emits exactly one class token | Step 4 |
@@ -555,7 +574,7 @@ The jobs are `testing.md` §11. The ownership is here.
 | **Running any of it** | No package exists, by P-pass rule. Every artefact above is specified; none has been executed | Nothing. §8's register carries the exposure |
 | **Panda's generated recipe surface** | Panda is installed in no checkout (`plan.md` §13) — the same limit `component-blueprint.md` §14 and `roadmap.md` §14 hit. The coverage check's enumerator is written against a documented shape | **P7-A**, and through it **P5-A**/**P5-B**, at steps 3 and 4 |
 | **The axe baseline** | Predicted from the reference sources; axe has not run. If it turns out wrong the number goes up and §5 records it — **what must not happen is the first `aria-hidden-focus` failure being "fixed" by re-introducing the kernel** | **P5-C**, at step 5 |
-| **The popper `--z-index` seam's price** | It needs a running floating component and a browser; no spike built one and neither could P5 or P6. P7 can name the check and its assertions, not its result | **P6-A**, at step 5b |
+| **The popper `--z-index` seam's price** | It needs a running floating component and a browser; no spike built one and neither could P5 or P6. P7 can name the check and its assertions, not its result | **P6-A, closed at step 5b: free, 1500 / 1501.** The assertions landed as a browser-test block rather than the named script |
 | **Whether tier 1 of `check:data-attr-vocab` is complete** | Some `data-*` values are computed rather than literal in a `.connect.ts`, so a source read can under-collect. That is why tier 2 drives real machines — but tier 2 needs components | Assumption **9**'s full closure, per batch |
 | **Every bundle number** | Not reproducible from git; no machine closure exists until step 5 and no library closure until B8 | `testing.md` §10's three measurement points |
 | **The Storybook runner against Solid 2.0** | Nobody has run the two together here | **P7-B**, at the first story |

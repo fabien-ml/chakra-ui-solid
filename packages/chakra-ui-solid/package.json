@@ -36,6 +36,7 @@
       "icon": "src/components/icon/index.ts",
       "loader": "src/components/loader/index.ts",
       "locale": "src/components/locale/index.ts",
+      "popover": "src/components/popover/index.ts",
       "quote": "src/components/quote/index.ts",
       "radiomark": "src/components/radiomark/index.ts",
       "simple-grid": "src/components/simple-grid/index.ts",

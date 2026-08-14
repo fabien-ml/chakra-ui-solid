@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 111 components. 34 done.
+v0.1.0 is the whole port: 111 components. 35 done.
 
 ## Done, per component
 
@@ -68,7 +68,12 @@ asks, correct **both** in the same commit.
       there — and its item content inherits the `skip` that leaves an initially-open one with no
       `data-state`
 - [ ] action-bar — popover · S:actionBar · 10/5 · D
-      Uses 3 of popover's 10 parts + Chakra-only `separator`, `selectionTrigger`. No trigger part → no `aria-controls` line
+      Uses 3 of popover's 10 parts + Chakra-only `separator`, `selectionTrigger`. No trigger part →
+      no `aria-controls` line. **The machine, its adapter wiring and all 13 slot shapes ship at
+      5b**, so this row inherits them and adds only its own recipe. **The popper seam does not
+      reach it**: `ActionBarPositioner` is `withContext("div", "positioner")` — a plain styled div
+      carrying none of the machine's positioner props — so no floating element exists for popper to
+      write into, and the recipe's `placement` variant does the positioning
 - [ ] avatar — S:avatar · 3/3
       Anatomy re-exported from Ark unchanged
 - [ ] carousel — S:carousel · 10/11
@@ -114,12 +119,19 @@ asks, correct **both** in the same commit.
       returning a plain string reads untracked and freezes at mount. It must return JSX — the same
       holds for the 42 other components with a `Context` part (blueprint §3.2)
 - [ ] color-picker — S:colorPicker · 24/26 · Z
-      Largest anatomy in the library. `+channelText`. Floating
+      Largest anatomy in the library. `+channelText`. Floating — **the seam is free**, measured at
+      `popover` (1500/1501): object-form `style` only on the positioner, content stays its
+      `firstElementChild`, and the arrow is captured once per floating-element identity
 - [ ] combobox — S:combobox · 14/16 · Z ⚠
-      **Duplicate slot `empty`**. `+indicatorGroup`, `+empty`. Floating. Restrictive-content-model hazard (§10.4 of the blueprint)
+      **Duplicate slot `empty`**. `+indicatorGroup`, `+empty`. Restrictive-content-model hazard
+      (§10.4 of the blueprint). Floating — **the seam is free**, measured at `popover` (1500/1501):
+      object-form `style` only on the positioner, content stays its `firstElementChild`, and the
+      arrow is captured once per floating-element identity
 - [ ] date-picker — S:datePicker · 24/26 · Z
       Its duplicate `view` slot is source-only, for the reason measured on the `dialog` row — it is
-      Panda's generator, not the recipe. `+indicatorGroup`. Floating.
+      Panda's generator, not the recipe. `+indicatorGroup`. Floating — **the seam is free**,
+      measured at `popover` (1500/1501): object-form `style` only on the positioner, content stays
+      its `firstElementChild`, and the arrow is captured once per floating-element identity.
       The preset's `prevTrigger`/`nextTrigger` write `boxShadow: "0 0 0 2px
       var(--colors-color-palette-focus-ring)"` as a **literal**, not a token reference, so our
       `chakra` cssVar prefix never reaches it and the shadow resolves to nothing. The only two such
@@ -152,22 +164,56 @@ asks, correct **both** in the same commit.
 - [ ] floating-panel — S:floatingPanel · 11/11 · D ⚠
       Own positioning, **not** popper
 - [ ] hover-card — S:hoverCard · 5/5 · Z
-      Floating. No `root` part in the anatomy
+      No `root` part in the anatomy. Floating — **the seam is free**, measured at `popover`
+      (1500/1501): object-form `style` only on the positioner, content stays its
+      `firstElementChild`, and the arrow is captured once per floating-element identity
 - [ ] listbox — S:listbox · 10/11 ⚠
       `@zag-js/collection`. `aria-labelledby` on content is **not** overridden — Chakra ships the dangling IDREF (blueprint §1.2)
 - [ ] marquee — S:marquee · 5/5
 - [ ] menu — S:menu · 14/15 · D
-      `+itemCommand`. Floating. Presence-gated `aria-controls`
+      `+itemCommand`. Presence-gated `aria-controls`. Floating — **the seam is free**, measured at
+      `popover` (1500/1501): object-form `style` only on the positioner, content stays its
+      `firstElementChild`, and the arrow is captured once per floating-element identity
 - [ ] number-input — S:numberInput · 8/8
 - [ ] pagination — ✗pagination · 7/—
       Key resolves to nothing in Chakra too (§2.5)
 - [ ] pin-input — S:pinInput · 4/4
       Repeated part (inputs, by index)
-- [ ] popover — S:popover · 10/13 · Z ⚠
-      `+header/body/footer`. **The floating probe** (§8). Its presence-gated `aria-controls` is not
-      its own: the `dialog` ship measured the gate as **Ark-wide, on five triggers** — dialog,
-      drawer, floating-panel, menu, popover — and ported it once, so this row inherits the shape
-      rather than deciding it
+- [x] popover — S:popover · 10/13 · Z ⚠
+      `+header/body/footer`, confirmed — 10 anatomy parts, 13 slots, exact correspondence.
+      **The floating probe, and the seam is free.** `@zag-js/popper` writes eight custom properties
+      (`--x`, `--y`, `--z-index`, `--transform-origin`, `--reference-width/height`,
+      `--available-width/height`) imperatively into the positioner's `style` attribute inside a
+      `raf`, and Solid's object-form binding diffs per property, so a reactive rewrite — consumer
+      signal, machine re-emit, or `autoUpdate` — disturbs none of them. **A stacked pair reads 1500
+      on the outer content and 1501 on the inner**, each positioner taking its own number by
+      `var(--z-index)`. Two rules follow for the other floating rows, neither enforced by a type:
+      **only the object form of `style` may reach a positioner** (a string binding wipes all eight,
+      and popper's `zIndexComputed` flag plus its approximate-equality guards make an ordinary
+      update decline to restore them — only `reposition()` does, because it builds a fresh closure);
+      and **content must stay the positioner's `firstElementChild`**, since `--z-index` is copied
+      once per floating-element identity off `getComputedStyle(firstElementChild).zIndex`. The arrow
+      is captured the same once-only way, by `querySelector("[data-part=arrow]")`
+      **`Z` stands — Chakra applies no Root defaults at all.** `PopoverRoot =
+      withRootProvider(ArkPopover.Root)` with no options object, where Dialog's passes
+      `lazyMount`/`unmountOnExit` true, so `createRenderStrategy`'s own `false`/`false` govern and a
+      closed popover ships its **whole tree**, hidden. The Root calls no `withDefaults`, by decision
+      rather than omission. **`PopoverIndicator` is defined upstream and exported from neither
+      `index.ts` nor `namespace.ts`** — the port keeps the omission; 16 components ship. **`Anchor`
+      is wired `withContext(…, undefined)`** — a bare positioning handle, and the one recipe slot no
+      element claims. Title and Description are both `div` (Dialog's Title is an `h2`);
+      Header/Body/Footer are `header`/`div`/`footer`
+      Its presence-gated `aria-controls` is not its own: the `dialog` ship measured the gate as
+      **Ark-wide, on five triggers** — dialog, drawer, floating-panel, menu, popover — and ported it
+      once, so this row inherits the shape rather than deciding it. Because the defaults mount the
+      content, the positive case is the *default* one here, and Ark's own Solid popover ships
+      `aria-controls="false"` there (`presenceApi().unmounted && null`); the React shape is ported
+      **The one defect this row found is ours, and it is fixed here**: Zag's `checkRenderedElements`
+      mutates its bindable in place and notifies nothing, so a `defaultOpen` popover with a Title
+      and no Description kept a dangling `aria-describedby` for its whole open window
+      (`decisions.md` §*A Zag correction that notifies nothing*). **The axe finding was wrong in
+      both directions** — `aria-hidden-focus` never fires, and `aria-valid-attr-value` fires in all
+      three states (`definition-of-done.md` §5)
 - [ ] presence — Z
       Headless machine, no anatomy. `chakra(ArkPresence)`. **`core` holds `createPresence`**, over
       the `@zag-js/presence` machine through this package's own adapter, beside the
@@ -199,7 +245,11 @@ asks, correct **both** in the same commit.
 - [ ] segment-group — radio-group · S:segmentGroup · 6/6
       Third public component on the radio-group machine
 - [ ] select — S:select · 15/16 · Z ⚠
-      `+indicatorGroup`. Floating. Hidden native `<select>` → restrictive-content-model hazard
+      `+indicatorGroup`. Hidden native `<select>` → restrictive-content-model hazard. Floating —
+      **the seam is free**, measured at `popover` (1500/1501): object-form `style` only on the
+      positioner, content stays its `firstElementChild`, and the arrow is captured once per
+      floating-element identity. **This is the row P6-A's re-confirmation lands on** (the first B5
+      component), and the price is expected to be the same
 - [ ] slider — S:slider · 10/12
       `+markerIndicator`, `+markerLabel`. Thumb offsets are machine inline `style` — legal
 - [ ] splitter — S:splitter · 4/5 ⚠
@@ -217,7 +267,9 @@ asks, correct **both** in the same commit.
 - [ ] toggle — ✗toggle · 2/—
       Key resolves to nothing in Chakra too (§2.5)
 - [ ] tooltip — S:tooltip · 5/5 · D
-      Floating
+      Floating — **the seam is free**, measured at `popover` (1500/1501): object-form `style` only
+      on the positioner, content stays its `firstElementChild`, and the arrow is captured once per
+      floating-element identity
 - [ ] tree-view — S:treeView · 15/15
       Repeated **and recursive** part — branches nest. The one place §7's shape gets stressed
 
