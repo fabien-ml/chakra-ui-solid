@@ -70,6 +70,7 @@
       "tag": "src/components/tag/index.ts",
       "text": "src/components/text/index.ts",
       "textarea": "src/components/textarea/index.ts",
+      "timeline": "src/components/timeline/index.ts",
       "visually-hidden": "src/components/visually-hidden/index.ts",
       "wrap": "src/components/wrap/index.ts"
     }

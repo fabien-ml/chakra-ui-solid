@@ -70,5 +70,6 @@ export * from "./strong";
 export * from "./tag";
 export * from "./text";
 export * from "./textarea";
+export * from "./timeline";
 export * from "./visually-hidden";
 export * from "./wrap";

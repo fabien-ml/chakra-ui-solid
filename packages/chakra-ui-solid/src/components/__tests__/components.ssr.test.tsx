@@ -191,6 +191,15 @@ import {
   Textarea,
   TextareaPropsProvider,
   TextPropsProvider,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDescription,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineRoot,
+  TimelineRootPropsProvider,
+  TimelineSeparator,
+  TimelineTitle,
   VisuallyHidden,
   VStack,
   Wrap,
@@ -1177,6 +1186,93 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <TextPropsProvider value={{ textStyle: "sm" }}>
       <Text>paragraph</Text>
     </TextPropsProvider>
+  ),
+  TimelineConnector: () => (
+    <TimelineRoot>
+      <TimelineItem>
+        <TimelineConnector>
+          <TimelineSeparator />
+          <TimelineIndicator />
+        </TimelineConnector>
+      </TimelineItem>
+    </TimelineRoot>
+  ),
+  TimelineContent: () => (
+    <TimelineRoot>
+      <TimelineItem>
+        <TimelineContent>
+          <TimelineTitle>Product Shipped</TimelineTitle>
+        </TimelineContent>
+      </TimelineItem>
+    </TimelineRoot>
+  ),
+  TimelineDescription: () => (
+    <TimelineRoot>
+      <TimelineItem>
+        <TimelineContent>
+          <TimelineDescription>13th May 2021</TimelineDescription>
+        </TimelineContent>
+      </TimelineItem>
+    </TimelineRoot>
+  ),
+  TimelineIndicator: () => (
+    <TimelineRoot>
+      <TimelineItem>
+        <TimelineConnector>
+          <TimelineIndicator>1</TimelineIndicator>
+        </TimelineConnector>
+      </TimelineItem>
+    </TimelineRoot>
+  ),
+  TimelineItem: () => (
+    <TimelineRoot>
+      <TimelineItem>
+        <TimelineContent>
+          <TimelineTitle>Product Shipped</TimelineTitle>
+        </TimelineContent>
+      </TimelineItem>
+    </TimelineRoot>
+  ),
+  // `showLastSeparator`, because it is the one variant whose whole effect is a custom property on
+  // the last item — a value the server has to write into the markup or the line ends early.
+  TimelineRoot: () => (
+    <TimelineRoot size="lg" variant="outline" showLastSeparator>
+      <TimelineItem>
+        <TimelineConnector>
+          <TimelineSeparator />
+          <TimelineIndicator />
+        </TimelineConnector>
+      </TimelineItem>
+    </TimelineRoot>
+  ),
+  TimelineRootPropsProvider: () => (
+    <TimelineRootPropsProvider value={{ size: "xl" }}>
+      <TimelineRoot>
+        <TimelineItem>
+          <TimelineContent>
+            <TimelineTitle>Product Shipped</TimelineTitle>
+          </TimelineContent>
+        </TimelineItem>
+      </TimelineRoot>
+    </TimelineRootPropsProvider>
+  ),
+  TimelineSeparator: () => (
+    <TimelineRoot>
+      <TimelineItem>
+        <TimelineConnector>
+          <TimelineSeparator />
+        </TimelineConnector>
+      </TimelineItem>
+    </TimelineRoot>
+  ),
+  TimelineTitle: () => (
+    <TimelineRoot>
+      <TimelineItem>
+        <TimelineContent>
+          <TimelineTitle>Product Shipped</TimelineTitle>
+        </TimelineContent>
+      </TimelineItem>
+    </TimelineRoot>
   ),
   VStack: () => <VStack>one above the other</VStack>,
   VisuallyHidden: () => <VisuallyHidden>screen readers only</VisuallyHidden>,

@@ -643,9 +643,23 @@ The seam's own suite gained the test that would have caught it.
       `concepts/composition.mdx` §*Best Practices* explains. The close triggers in the examples stay
       **unlabelled**, 1:1 with upstream, on `badge`'s precedent that the docs examples suite carries
       upstream's content rather than our corrections
-- [ ] timeline — S:timeline · —/8
-      Repeated part (items) — a non-event, per `list`. **Its Root carries the same `defaultProps: {
-      role: "list" }` `list`'s does**, so it takes the same `withDefaults` wrapper
+- [x] timeline — S:timeline · —/8
+      Repeated part (items) — a non-event, per `list`. Its Root does carry the same `defaultProps:
+      { role: "list" }` `list`'s does, and takes the same `withDefaults` wrapper. **The note missed
+      the other half of the pair: `Timeline.Item` carries `defaultProps: { role: "listitem" }`**, so
+      the row has two wrapper sites, not one — and the second wraps a `withContext` part rather than
+      the minted Root. Its markup is nothing but nested flex `div`s, so losing either half loses the
+      list outright.
+      `variantKeys: ["variant", "showLastSeparator", "size"]`, and `showLastSeparator` is a boolean
+      variant whose whole effect is `--timeline-separator-display` on the last item — the separator's
+      own `display` reads it, which is why the test asserts `display` there and nowhere else in this
+      family.
+      Docs: **all 6 of upstream's example slots**, `Explorer` dropped as www machinery. Three
+      adaptations: `timeline-with-sizes`, `timeline-with-variants` and `timeline-composition` put a
+      `Circle` with an initial where upstream puts an `Avatar` — the `float-with-avatar` precedent,
+      since `avatar` has not shipped — `timeline-composition` writes its own filler text where
+      upstream imports `react-lorem-ipsum`, and the glyphs come from the docs' own lucide set
+      (`ShipIcon`, `PackageIcon`, `PenIcon` added for it) where upstream imports `react-icons/lu`
 
 ## Atomic-recipe components (21)
 

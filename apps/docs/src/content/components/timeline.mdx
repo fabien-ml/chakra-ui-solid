@@ -1,0 +1,69 @@
+---
+title: Timeline
+description: Used to display a list of events in chronological order
+links:
+  source: packages/chakra-ui-solid/src/components/timeline
+  chakra: https://chakra-ui.com/docs/components/timeline
+---
+
+<Example name="timeline-basic" />
+
+## Usage
+
+```tsx
+import { Timeline } from "chakra-ui-solid";
+```
+
+```tsx
+<Timeline.Root>
+  <Timeline.Item>
+    <Timeline.Connector>
+      <Timeline.Separator />
+      <Timeline.Indicator />
+    </Timeline.Connector>
+    <Timeline.Content>
+      <Timeline.Title />
+      <Timeline.Description />
+    </Timeline.Content>
+  </Timeline.Item>
+</Timeline.Root>
+```
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the timeline.
+
+<Example name="timeline-with-sizes" />
+
+### Variants
+
+Use the `variant` prop to change the variant of the timeline.
+
+<Example name="timeline-with-variants" />
+
+### Content Before
+
+Here's an example of a timeline with content before the timeline indicator.
+
+<Example name="timeline-with-content-before" />
+
+### Alternating Content
+
+Here's an example of a timeline with alternating content.
+
+<Example name="timeline-alternating" />
+
+### Composition
+
+Here's an example of how to compose the timeline with other components to create a
+consistent-looking timeline.
+
+<Example name="timeline-composition" />
+
+## Props
+
+### Root
+
+<PropsTable component="timeline" interface="TimelineRootProps" />

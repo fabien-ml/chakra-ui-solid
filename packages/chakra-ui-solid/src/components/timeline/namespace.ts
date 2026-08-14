@@ -1,0 +1,23 @@
+export type {
+  TimelineConnectorProps as ConnectorProps,
+  TimelineContentProps as ContentProps,
+  TimelineDescriptionProps as DescriptionProps,
+  TimelineIndicatorProps as IndicatorProps,
+  TimelineItemProps as ItemProps,
+  TimelinePropsProviderProps as RootPropsProviderProps,
+  TimelineRootBaseProps as RootBaseProps,
+  TimelineRootProps as RootProps,
+  TimelineSeparatorProps as SeparatorProps,
+  TimelineTitleProps as TitleProps,
+} from "./timeline";
+export {
+  TimelineConnector as Connector,
+  TimelineContent as Content,
+  TimelineDescription as Description,
+  TimelineIndicator as Indicator,
+  TimelineItem as Item,
+  TimelineRoot as Root,
+  TimelineRootPropsProvider as RootPropsProvider,
+  TimelineSeparator as Separator,
+  TimelineTitle as Title,
+} from "./timeline";
