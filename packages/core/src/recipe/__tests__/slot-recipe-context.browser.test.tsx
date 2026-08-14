@@ -1,7 +1,7 @@
 import { type MountedComponent, mount } from "@chakra-ui-solid/internal-test-utils";
 import { type CardVariantProps, card } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { createSignal, flush } from "solid-js";
+import { createContext, createSignal, flush, useContext } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import { renderStyled } from "../../render-styled/render-styled";
 import { withContextDefaults } from "../../utils/defaults";
@@ -222,7 +222,7 @@ describe("createSlotRecipeContext — the seams a hand-written body uses", () =>
     const WrappedRoot = withProvider("div", "root", {
       wrapElement(element, props) {
         wrappedSize = props.size as string | undefined;
-        return <div data-probe="wrapper">{element}</div>;
+        return <div data-probe="wrapper">{element()}</div>;
       },
     });
 
@@ -237,5 +237,31 @@ describe("createSlotRecipeContext — the seams a hand-written body uses", () =>
     );
     expect(wrappedSize).toBe("sm");
     expect(getComputedStyle(probe(container, "body")).padding).toBe("16px");
+  });
+
+  it("builds the Root's element inside `wrapElement`'s wrapper, not before it", () => {
+    // The failure this exists for: `wrapElement` used to receive an already-built element, and
+    // `renderStyled` builds an element *and its children* on the call — so every part below ran
+    // before the wrapper's context existed and threw the "no Root" error from under its own Root.
+    // Passing the element as a function and reading it as a JSX child defers it into the provider.
+    const StatusContext = createContext("outside");
+
+    function Reader(props: { probe: string }) {
+      return <span data-probe={props.probe}>{useContext(StatusContext)}</span>;
+    }
+
+    const WrappedRoot = withProvider("div", "root", {
+      wrapElement(element) {
+        return <StatusContext value="inside">{element()}</StatusContext>;
+      },
+    });
+
+    const container = render(() => (
+      <WrappedRoot>
+        <Reader probe="reader" />
+      </WrappedRoot>
+    ));
+
+    expect(probe(container, "reader").textContent).toBe("inside");
   });
 });

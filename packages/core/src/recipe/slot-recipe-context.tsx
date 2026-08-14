@@ -46,10 +46,14 @@ export interface WithProviderOptions<Props extends object> {
    * `Alert.Root` is what it exists for: the recipe gives it every slot it needs, and the one thing
    * `withProvider` cannot supply is the `status` its indicator reads.
    *
-   * The element arrives as a resolved value rather than as a JSX prop, so wrapping it reads it once
-   * and there is no second `createComponent` to throw away.
+   * The element arrives as a **function**, and it has to: `renderStyled` builds the element *and
+   * its children* on the call, so an element passed as a resolved value would have run every part
+   * below it before the wrapper's context existed — `Alert.Indicator` then throws the "no Root"
+   * error from directly under its own Root (measured). Write it as a JSX child —
+   * `<StatusProvider …>{element()}</StatusProvider>` — which compiles to a getter, so the call
+   * happens inside the provider and happens once.
    */
-  wrapElement?(element: JSX.Element, props: Props): JSX.Element;
+  wrapElement?(element: () => JSX.Element, props: Props): JSX.Element;
 }
 
 /** What {@link createSlotRecipeContext} returns — Chakra's multi-part seam, in Solid's expression. */
@@ -163,8 +167,8 @@ export function createSlotRecipeContext<
       // children there and then, so an element built in this body would run every part below it
       // outside the context and each one would throw the "no Root" error from under its own Root.
       // A component's JSX children compile to a getter, which is what defers it.
-      const renderElementInContext = () => {
-        const element = renderStyled<ElementPropsBag>({
+      const buildElement = () =>
+        renderStyled<ElementPropsBag>({
           as: bag.as ?? tag,
           render: bag.render,
           // The variant keys are the recipe's inputs, not the element's: forwarded, `size` would
@@ -172,8 +176,11 @@ export function createSlotRecipeContext<
           props: variantKeys.length === 0 ? bag : (omit(bag, ...variantKeys) as ElementPropsBag),
           recipeClass: () => slots()[slot],
         });
-        return providerOptions.wrapElement?.(element, props) ?? element;
-      };
+
+      const renderElementInContext = () =>
+        providerOptions.wrapElement === undefined
+          ? buildElement()
+          : providerOptions.wrapElement(buildElement, props);
 
       return <StylesProvider value={slots}>{renderElementInContext()}</StylesProvider>;
     };
