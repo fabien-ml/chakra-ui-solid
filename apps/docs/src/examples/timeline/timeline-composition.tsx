@@ -14,9 +14,7 @@ export default function TimelineComposition() {
         <Timeline.Connector>
           <Timeline.Separator />
           <Timeline.Indicator>
-            <Icon fontSize="xs">
-              <PenIcon />
-            </Icon>
+            <Icon as={PenIcon} fontSize="xs" />
           </Timeline.Indicator>
         </Timeline.Connector>
         <Timeline.Content>
@@ -35,9 +33,7 @@ export default function TimelineComposition() {
         <Timeline.Connector>
           <Timeline.Separator />
           <Timeline.Indicator>
-            <Icon fontSize="xs">
-              <XIcon />
-            </Icon>
+            <Icon as={XIcon} fontSize="xs" />
           </Timeline.Indicator>
         </Timeline.Connector>
         <Timeline.Content>
@@ -56,9 +52,7 @@ export default function TimelineComposition() {
         <Timeline.Connector>
           <Timeline.Separator />
           <Timeline.Indicator bg="teal.solid" color="teal.contrast">
-            <Icon fontSize="xs">
-              <XIcon />
-            </Icon>
+            <Icon as={XIcon} fontSize="xs" />
           </Timeline.Indicator>
         </Timeline.Connector>
         <Timeline.Content gap="4">
