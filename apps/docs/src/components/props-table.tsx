@@ -110,10 +110,19 @@ export function PropsTable(props: { component: string; interface?: string }) {
  * and `GridProps` is nine, and nine tables inherit a named interface of that kind. One
  * sentence covering both told a Collapsible reader that `unmountOnExit` — the prop its own page
  * demonstrates — was a DOM attribute of a `div` (`docs-site.md` §4.2).
+ *
+ * **`UnstyledProp` is dropped from the list rather than sorted into it**, because the sentence's own
+ * tail already names `unstyled`. It is a heritage clause only on the components that render no
+ * element: they cannot inherit the prop through `HTMLChakraProps` like everything else, so they name
+ * the one interface Chakra names — and Dialog's Root was the first page to print *"everything in
+ * `UnstyledProp`, and the three every component takes: as, render and unstyled"*. It cannot go
+ * through `isElementSurface` either: that predicate routes a clause into the *other* branch, which
+ * would tell a reader that a component rendering no element inherits a `div`'s DOM attributes.
  */
 function Inherited(props: { entry: PropsInterface }) {
-  const named = () => props.entry.extends.filter((base) => !isElementSurface(base));
-  const elementSurface = () => props.entry.extends.filter(isElementSurface);
+  const bases = () => props.entry.extends.filter((base) => base !== "UnstyledProp");
+  const named = () => bases().filter((base) => !isElementSurface(base));
+  const elementSurface = () => bases().filter(isElementSurface);
 
   return (
     <Box as="p" fontSize="sm" color="fg.muted" mt="2">
@@ -127,7 +136,7 @@ function Inherited(props: { entry: PropsInterface }) {
         of the element it renders, several hundred names listed as their sources rather than
         expanded —{" "}
       </Show>
-      <Show when={props.entry.extends.length > 0}>and </Show>
+      <Show when={bases().length > 0}>and </Show>
       the three every component takes: <CompositionLink hash="the-as-prop">as</CompositionLink>,{" "}
       <CompositionLink hash="the-render-prop">render</CompositionLink> and{" "}
       <CompositionLink hash="the-unstyled-prop">unstyled</CompositionLink>.

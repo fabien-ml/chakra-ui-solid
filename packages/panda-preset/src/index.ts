@@ -7,4 +7,4 @@
 export type { ChakraConfigOverrides, ResponsiveGrain } from "./config";
 export { defineChakraConfig } from "./config";
 export { chakraSolidPreset, chakraSolidPreset as default } from "./preset";
-export { recipeKeys, slotRecipeKeys, variantKeysFor } from "./recipe-registry";
+export { defaultVariantsFor, recipeKeys, slotRecipeKeys, variantKeysFor } from "./recipe-registry";

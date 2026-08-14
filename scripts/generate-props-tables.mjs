@@ -6,7 +6,7 @@
 // subject exists today:
 //
 //   1. our own part props        — the compiler API over src/components  ← here
-//   2. the recipe's variant map  — the imported preset object            (step 4, with P7-A)
+//   2. the recipe's variant map  — the imported preset object            ← its defaults, here
 //   3. the machine's Props type  — @zag-js/<machine>'s types             (step 5, with Dialog)
 //
 // Never hand-written, and the reason is one-directional: a component that gains a prop gains a row
@@ -26,6 +26,12 @@ import ts from "typescript";
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const componentsSrc = join(repoRoot, "packages/chakra-ui-solid/src/components");
 const outputFile = join(repoRoot, "apps/docs/src/generated/props-tables.ts");
+
+// The **built** preset, by path: this script sits in `scripts/`, where a bare specifier resolves
+// against the repo root's `node_modules` and the workspace package is not linked there. `codegen`
+// declares `dependsOn: ["^build"]` for exactly this reason, so the file is on disk before any task
+// that reads it runs — and a missing one throws here rather than quietly emitting no defaults.
+const { defaultVariantsFor } = await import(join(repoRoot, "packages/panda-preset/dist/index.js"));
 
 /** Every `.ts`/`.tsx` under a component's directory, tests and stories excluded. */
 function sourceFilesFor(componentDir) {
@@ -254,6 +260,41 @@ function foldLocalOptions(interfaces) {
     });
 }
 
+/**
+ * The recipe's own `defaultVariants`, filled into any variant row that declares no `@default`.
+ *
+ * **A recipe variant's default belongs to the recipe**, so a component interface that restated one
+ * would be a second source of truth drifting silently on a preset bump — Dialog's four variants
+ * carry no `@default` for that reason, and the React version's page still shows `md` / `top` /
+ * `outside` / `scale` in the Default column. This is how ours shows them without anyone typing them
+ * twice.
+ *
+ * **A declared `@default` wins**, because it means something the recipe does not know:
+ * `CloseButtonProps.variant` says `ghost` where the `button` recipe says `solid`, and it is right —
+ * the component's own `withDefaults` overrides the recipe. Measured across the library, that is the
+ * only row where the two disagree; the other fifteen restate the recipe exactly, which makes each
+ * of them a drift waiting to happen and none of them this commit's business.
+ *
+ * The key is the directory name in camelCase, which is the recipe key for every directory that has
+ * one. A directory with no matching recipe fills nothing.
+ */
+function withRecipeDefaults(component, interfaces) {
+  const recipeKey = component.replace(/-(.)/g, (_, letter) => letter.toUpperCase());
+  const defaults = defaultVariantsFor(recipeKey);
+  if (Object.keys(defaults).length === 0) {
+    return interfaces;
+  }
+
+  return interfaces.map((entry) => ({
+    ...entry,
+    props: entry.props.map((row) =>
+      row.defaultValue === null && defaults[row.name] !== undefined
+        ? { ...row, defaultValue: defaults[row.name] }
+        : row,
+    ),
+  }));
+}
+
 /** The interface a directory is named after — `color-swatch` → `ColorSwatchProps`. */
 function principalInterfaceName(component) {
   return `${component
@@ -306,15 +347,18 @@ for (const component of componentDirs) {
     }
   }
 
-  const interfaces = foldLocalOptions(
-    files.flatMap((file) => {
-      const sourceFile = program.getSourceFile(file);
-      return sourceFile === undefined ? [] : interfacesIn(sourceFile);
-    }),
-  ).map((entry) => ({
-    ...entry,
-    props: entry.props.map((row) => ({ ...row, type: aliases.get(row.type) ?? row.type })),
-  }));
+  const interfaces = withRecipeDefaults(
+    component,
+    foldLocalOptions(
+      files.flatMap((file) => {
+        const sourceFile = program.getSourceFile(file);
+        return sourceFile === undefined ? [] : interfacesIn(sourceFile);
+      }),
+    ).map((entry) => ({
+      ...entry,
+      props: entry.props.map((row) => ({ ...row, type: aliases.get(row.type) ?? row.type })),
+    })),
+  );
 
   // A component that is one bare `chakra()` call declares no `*Props` interface at all — Center and
   // AbsoluteCenter are both a factory call and a variant. They still take the three universal props,

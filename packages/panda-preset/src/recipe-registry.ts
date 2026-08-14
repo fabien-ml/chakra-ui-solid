@@ -10,7 +10,14 @@ import { containerRecipe } from "./container-recipe";
  * Panda's own types describe a preset's `theme` as fully optional, so these two reads are narrowed
  * once here instead of at every call site.
  */
-type RecipeRegistry = Record<string, { className?: string; variants?: Record<string, unknown> }>;
+type RecipeRegistry = Record<
+  string,
+  {
+    className?: string;
+    variants?: Record<string, unknown>;
+    defaultVariants?: Record<string, string>;
+  }
+>;
 
 const theme = chakraPreset.theme as
   | { recipes?: RecipeRegistry; slotRecipes?: RecipeRegistry }
@@ -68,6 +75,24 @@ export function variantKeysFor(): Array<{ recipe: string; keys: string[] }> {
     recipe,
     keys: Object.keys(registryEntry(recipe)?.variants ?? {}),
   }));
+}
+
+/**
+ * The values a recipe resolves for itself when nothing is passed — `{ size: "md", placement: "top",
+ * … }`, empty for a recipe that declares none.
+ *
+ * **The docs site's props tables are the caller.** A recipe variant's default belongs to the
+ * recipe's `defaultVariants`, so a component's own interface must not restate one: a `@default` tag
+ * beside a variant is a second source of truth that drifts silently on a preset bump, and Dialog's
+ * four variants deliberately carry none. Reading it here is what lets the generated table print
+ * `md` for `size` anyway, out of the one place that decides it.
+ *
+ * A **component-level** default is a different thing and still belongs on the interface —
+ * `CloseButton` sets `variant: "ghost"` in its own `withDefaults`, where the `button` recipe says
+ * `solid`. The generator resolves that by letting a declared `@default` win.
+ */
+export function defaultVariantsFor(recipeKey: string): Record<string, string> {
+  return registryEntry(recipeKey)?.defaultVariants ?? {};
 }
 
 function registryEntry(recipeKey: string): RecipeRegistry[string] | undefined {

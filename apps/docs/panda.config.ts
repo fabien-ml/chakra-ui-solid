@@ -30,5 +30,13 @@ export default defineChakraConfig({
     // directly, and a style prop Panda never scanned renders nothing and raises no error.
     "./src/**/*.{ts,tsx,mdx}",
   ],
+  // The one opt-in this site actually needs, and the `responsive` knob's own worked example:
+  // `dialog-with-responsive-size` writes `size={{ mdDown: "full", md: "lg" }}`, and the recipe
+  // runtime answers that with `mdDown:dialog__content--size_full md:dialog__content--size_lg` —
+  // classes no default `staticCss` run generates. Without this line the example renders with no
+  // size rules at any width and nothing errors (`CLAUDE.md`, *silent unstyling*).
+  //
+  // It is a knob a consumer writes too, so the file stays the shape the install page documents.
+  responsive: { dialog: ["size"] },
   outdir: "styled-system",
 });

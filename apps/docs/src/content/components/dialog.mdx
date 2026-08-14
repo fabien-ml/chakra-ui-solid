@@ -1,0 +1,170 @@
+---
+title: Dialog
+description: Used to display a dialog prompt
+links:
+  source: packages/chakra-ui-solid/src/components/dialog
+  chakra: https://chakra-ui.com/docs/components/dialog
+---
+
+<Example name="dialog-basic" />
+
+## Usage
+
+```tsx
+import { Dialog } from "chakra-ui-solid";
+```
+
+```tsx
+<Dialog.Root>
+  <Dialog.Trigger />
+  <Dialog.Backdrop />
+  <Dialog.Positioner>
+    <Dialog.Content>
+      <Dialog.CloseTrigger />
+      <Dialog.Header>
+        <Dialog.Title />
+      </Dialog.Header>
+      <Dialog.Body />
+      <Dialog.Footer />
+    </Dialog.Content>
+  </Dialog.Positioner>
+</Dialog.Root>
+```
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the dialog component.
+
+<Example name="dialog-with-sizes" />
+
+### Cover
+
+Use the `size="cover"` prop to make the dialog component cover the entire screen while revealing a
+small portion of the page behind.
+
+<Example name="dialog-with-cover" />
+
+### Fullscreen
+
+Use the `size="full"` prop to make the dialog component take up the entire screen.
+
+<Example name="dialog-with-fullscreen" />
+
+### Responsive Size
+
+Use responsive values for the `size` prop to make the dialog adapt to different screen sizes.
+
+We recommend using exact breakpoints values instead of using a `base` to ensure styles are properly
+contained.
+
+```tsx
+// ❌ Might cause a style leak between the breakpoints
+<Dialog.Root size={{ base: "full", md: "lg" }}>{/* ... */}</Dialog.Root>
+
+// Works ✅
+<Dialog.Root size={{ mdDown: "full", md: "lg" }}>{/* ... */}</Dialog.Root>
+```
+
+`size` is a **recipe variant**, not a style prop, so a responsive value needs the opt-in that
+pre-generates it at every breakpoint. Without it the dialog renders with no size rules at all and
+nothing errors:
+
+```ts title="panda.config.ts"
+export default defineChakraConfig({
+  responsive: { dialog: ["size"] },
+  include: [...],
+});
+```
+
+[defineChakraConfig](/docs/theming/chakra-config#responsive) covers the three grains it accepts.
+
+<Example name="dialog-with-responsive-size" />
+
+### Placement
+
+Use the `placement` prop to change the placement of the dialog component.
+
+<Example name="dialog-with-placement" />
+
+### Controlled
+
+Use the `open` and `onOpenChange` prop to control the visibility of the dialog component.
+
+<Example name="dialog-controlled" />
+
+### Store
+
+An alternative way to control the dialog is to use the `RootProvider` component and the
+`createDialog` store hook.
+
+This way you can access the dialog state and methods from outside the dialog.
+
+<Example name="dialog-with-store" />
+
+### Context
+
+Use the `Dialog.Context` component to access the dialog state and methods from outside the dialog.
+
+Its render prop is called in the part's own body, which is not a tracking scope — so it has to
+return JSX. A callback returning a bare ternary reads the state untracked and freezes on the value
+it had at mount.
+
+<Example name="dialog-with-context" />
+
+### Nested Dialogs
+
+You can nest dialogs by using the `Dialog.Root` component inside another `Dialog.Root` component.
+
+<Example name="dialog-nested" />
+
+### Inside Scroll
+
+Use the `scrollBehavior=inside` prop to change the scroll behavior of the dialog when its content
+overflows.
+
+<Example name="dialog-with-inside-scroll" />
+
+### Outside Scroll
+
+Use the `scrollBehavior=outside` prop to change the scroll behavior of the dialog when its content
+overflows.
+
+<Example name="dialog-with-outside-scroll" />
+
+### Motion Preset
+
+Use the `motionPreset` prop to change the animation of the dialog component.
+
+<Example name="dialog-with-motion-preset" />
+
+### Alert Dialog
+
+Set the `role: "alertdialog"` prop to change the dialog component to an alert dialog.
+
+<Example name="dialog-with-role" />
+
+### Close Button Outside
+
+Here's an example of how to customize the `Dialog.CloseTrigger` component to position the close
+button outside the dialog component.
+
+<Example name="dialog-with-close-outside" />
+
+### Non-Modal Dialog
+
+We don't recommend using a non-modal dialog due to the accessibility concerns they present. In event
+you need it, here's what you can do:
+
+- set the `modal` prop to `false`
+- set `pointerEvents` to `none` on the `Dialog.Positioner` component
+- (optional)set the `closeOnInteractOutside` prop to `false`
+
+<Example name="dialog-non-modal" />
+
+## Props
+
+### Root
+
+<PropsTable component="dialog" interface="DialogRootProps" />

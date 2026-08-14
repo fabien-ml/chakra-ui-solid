@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 111 components. 33 done.
+v0.1.0 is the whole port: 111 components. 34 done.
 
 ## Done, per component
 
@@ -125,14 +125,23 @@ asks, correct **both** in the same commit.
       `chakra` cssVar prefix never reaches it and the shadow resolves to nothing. The only two such
       strings in the whole preset. The `outline-color` beside it still rings the focused trigger, so
       this is a second ring lost, not the indicator
-- [ ] dialog — S:dialog · 7/10 · D ⚠
+- [x] dialog — S:dialog · 7/10 · D ⚠
       `+header/body/footer`. The worked blueprint. **The duplicate `backdrop` slot is
       source-only**: `dialogSlotNames` lists eleven entries for ten slots, both `backdrop` rows
       build the same class into the same key, and the `Object.fromEntries` that assembles the map
       collapses them — nothing de-duplicates anything and the element carries the class once.
       **`focus-trap` is not a dependency of this row**: the machine runs `@zag-js/focus-trap` itself
       in an effect gated on `trapFocus`. The `aria-controls` gate is **presence-gated, not
-      open-gated** — while the content is mounted-but-closed the IDREF still resolves, so it stays
+      open-gated** — while the content is mounted-but-closed the IDREF still resolves, so it stays.
+      **The first page to need `defineChakraConfig({ responsive })`**, and the first proof that a
+      responsive *recipe variant* is a CIJ case the marks do not cover: `size={{ mdDown: "full", md:
+      "lg" }}` makes the generated recipe answer `mdDown:dialog__content--size_full
+      md:dialog__content--size_lg`, and the default `staticCss: ["*"]` run generates neither — the
+      dialog then renders with no size rule at *any* width and nothing errors. The site's own
+      `panda.config.ts` carries `responsive: { dialog: ["size"] }`. It is a fact about the opt-in
+      rather than about this recipe, so it lands the same way on the four other rows whose upstream
+      pages carry one: `button` (`size`), `drawer` (`placement`), `separator` (`orientation`) and
+      `pagination` (`size`)
 - [ ] drawer — dialog · S:drawer · 7/10 · D ⚠
       Runs on `dialog`, not `@zag-js/drawer` (§2.2). Its duplicate `backdrop` slot is source-only,
       for the reason measured on the `dialog` row — it is Panda's generator, not the recipe
