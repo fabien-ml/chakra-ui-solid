@@ -4,14 +4,32 @@ import { describe, expect, it } from "vitest";
 import * as barrel from "../index";
 import {
   AbsoluteCenter,
+  AlertContent,
+  AlertDescription,
+  AlertIndicator,
+  AlertRoot,
+  AlertRootPropsProvider,
+  AlertTitle,
   AspectRatio,
   Badge,
   BadgePropsProvider,
   Bleed,
+  BlockquoteCaption,
+  BlockquoteContent,
+  BlockquoteIcon,
+  BlockquotePropsProvider,
+  BlockquoteRoot,
   Box,
   Button,
   ButtonGroup,
   ButtonPropsProvider,
+  CardBody,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardPropsProvider,
+  CardRoot,
+  CardTitle,
   Center,
   Checkmark,
   Circle,
@@ -127,8 +145,17 @@ import {
   Square,
   Stack,
   StackSeparator,
+  StatusIndicator,
+  StatusPropsProvider,
+  StatusRoot,
   Sticky,
   Strong,
+  TagCloseTrigger,
+  TagEndElement,
+  TagLabel,
+  TagRoot,
+  TagRootPropsProvider,
+  TagStartElement,
   Text,
   Textarea,
   TextareaPropsProvider,
@@ -164,6 +191,46 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
       <div>media</div>
     </AspectRatio>
   ),
+  // `error`, because that is a status whose glyph is shared with `warning` — the map has to be read
+  // rather than guessed — and the indicator's default children are built on the server, where a JSX
+  // constant hoisted beside the component would already have been constructed at import time.
+  AlertContent: () => (
+    <AlertRoot status="error">
+      <AlertContent>
+        <AlertTitle>Invalid fields</AlertTitle>
+      </AlertContent>
+    </AlertRoot>
+  ),
+  AlertDescription: () => (
+    <AlertRoot>
+      <AlertDescription>Please fix them and try again.</AlertDescription>
+    </AlertRoot>
+  ),
+  AlertIndicator: () => (
+    <AlertRoot status="success">
+      <AlertIndicator />
+    </AlertRoot>
+  ),
+  // Responsive, because that is the arm where the status names no single glyph and the indicator
+  // draws nothing — the branch a server has to take the same way the client will.
+  AlertRoot: () => (
+    <AlertRoot status={{ base: "info", md: "warning" }}>
+      <AlertIndicator />
+      <AlertTitle>Heads up</AlertTitle>
+    </AlertRoot>
+  ),
+  AlertRootPropsProvider: () => (
+    <AlertRootPropsProvider value={{ variant: "solid" }}>
+      <AlertRoot>
+        <AlertTitle>Heads up</AlertTitle>
+      </AlertRoot>
+    </AlertRootPropsProvider>
+  ),
+  AlertTitle: () => (
+    <AlertRoot>
+      <AlertTitle>Heads up</AlertTitle>
+    </AlertRoot>
+  ),
   Badge: () => <Badge colorPalette="green">New</Badge>,
   BadgePropsProvider: () => (
     <BadgePropsProvider value={{ size: "lg" }}>
@@ -171,6 +238,35 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </BadgePropsProvider>
   ),
   Bleed: () => <Bleed inline="4">wide</Bleed>,
+  BlockquoteCaption: () => (
+    <BlockquoteRoot>
+      <BlockquoteCaption>Uzumaki Naruto</BlockquoteCaption>
+    </BlockquoteRoot>
+  ),
+  BlockquoteContent: () => (
+    <BlockquoteRoot>
+      <BlockquoteContent cite="https://example.com">Quoted.</BlockquoteContent>
+    </BlockquoteRoot>
+  ),
+  // The one part of this family whose element is a **component** rather than a tag, so the slot's
+  // class has to survive being handed to `chakra.svg` rather than written on a host element.
+  BlockquoteIcon: () => (
+    <BlockquoteRoot variant="plain">
+      <BlockquoteIcon />
+    </BlockquoteRoot>
+  ),
+  BlockquotePropsProvider: () => (
+    <BlockquotePropsProvider value={{ variant: "solid" }}>
+      <BlockquoteRoot>
+        <BlockquoteContent>Quoted.</BlockquoteContent>
+      </BlockquoteRoot>
+    </BlockquotePropsProvider>
+  ),
+  BlockquoteRoot: () => (
+    <BlockquoteRoot justify="center">
+      <BlockquoteContent>Quoted.</BlockquoteContent>
+    </BlockquoteRoot>
+  ),
   Box: () => <Box p="4">boxed</Box>,
   // Loading, because that is the branch that mounts a Loader and resolves the children through
   // `children()` — the idle branch writes them straight in and would not exercise either.
@@ -188,6 +284,43 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <ButtonPropsProvider value={{ variant: "outline" }}>
       <Button>One</Button>
     </ButtonPropsProvider>
+  ),
+  CardBody: () => (
+    <CardRoot>
+      <CardBody>body</CardBody>
+    </CardRoot>
+  ),
+  CardDescription: () => (
+    <CardRoot>
+      <CardDescription>About one subject.</CardDescription>
+    </CardRoot>
+  ),
+  CardFooter: () => (
+    <CardRoot>
+      <CardFooter>actions</CardFooter>
+    </CardRoot>
+  ),
+  CardHeader: () => (
+    <CardRoot>
+      <CardHeader>head</CardHeader>
+    </CardRoot>
+  ),
+  CardPropsProvider: () => (
+    <CardPropsProvider value={{ size: "lg" }}>
+      <CardRoot>
+        <CardBody>body</CardBody>
+      </CardRoot>
+    </CardPropsProvider>
+  ),
+  CardRoot: () => (
+    <CardRoot variant="elevated">
+      <CardBody>body</CardBody>
+    </CardRoot>
+  ),
+  CardTitle: () => (
+    <CardRoot>
+      <CardTitle>Nue Camp</CardTitle>
+    </CardRoot>
   ),
   Center: () => <Center>middle</Center>,
   // Checked, because that is the arm that draws a glyph — the unchecked one renders an empty `svg`
@@ -706,8 +839,62 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   Square: () => <Square size="10">1</Square>,
   Stack: () => <Stack gap="4">stacked</Stack>,
   StackSeparator: () => <StackSeparator />,
+  StatusIndicator: () => (
+    <StatusRoot colorPalette="green">
+      <StatusIndicator />
+    </StatusRoot>
+  ),
+  StatusPropsProvider: () => (
+    <StatusPropsProvider value={{ size: "lg" }}>
+      <StatusRoot>
+        <StatusIndicator />
+      </StatusRoot>
+    </StatusPropsProvider>
+  ),
+  StatusRoot: () => (
+    <StatusRoot colorPalette="orange">
+      <StatusIndicator />
+      In Review
+    </StatusRoot>
+  ),
   Sticky: () => <Sticky top="0">pinned</Sticky>,
   Strong: () => <Strong>bold</Strong>,
+  // Its default ✕ is built inside the component rather than hoisted beside it — JSX at module scope
+  // is constructed at *import* time and 500s the route before anything renders.
+  TagCloseTrigger: () => (
+    <TagRoot>
+      <TagEndElement>
+        <TagCloseTrigger />
+      </TagEndElement>
+    </TagRoot>
+  ),
+  TagEndElement: () => (
+    <TagRoot>
+      <TagEndElement>+</TagEndElement>
+    </TagRoot>
+  ),
+  TagLabel: () => (
+    <TagRoot>
+      <TagLabel>Fish</TagLabel>
+    </TagRoot>
+  ),
+  TagRoot: () => (
+    <TagRoot size="lg" variant="solid">
+      <TagLabel>Fish</TagLabel>
+    </TagRoot>
+  ),
+  TagRootPropsProvider: () => (
+    <TagRootPropsProvider value={{ size: "xl" }}>
+      <TagRoot>
+        <TagLabel>Fish</TagLabel>
+      </TagRoot>
+    </TagRootPropsProvider>
+  ),
+  TagStartElement: () => (
+    <TagRoot>
+      <TagStartElement>@</TagStartElement>
+    </TagRoot>
+  ),
   Text: () => <Text textStyle="lg">paragraph</Text>,
   // `autoresize`, because that is the arm with the inline `style` and the subscription — a plain
   // one exercises neither.

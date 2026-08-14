@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 46 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 51 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -76,7 +76,14 @@ asks, correct **both** in the same commit.
       carrying none of the machine's positioner props — so no floating element exists for popper to
       write into, and the recipe's `placement` variant does the positioning
 - [ ] avatar — S:avatar · 3/3
-      Anatomy re-exported from Ark unchanged
+      Anatomy re-exported from Ark unchanged.
+      **Three shipped pages owe it a section each**, all dropped for this row and all measured at
+      Phase 4: `blockquote.mdx`'s *With Avatar*, `card.mdx`'s *With Avatar*, and `tag.mdx`'s
+      *Avatar* — the last of which the `tag` recipe really does style, through
+      `.tag__startElement:has([data-scope=avatar])`, so a substitute glyph would not exercise it.
+      `card-basic` and `card-with-variants` carry a `Circle` in the avatar's place instead
+      (`float-with-avatar`'s precedent), because there the avatar is decoration rather than the
+      subject
 - [ ] carousel — S:carousel · 10/11
       **Duplicate slot `progressText`** (§1.3b)
 - [ ] checkbox — S:checkbox · 4/5
@@ -325,6 +332,13 @@ minted — it calls `resolveSlotClasses(props)` and publishes with `StylesProvid
 is the same case, and `native-select` is the reason: `withProvider` omits the variant keys and
 nothing else.
 
+**`withProvider`'s `wrapElement` hands over a *function*, corrected at `alert`.** It shipped taking
+a resolved `JSX.Element`, which cannot work: `renderStyled` builds the element **and its children**
+on the call, so every part below ran before the wrapper's context existed and `Alert.Indicator`
+threw the "no Root" error from directly under its own Root. A wrapper now writes
+`{element()}` as a JSX child, which compiles to a getter and defers the build into the provider.
+The seam's own suite gained the test that would have caught it.
+
 - [x] field — S:field · —/8
       **The largest machine-less behavior in the library**, and the first machine-less multi-part
       component to ship: `createField` is a hand-written store of signals and prop getters, in the
@@ -425,23 +439,99 @@ nothing else.
       Docs: 8 of upstream's 10 example slots. `Hook Form` is a third-party React package; `Explorer`
       is www machinery. `Closed Component` keeps its section and loses the `@chakra-ui/cli snippet`
       note, which addresses a CLI this project does not have
-- [ ] alert — S:alert · —/5
-- [ ] blockquote — S:blockquote · —/4
+- [x] alert — S:alert · —/5
+      **The only one of the five flat slot recipes with a context of its own**, and the row that
+      corrected the seam: `status` is a recipe variant *and* the value `Alert.Indicator` reads to
+      pick its glyph, so the Root wraps its element in an `AlertStatusProvider` through
+      `withProvider`'s `wrapElement` — see the section preamble for the correction that took.
+      Four variant keys, not one: `status`, `inline`, `variant`, `size`. `inline` is the library's
+      **first boolean `defaultVariants` entry**, and it broke the docs props-table generator, whose
+      emitted `defaultValue` is typed `string | null` — the generator now stringifies.
+      **`Alert.Indicator` is the one part `withContext` cannot mint**, because its children default
+      to a glyph chosen from the status: `info`/`neutral` share the circle-i, `error`/`warning`
+      share the triangle, `success` is the circled check. A **responsive** `status` names no single
+      glyph and draws nothing, which is upstream's `Fragment` one indirection later. Read exactly
+      once through `??`, so no `children()` is owed.
+      Its hydration entry is the batch's only one, and it is earned: three roots give three
+      indicator shapes — the default glyph, nothing at all, and a consumer's own spinner — each
+      spending a different number of hydration keys, over a context the Root opened around its own
+      element.
+      Docs: **all 10 of upstream's example slots**, `Explorer` dropped as www machinery. Two
+      adaptations: the *Custom Icon* prose named an `icon` prop `Alert.Root` does not have (it is
+      the closed component's, and upstream's own example passes children to `Alert.Indicator`), and
+      `alert-with-custom-icon` / `alert-with-customization` take `BellIcon` and `PartyPopperIcon`
+      from the docs' own lucide set where upstream imports `react-icons/lu` — `badge-with-icon`'s
+      precedent
+- [x] blockquote — S:blockquote · —/4
+      The plainest of the five: `withProvider("figure", "root")` plus three `withContext` parts and
+      no body anywhere. **`Blockquote.Icon`'s element is a component, not a tag** — `withContext(
+      QuoteIcon, "icon")` — the only part in the batch whose slot class is handed to `chakra.svg`
+      rather than written on a host element, and it works unchanged.
+      `variantKeys: ["justify", "variant"]`; `plain` keeps the padding and drops only the rule.
+      Docs: **8 of upstream's 10 example slots**. `With Avatar` waits on the `avatar` row and
+      `Explorer` is www machinery. `blockquote-with-colors` is the `code-with-colors` case — ten
+      palettes written out, because `colorPalette` is a style prop the preset deliberately keeps out
+      of `staticCss` — and `blockquote-with-custom-icon` takes `StarIcon` from the docs' own set
+      where upstream imports `react-icons/lu`
 - [ ] breadcrumb — S:breadcrumb · —/7
       Repeated part (items)
-- [ ] card — S:card · —/6
+- [x] card — S:card · —/6
+      The seam's own reference recipe, and the row that proved `withProvider` carries a plain Root
+      with no body at all: six slots, six components, `variantKeys: ["size", "variant"]`, one file.
+      **`Card.Title` renders an `h3` where Chakra's own type says `HTMLChakraProps<"h2">`** —
+      `withContext("h3", "title")` is what upstream actually renders, so the type is wrong about it
+      and parity is what a consumer observes. The port's type says `h3`.
+      **No part carries `data-scope` or `data-part`, and none of the five in this batch does.**
+      Chakra's `withContext` writes a class and nothing else, so nothing here is addressable by
+      `[data-scope]` — the recipe's selectors read the classes. (`native-select` found the same
+      thing from the other direction; `field` and `fieldset` carry theirs off prop getters.)
+      Docs: **4 of upstream's 7 example slots**. *With Image* and *Horizontal* wait on the `image`
+      row and *With Avatar* on `avatar`; `Customization` is dropped on `field`'s precedent — its
+      snippets are `defineSlotRecipe` / `createSystem` / `ChakraProvider`, the runtime style system
+      this port structurally does not have — and `Explorer` is www machinery. `card-basic` and
+      `card-with-variants` keep their sections with a `Circle` where the avatar was
 - [ ] data-list — S:dataList · —/4
       Repeated part (items)
 - [ ] empty-state — S:emptyState · —/5
 - [ ] list — S:list · —/3
       Repeated part (items)
 - [ ] stat — S:stat · —/6
-- [ ] status — S:status · —/2
+- [x] status — S:status · —/2
+      The smallest multi-part row in the library: two slots, one variant, no body. There is **no
+      `Status.Label`** — the word is a plain child of the Root, which is an `inline-flex` row with a
+      gap, upstream included. The dot is `0.64em`, so `size` moves the label's type scale and the
+      dot follows it rather than taking a step of its own.
+      Docs: **3 of upstream's 4 example slots**, and the dropped one is a **new kind of drop**.
+      `status-closed-component` maps a `value` to a `colorPalette` at runtime
+      (`statusMap[value]`), and `colorPalette` is a style prop the preset deliberately keeps out of
+      `staticCss` — so the snippet computes a class with no rule and renders colourless with no
+      error. It is the first example blocked by that decision rather than by an unported row;
+      `code-with-colors` and its two Phase-4 counterparts could be written out literally, and a
+      closed component that takes the palette as a parameter cannot. `Explorer` is www machinery
 - [ ] table — S:table · —/8
       Repeated parts (rows, cells)
-- [ ] tag — S:tag · —/5
-      Settled by the `badge` port: `tagSlotRecipe` reuses `badgeRecipe.variants.variant` for its own
-      `variant`, and nothing else. Already inlined in the installed preset — this row waits on nothing
+- [x] tag — S:tag · —/5
+      The `badge` row's prediction, verified: `tagSlotRecipe` reuses `badgeRecipe.variants.variant`
+      and nothing else, the installed preset ships it inlined, and no preset edit was owed.
+      **`Tag.Root` renders a `div`** — `withProvider("div", "root")` — where Chakra's own type says
+      `HTMLChakraProps<"span", …>`. `Card.Title` has the same mismatch in the same batch; both port
+      what the component renders rather than what the type claims.
+      **`Tag.CloseTrigger` is the one part `withContext` cannot mint.** It carries two defaults —
+      `type="button"` and the ✕ — and both go through `withDefaults` plus a `children` getter rather
+      than a JSX attribute before a spread. The glyph is a getter and not a `withDefaults` entry
+      because that object is evaluated where it is written, so a JSX default there would construct
+      the icon on every render and discard it whenever a consumer passed their own.
+      One inherited a11y violation: the default ✕ is a bare `<CloseIcon />` with no title and no
+      label, so the button has no discernible text — **and the React version's does not either**,
+      from the identical default. Both wrong the same way, so it ships; the test pins exactly that
+      one violation and a second pins that `aria-label` clears it.
+      Docs: **9 of upstream's 11 example slots**. `Avatar` waits on the `avatar` row — and it is the
+      one substitution that would not work, since `.tag__startElement:has([data-scope=avatar])` is a
+      real selector — and `Explorer` is www machinery. `tag-with-colors` is the `code-with-colors`
+      case; `tag-as-button` is `asChild` → `render`, with the cast
+      `concepts/composition.mdx` §*Best Practices* explains. The close triggers in the examples stay
+      **unlabelled**, 1:1 with upstream, on `badge`'s precedent that the docs examples suite carries
+      upstream's content rather than our corrections
 - [ ] timeline — S:timeline · —/8
       Repeated part (items)
 
@@ -731,6 +821,9 @@ nothing else.
 - [x] group
       Already writes `--group-count`/`--group-index` inline — route 3, legal
 - [ ] image
+      **Two `card.mdx` sections wait on it**, measured at Phase 4: *With Image* and *Horizontal*
+      are both `<Image>` beside `Card.Body`, and in *Horizontal* the image is the layout the
+      section demonstrates rather than decoration, so neither substitutes
 - [ ] input-element
       Part of the input-group family. Upstream is `chakra("div", { base, variants: { placement } })`
       — no recipe key, no `Field` context; it is also the identity `input-group` compares against

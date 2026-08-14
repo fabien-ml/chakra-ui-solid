@@ -1,0 +1,78 @@
+---
+title: Blockquote
+description: Used to quote text content from an external source
+links:
+  source: packages/chakra-ui-solid/src/components/blockquote
+  chakra: https://chakra-ui.com/docs/components/blockquote
+---
+
+<Example name="blockquote-basic" />
+
+## Usage
+
+```tsx
+import { Blockquote } from "chakra-ui-solid";
+```
+
+```tsx
+<Blockquote.Root>
+  <Blockquote.Content cite="https://" />
+  <Blockquote.Caption>
+    <cite>Uzumaki Naruto</cite>
+  </Blockquote.Caption>
+</Blockquote.Root>
+```
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### With Cite
+
+To provide reference about the blockquote:
+
+- pass the `cite` prop to `Blockquote.Content` pointing to the quote url
+- render the `Blockquote.Caption` component to display name of quote author
+
+<Example name="blockquote-with-cite" />
+
+### Colors
+
+Use the `colorPalette` prop to change the color of the blockquote.
+
+<Example name="blockquote-with-colors" />
+
+### Variants
+
+Use the `variant` prop to change the visual style of the blockquote.
+
+<Example name="blockquote-with-variants" />
+
+### Icon
+
+Here's an example of how to compose the `Float` and `Blockquote.Icon` to show an icon on the
+blockquote. The default icon is a double quote.
+
+<Example name="blockquote-with-icon" />
+
+Alternatively, you can render a custom icon.
+
+<Example name="blockquote-with-custom-icon" />
+
+### Justify
+
+Use the `justify` prop to change the alignment of the blockquote.
+
+<Example name="blockquote-with-justify" />
+
+### Closed Component
+
+Here's an example of how to create a closed component composition
+
+<Example name="blockquote-closed-component" />
+
+## Props
+
+### Root
+
+<PropsTable component="blockquote" interface="BlockquoteRootProps" />

@@ -1,0 +1,39 @@
+---
+title: Status
+description: Used to indicate the status of a process or state
+links:
+  source: packages/chakra-ui-solid/src/components/status
+  chakra: https://chakra-ui.com/docs/components/status
+---
+
+<Example name="status-basic" />
+
+## Usage
+
+```tsx
+import { Status } from "chakra-ui-solid";
+```
+
+```tsx
+<Status.Root>
+  <Status.Indicator />
+</Status.Root>
+```
+
+## Examples
+
+### Label
+
+Render the label within the `Status.Root` component.
+
+<Example name="status-with-label" />
+
+### Sizes
+
+Use the `size` prop to change the size of the status component.
+
+<Example name="status-with-sizes" />
+
+## Props
+
+<PropsTable component="status" interface="StatusRootProps" />

@@ -289,7 +289,10 @@ function withRecipeDefaults(component, interfaces) {
     ...entry,
     props: entry.props.map((row) =>
       row.defaultValue === null && defaults[row.name] !== undefined
-        ? { ...row, defaultValue: defaults[row.name] }
+        ? // Stringified: `alert`'s `inline` defaults to the boolean `false`, and the table renders a
+          // default as code text either way — a raw boolean here is the one value the emitted
+          // `string | null` cannot hold.
+          { ...row, defaultValue: String(defaults[row.name]) }
         : row,
     ),
   }));

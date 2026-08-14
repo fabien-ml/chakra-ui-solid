@@ -151,6 +151,16 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/skeleton/__tests__/skeleton.ssr-entry.tsx",
   ),
+  // The first subject whose branch is decided by a **context the Root opened around its own
+  // element**. `Alert.Indicator` defaults its children to a glyph chosen from the Root's `status`,
+  // so three roots give three shapes — the default glyph, nothing at all (a responsive `status`
+  // names none), and a consumer's own spinner — and each spends a different number of hydration
+  // keys. It is also the only subject where a server render proves the wrap happened at all: built
+  // outside the provider, every indicator throws from directly under its own Root.
+  alert: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/alert/__tests__/alert.ssr-entry.tsx",
+  ),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

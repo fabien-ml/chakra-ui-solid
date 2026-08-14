@@ -1,0 +1,19 @@
+export type {
+  CardBodyProps as BodyProps,
+  CardDescriptionProps as DescriptionProps,
+  CardFooterProps as FooterProps,
+  CardHeaderProps as HeaderProps,
+  CardPropsProviderProps as PropsProviderProps,
+  CardRootBaseProps as RootBaseProps,
+  CardRootProps as RootProps,
+  CardTitleProps as TitleProps,
+} from "./card";
+export {
+  CardBody as Body,
+  CardDescription as Description,
+  CardFooter as Footer,
+  CardHeader as Header,
+  CardPropsProvider as PropsProvider,
+  CardRoot as Root,
+  CardTitle as Title,
+} from "./card";

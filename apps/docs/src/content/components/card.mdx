@@ -1,0 +1,49 @@
+---
+title: Card
+description: Used to display content related to a single subject.
+links:
+  source: packages/chakra-ui-solid/src/components/card
+  chakra: https://chakra-ui.com/docs/components/card
+---
+
+<Example name="card-basic" />
+
+## Usage
+
+```tsx
+import { Card } from "chakra-ui-solid";
+```
+
+```tsx
+<Card.Root>
+  <Card.Header />
+  <Card.Body />
+  <Card.Footer />
+</Card.Root>
+```
+
+## Examples
+
+### Variants
+
+Use the `variant` prop to change the visual style of the Card.
+
+<Example name="card-with-variants" />
+
+### Within Form
+
+Use the Card component within a form to group related fields together.
+
+<Example name="card-with-form" />
+
+### Sizes
+
+Use the `size` prop to change the size of the Card.
+
+<Example name="card-with-sizes" />
+
+## Props
+
+### Root
+
+<PropsTable component="card" interface="CardRootProps" />

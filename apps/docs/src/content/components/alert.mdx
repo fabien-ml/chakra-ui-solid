@@ -1,0 +1,92 @@
+---
+title: Alert
+description: Used to communicate a state that affects a system, feature or page.
+links:
+  source: packages/chakra-ui-solid/src/components/alert
+  chakra: https://chakra-ui.com/docs/components/alert
+---
+
+<Example name="alert-basic" />
+
+## Usage
+
+```tsx
+import { Alert } from "chakra-ui-solid";
+```
+
+```tsx
+<Alert.Root>
+  <Alert.Indicator />
+  <Alert.Content>
+    <Alert.Title />
+    <Alert.Description />
+  </Alert.Content>
+</Alert.Root>
+```
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Description
+
+Render the `Alert.Description` component to provide additional context to the alert.
+
+<Example name="alert-with-description" />
+
+### Status
+
+Change the status of the alerts by passing the `status` prop. This affects the color scheme and
+icon used. Alert supports `error`, `success`, `warning`, and `info` statuses.
+
+<Example name="alert-with-status" />
+
+### Variants
+
+Use the `variant` prop to change the visual style of the alert. Values can be either `subtle`,
+`solid`, `outline`, `surface`
+
+<Example name="alert-with-variants" />
+
+### With Close Button
+
+Here's and example of how to compose the `Alert` with a close button.
+
+<Example name="alert-with-close-button" />
+
+### With Spinner
+
+Here's and example of how to compose the `Alert` with a spinner.
+
+<Example name="alert-with-spinner" />
+
+### Custom Icon
+
+Render your own icon inside `Alert.Indicator` to override the default icon for the alert status.
+
+<Example name="alert-with-custom-icon" />
+
+### Color Palette Override
+
+The default colorPalette is inferred from the `status` prop. To override the color palette, pass
+the `colorPalette` prop.
+
+<Example name="alert-with-color-palette-override" />
+
+### Customization
+
+You can style the `Alert` component using style props.
+
+<Example name="alert-with-customization" />
+
+### Closed Component
+
+Here's how to setup the `Alert` for a closed component composition.
+
+<Example name="alert-closed-component" />
+
+## Props
+
+### Root
+
+<PropsTable component="alert" interface="AlertRootProps" />

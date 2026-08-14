@@ -1,0 +1,84 @@
+---
+title: Tag
+description: Used for categorizing or labeling content
+links:
+  source: packages/chakra-ui-solid/src/components/tag
+  chakra: https://chakra-ui.com/docs/components/tag
+---
+
+<Example name="tag-basic" />
+
+## Usage
+
+```tsx
+import { Tag } from "chakra-ui-solid";
+```
+
+```tsx
+<Tag.Root>
+  <Tag.Label>Tag here</Tag.Label>
+</Tag.Root>
+```
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Icon
+
+Use the `Tag.StartElement` and `Tag.EndElement` components to add an icon to the start or end of
+the tag
+
+<Example name="tag-with-icon" />
+
+### Variants
+
+Use the `variant` prop to change the appearance of the tag.
+
+<Example name="tag-with-variants" />
+
+### Sizes
+
+Use the `size` prop to change the size of the tag.
+
+<Example name="tag-with-sizes" />
+
+### Colors
+
+Use the `colorPalette` prop to change the color of the tag.
+
+<Example name="tag-with-colors" />
+
+### Closable
+
+Use the `Tag.CloseTrigger` within the `Tag.EndElement` to make the tag closable.
+
+<Example name="tag-with-close" />
+
+### Overflow
+
+Use the `maxWidth` prop to control the maximum width of the tag. When the content exceeds this
+width, it will be truncated with an ellipsis.
+
+> This is particularly useful when dealing with dynamic or user-generated content where the length
+> might vary.
+
+<Example name="tag-with-overflow" />
+
+### Render as button
+
+Use the `render` prop to render the tag as a button.
+
+<Example name="tag-as-button" />
+
+### Closed Component
+
+Here's how to setup the Tag for a closed component composition.
+
+<Example name="tag-closed-component" />
+
+## Props
+
+### Root
+
+<PropsTable component="tag" interface="TagRootProps" />
