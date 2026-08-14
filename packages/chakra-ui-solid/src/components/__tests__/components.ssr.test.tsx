@@ -50,6 +50,11 @@ import {
   createCollapsible,
   createDialog,
   createPopover,
+  DataListItem,
+  DataListItemLabel,
+  DataListItemValue,
+  DataListPropsProvider,
+  DataListRoot,
   DialogActionTrigger,
   DialogBackdrop,
   DialogBody,
@@ -402,6 +407,51 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </CodePropsProvider>
   ),
   Container: () => <Container>page</Container>,
+  DataListItem: () => (
+    <DataListRoot>
+      <DataListItem>
+        <DataListItemLabel>Name</DataListItemLabel>
+        <DataListItemValue>John Doe</DataListItemValue>
+      </DataListItem>
+    </DataListRoot>
+  ),
+  DataListItemLabel: () => (
+    <DataListRoot>
+      <DataListItem>
+        <DataListItemLabel>Name</DataListItemLabel>
+      </DataListItem>
+    </DataListRoot>
+  ),
+  DataListItemValue: () => (
+    <DataListRoot>
+      <DataListItem>
+        <DataListItemValue>John Doe</DataListItemValue>
+      </DataListItem>
+    </DataListRoot>
+  ),
+  DataListPropsProvider: () => (
+    <DataListPropsProvider value={{ size: "lg" }}>
+      <DataListRoot>
+        <DataListItem>
+          <DataListItemLabel>Name</DataListItemLabel>
+        </DataListItem>
+      </DataListRoot>
+    </DataListPropsProvider>
+  ),
+  // Two items rather than one, because the part repeats: the same component minted once and
+  // rendered per row is what a server has to produce twice from one class map.
+  DataListRoot: () => (
+    <DataListRoot orientation="horizontal" variant="bold">
+      <DataListItem>
+        <DataListItemLabel>Name</DataListItemLabel>
+        <DataListItemValue>John Doe</DataListItemValue>
+      </DataListItem>
+      <DataListItem>
+        <DataListItemLabel>Email</DataListItemLabel>
+        <DataListItemValue>john@example.com</DataListItemValue>
+      </DataListItem>
+    </DataListRoot>
+  ),
   // Chakra defaults `lazyMount` and `unmountOnExit` to `true` on Dialog, so a closed dialog's
   // backdrop, positioner and content are not in the served markup at all. Every gated subject below
   // opts out with `lazyMount={false}`, which is what leaves an element for this suite to find; the

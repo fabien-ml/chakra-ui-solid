@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 52 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 53 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -493,8 +493,20 @@ The seam's own suite gained the test that would have caught it.
       snippets are `defineSlotRecipe` / `createSystem` / `ChakraProvider`, the runtime style system
       this port structurally does not have — and `Explorer` is www machinery. `card-basic` and
       `card-with-variants` keep their sections with a `Circle` where the avatar was
-- [ ] data-list — S:dataList · —/4
-      Repeated part (items)
+- [x] data-list — S:dataList · —/4
+      Repeated part (items) — a non-event, as `list` measured: one `withContext`-minted
+      `DataList.Item` rendered per fact, styled from the one class map the Root resolved. Four
+      slots, three variant keys (`orientation`, `size`, `variant`), no body anywhere, and the seam
+      minted every part unchanged.
+      The `dl` groups each pair in a **`div`**, which is the markup a `dl` allows and what makes
+      `orientation` expressible: the item is the flex container, so `horizontal` is a row of `dt`
+      and `dd` and `vertical` is a column, with the label holding a 120px track on `horizontal`
+      only. `variant` swaps *which half is muted* rather than adding emphasis — `subtle` dims the
+      label, `bold` dims the value and weights the label.
+      Docs: **6 of upstream's 8 example slots**. `Info Tip` and `Closed Component` both wait on the
+      `toggle-tip` row — the closed component's whole added surface is its `info` prop, which is an
+      `InfoTip` — and `Explorer` is www machinery. The `:::info` admonition pointing at the closed
+      component goes with it
 - [ ] empty-state — S:emptyState · —/5
 - [x] list — S:list · —/3
       **A repeated part costs nothing** — the same `withContext`-minted `List.Item` is reused per

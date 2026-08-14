@@ -1,0 +1,60 @@
+---
+title: DataList
+description: Used to display a list of similar data items.
+links:
+  source: packages/chakra-ui-solid/src/components/data-list
+  chakra: https://chakra-ui.com/docs/components/data-list
+---
+
+<Example name="data-list-basic" />
+
+## Usage
+
+```tsx
+import { DataList } from "chakra-ui-solid";
+```
+
+```tsx
+<DataList.Root>
+  <For each={data}>
+    {(item) => (
+      <DataList.Item>
+        <DataList.ItemLabel>{item.label}</DataList.ItemLabel>
+        <DataList.ItemValue>{item.value}</DataList.ItemValue>
+      </DataList.Item>
+    )}
+  </For>
+</DataList.Root>
+```
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the datalist component.
+
+<Example name="data-list-with-sizes" />
+
+### Variants
+
+Use the `variant` prop to change the variant of the datalist component.
+
+<Example name="data-list-with-variants" />
+
+### Orientation
+
+Use the `orientation` prop to change the orientation of the datalist component.
+
+<Example name="data-list-with-orientation" />
+
+### Separator
+
+Use the `divideY` prop on the `DataList.Root` to add a separator between items.
+
+<Example name="data-list-with-separator" />
+
+## Props
+
+### Root
+
+<PropsTable component="data-list" interface="DataListRootProps" />

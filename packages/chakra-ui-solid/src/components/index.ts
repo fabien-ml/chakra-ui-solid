@@ -29,6 +29,7 @@ export * from "./code";
 export * from "./collapsible";
 export * from "./color-swatch";
 export * from "./container";
+export * from "./data-list";
 export * from "./dialog";
 export * from "./em";
 export * from "./environment";
