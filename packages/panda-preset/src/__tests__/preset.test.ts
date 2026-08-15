@@ -181,10 +181,10 @@ describe("the preset's own chain and atomic staticCss", () => {
 
 describe("the anatomy/skin split", () => {
   it("leaves nothing of the upstream preset behind", () => {
-    // **The invariant the whole seam rests on.** The two halves are the same object taken apart, so
-    // loading the default skin resolves to the preset it was and the stylesheet cannot move. An
-    // upstream release that adds a theme key lands here first — unclaimed by either half it would
-    // go missing from every consumer's sheet with nothing to say so.
+    // **The invariant the whole seam rests on.** The two halves cover every key the upstream preset
+    // declares, so loading the default skin resolves to the preset it was and the stylesheet cannot
+    // move. An upstream release that adds a theme key lands here first — unclaimed by either half it
+    // would go missing from every consumer's sheet with nothing to say so.
     const { globalCss, recipes, slotRecipes, ...skinTheme } = chakraSkin;
 
     expect(new Set([...Object.keys(anatomy.theme ?? {}), ...Object.keys(skinTheme)])).toEqual(
@@ -195,10 +195,27 @@ describe("the anatomy/skin split", () => {
     expect(new Set(Object.keys(chakraPreset))).toEqual(
       new Set(["name", "theme", "utilities", "conditions", "globalCss"]),
     );
-    expect(globalCss).toBe(chakraPreset.globalCss);
-    expect(anatomy.utilities).toBe(chakraPreset.utilities);
+    // `conditions` is still the dependency's own object, so identity is what says so. Everything
+    // the skin carries — and `utilities` — is **vendored** under `chakra/`, so what is asserted
+    // there is value equality against the dependency: that is the byte-neutrality claim the copy
+    // makes, and the only thing that can catch a token dropped in transcription.
     expect(anatomy.conditions).toBe(chakraPreset.conditions);
-    // Deltas are typed on `Skin` and Chakra's own carries none — it is a slice, not an override.
+    expect(globalCss).toEqual(chakraPreset.globalCss);
+    // A utility is a `transform` function, so only the **names** can be compared across the copy —
+    // and names are the whole of what is sealed anyway: the published
+    // `styled-system/jsx/is-valid-prop.mjs` hardcodes every one of them, so a lost name is a style
+    // prop that silently stops being a style prop. What the transforms compute is asserted by the
+    // generated stylesheet instead.
+    expect(Object.keys(anatomy.utilities?.extend ?? {})).toEqual(
+      Object.keys(chakraPreset.utilities?.extend ?? {}),
+    );
+    expect(skinTheme).toEqual(
+      Object.fromEntries(
+        Object.entries(chakraPreset.theme ?? {}).filter(([key]) => key in skinTheme),
+      ),
+    );
+    // Deltas are typed on `Skin` and Chakra's own carries none — it is a copy of the look, not an
+    // override of it.
     expect([recipes, slotRecipes]).toEqual([undefined, undefined]);
   });
 

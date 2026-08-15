@@ -1,5 +1,12 @@
-import chakraPreset from "@chakra-ui/panda-preset";
 import type { Config } from "@pandacss/dev";
+import { animationStyles } from "./chakra/animation-styles";
+import { breakpoints } from "./chakra/breakpoints";
+import { globalCss } from "./chakra/global-css";
+import { keyframes } from "./chakra/keyframes";
+import { layerStyles } from "./chakra/layer-styles";
+import { semanticTokens } from "./chakra/semantic-tokens";
+import { textStyles } from "./chakra/text-styles";
+import { tokens } from "./chakra/tokens";
 
 /**
  * Every type here is read off `Config` rather than off `@pandacss/types`, which `@pandacss/dev`
@@ -47,22 +54,25 @@ export function defineSkin(skin: Skin): Skin {
   return skin;
 }
 
-const chakraTheme = chakraPreset.theme ?? {};
-
 /**
- * Chakra v3's look, sliced off the same imported preset object `anatomy.ts` slices — never
- * transcribed, for the reason that file states.
+ * Chakra v3's look, assembled from the vendored modules under `chakra/` — one file per upstream
+ * file, so a Chakra bump is a `diff -r` against `@chakra-ui/panda-preset`'s own `src/`.
+ *
+ * **Vendored rather than sliced off the dependency**, which is the one exception `CLAUDE.md` makes
+ * and which those files pay for with an `@license` header each. A skin is a *replaceable* half, and
+ * a shape contract cannot be designed around bodies we cannot see; a skin that can only override
+ * `@chakra-ui/panda-preset` is `theme.extend` with extra steps.
  *
  * Declared in the upstream theme's own key order, so the merged theme this half contributes to
  * keeps the token and keyframe emission order the stylesheet already had.
  */
 export const chakraSkin: Skin = defineSkin({
-  breakpoints: chakraTheme.breakpoints,
-  keyframes: chakraTheme.keyframes,
-  tokens: chakraTheme.tokens,
-  semanticTokens: chakraTheme.semanticTokens,
-  textStyles: chakraTheme.textStyles,
-  layerStyles: chakraTheme.layerStyles,
-  animationStyles: chakraTheme.animationStyles,
-  globalCss: chakraPreset.globalCss,
+  breakpoints,
+  keyframes,
+  tokens,
+  semanticTokens,
+  textStyles,
+  layerStyles,
+  animationStyles,
+  globalCss,
 });

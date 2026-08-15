@@ -160,6 +160,72 @@ const chakraReact: AttributionEntry[] = [
   },
 ];
 
+/**
+ * The vendored half of `@chakra-ui/panda-preset` — its token tables and its compositions, one file
+ * per upstream file under `packages/panda-preset/src/chakra/`.
+ *
+ * This is the **single vendoring exception** `CLAUDE.md` makes, and the reason is that a skin is a
+ * replaceable half: a shape contract cannot be designed around bodies nobody can see, and a skin
+ * that can only override a dependency is `theme.extend` with extra steps. One file per upstream
+ * file is what keeps a Chakra bump a `diff -r`.
+ *
+ * Three `.map()`s over name lists rather than 29 objects, on the reasoning `zagSolidFork` above
+ * uses: the row *set* is the fact worth reading, and a bump changes file contents rather than this
+ * block. The lists are each directory as upstream wrote it, `index.ts` barrels included — a barrel
+ * that assembles an object is expression like any other file, where one that only re-exports is not
+ * (which is why `recipes/` and `slot-recipes/` are absent rather than partially listed).
+ */
+const chakraPandaPreset: AttributionEntry[] = [
+  ...[
+    "animations",
+    "aspect-ratios",
+    "blurs",
+    "borders",
+    "colors",
+    "cursor",
+    "durations",
+    "easings",
+    "font-sizes",
+    "font-weights",
+    "fonts",
+    "index",
+    "letter-spacings",
+    "line-heights",
+    "radii",
+    "sizes",
+    "spacing",
+    "z-index",
+  ].map((name) => ({
+    file: `packages/panda-preset/src/chakra/tokens/${name}.ts`,
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: `packages/panda-preset/src/tokens/${name}.ts`,
+    license: "MIT" as const,
+    package: "panda-preset",
+  })),
+  ...["colors", "index", "radii", "shadows"].map((name) => ({
+    file: `packages/panda-preset/src/chakra/semantic-tokens/${name}.ts`,
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: `packages/panda-preset/src/semantic-tokens/${name}.ts`,
+    license: "MIT" as const,
+    package: "panda-preset",
+  })),
+  ...[
+    "animation-styles",
+    "breakpoints",
+    "global-css",
+    "keyframes",
+    "layer-styles",
+    "text-styles",
+    "utilities",
+  ].map((name) => ({
+    file: `packages/panda-preset/src/chakra/${name}.ts`,
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: `packages/panda-preset/src/${name}.ts`,
+    license: "MIT" as const,
+    package: "panda-preset",
+  })),
+];
+
 const docsApp: AttributionEntry[] = [
   {
     // The brand marks — the bolt and the logotype glyph. They were `site/icons.tsx` until the
@@ -204,7 +270,12 @@ const docsApp: AttributionEntry[] = [
   },
 ];
 
-export const attributions: AttributionEntry[] = [...zagSolidFork, ...chakraReact, ...docsApp];
+export const attributions: AttributionEntry[] = [
+  ...zagSolidFork,
+  ...chakraReact,
+  ...chakraPandaPreset,
+  ...docsApp,
+];
 
 export const noticeOnlyPaths: NoticeOnlyPath[] = [
   {

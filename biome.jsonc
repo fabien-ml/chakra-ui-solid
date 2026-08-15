@@ -57,6 +57,25 @@
       }
     },
     {
+      // `src/chakra/` is the vendored `@chakra-ui/panda-preset`, and the same argument applies: a
+      // Chakra bump is meant to be a `diff -r` against that tree, so a rule fixed here shows up as
+      // our change in every future diff and says nothing about our code. Three `any`s in a utility
+      // transform, one guard clause and one string concatenation, all in `utilities.ts` — the one
+      // file there with statements in it rather than a token table.
+      "includes": ["**/src/chakra/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useBlockStatements": "off",
+            "useTemplate": "off"
+          },
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/*.browser.test.tsx"],
       "linter": {
         "rules": {

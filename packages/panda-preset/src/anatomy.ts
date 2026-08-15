@@ -1,5 +1,6 @@
 import chakraPreset from "@chakra-ui/panda-preset";
 import { definePreset } from "@pandacss/dev";
+import { utilities } from "./chakra/utilities";
 
 const chakraTheme = chakraPreset.theme ?? {};
 
@@ -11,12 +12,15 @@ const chakraTheme = chakraPreset.theme ?? {};
  * 4,231 declarations in those bodies, 56% are structural and 37% are token references, so swapping
  * a look is swapping the token table in `skin.ts` and leaving all four of these keys alone.
  *
- * **They are sliced off the imported preset object rather than copied into this file**, and the
- * difference is legal rather than tidiness. Reading four keys off a dependency reproduces none of
- * its expression, so this stays a dependency; transcribing a recipe body or a token table here
- * would make the file a derivative and owe an `attribution.config.ts` entry, an `@license` header
- * and two `NOTICE.md` rows (`CLAUDE.md`, *Reference use*). It is also what keeps a Chakra release
- * that reshapes a body covered by the version bump alone.
+ * **The recipe bodies and the conditions are still sliced off the imported preset object**, and
+ * that is where the vendoring stops for now: `CLAUDE.md` settles that Chakra v3's preset becomes
+ * ours to maintain, and `chakra/` holds the token tables and compositions that already moved. The
+ * 75 bodies follow; until they do, reading two keys off a dependency reproduces none of its
+ * expression and owes nothing.
+ *
+ * `utilities` is vendored, because it is not swappable and never was: every utility *name* is
+ * compiled into the published `styled-system/jsx/is-valid-prop.mjs`, so `focusRing` and `boxSize`
+ * are sealed by exactly the mechanism that seals a recipe's variant keys.
  */
 export const anatomy = definePreset({
   name: "@chakra-ui-solid/anatomy",
@@ -26,6 +30,6 @@ export const anatomy = definePreset({
     slotRecipes: chakraTheme.slotRecipes,
   },
 
-  utilities: chakraPreset.utilities,
+  utilities: { extend: utilities },
   conditions: chakraPreset.conditions,
 });

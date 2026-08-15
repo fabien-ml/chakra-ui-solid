@@ -80,9 +80,18 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 - **License:** MIT License
 - **Copyright:** Copyright (c) 2019 Chakra Systems Inc.
 
-`@chakra-ui/panda-preset` is consumed as a published npm dependency — the design tokens, recipes,
-and slot recipes are used as shipped, not copied into this repository. No obligation beyond this
-notice.
+**`@chakra-ui/panda-preset` is vendored rather than consumed**, and it is the only thing in this
+repository that is. Chakra v3's look is a *skin* here — one preset among several a consumer may
+write — and a skin that can only override a dependency is `theme.extend` with extra steps, so the
+preset is copied in and maintained as ours. One file per upstream file, so a Chakra release is a
+`diff -r` against their `src/`; every copied file carries an `@license` header and a row below.
+
+**Vendored so far: the token tables and the compositions** — 29 files under
+`packages/panda-preset/src/chakra/`. The recipe bodies and the conditions are still resolved from
+the published package as shipped, and owe nothing beyond this notice until they move too. Two
+modifications, both mechanical: the import specifier, since Chakra's own `src/def.ts` is not copied
+and `@pandacss/dev` exports the same helpers, and — in `utilities.ts` alone — a type annotation
+standing in for the one helper it does not export, `defineUtilities`.
 
 `@chakra-ui/react` is a **read reference** for public API shape, prop names, component anatomy, and
 naming. Its `src/styled-system/` is an Emotion serializer and is read for API shape, not for
@@ -91,11 +100,11 @@ that reproduce Chakra's expression get a row, and `factory.tsx` is one: its `exc
 seven SVG tags whose geometry attributes must reach the DOM rather than be folded into a class — is
 carried over verbatim, because a data table is expression where the API around it is not.
 
-**One recipe body is reproduced, and only because the preset omits it.** `container` is a key
-`@chakra-ui/react`'s own theme defines and `@chakra-ui/panda-preset` does not ship, so a Container
-resolved against the dependency would compute a class with no rule behind it. Its body is ported
-into `packages/panda-preset/src/container-recipe.ts` with one modification — the `className` — and
-no other recipe or token table is re-emitted anywhere in this repository.
+**One recipe body comes from `@chakra-ui/react` rather than from the preset, because the preset
+omits it.** `container` is a key Chakra's own theme defines and `@chakra-ui/panda-preset` does not
+ship, so a Container resolved against the preset would compute a class with no rule behind it. Its
+body is ported into `packages/panda-preset/src/container-recipe.ts` with one modification — the
+`className` — and it is the only recipe body reproduced anywhere in this repository.
 
 **One utility transform is reproduced, for the same reason.** `currentBg` is a Chakra keyword that
 two of the preset's own recipes write, and the transform compiling it — the keyword to a custom
@@ -153,6 +162,35 @@ fold on the docs home and in every page's footer.
 | `packages/chakra-ui-solid/src/components/link/link-box.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/link/link-box.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `packages/panda-preset/src/current-bg-utilities.ts` | `chakra-ui/chakra-ui` — `packages/react/src/preset-base.ts` |
+| `packages/panda-preset/src/chakra/tokens/animations.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/animations.ts` |
+| `packages/panda-preset/src/chakra/tokens/aspect-ratios.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/aspect-ratios.ts` |
+| `packages/panda-preset/src/chakra/tokens/blurs.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/blurs.ts` |
+| `packages/panda-preset/src/chakra/tokens/borders.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/borders.ts` |
+| `packages/panda-preset/src/chakra/tokens/colors.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/colors.ts` |
+| `packages/panda-preset/src/chakra/tokens/cursor.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/cursor.ts` |
+| `packages/panda-preset/src/chakra/tokens/durations.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/durations.ts` |
+| `packages/panda-preset/src/chakra/tokens/easings.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/easings.ts` |
+| `packages/panda-preset/src/chakra/tokens/font-sizes.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/font-sizes.ts` |
+| `packages/panda-preset/src/chakra/tokens/font-weights.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/font-weights.ts` |
+| `packages/panda-preset/src/chakra/tokens/fonts.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/fonts.ts` |
+| `packages/panda-preset/src/chakra/tokens/index.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/index.ts` |
+| `packages/panda-preset/src/chakra/tokens/letter-spacings.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/letter-spacings.ts` |
+| `packages/panda-preset/src/chakra/tokens/line-heights.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/line-heights.ts` |
+| `packages/panda-preset/src/chakra/tokens/radii.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/radii.ts` |
+| `packages/panda-preset/src/chakra/tokens/sizes.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/sizes.ts` |
+| `packages/panda-preset/src/chakra/tokens/spacing.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/spacing.ts` |
+| `packages/panda-preset/src/chakra/tokens/z-index.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/z-index.ts` |
+| `packages/panda-preset/src/chakra/semantic-tokens/colors.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/semantic-tokens/colors.ts` |
+| `packages/panda-preset/src/chakra/semantic-tokens/index.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/semantic-tokens/index.ts` |
+| `packages/panda-preset/src/chakra/semantic-tokens/radii.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/semantic-tokens/radii.ts` |
+| `packages/panda-preset/src/chakra/semantic-tokens/shadows.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/semantic-tokens/shadows.ts` |
+| `packages/panda-preset/src/chakra/animation-styles.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/animation-styles.ts` |
+| `packages/panda-preset/src/chakra/breakpoints.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/breakpoints.ts` |
+| `packages/panda-preset/src/chakra/global-css.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/global-css.ts` |
+| `packages/panda-preset/src/chakra/keyframes.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/keyframes.ts` |
+| `packages/panda-preset/src/chakra/layer-styles.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/layer-styles.ts` |
+| `packages/panda-preset/src/chakra/text-styles.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/text-styles.ts` |
+| `packages/panda-preset/src/chakra/utilities.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/utilities.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/ui/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
 | `apps/docs/src/examples/decorative-box.tsx` | `chakra-ui/chakra-ui` — `apps/compositions/src/lib/decorative-box.tsx` |
