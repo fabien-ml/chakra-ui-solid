@@ -4,10 +4,7 @@ import {
   type PresetVariant,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
-import {
-  type StatusVariantProps as StatusRecipeVariants,
-  status as statusRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { StatusVariantProps as StatusRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { Component } from "solid-js";
 
@@ -43,8 +40,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   StatusRecipeVariants
 >({
   name: "Status",
-  recipe: statusRecipe,
-  variantKeys: ["size"],
+  recipe: "status",
 });
 
 /** The classes the nearest {@link StatusRoot} resolved, one per slot. */

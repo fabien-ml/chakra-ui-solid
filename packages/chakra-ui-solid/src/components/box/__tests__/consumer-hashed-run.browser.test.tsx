@@ -3,7 +3,7 @@ import { mount } from "@chakra-ui-solid/internal-test-utils";
 import type { JSX } from "@solidjs/web";
 // The barrel, not the sibling source files, because this file is the consumer's story end to end:
 // what they import, the system their own Panda run generated, and the sheet the same run emitted.
-import { Bleed, Box, Flex } from "chakra-ui-solid";
+import { Bleed, Box, Button, CardBody, CardRoot, Flex } from "chakra-ui-solid";
 import { afterEach, describe, expect, it } from "vitest";
 import hashedStylesheet from "./__fixtures__/consumer/consumer-hashed.css?raw";
 import { system as hashedSystem } from "./__fixtures__/consumer/styled-system-hashed/chakra-system";
@@ -23,11 +23,11 @@ import { system as hashedSystem } from "./__fixtures__/consumer/styled-system-ha
  * assertion below can pass by coincidence against the repo's own stylesheet, which is on the page
  * throughout.
  *
- * **What it cannot cover yet.** Recipes are still resolved from the repo's own generated package
- * with the repo's own unhashed class names, so a component with a recipe behind it — Button, Dialog,
- * every slot recipe — really is unstyled under this fixture. That is the ordering, not the design:
- * when `getRecipeFn`/`getSlotRecipeFn` move onto `SystemContext`, a recipe case belongs here beside
- * the four below, and it is the case that closes this file.
+ * **Recipes included, which closes the file.** A recipe used to be a compiled function this package
+ * imported, so its class names were the repo's however the consumer had configured Panda — every
+ * component with a recipe behind it really was unstyled here. It is now a key looked up in the
+ * system they hand over, so the last two tests below are the same claim as the first four, made
+ * about the half that could not make it.
  */
 
 let mounted: { container: HTMLElement; dispose: () => void } | undefined;
@@ -106,5 +106,41 @@ describe("a consumer whose Panda run hashes every name", () => {
     expect(style.marginInlineEnd).toBe("-99px");
     // `spacing.2` is untouched by their overrides, so this one is Chakra's own `0.5rem`.
     expect(style.marginBlockEnd).toBe("-8px");
+  });
+
+  it("styles a component whose recipe it resolves by key", () => {
+    const element = renderUnderHashedSystem(() => <Button>Save</Button>);
+
+    // The repo's own stylesheet is loaded and has no rule for a hashed recipe class either.
+    expect(getComputedStyle(element).paddingInlineStart).toBe("0px");
+
+    applyHashedStylesheet();
+    const style = getComputedStyle(element);
+
+    // `button`'s `md` size is `px: "4"`, and their `spacing.4` is 99px — so this one value says the
+    // class came out of their run *and* that the recipe body resolved against their tokens. The
+    // height is Chakra's `sizes.10`, which they left alone.
+    expect(style.paddingInlineStart).toBe("99px");
+    expect(style.height).toBe("40px");
+  });
+
+  it("dresses every slot of a slot recipe out of the same run", () => {
+    const root = renderUnderHashedSystem(() => (
+      <CardRoot>
+        <CardBody data-probe="body" />
+      </CardRoot>
+    ));
+    const body = root.querySelector('[data-probe="body"]');
+    if (!(body instanceof HTMLElement)) {
+      throw new Error("expected the card to render a body");
+    }
+
+    applyHashedStylesheet();
+
+    // Two hashed classes and one custom property between them: the root's `size` variant declares
+    // `--card-padding` and the body's base slot reads it, so a body with padding is the Root having
+    // resolved the recipe once and every part below having worn its own slot's class.
+    expect(getComputedStyle(body).padding).toBe("24px");
+    expect(getComputedStyle(root).display).toBe("flex");
   });
 });

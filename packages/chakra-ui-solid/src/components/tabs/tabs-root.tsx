@@ -6,10 +6,7 @@ import {
   renderStyled,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type TabsVariantProps as TabsRecipeVariants,
-  tabs as tabsRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { TabsVariantProps as TabsRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 import { createTabs } from "./create-tabs";
@@ -96,7 +93,7 @@ function renderRoot(
   // The four values are read lazily and passed straight through: `undefined` is what the recipe's
   // own `defaultVariants` resolves, so restating a default here would be the second source of truth
   // `TabsVariantProps` declines to be.
-  const slots = createSlotClasses<TabsSlot, TabsRecipeVariants>(tabsRecipe, {
+  const slots = createSlotClasses<TabsSlot, TabsRecipeVariants>("tabs", {
     variantProps: () => ({
       fitted: styling.fitted,
       justify: styling.justify,

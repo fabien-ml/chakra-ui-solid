@@ -5,12 +5,10 @@ import {
   type PresetVariant,
   type PropsProviderProps,
   renderStyled,
+  useRecipeVariantKeys,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type StatVariantProps as StatRecipeVariants,
-  stat as statRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { StatVariantProps as StatRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
@@ -32,13 +30,6 @@ export interface StatVariantProps {
    */
   size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"stat", "size">>;
 }
-
-/**
- * Shared by the Root and {@link StatGroup}, so the two cannot disagree about which keys belong to
- * the recipe. Never `recipe.variantKeys`: `omit` narrows by the keys it is given, and a
- * `string[]` narrows nothing.
- */
-const VARIANT_KEYS = ["size"] as const;
 
 /** The Root's own props, without the `dl`'s — what a `Stat.PropsProvider` may supply. */
 export interface StatRootBaseProps extends StatVariantProps {}
@@ -83,8 +74,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   StatRecipeVariants
 >({
   name: "Stat",
-  recipe: statRecipe,
-  variantKeys: VARIANT_KEYS,
+  recipe: "stat",
 });
 
 /** The classes the nearest {@link StatRoot} resolved, one per slot. */
@@ -213,9 +203,13 @@ export const StatGroup: Component<StatGroupProps> = (props) => {
     justifyContent: "space-around",
     alignItems: "flex-start",
   } satisfies Partial<StatGroupProps>);
+  // The Root's own recipe answers which keys these are, so the group and the Root cannot disagree
+  // about them — and a variant key a consumer added to `stat` is passed down rather than landing on
+  // the `div` as an attribute.
+  //
   // Named, and spread as an identifier — a call expression in a JSX spread compiles to a memo the
   // receiving component then reads untracked.
-  const groupProps = omit(merged, ...VARIANT_KEYS);
+  const groupProps = omit(merged, ...useRecipeVariantKeys<StatGroupProps>("stat"));
 
   return (
     <StatPropsProvider value={variantProps}>

@@ -3,11 +3,13 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  pickVariantProps,
   renderStyled,
+  useRecipeVariantKeys,
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import { type ButtonVariantProps, button } from "@chakra-ui-solid/styled-system/recipes";
+import type { ButtonVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { type Component, children, merge, omit, Show } from "solid-js";
@@ -34,8 +36,9 @@ export type ButtonVariant = ConditionalValue<
 /**
  * The two variants spelled out rather than inherited from the generated `ButtonVariantProps`, so
  * each carries a description a reader can use and a type they can read — and this is the interface
- * the docs page's props table is built from. Drift is caught by {@link VARIANT_KEYS} below, which
- * is typed against the generated variants.
+ * the docs page's props table is built from. It names Chakra's own variants; what the body actually
+ * partitions by is whatever the system's `button` recipe accepts, so a consumer who adds one gets
+ * it passed to the recipe rather than onto the element.
  */
 export interface ButtonProps extends HTMLChakraProps<"button"> {
   /**
@@ -75,21 +78,6 @@ export interface ButtonProps extends HTMLChakraProps<"button"> {
 /** The DOM props Button forwards to the rendered element, as Box names its own. */
 type ButtonElementProps = ComponentProps<"button">;
 
-/**
- * The recipe's own inputs, as literal keys rather than `button.variantKeys` — `omit` narrows
- * the returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` is what
- * keeps the two lists one list at compile time: a variant renamed in the recipe stops the build
- * here, and the test asserts the same equality at runtime.
- *
- * Never Panda's generated `splitVariantProps`, which is how Chakra spells this in `ButtonGroup`:
- * it destructures the props object eagerly, so in Solid a changed `size` stops re-resolving.
- * `ButtonGroup` imports this tuple instead.
- */
-export const VARIANT_KEYS = [
-  "size",
-  "variant",
-] as const satisfies readonly (keyof ButtonVariantProps & keyof ButtonProps)[];
-
 /** The four props that drive the Loader. Not style props, so they need omitting by name. */
 const LOADING_KEYS = ["loading", "loadingText", "spinner", "spinnerPlacement"] as const;
 
@@ -100,8 +88,8 @@ const LOADING_KEYS = ["loading", "loadingText", "spinner", "spinnerPlacement"] a
  * pipeline, and Button's body is not that: it wraps its children in a {@link Loader}. So it takes
  * the half of the seam it can use — the context an ancestor writes to — and calls
  * `createRecipeClass` + `renderStyled` itself, which is `Container`'s shape with a props context in
- * front. Passing `recipe`/`variantKeys` here would configure a `withContext` nobody calls, and read
- * as though changing them changed what Button resolves.
+ * front. Passing `recipe` here would configure a `withContext` nobody calls, and read as though
+ * changing it changed what Button resolves.
  */
 const { PropsProvider, usePropsContext } = createRecipeContext<ButtonProps>();
 
@@ -132,8 +120,14 @@ export const Button: Component<ButtonProps> = (props) => {
     loading: false,
   } satisfies Partial<ButtonProps>);
 
-  const recipeClass = createRecipeClass(button, {
-    variantProps: () => ({ size: merged.size, variant: merged.variant }),
+  // The recipe's own variant names, off the system above — never Panda's generated
+  // `splitVariantProps`, which is how Chakra spells this in `ButtonGroup`: it destructures the props
+  // object eagerly, so in Solid a changed `size` stops re-resolving.
+  const variantKeys = useRecipeVariantKeys<ButtonProps>("button");
+
+  const recipeClass = createRecipeClass("button", {
+    // Read inside the accessor, so the variant values are tracked rather than snapshotted.
+    variantProps: () => pickVariantProps<ButtonVariantProps>(merged, variantKeys),
   });
 
   // **Resolved once, read in both arms.** `props.children` compiles to a lazy getter, and the two
@@ -149,7 +143,7 @@ export const Button: Component<ButtonProps> = (props) => {
 
   // Every read below goes to `merged`, never to `props`: `withDefaults` copies nothing, so
   // `omit(props, …)` would hand the element a bag with the defaults missing.
-  const elementProps = merge(omit(merged, ...VARIANT_KEYS, ...LOADING_KEYS, "children"), {
+  const elementProps = merge(omit(merged, ...variantKeys, ...LOADING_KEYS, "children"), {
     /** Chakra's `dataAttr`: present-and-empty when loading, absent when not. */
     get "data-loading"() {
       return merged.loading ? "" : undefined;

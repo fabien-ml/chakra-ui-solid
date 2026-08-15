@@ -3,14 +3,14 @@ import {
   type HTMLChakraProps,
   type PresetVariant,
 } from "@chakra-ui-solid/core";
-import { type KbdVariantProps, kbd } from "@chakra-ui-solid/styled-system/recipes";
+import type { KbdVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
 /**
  * The two variants spelled out rather than inherited from the generated `KbdVariantProps`, so each
  * carries a description a reader can use and a type they can read — Badge's precedent, and this is
- * the interface the docs page's props table is built from. Drift is caught at the call below, whose
- * key tuple is typed against the generated variants.
+ * the interface the docs page's props table is built from. It names Chakra's own variants; what the
+ * seam partitions by is whatever the system's `kbd` recipe accepts.
  */
 export interface KbdProps extends HTMLChakraProps<"kbd"> {
   /**
@@ -31,8 +31,7 @@ export interface KbdProps extends HTMLChakraProps<"kbd"> {
 }
 
 const { withContext, PropsProvider } = createRecipeContext<KbdProps, KbdVariantProps>({
-  recipe: kbd,
-  variantKeys: ["variant", "size"],
+  recipe: "kbd",
 });
 
 /**

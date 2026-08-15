@@ -4,10 +4,12 @@ import {
   type HTMLChakraProps,
   mergeProps,
   type PresetVariant,
+  pickVariantProps,
   renderStyled,
+  useRecipeVariantKeys,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
-import { type TextareaVariantProps, textarea } from "@chakra-ui-solid/styled-system/recipes";
+import type { TextareaVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { autoresizeTextarea } from "@zag-js/auto-resize";
@@ -17,7 +19,8 @@ import { useOptionalFieldContext } from "../field/field-context";
 /**
  * The two variants spelled out rather than inherited from the generated `TextareaVariantProps`, so
  * each carries a description a reader can use and a type they can read — Badge's precedent, and
- * Input's. Drift is caught at the seam below, whose keys are typed against the generated variants.
+ * Input's. It names Chakra's own variants; what the body partitions by is whatever the system's
+ * `textarea` recipe accepts.
  */
 export interface TextareaProps extends HTMLChakraProps<"textarea"> {
   /**
@@ -51,16 +54,11 @@ export interface TextareaProps extends HTMLChakraProps<"textarea"> {
 type TextareaElementProps = ComponentProps<"textarea">;
 
 /**
- * The recipe's own inputs, as literal keys rather than `textarea.variantKeys` — `omit` narrows
- * the returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` keeps
- * the two lists one list at compile time, and the test asserts the same equality at runtime.
- *
- * `autoresize` rides along because it is not the element's attribute either: it drives an effect and
- * an inline `resize`, and forwarded it would reach the DOM as `autoresize=""`.
+ * `autoresize` is not the element's attribute: it drives an effect and an inline `resize`, and
+ * forwarded it would reach the DOM as `autoresize=""`. The recipe's own variants are omitted
+ * alongside it, and they come off the recipe rather than from a tuple here.
  */
-const VARIANT_KEYS = ["size", "variant"] as const satisfies readonly (keyof TextareaVariantProps &
-  keyof TextareaProps)[];
-const NON_ELEMENT_KEYS = [...VARIANT_KEYS, "autoresize"] as const;
+const OWN_KEYS = ["autoresize"] as const;
 
 /** Input's shape: the props context off the seam, and the body's own third source under it. */
 const { PropsProvider, usePropsContext } = createRecipeContext<TextareaProps>();
@@ -101,8 +99,12 @@ export const Textarea: Component<TextareaProps> = (props) => {
     fromContext,
   ) as TextareaProps;
 
-  const recipeClass = createRecipeClass(textarea, {
-    variantProps: () => ({ size: merged.size, variant: merged.variant }),
+  // The recipe's own variant names, off the system above.
+  const variantKeys = useRecipeVariantKeys<TextareaProps>("textarea");
+
+  const recipeClass = createRecipeClass("textarea", {
+    // Read inside the accessor, so the variant values are tracked rather than snapshotted.
+    variantProps: () => pickVariantProps<TextareaVariantProps>(merged, variantKeys),
   });
 
   // A **signal**, not a plain `let`: the effect below has to re-run once the ref lands, and the
@@ -129,7 +131,7 @@ export const Textarea: Component<TextareaProps> = (props) => {
     // these keys, so the two bags answer the same thing.
     as: (fromContext.as ?? "textarea") as ValidComponent,
     render: fromContext.render,
-    props: omit(merged, ...NON_ELEMENT_KEYS) as unknown as TextareaElementProps,
+    props: omit(merged, ...variantKeys, ...OWN_KEYS) as unknown as TextareaElementProps,
     recipeClass,
     ref: setElement,
   });

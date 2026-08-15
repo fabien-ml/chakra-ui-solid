@@ -3,6 +3,10 @@ import {
   AspectRatio,
   Bleed,
   Box,
+  Button,
+  CardBody,
+  CardRoot,
+  CardTitle,
   Center,
   Circle,
   Container,
@@ -106,6 +110,22 @@ const LayoutTier = () => (
   </Span>
 );
 
+/**
+ * The recipe tier, which reaches their sheet by a different route than everything above it: a recipe
+ * is named by a **key** at render time, so nothing in this file is what Panda extracts it from — the
+ * import specifier is, through the gate `defineChakraConfig()` appends. Both kinds are here because
+ * an atomic recipe is one class and a slot recipe is one per part.
+ */
+const RecipeTier = () => (
+  <Box>
+    <Button size="lg">Save</Button>
+    <CardRoot>
+      <CardTitle>Total</CardTitle>
+      <CardBody />
+    </CardRoot>
+  </Box>
+);
+
 export const App = () => (
   <Box p="4" bg="red.500" gapX="4">
     {/* Form 1 — the JSX namespace, and the form `isUpperCase` cannot rescue. */}
@@ -117,5 +137,6 @@ export const App = () => (
       <FactoryCircle cx={20} cy={20} />
     </svg>
     <LayoutTier />
+    <RecipeTier />
   </Box>
 );

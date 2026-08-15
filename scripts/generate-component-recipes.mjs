@@ -9,22 +9,23 @@
 // here, once, and committed as data.
 //
 // **Derived, never enumerated.** No component name and no recipe key is typed out anywhere in this
-// file. An entry is whatever `chakraUiSolid.entries` lists, a recipe is whatever an entry's source
-// transitively imports from `@chakra-ui-solid/styled-system/recipes`, and a component name is
-// whatever that entry exports as a value. A new port is picked up because it added a directory and
-// an entry; a new upstream recipe is picked up because a component imported it. Anything a human
-// had to remember to add here would reintroduce silent unstyling exactly as the library grows.
+// file. An entry is whatever `chakraUiSolid.entries` lists, a recipe is whatever key an entry's
+// source hands to one of the four recipe seams, and a component name is whatever that entry exports
+// as a value. A new port is picked up because it added a directory and an entry; a new upstream
+// recipe is picked up because a component named it. Anything a human had to remember to add here
+// would reintroduce silent unstyling exactly as the library grows.
 //
 // Two things make the walk trustworthy rather than approximate:
 //
 //   • **A type-only edge is not a runtime edge.** `import type { FieldRootProps } from "../field"`
-//     compiles to nothing, so it must not drag Field's recipes into another entry's set. Likewise
-//     `import { type ButtonVariantProps, button }` contributes `button` and not the type beside it.
+//     compiles to nothing, so it must not drag Field's recipes into another entry's set.
 //
-//   • **Panda's generated recipe module exports exactly one *value* per recipe, named by the recipe
-//     key** (`button`, `skipNavLink`, `colorSwatch`) — everything else it exports is a type. So a
-//     value binding taken from that module *is* a recipe key, with no list to check it against.
-//     The name before `as` is the one that counts: `tabs as tabsRecipe` is the `tabs` recipe.
+//   • **A recipe is named by a string literal, at one of four call sites and nowhere else.** A
+//     component used to import the compiled recipe and the import was the signal; the recipe now
+//     comes off the `<ChakraProvider>`'s system by key, so the key is. `createRecipeClass("button")`,
+//     `createSlotClasses("dialog")`, `useRecipeVariantKeys("button")` and the `recipe:` option the
+//     two seam factories take are the whole set — {@link RECIPE_KEY_SITES} matches them, and a fifth
+//     spelling would have to be added there.
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -34,7 +35,20 @@ import { fileURLToPath } from "node:url";
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const packageRoot = join(repoRoot, "packages/chakra-ui-solid");
 const artifactPath = join(repoRoot, "packages/panda-preset/src/component-recipes.ts");
-const recipesModule = "@chakra-ui-solid/styled-system/recipes";
+
+/**
+ * Where a recipe key is written, and the reason the two patterns are this narrow: anything looser
+ * would pick up an unrelated string and put a recipe nobody renders into every consumer's sheet.
+ *
+ * The first covers the three functions that take the key positionally, with the optional type
+ * arguments in between — `createSlotClasses<DialogSlot, DialogRecipeVariants>("dialog", …)`. Type
+ * arguments never contain a `(`, which is what stops the `[^(]*` from crossing into the next call.
+ * The second covers the `recipe:` option on `createRecipeContext` and `createSlotRecipeContext`.
+ */
+const RECIPE_KEY_SITES = [
+  /\b(?:createRecipeClass|createSlotClasses|useRecipeVariantKeys)\s*(?:<[^(]*>)?\s*\(\s*"([^"]+)"/g,
+  /\brecipe:\s*"([^"]+)"/g,
+];
 
 /**
  * The source with comments blanked, and — when `keepStrings` is false — string *interiors* blanked
@@ -197,7 +211,14 @@ function parseModule(path) {
     }
   }
 
-  return { edges, localExports };
+  const recipeKeys = [];
+  for (const pattern of RECIPE_KEY_SITES) {
+    for (const [, key] of code.matchAll(pattern)) {
+      recipeKeys.push(key);
+    }
+  }
+
+  return { edges, localExports, recipeKeys };
 }
 
 const parsed = new Map();
@@ -221,14 +242,12 @@ function recipesReachedFrom(entryPath) {
     }
     visited.add(path);
 
-    for (const edge of moduleAt(path).edges) {
+    const module = moduleAt(path);
+    for (const key of module.recipeKeys) {
+      recipes.add(key);
+    }
+    for (const edge of module.edges) {
       if (edge.isTypeOnly) {
-        continue;
-      }
-      if (edge.specifier === recipesModule) {
-        for (const binding of edge.bindings.filter((each) => !each.isType)) {
-          recipes.add(binding.imported);
-        }
         continue;
       }
       const resolved = resolveModule(edge.specifier, path);

@@ -3,13 +3,13 @@ import {
   type HTMLChakraProps,
   type PresetVariant,
 } from "@chakra-ui-solid/core";
-import { type MarkVariantProps, mark } from "@chakra-ui-solid/styled-system/recipes";
+import type { MarkVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
 /**
  * The one variant spelled out rather than inherited from the generated `MarkVariantProps`, so it
- * carries a description a reader can use and a type they can read. Drift is caught at the call
- * below, whose key tuple is typed against the generated variants.
+ * carries a description a reader can use and a type they can read. It names Chakra's own variant;
+ * what the seam partitions by is whatever the system's `mark` recipe accepts.
  *
  * **No `@default` tag, and that is the recipe's answer rather than an omission**: `markRecipe`
  * declares no `defaultVariants`, so an unmarked `<Mark>` gets the base alone — a transparent
@@ -26,8 +26,7 @@ export interface MarkProps extends HTMLChakraProps<"mark"> {
 }
 
 const { withContext, PropsProvider } = createRecipeContext<MarkProps, MarkVariantProps>({
-  recipe: mark,
-  variantKeys: ["variant"],
+  recipe: "mark",
 });
 
 /**

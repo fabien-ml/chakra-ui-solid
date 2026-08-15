@@ -7,10 +7,7 @@ import {
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type DrawerVariantProps as DrawerRecipeVariants,
-  drawer as drawerRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { DrawerVariantProps as DrawerRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { JSX } from "@solidjs/web";
 import { type Accessor, type Component, merge } from "solid-js";
 // The same machine under a second name, which is what a drawer *is* here: Chakra's `drawer.tsx`
@@ -75,7 +72,7 @@ function renderRoot(
   // The three values are read lazily and passed straight through: `undefined` is what the recipe's
   // own `defaultVariants` resolves, so restating a default here would be the second source of truth
   // `DrawerVariantProps` declines to be.
-  const slots = createSlotClasses<DrawerSlot, DrawerRecipeVariants>(drawerRecipe, {
+  const slots = createSlotClasses<DrawerSlot, DrawerRecipeVariants>("drawer", {
     variantProps: () => ({
       size: rootProps.size,
       placement: rootProps.placement,

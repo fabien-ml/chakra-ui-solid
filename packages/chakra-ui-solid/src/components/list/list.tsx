@@ -5,10 +5,7 @@ import {
   type PropsProviderProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type ListVariantProps as ListRecipeVariants,
-  list as listRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { ListVariantProps as ListRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { Component } from "solid-js";
 
@@ -49,8 +46,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   ListRecipeVariants
 >({
   name: "List",
-  recipe: listRecipe,
-  variantKeys: ["variant", "align"],
+  recipe: "list",
 });
 
 /** The classes the nearest {@link ListRoot} resolved, one per slot. */

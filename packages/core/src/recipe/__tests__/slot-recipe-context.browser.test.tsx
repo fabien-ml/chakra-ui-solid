@@ -1,11 +1,13 @@
 import { type MountedComponent, mount } from "@chakra-ui-solid/internal-test-utils";
+import { testSystem } from "@chakra-ui-solid/internal-test-utils/system";
 import { type CardVariantProps, card } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { createContext, createSignal, flush, useContext } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import { renderStyled } from "../../render-styled/render-styled";
+import { ChakraProvider, type SystemContext } from "../../system/system";
 import { withContextDefaults } from "../../utils/defaults";
-import { registerRecipeDefaults } from "../recipe-defaults";
+import type { SlotRecipeFn } from "../recipe";
 import { createSlotRecipeContext } from "../slot-recipe-context";
 
 /**
@@ -35,8 +37,7 @@ const {
   usePropsContext,
 } = createSlotRecipeContext<CardSlot, CardRootProps, CardVariantProps>({
   name: "Card",
-  recipe: card,
-  variantKeys: ["size", "variant"],
+  recipe: "card",
 });
 
 const Root = withProvider("div", "root");
@@ -268,26 +269,45 @@ describe("createSlotRecipeContext — the seams a hand-written body uses", () =>
 });
 
 /**
- * A slot recipe's half of `registerRecipeDefaults`. The atomic half is in
- * `button.browser.test.tsx`; what is specific here is that one registered value has to reach *every*
- * slot, since `createSlotClasses` resolves the recipe once for all of them.
+ * A slot recipe's half of *the consumer owns the recipe*. The atomic half is in
+ * `button.browser.test.tsx`; what is specific here is that one default has to reach *every* slot,
+ * since `createSlotClasses` resolves the recipe once for all of them.
  *
  * `--card-padding` is set per size on the root and read by the body, so the body's padding is the
- * measurement: `md` (ours) is 24px, `sm` (the consumer's) is 16px, `lg` is 28px.
+ * measurement: `md` (Chakra's) is 24px, `sm` (the consumer's) is 16px, `lg` is 28px.
  */
-describe("createSlotRecipeContext — a consumer's registered recipe defaults", () => {
-  /** A consumer's own generated `card`, whose `defaultVariants` say `sm` where Chakra's say `md`. */
-  const consumerCard = (size: string) => ({
-    card: { __name__: "card", getVariantProps: () => ({ size }) },
+describe("createSlotRecipeContext — a consumer's own slot recipe", () => {
+  /**
+   * What Panda generates for `defaultVariants: { size: "sm" }`, over the real recipe so the classes
+   * are ones the dev stylesheet carries. The `undefined` filter is Panda's own `compact`, and it is
+   * why a consumer's default survives a Root that forwards `size` unset.
+   */
+  const cardDefaultingTo = (size: string) =>
+    Object.assign(
+      (variants: CardVariantProps = {}) =>
+        card({
+          size,
+          ...Object.fromEntries(
+            Object.entries(variants).filter(([, value]) => value !== undefined),
+          ),
+        } as CardVariantProps),
+      { variantKeys: card.variantKeys, splitVariantProps: card.splitVariantProps },
+    );
+
+  /** The repo's own system with one slot recipe replaced — a consumer's, in the one way that matters. */
+  const systemWithCard = (recipe: unknown): SystemContext => ({
+    ...testSystem,
+    getSlotRecipeFn: <Slot extends string, Variants>(key: string) =>
+      key === "card"
+        ? (recipe as SlotRecipeFn<Slot, Variants>)
+        : testSystem.getSlotRecipeFn<Slot, Variants>(key),
   });
 
-  // The registry is module-global, so a registration here would otherwise outlive its test.
-  afterEach(() => registerRecipeDefaults({}));
+  const renderUnderCard = (recipe: unknown, ui: () => JSX.Element): HTMLElement =>
+    render(() => <ChakraProvider value={systemWithCard(recipe)}>{ui()}</ChakraProvider>);
 
   it("dresses every slot at the consumer's default size", () => {
-    registerRecipeDefaults(consumerCard("sm"));
-
-    const container = render(() => (
+    const container = renderUnderCard(cardDefaultingTo("sm"), () => (
       <Root data-probe="root">
         <Body data-probe="body" />
       </Root>
@@ -297,9 +317,7 @@ describe("createSlotRecipeContext — a consumer's registered recipe defaults", 
   });
 
   it("still loses to a size on the Root, and to one supplied from above", () => {
-    registerRecipeDefaults(consumerCard("sm"));
-
-    const container = render(() => (
+    const container = renderUnderCard(cardDefaultingTo("sm"), () => (
       <PropsProvider value={{ size: "md" }}>
         <Root size="lg">
           <Body data-probe="local" />
@@ -315,16 +333,24 @@ describe("createSlotRecipeContext — a consumer's registered recipe defaults", 
   });
 
   it("keeps the consumer's default when a Root forwards `size` unset", () => {
-    // The seam builds its variant bag as `{ size: props.size }`, so an unset `size` is a key that
-    // exists with `undefined` — and a spread would let it delete what was registered.
-    registerRecipeDefaults(consumerCard("sm"));
-
-    const container = render(() => (
+    // The seam builds its variant bag by reading each key off the props, so an unset `size` is a key
+    // that exists with `undefined` — and a spread would let it delete their default.
+    const container = renderUnderCard(cardDefaultingTo("sm"), () => (
       <Root size={undefined}>
         <Body data-probe="body" />
       </Root>
     ));
 
     expect(getComputedStyle(probe(container, "body")).padding).toBe("16px");
+  });
+
+  it("names the key when the system carries no `card` recipe", () => {
+    expect(() =>
+      renderUnderCard(undefined, () => (
+        <Root>
+          <Body />
+        </Root>
+      )),
+    ).toThrowError(/no "card" recipe/);
   });
 });

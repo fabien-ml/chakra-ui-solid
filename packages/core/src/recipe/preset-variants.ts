@@ -37,13 +37,12 @@
  * `chakra-ui-solid` is that case today: it re-exports neither this interface nor
  * {@link PresetVariant}.
  *
- * Variant **values** are the only thing `theme.extend` reaches. Variant **keys**, **utilities** and
- * **conditions** are all sealed the same way, by being compiled into what we publish before the
- * consumer's build runs: `splitVariantProps` and the `VARIANT_KEYS` tuples that strip variant props
- * off the DOM, `styled-system/css/conditions.mjs` with all 133 condition names, and
- * `styled-system/jsx/is-valid-prop.mjs` with every utility name. A consumer can restyle `huge` but
- * cannot change what `_icon` or `focusRing` mean — and a variant key that existed only in their
- * types would style correctly and then leak onto the element as an HTML attribute.
+ * Variant **values** are what this block declares, and at runtime a consumer's own system already
+ * carries the rest: variant **keys** come off the recipe it supplies, so a key they added is passed
+ * to the recipe rather than leaked onto the element. **Utilities** and **conditions** are still
+ * sealed in the types by `styled-system/css/conditions.mjs` and
+ * `styled-system/jsx/is-valid-prop.mjs`, which are declarations we publish before their build runs.
+ * Typegen closes all three from their own config; until then this block is the hand-written half.
  */
 // biome-ignore lint/suspicious/noEmptyInterface: the suggested `type` alias deletes the mechanism — `declare module` merges into an interface and cannot augment an alias, and empty is the shipped state.
 export interface RecipeVariantOverrides {}

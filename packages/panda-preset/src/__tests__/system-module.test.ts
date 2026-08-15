@@ -50,9 +50,10 @@ describe("the system module a consumer's Panda run generates", () => {
     expect(source).toContain('import * as css from "./css";');
     expect(source).toContain('import { isCssProperty } from "./jsx/is-valid-prop";');
     expect(source).toContain('import * as patterns from "./patterns";');
+    expect(source).toContain('import * as recipes from "./recipes";');
     expect(source).toContain('import { token } from "./tokens";');
     expect(source).toContain(
-      "export const system = createSystem({ ...css, isCssProperty, token, patterns });",
+      "export const system = createSystem({ ...css, isCssProperty, token, patterns, recipes });",
     );
   });
 

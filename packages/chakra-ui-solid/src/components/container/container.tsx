@@ -1,12 +1,13 @@
 import { createRecipeContext, type HTMLChakraProps } from "@chakra-ui-solid/core";
-import { type ContainerVariantProps, container } from "@chakra-ui-solid/styled-system/recipes";
+import type { ContainerVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
 /**
  * The two variants spelled out rather than inherited from the generated `ContainerVariantProps`,
  * so each carries a description a reader can use and a type they can read — a generated type has
- * neither. A variant renamed in the recipe is still caught: the keys handed to the seam below are
- * typed against the generated one, so the call, not the interface, is what stops drifting silently.
+ * neither. It names Chakra's own variants; what the seam partitions by is whatever the system's
+ * `container` recipe accepts, so a variant a consumer added reaches the recipe rather than the
+ * element.
  */
 export interface ContainerProps extends HTMLChakraProps<"div"> {
   /** Center the content and stack it in a column, rather than leaving the layout to the children. */
@@ -16,8 +17,7 @@ export interface ContainerProps extends HTMLChakraProps<"div"> {
 }
 
 const { withContext, PropsProvider } = createRecipeContext<ContainerProps, ContainerVariantProps>({
-  recipe: container,
-  variantKeys: ["centerContent", "fluid"],
+  recipe: "container",
 });
 
 /**

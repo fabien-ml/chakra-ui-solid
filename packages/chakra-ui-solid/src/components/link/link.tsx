@@ -3,13 +3,13 @@ import {
   type HTMLChakraProps,
   type PresetVariant,
 } from "@chakra-ui-solid/core";
-import { type LinkVariantProps, link } from "@chakra-ui-solid/styled-system/recipes";
+import type { LinkVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
 /**
  * The one variant spelled out rather than inherited from the generated `LinkVariantProps`, so it
- * carries a description a reader can use and a type they can read. Drift is caught at the call
- * below, whose key tuple is typed against the generated variants.
+ * carries a description a reader can use and a type they can read. It names Chakra's own variant;
+ * what the seam partitions by is whatever the system's `link` recipe accepts.
  */
 export interface LinkProps extends HTMLChakraProps<"a"> {
   /**
@@ -21,8 +21,7 @@ export interface LinkProps extends HTMLChakraProps<"a"> {
 }
 
 const { withContext, PropsProvider } = createRecipeContext<LinkProps, LinkVariantProps>({
-  recipe: link,
-  variantKeys: ["variant"],
+  recipe: "link",
 });
 
 /**

@@ -1,4 +1,7 @@
 import { testSystem } from "@chakra-ui-solid/internal-test-utils/system";
+import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
+import * as recipes from "@chakra-ui-solid/styled-system/recipes";
+import { button, dialog } from "@chakra-ui-solid/styled-system/recipes";
 import { createRoot } from "solid-js";
 import { describe, expect, it } from "vitest";
 import { chakra } from "../../factory/factory";
@@ -37,9 +40,24 @@ describe("useChakraContext — with no provider above it", () => {
 
 describe("createSystem", () => {
   it("renames Panda's `isCssProperty` to the member `renderStyled` reads", () => {
-    const system = createSystem({ ...testSystem, isCssProperty: (property) => property === "wat" });
+    const system = createSystem({
+      ...testSystem,
+      recipes,
+      isCssProperty: (property) => property === "wat",
+    });
 
     expect(system.isValidProperty("wat")).toBe(true);
     expect(system.isValidProperty("padding")).toBe(false);
+  });
+
+  it("turns the recipes namespace into the two key lookups", () => {
+    // Both kinds arrive in one namespace, so both lookups read the same map and differ only in what
+    // they promise the caller. A key it does not carry answers `undefined` here; the throw that
+    // names it belongs to the seams, which know it was asked for on purpose.
+    const system = createSystem({ ...testSystem, recipes, isCssProperty });
+
+    expect(system.getRecipeFn("button")).toBe(button);
+    expect(system.getSlotRecipeFn("dialog")).toBe(dialog);
+    expect(system.getRecipeFn("nothing-of-the-sort")).toBeUndefined();
   });
 });

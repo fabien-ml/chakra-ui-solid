@@ -20,9 +20,6 @@ const FILE_NAME = "chakra-system.ts";
  * `chakra-ui-solid` rather than `@chakra-ui-solid/core`, where `createSystem` is declared: the
  * barrel re-exports it, and a package manager with an isolated `node_modules` — pnpm's default —
  * puts only the package a consumer installed on their resolution path.
- *
- * There is no `recipes` import yet, because `createSystem` does not take one yet. The two ends move
- * together, or the generated file is a type error in every consumer's project.
  */
 const SYSTEM_MODULE = `/* eslint-disable */
 /**
@@ -47,9 +44,10 @@ import { createSystem } from "chakra-ui-solid";
 import * as css from "./css";
 import { isCssProperty } from "./jsx/is-valid-prop";
 import * as patterns from "./patterns";
+import * as recipes from "./recipes";
 import { token } from "./tokens";
 
-export const system = createSystem({ ...css, isCssProperty, token, patterns });
+export const system = createSystem({ ...css, isCssProperty, token, patterns, recipes });
 `;
 
 /**

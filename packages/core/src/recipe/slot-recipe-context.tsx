@@ -6,7 +6,7 @@ import type { RenderProp } from "../render/render";
 import { renderStyled } from "../render-styled/render-styled";
 import { withContextDefaults } from "../utils/defaults";
 import { createPropsContext, type PropsProviderProps } from "./props-context";
-import { createSlotClasses, type SlotRecipeFn } from "./recipe";
+import { createSlotClasses, pickVariantProps, useRecipeVariantKeys } from "./recipe";
 
 /** What `renderStyled` is handed once the variants are split off — keys in, no element type out. */
 type ElementPropsBag = Record<string, unknown> & { class?: unknown };
@@ -17,29 +17,19 @@ type PolymorphicProps = {
   render?: RenderProp<ElementPropsBag>;
 };
 
-export interface SlotRecipeContextOptions<
-  Slot extends string,
-  Props extends object,
-  Variants extends object,
-> {
+export interface SlotRecipeContextOptions {
   /**
    * The component family's name — `"Card"`, `"Field"`. It is the one in the error a part throws when
    * it is rendered with no Root above it, so it reads as the component a consumer forgot.
    */
   name: string;
   /**
-   * The generated slot recipe the family is styled by. Optional for the same reason
-   * {@link createRecipeContext}'s is: a key can resolve to nothing upstream, and the seam is still
-   * the props context plus the style-prop pipeline.
+   * The key naming the slot recipe the family is styled by, in the system a `<ChakraProvider>`
+   * supplies — `"card"`, `"field"`. Optional for the same reason `createRecipeContext`'s is: a key
+   * can resolve to nothing upstream, and the seam is still the props context plus the style-prop
+   * pipeline.
    */
-  recipe?: SlotRecipeFn<Slot, Variants>;
-  /**
-   * The recipe's own inputs, as **literal** keys rather than `recipe.variantKeys` — `omit`
-   * narrows by the keys it is given, and a `string[]` narrows nothing. Never Panda's
-   * `splitVariantProps`, which destructures eagerly and so snapshots every style prop passed beside
-   * the variant.
-   */
-  variantKeys?: readonly (keyof Variants & keyof Props & string)[];
+  recipe?: string;
 }
 
 export interface WithProviderOptions<Props extends object> {
@@ -105,8 +95,7 @@ const NO_SLOTS = <Slot extends string>() => ({}) as Record<Slot, string>;
  * const { withProvider, withContext, useStyles, PropsProvider } =
  *   createSlotRecipeContext<CardSlot, CardRootProps, CardVariantProps>({
  *     name: "Card",
- *     recipe: card,
- *     variantKeys: ["size", "variant"],
+ *     recipe: "card",
  *   });
  *
  * export const CardRoot = withProvider("div", "root");
@@ -128,7 +117,7 @@ export function createSlotRecipeContext<
   Slot extends string,
   Props extends object,
   Variants extends object = Record<never, never>,
->(options: SlotRecipeContextOptions<Slot, Props, Variants>): SlotRecipeContext<Slot, Props> {
+>(options: SlotRecipeContextOptions): SlotRecipeContext<Slot, Props> {
   const { PropsProvider, usePropsContext } = createPropsContext<Props>();
 
   // The named error is the whole reason this is `createComponentContext` rather than a bare context:
@@ -137,17 +126,24 @@ export function createSlotRecipeContext<
     options.name,
   );
 
-  const variantKeys = options.variantKeys ?? [];
-  const recipe = options.recipe;
+  const recipeKey = options.recipe;
+
+  /**
+   * The recipe's own variant names, off the system above. A context read, so every caller is a Root
+   * body — which is where the recipe is resolved and where a missing key throws.
+   */
+  const variantKeysOf = (key: string | undefined) =>
+    key === undefined ? [] : useRecipeVariantKeys(key);
 
   const resolveSlotClasses = (props: Props): Accessor<Record<Slot, string>> => {
-    if (recipe === undefined) {
+    if (recipeKey === undefined) {
       return NO_SLOTS<Slot>;
     }
+    const variantKeys = variantKeysOf(recipeKey);
     const bag = props as Record<string, unknown>;
-    return createSlotClasses<Slot, Variants>(recipe, {
+    return createSlotClasses<Slot, Variants>(recipeKey, {
       // Read inside the accessor, so a changed variant re-resolves rather than being snapshotted.
-      variantProps: () => Object.fromEntries(variantKeys.map((key) => [key, bag[key]])) as Variants,
+      variantProps: () => pickVariantProps<Variants>(props, variantKeys),
       unstyled: () => bag.unstyled as boolean | undefined,
     });
   };
@@ -164,6 +160,7 @@ export function createSlotRecipeContext<
       const props = withContextDefaults(componentProps, usePropsContext());
       const bag = props as ElementPropsBag & PolymorphicProps;
       const slots = resolveSlotClasses(props);
+      const variantKeys = variantKeysOf(recipeKey);
 
       // Built **inside** the provider, never before it. `renderStyled` constructs the element and its
       // children there and then, so an element built in this body would run every part below it

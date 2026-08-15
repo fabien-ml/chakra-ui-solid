@@ -3,15 +3,15 @@ import {
   type HTMLChakraProps,
   type PresetVariant,
 } from "@chakra-ui-solid/core";
-import { type SpinnerVariantProps, spinner } from "@chakra-ui-solid/styled-system/recipes";
+import type { SpinnerVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
 /**
  * The one variant spelled out rather than inherited from the generated `SpinnerVariantProps`, so it
  * carries a description a reader can use and a type they can read — a generated type has neither,
  * and this is the interface the docs page's props table is built from. Container's precedent, and
- * drift is caught the same way: `variantKeys` below is typed against the generated variants, so a
- * variant renamed in the recipe stops the build at the call rather than at the interface.
+ * the same division of labour: this names Chakra's own variant, while what the seam partitions by is
+ * whatever the system's `spinner` recipe accepts.
  */
 export interface SpinnerProps extends HTMLChakraProps<"span"> {
   /**
@@ -26,8 +26,7 @@ export interface SpinnerProps extends HTMLChakraProps<"span"> {
 }
 
 const { withContext, PropsProvider } = createRecipeContext<SpinnerProps, SpinnerVariantProps>({
-  recipe: spinner,
-  variantKeys: ["size"],
+  recipe: "spinner",
 });
 
 /**

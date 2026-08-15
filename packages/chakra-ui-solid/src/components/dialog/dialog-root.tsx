@@ -7,10 +7,7 @@ import {
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type DialogVariantProps as DialogRecipeVariants,
-  dialog as dialogRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { DialogVariantProps as DialogRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { JSX } from "@solidjs/web";
 import { type Accessor, type Component, merge } from "solid-js";
 import { createDialog } from "./create-dialog";
@@ -72,7 +69,7 @@ function renderRoot(
   // The four values are read lazily and passed straight through: `undefined` is what the recipe's
   // own `defaultVariants` resolves, so restating a default here would be the second source of truth
   // `DialogVariantProps` declines to be.
-  const slots = createSlotClasses<DialogSlot, DialogRecipeVariants>(dialogRecipe, {
+  const slots = createSlotClasses<DialogSlot, DialogRecipeVariants>("dialog", {
     variantProps: () => ({
       size: rootProps.size,
       placement: rootProps.placement,

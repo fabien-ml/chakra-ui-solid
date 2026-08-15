@@ -1,8 +1,5 @@
 import { createComponentContext, createSlotRecipeContext } from "@chakra-ui-solid/core";
-import {
-  type FieldsetVariantProps as FieldsetRecipeVariants,
-  fieldset as fieldsetRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { FieldsetVariantProps as FieldsetRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { CreateFieldsetReturn, FieldsetRootBaseProps } from "./fieldset.types";
 
 /**
@@ -38,6 +35,5 @@ export const {
   resolveSlotClasses: resolveFieldsetSlotClasses,
 } = createSlotRecipeContext<FieldsetSlot, FieldsetRootBaseProps, FieldsetRecipeVariants>({
   name: "Fieldset",
-  recipe: fieldsetRecipe,
-  variantKeys: ["size"],
+  recipe: "fieldset",
 });

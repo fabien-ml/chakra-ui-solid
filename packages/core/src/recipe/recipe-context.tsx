@@ -5,33 +5,23 @@ import type { RenderProp } from "../render/render";
 import { renderStyled } from "../render-styled/render-styled";
 import { withContextDefaults } from "../utils/defaults";
 import { createPropsContext, type PropsProviderProps } from "./props-context";
-import { createRecipeClass, type RecipeFn } from "./recipe";
+import { createRecipeClass, pickVariantProps, useRecipeVariantKeys } from "./recipe";
 
 /** What `renderStyled` is handed once the variants are split off — keys in, no element type out. */
 type ElementPropsBag = Record<string, unknown> & { class?: unknown };
 
-export interface RecipeContextOptions<Props extends object, Variants extends object> {
+export interface RecipeContextOptions {
   /**
-   * The generated recipe this component is styled by.
+   * The key naming the recipe this component is styled by, in the system a `<ChakraProvider>`
+   * supplies — `"heading"`, `"button"`.
    *
    * **Optional, because a component can have no recipe at all** — `Text`'s key resolves to nothing
    * in Chakra either, and four more (`Clipboard`, `Pagination`, `Toggle`, `DownloadTrigger`) are
    * unstyled-by-key upstream on purpose (`parity-matrix.md` §2.5). With no recipe the returned
    * component is still the props context plus the style-prop pipeline, which is the whole of what
-   * those components are.
+   * those components are. A key the system does *not* carry is the other case entirely, and throws.
    */
-  recipe?: RecipeFn<Variants>;
-  /**
-   * The recipe's own inputs, as **literal** keys rather than `recipe.variantKeys` — `omit`
-   * narrows the returned props by the keys it is given, and a `string[]` narrows nothing. The two
-   * lists are the same list, and the owning component's test asserts it against
-   * `recipe.variantKeys`.
-   *
-   * Never Panda's generated `splitVariantProps`: it destructures the props object eagerly, which in
-   * Solid snapshots every value it reads, so a changed `size` stops re-resolving and every style
-   * prop passed alongside stops reacting. A fixed key tuple reads nothing at partition time.
-   */
-  variantKeys?: readonly (keyof Variants & keyof Props & string)[];
+  recipe?: string;
 }
 
 /** What {@link createRecipeContext} returns — the two halves of Chakra's seam, plus its reader. */
@@ -50,8 +40,7 @@ export interface RecipeContext<Props extends object> {
  *
  * ```tsx
  * const { withContext, PropsProvider } = createRecipeContext<HeadingProps, HeadingVariantProps>({
- *   recipe: heading,
- *   variantKeys: ["size"],
+ *   recipe: "heading",
  * });
  *
  * export const Heading = withContext("h2");
@@ -72,10 +61,10 @@ export interface RecipeContext<Props extends object> {
 export function createRecipeContext<
   Props extends object,
   Variants extends object = Record<never, never>,
->(options: RecipeContextOptions<Props, Variants> = {}): RecipeContext<Props> {
+>(options: RecipeContextOptions = {}): RecipeContext<Props> {
   const { PropsProvider, usePropsContext } = createPropsContext<Props>();
 
-  const variantKeys = options.variantKeys ?? [];
+  const recipeKey = options.recipe;
 
   const withContext =
     (tag: ValidComponent): Component<Props> =>
@@ -91,7 +80,9 @@ export function createRecipeContext<
         render?: RenderProp<ElementPropsBag>;
       };
 
-      const recipe = options.recipe;
+      // Off the system's own recipe, so a variant key the consumer added is a variant here too
+      // rather than an attribute on the element.
+      const variantKeys = recipeKey === undefined ? [] : useRecipeVariantKeys(recipeKey);
 
       return renderStyled<ElementPropsBag>({
         as: props.as ?? tag,
@@ -100,13 +91,12 @@ export function createRecipeContext<
         // reach the DOM as an attribute, and it is not a style prop for `renderStyled` to swallow.
         props: variantKeys.length === 0 ? props : omit(props, ...variantKeys),
         recipeClass:
-          recipe === undefined
+          recipeKey === undefined
             ? undefined
-            : createRecipeClass(recipe, {
+            : createRecipeClass(recipeKey, {
                 // Read inside the accessor, so the variant values are tracked rather than
                 // snapshotted — the same reason the factory builds its variant bag this way.
-                variantProps: () =>
-                  Object.fromEntries(variantKeys.map((key) => [key, props[key]])) as Variants,
+                variantProps: () => pickVariantProps<Variants>(props, variantKeys),
               }),
       });
     };

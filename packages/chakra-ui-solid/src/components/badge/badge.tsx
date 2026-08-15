@@ -3,15 +3,15 @@ import {
   type HTMLChakraProps,
   type PresetVariant,
 } from "@chakra-ui-solid/core";
-import { type BadgeVariantProps, badge } from "@chakra-ui-solid/styled-system/recipes";
+import type { BadgeVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
 /**
  * The two variants spelled out rather than inherited from the generated `BadgeVariantProps`, so each
  * carries a description a reader can use and a type they can read — a generated type has neither,
  * and this is the interface the docs page's props table is built from. Heading's precedent, and
- * drift is caught the same way: the keys handed to the seam below are typed against the generated
- * variants, so a variant renamed in the recipe stops the build at the call rather than here.
+ * the same division of labour: this names Chakra's own variants, while what the seam partitions by
+ * is whatever the system's `badge` recipe accepts.
  */
 export interface BadgeProps extends HTMLChakraProps<"span"> {
   /**
@@ -32,8 +32,7 @@ export interface BadgeProps extends HTMLChakraProps<"span"> {
 }
 
 const { withContext, PropsProvider } = createRecipeContext<BadgeProps, BadgeVariantProps>({
-  recipe: badge,
-  variantKeys: ["variant", "size"],
+  recipe: "badge",
 });
 
 /**

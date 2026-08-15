@@ -2,9 +2,11 @@ import {
   createRecipeClass,
   type HTMLChakraProps,
   type PresetVariant,
+  pickVariantProps,
   renderStyled,
+  useRecipeVariantKeys,
 } from "@chakra-ui-solid/core";
-import { type RadiomarkVariantProps, radiomark } from "@chakra-ui-solid/styled-system/recipes";
+import type { RadiomarkVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, merge, omit, Show } from "solid-js";
@@ -12,8 +14,8 @@ import { type Component, merge, omit, Show } from "solid-js";
 /**
  * The three variants spelled out rather than inherited from the generated `RadiomarkVariantProps`,
  * so each carries a description a reader can use and a type they can read — a generated type has
- * neither, and this is the interface the docs page's props table is built from. Drift is caught by
- * {@link VARIANT_KEYS}, which is typed against the generated variants.
+ * neither, and this is the interface the docs page's props table is built from. It names Chakra's
+ * own variants; what the body partitions by is whatever the system's `radiomark` recipe accepts.
  */
 export interface RadiomarkProps extends HTMLChakraProps<"span"> {
   /**
@@ -46,17 +48,6 @@ export interface RadiomarkProps extends HTMLChakraProps<"span"> {
 /** The DOM props Radiomark forwards to the rendered element. */
 type RadiomarkElementProps = ComponentProps<"span">;
 
-/**
- * The recipe's own inputs, as literal keys typed against the generated variants. A variant renamed
- * upstream stops the build here rather than reaching the DOM as an attribute, and the test asserts
- * the same equality at runtime against `radiomark.variantKeys`.
- */
-const VARIANT_KEYS = [
-  "variant",
-  "size",
-  "filled",
-] as const satisfies readonly (keyof RadiomarkVariantProps & keyof RadiomarkProps)[];
-
 /** This component's own inputs — state it reports through `data-*`, never as DOM attributes. */
 const STATE_KEYS = ["checked", "disabled"] as const;
 
@@ -77,8 +68,12 @@ const STATE_KEYS = ["checked", "disabled"] as const;
  * is what the styles find on the way back in.
  */
 export const Radiomark: Component<RadiomarkProps> = (props) => {
-  const recipeClass = createRecipeClass(radiomark, {
-    variantProps: () => ({ variant: props.variant, size: props.size, filled: props.filled }),
+  // The recipe's own variant names, off the system above.
+  const variantKeys = useRecipeVariantKeys<RadiomarkProps>("radiomark");
+
+  const recipeClass = createRecipeClass("radiomark", {
+    // Read inside the accessor, so the variant values are tracked rather than snapshotted.
+    variantProps: () => pickVariantProps<RadiomarkVariantProps>(props, variantKeys),
     // No `unstyled` accessor, unlike Checkmark's: this recipe reaches the element through
     // `renderStyled`'s `recipeClass` seam, which suppresses itself under `unstyled` already.
     // Checkmark bypasses that seam because its five presentation attributes would be suppressed
@@ -107,7 +102,7 @@ export const Radiomark: Component<RadiomarkProps> = (props) => {
         return props.disabled === true ? "" : undefined;
       },
     },
-    omit(props, ...VARIANT_KEYS, ...STATE_KEYS),
+    omit(props, ...variantKeys, ...STATE_KEYS),
     { children: dot },
   );
 

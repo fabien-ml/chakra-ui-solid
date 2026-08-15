@@ -1,15 +1,16 @@
 import buttonServerHtml from "virtual:hydration-fixture?id=button";
-import { registerRecipeDefaults } from "@chakra-ui-solid/core";
+import { ChakraProvider, type RecipeFn, type SystemContext } from "@chakra-ui-solid/core";
 import {
   hydrateFixture,
   type MountedElement,
   mountElement,
 } from "@chakra-ui-solid/internal-test-utils";
-import { button } from "@chakra-ui-solid/styled-system/recipes";
+import { testSystem } from "@chakra-ui-solid/internal-test-utils/system";
+import { type ButtonVariantProps, button } from "@chakra-ui-solid/styled-system/recipes";
 import type { JSX } from "@solidjs/web";
 import { createSignal, flush } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
-import { Button, ButtonPropsProvider, VARIANT_KEYS } from "../button";
+import { Button, ButtonPropsProvider } from "../button";
 import { ButtonGroup } from "../button-group";
 import { CloseButton } from "../close-button";
 import { IconButton } from "../icon-button";
@@ -98,7 +99,7 @@ describe("Button", () => {
     expect(getComputedStyle(mounted.element).height).toBe("80px");
   });
 
-  it("keeps its own props off the element, and the tuple is the recipe's", () => {
+  it("keeps its own props off the element", () => {
     mounted = mountElement(() => (
       <Button size="lg" variant="ghost" spinnerPlacement="end">
         Save
@@ -108,10 +109,6 @@ describe("Button", () => {
     for (const attribute of ["size", "variant", "loading", "spinnerPlacement"]) {
       expect(mounted.element.hasAttribute(attribute)).toBe(false);
     }
-    // `omit` narrows by the literal keys it is handed, so a variant added to the recipe
-    // upstream and not to the tuple would reach the DOM as an attribute — with nothing else to say
-    // so.
-    expect(button.variantKeys).toEqual([...VARIANT_KEYS]);
   });
 
   it("marks, disables and covers itself while loading, without changing width", () => {
@@ -371,52 +368,68 @@ describe("Button — server render, then hydrate", () => {
 });
 
 /**
- * A consumer's `defaultVariants` are invisible to the recipe function we call — it was compiled
- * against *ours*, with `{ size: "md", variant: "solid" }` baked in — so `registerRecipeDefaults`
- * hands them over at runtime. Button is the atomic half of that; the slot half is in
- * `packages/core/src/recipe/__tests__/slot-recipe-context.browser.test.tsx`.
+ * A consumer's own `button` recipe, reached through the `<ChakraProvider>` they hand us.
+ *
+ * The recipe function is theirs, so their `defaultVariants` are simply what it resolves — there is
+ * nothing to register and nothing that could be forgotten. Button is the atomic half of that; the
+ * slot half is in `packages/core/src/recipe/__tests__/slot-recipe-context.browser.test.tsx`.
  *
  * Heights rather than classes, because `button--size_sm` is a class Panda computes and never
- * injects: `sm` is 36px and our `md` is 40px, so the pixel is the only thing that says the
- * registered value reached a rule.
+ * injects: `sm` is 36px and Chakra's `md` is 40px, so the pixel is the only thing that says their
+ * default reached a rule.
  */
-describe("Button — a consumer's registered recipe defaults", () => {
-  /** A consumer's own generated `button`, whose `defaultVariants` say `sm` where Chakra's say `md`. */
-  const consumerButton = (size: string) => ({
-    button: { __name__: "button", getVariantProps: () => ({ button: "__ignore__", size }) },
+describe("Button — a consumer's own system", () => {
+  /**
+   * What Panda generates for `defaultVariants: { size: "sm" }`, over the real recipe so the classes
+   * are ones the dev stylesheet carries.
+   *
+   * The `undefined` filter is Panda's own `compact`, and it is the whole reason a consumer's default
+   * survives a wrapper: every seam here builds its variant bag by reading each key off the props, so
+   * an unset `size` arrives as a *present* `undefined` that a plain spread would let win.
+   */
+  const buttonDefaultingTo = (size: string): RecipeFn<ButtonVariantProps> =>
+    Object.assign(
+      (variants: ButtonVariantProps = {}) =>
+        button({
+          size,
+          ...Object.fromEntries(
+            Object.entries(variants).filter(([, value]) => value !== undefined),
+          ),
+        } as ButtonVariantProps),
+      { variantKeys: button.variantKeys, splitVariantProps: button.splitVariantProps },
+    ) as RecipeFn<ButtonVariantProps>;
+
+  /** The repo's own system with one recipe replaced — a consumer's, in the one way that matters. */
+  const systemWithButton = (recipe: unknown): SystemContext => ({
+    ...testSystem,
+    getRecipeFn: <Variants,>(key: string) =>
+      key === "button" ? (recipe as RecipeFn<Variants>) : testSystem.getRecipeFn<Variants>(key),
   });
 
-  // The registry is module-global, so a registration here would otherwise outlive its test.
-  afterEach(() => registerRecipeDefaults({}));
+  const mountUnder = (system: SystemContext, ui: () => JSX.Element) =>
+    mountElement(() => <ChakraProvider value={system}>{ui()}</ChakraProvider>);
 
-  it("sizes a bare Button off the consumer's default, not ours", () => {
-    registerRecipeDefaults(consumerButton("sm"));
-    mounted = mountElement(() => <Button>Save</Button>);
+  it("sizes a bare Button off the consumer's default, not Chakra's", () => {
+    mounted = mountUnder(systemWithButton(buttonDefaultingTo("sm")), () => <Button>Save</Button>);
 
     expect(getComputedStyle(mounted.element).height).toBe("36px");
-    // `variant` is unregistered, so our compiled `solid` still fills it — registering is overriding
-    // the keys named, never opting out of the rest.
+    // `variant` is untouched by their config, so Chakra's `solid` still fills it.
     expect(getComputedStyle(mounted.element).backgroundColor).not.toBe(TRANSPARENT);
   });
 
   it("keeps the consumer's default when a wrapper forwards an unset `size`", () => {
-    // Button builds its variant bag as `() => ({ size: merged.size, variant: merged.variant })`, so
-    // an unset `size` is a key that *exists* with `undefined`. Merged by presence — a spread — that
-    // key wins, deletes the registered `sm`, and every button silently returns to our 40px.
-    registerRecipeDefaults(consumerButton("sm"));
-    mounted = mountElement(() => <Button size={undefined}>Save</Button>);
+    mounted = mountUnder(systemWithButton(buttonDefaultingTo("sm")), () => (
+      <Button size={undefined}>Save</Button>
+    ));
 
     expect(getComputedStyle(mounted.element).height).toBe("36px");
   });
 
   it("loses to a props context, which still loses to a prop", () => {
-    // Four layers over one recipe key, and they are four different mechanisms:
-    // `ButtonPropsProvider` is a per-subtree override, a registration is app-wide, and the compiled
-    // `md` is what the recipe function was built with. `lg` is 44px, `xl` 48px, `sm` 36px, `md` 40px
-    // — so the two heights here place the registration below the provider, and the test above
-    // places it above the compiled default.
-    registerRecipeDefaults(consumerButton("sm"));
-    mounted = mountElement(() => (
+    // Three layers over one recipe key, and they are three different mechanisms:
+    // `ButtonPropsProvider` is a per-subtree override, a prop is per element, and their
+    // `defaultVariants` is what the recipe resolves from nothing. `lg` is 44px, `xl` 48px, `sm` 36px.
+    mounted = mountUnder(systemWithButton(buttonDefaultingTo("sm")), () => (
       <ButtonPropsProvider value={{ size: "xl" }}>
         <Button data-probe="local" size="lg">
           Local
@@ -431,5 +444,20 @@ describe("Button — a consumer's registered recipe defaults", () => {
     expect(
       getComputedStyle(queryElement(mounted.container, '[data-probe="provided"]')).height,
     ).toBe("48px");
+  });
+
+  it("keeps a variant key the consumer added off the element", () => {
+    // The failure this closes: the keys used to be a tuple compiled here, so `tone` was a name
+    // nothing recognised — it left the recipe unused and landed on the button as an attribute.
+    const withTone = Object.assign((variants: ButtonVariantProps = {}) => button(variants), {
+      variantKeys: [...button.variantKeys, "tone"],
+      splitVariantProps: button.splitVariantProps,
+    });
+
+    mounted = mountUnder(systemWithButton(withTone), () => (
+      <Button {...({ tone: "brand" } as ButtonVariantProps)}>Save</Button>
+    ));
+
+    expect(mounted.element.hasAttribute("tone")).toBe(false);
   });
 });

@@ -5,7 +5,7 @@ import {
   type PresetVariant,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import { type SkeletonVariantProps, skeleton } from "@chakra-ui-solid/styled-system/recipes";
+import type { SkeletonVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import { type Component, For, omit } from "solid-js";
 import { Circle, type CircleProps } from "../circle";
@@ -14,8 +14,8 @@ import { Stack, type StackProps } from "../stack";
 /**
  * The two variants spelled out rather than inherited from the generated `SkeletonVariantProps`, so
  * each carries a description a reader can use and a type they can read — Badge's precedent, and
- * this is the interface the docs page's props table is built from. Drift is caught at the call
- * below, whose key tuple is typed against the generated variants.
+ * this is the interface the docs page's props table is built from. It names Chakra's own variants;
+ * what the seam partitions by is whatever the system's `skeleton` recipe accepts.
  */
 export interface SkeletonProps extends HTMLChakraProps<"div"> {
   /**
@@ -35,8 +35,7 @@ export interface SkeletonProps extends HTMLChakraProps<"div"> {
 }
 
 const { withContext, PropsProvider } = createRecipeContext<SkeletonProps, SkeletonVariantProps>({
-  recipe: skeleton,
-  variantKeys: ["loading", "variant"],
+  recipe: "skeleton",
 });
 
 /**

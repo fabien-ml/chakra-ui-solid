@@ -4,10 +4,12 @@ import {
   type HTMLChakraProps,
   mergeProps,
   type PresetVariant,
+  pickVariantProps,
   renderStyled,
+  useRecipeVariantKeys,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
-import { type InputVariantProps, input } from "@chakra-ui-solid/styled-system/recipes";
+import type { InputVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import type { Component } from "solid-js";
@@ -16,9 +18,9 @@ import { useOptionalFieldContext } from "../field/field-context";
 
 /**
  * The two variants spelled out rather than inherited from the generated `InputVariantProps`, so each
- * carries a description a reader can use and a type they can read — Badge's precedent. Drift is
- * caught at the seam below, whose keys are typed against the generated variants, and the tuple
- * order follows `input.variantKeys` rather than the order they are declared here.
+ * carries a description a reader can use and a type they can read — Badge's precedent. It names
+ * Chakra's own variants; what the body partitions by is whatever the system's `input` recipe
+ * accepts.
  */
 export interface InputProps extends HTMLChakraProps<"input"> {
   /**
@@ -41,14 +43,6 @@ export interface InputProps extends HTMLChakraProps<"input"> {
 
 /** The DOM props Input forwards to the rendered element. */
 type InputElementProps = ComponentProps<"input">;
-
-/**
- * The recipe's own inputs, as literal keys rather than `input.variantKeys` — `omit` narrows
- * the returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` keeps
- * the two lists one list at compile time, and the test asserts the same equality at runtime.
- */
-const VARIANT_KEYS = ["size", "variant"] as const satisfies readonly (keyof InputVariantProps &
-  keyof InputProps)[];
 
 /**
  * The props context on its own — no `withContext`, and no recipe handed to the seam.
@@ -91,8 +85,12 @@ export const Input: Component<InputProps> = (props) => {
   // and the two IDREFs at whatever they were when the input mounted.
   const merged = mergeProps(() => field?.getInputProps() ?? {}, fromContext) as InputProps;
 
-  const recipeClass = createRecipeClass(input, {
-    variantProps: () => ({ size: merged.size, variant: merged.variant }),
+  // The recipe's own variant names, off the system above.
+  const variantKeys = useRecipeVariantKeys<InputProps>("input");
+
+  const recipeClass = createRecipeClass("input", {
+    // Read inside the accessor, so the variant values are tracked rather than snapshotted.
+    variantProps: () => pickVariantProps<InputVariantProps>(merged, variantKeys),
   });
 
   return renderStyled<InputElementProps>({
@@ -103,7 +101,7 @@ export const Input: Component<InputProps> = (props) => {
     render: fromContext.render,
     // The variant keys are the recipe's inputs, not the element's: forwarded, `size` would reach
     // the DOM as an attribute.
-    props: omit(merged, ...VARIANT_KEYS) as unknown as InputElementProps,
+    props: omit(merged, ...variantKeys) as unknown as InputElementProps,
     recipeClass,
   });
 };

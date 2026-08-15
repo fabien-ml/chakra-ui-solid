@@ -6,10 +6,7 @@ import {
   renderStyled,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type TagVariantProps as TagRecipeVariants,
-  tag as tagRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { TagVariantProps as TagRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, merge } from "solid-js";
@@ -63,8 +60,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   TagRecipeVariants
 >({
   name: "Tag",
-  recipe: tagRecipe,
-  variantKeys: ["size", "variant"],
+  recipe: "tag",
 });
 
 /** The classes the nearest {@link TagRoot} resolved, one per slot. */

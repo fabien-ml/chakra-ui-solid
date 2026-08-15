@@ -5,10 +5,7 @@ import {
   type UnstyledProp,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type PopoverVariantProps as PopoverRecipeVariants,
-  popover as popoverRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { PopoverVariantProps as PopoverRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { JSX } from "@solidjs/web";
 import { type Accessor, type Component, merge } from "solid-js";
 import { createPopover } from "./create-popover";
@@ -63,7 +60,7 @@ function renderRoot(
   // `size` is read lazily and passed straight through: `undefined` is what the recipe's own
   // `defaultVariants` resolves, so restating `"md"` here would be the second source of truth
   // `PopoverVariantProps` declines to be.
-  const slots = createSlotClasses<PopoverSlot, PopoverRecipeVariants>(popoverRecipe, {
+  const slots = createSlotClasses<PopoverSlot, PopoverRecipeVariants>("popover", {
     variantProps: () => ({ size: rootProps.size }),
     // The Root-level opt-out, which empties every slot. A part opting out for itself is
     // `renderStyled`'s job, and it already suppresses its own `recipeClass` on `unstyled`.

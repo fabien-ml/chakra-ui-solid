@@ -3,10 +3,12 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  pickVariantProps,
   renderStyled,
+  useRecipeVariantKeys,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
-import { type SeparatorVariantProps, separator } from "@chakra-ui-solid/styled-system/recipes";
+import type { SeparatorVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
@@ -14,8 +16,8 @@ import { type Component, merge, omit } from "solid-js";
 /**
  * The three variants spelled out rather than inherited from the generated `SeparatorVariantProps`,
  * so each carries a description a reader can use and a type they can read — Badge's precedent, and
- * this is the interface the docs page's props table is built from. Drift is caught by
- * {@link VARIANT_KEYS} below, which is typed against the generated variants.
+ * this is the interface the docs page's props table is built from. It names Chakra's own variants;
+ * what the body partitions by is whatever the system's `separator` recipe accepts.
  */
 export interface SeparatorProps extends Omit<HTMLChakraProps<"span">, "orientation"> {
   /**
@@ -43,17 +45,6 @@ export interface SeparatorProps extends Omit<HTMLChakraProps<"span">, "orientati
 
 /** The DOM props Separator forwards to the rendered element, as Box names its own. */
 type SeparatorElementProps = ComponentProps<"span">;
-
-/**
- * The recipe's own inputs, as literal keys rather than `separator.variantKeys` — `omit`
- * narrows the returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies`
- * keeps the two lists one list at compile time, and the test asserts the same equality at runtime.
- */
-const VARIANT_KEYS = [
-  "variant",
-  "orientation",
-  "size",
-] as const satisfies readonly (keyof SeparatorVariantProps & keyof SeparatorProps)[];
 
 /**
  * The props context on its own — no `withContext`, and no recipe handed to the seam, because
@@ -84,12 +75,12 @@ export const Separator: Component<SeparatorProps> = (props) => {
   // side, styles included. Ours honours it (`roadmap.md`, the `separator` row).
   const merged = withContextDefaults(props, usePropsContext());
 
-  const recipeClass = createRecipeClass(separator, {
-    variantProps: () => ({
-      variant: merged.variant,
-      orientation: merged.orientation,
-      size: merged.size,
-    }),
+  // The recipe's own variant names, off the system above.
+  const variantKeys = useRecipeVariantKeys<SeparatorProps>("separator");
+
+  const recipeClass = createRecipeClass("separator", {
+    // Read inside the accessor, so the variant values are tracked rather than snapshotted.
+    variantProps: () => pickVariantProps<SeparatorVariantProps>(merged, variantKeys),
   });
 
   /** The plain orientation, or `undefined` when it is a responsive value with no single answer. */
@@ -111,7 +102,7 @@ export const Separator: Component<SeparatorProps> = (props) => {
         return plainOrientation();
       },
     },
-    omit(merged, ...VARIANT_KEYS),
+    omit(merged, ...variantKeys),
   );
 
   return renderStyled<SeparatorElementProps>({

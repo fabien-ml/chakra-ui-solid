@@ -6,10 +6,7 @@ import {
   renderStyled,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type BreadcrumbVariantProps as BreadcrumbRecipeVariants,
-  breadcrumb as breadcrumbRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { BreadcrumbVariantProps as BreadcrumbRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, merge } from "solid-js";
@@ -69,8 +66,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   BreadcrumbRecipeVariants
 >({
   name: "Breadcrumb",
-  recipe: breadcrumbRecipe,
-  variantKeys: ["variant", "size"],
+  recipe: "breadcrumb",
 });
 
 /** The classes the nearest {@link BreadcrumbRoot} resolved, one per slot. */

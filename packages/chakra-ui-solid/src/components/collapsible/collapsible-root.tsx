@@ -5,7 +5,6 @@ import {
   renderStyled,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
-import { collapsible } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 import type {
@@ -65,7 +64,7 @@ function renderRoot(
   styling: RootStylingProps,
   elementProps: DivProps,
 ): JSX.Element {
-  const slots = createSlotClasses<CollapsibleSlot, Record<never, never>>(collapsible, {
+  const slots = createSlotClasses<CollapsibleSlot, Record<never, never>>("collapsible", {
     // Zero variants: `collapsibleVariantKeys` is `[]` and `defaultVariants` is `{}`, so the recipe
     // takes nothing and only its `content` slot has a body. The call still has to happen — it is
     // what produces the class names all four parts carry.

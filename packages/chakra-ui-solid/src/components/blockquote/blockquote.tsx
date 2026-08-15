@@ -4,10 +4,7 @@ import {
   type PresetVariant,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
-import {
-  type BlockquoteVariantProps as BlockquoteRecipeVariants,
-  blockquote as blockquoteRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { BlockquoteVariantProps as BlockquoteRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { Component } from "solid-js";
 import { QuoteIcon } from "../icons";
@@ -51,8 +48,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   BlockquoteRecipeVariants
 >({
   name: "Blockquote",
-  recipe: blockquoteRecipe,
-  variantKeys: ["justify", "variant"],
+  recipe: "blockquote",
 });
 
 /** The classes the nearest {@link BlockquoteRoot} resolved, one per slot. */

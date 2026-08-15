@@ -6,10 +6,7 @@ import {
   type PropsProviderProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type TableVariantProps as TableRecipeVariants,
-  table as tableRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { TableVariantProps as TableRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { Component } from "solid-js";
 
@@ -83,8 +80,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   TableRecipeVariants
 >({
   name: "Table",
-  recipe: tableRecipe,
-  variantKeys: ["interactive", "stickyHeader", "striped", "showColumnBorder", "variant", "size"],
+  recipe: "table",
 });
 
 /** The classes the nearest {@link TableRoot} resolved, one per slot. */

@@ -1,7 +1,8 @@
+import { useRecipeVariantKeys } from "@chakra-ui-solid/core";
 import type { Component } from "solid-js";
 import { omit } from "solid-js";
 import { Group, type GroupProps } from "../group";
-import { type ButtonProps, ButtonPropsProvider, VARIANT_KEYS } from "./button";
+import { type ButtonProps, ButtonPropsProvider } from "./button";
 
 export interface ButtonGroupProps extends GroupProps {
   /**
@@ -24,9 +25,8 @@ export interface ButtonGroupProps extends GroupProps {
  * It is the only writer to a props context in the library, and the two halves are independent: the
  * Group lays the row out and collapses the seams when `attached`, while the provider supplies the
  * variants. Chakra splits those variants off with `recipe.splitVariantProps(props)`; that spelling
- * destructures eagerly, so a `size` that changes would stop re-resolving below. The literal
- * `VARIANT_KEYS` tuple is imported from `button.tsx` rather than restated, so the two files cannot
- * disagree about which keys belong to the recipe.
+ * destructures eagerly, so a `size` that changes would stop re-resolving below. The keys come off
+ * the same `button` recipe {@link Button} resolves, so the two files cannot disagree about them.
  */
 export const ButtonGroup: Component<ButtonGroupProps> = (props) => {
   // A named object of **getters**, never an inline `value={{ size: props.size }}`. Written inline,
@@ -49,7 +49,7 @@ export const ButtonGroup: Component<ButtonGroupProps> = (props) => {
   // compiler in a function, `merge` turns a function source into a memo, and the receiving
   // component then reads that memo in its body — the `STRICT_READ_UNTRACKED` diagnostic `mount()`
   // fails on (measured). The same reason `Group` and `Loader` name theirs.
-  const groupProps = omit(props, ...VARIANT_KEYS);
+  const groupProps = omit(props, ...useRecipeVariantKeys<ButtonGroupProps>("button"));
 
   return (
     <ButtonPropsProvider value={variantProps}>

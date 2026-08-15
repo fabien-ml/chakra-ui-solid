@@ -6,10 +6,7 @@ import {
   type PropsProviderProps,
   renderStyled,
 } from "@chakra-ui-solid/core";
-import {
-  type AlertVariantProps as AlertRecipeVariants,
-  alert as alertRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { AlertVariantProps as AlertRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { Dynamic } from "@solidjs/web";
@@ -80,8 +77,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   AlertRecipeVariants
 >({
   name: "Alert",
-  recipe: alertRecipe,
-  variantKeys: ["status", "inline", "variant", "size"],
+  recipe: "alert",
 });
 
 /** The classes the nearest {@link AlertRoot} resolved, one per slot. */

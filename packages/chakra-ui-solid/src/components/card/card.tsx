@@ -4,10 +4,7 @@ import {
   type PresetVariant,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
-import {
-  type CardVariantProps as CardRecipeVariants,
-  card as cardRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { CardVariantProps as CardRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { Component } from "solid-js";
 
@@ -57,8 +54,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   CardRecipeVariants
 >({
   name: "Card",
-  recipe: cardRecipe,
-  variantKeys: ["size", "variant"],
+  recipe: "card",
 });
 
 /**

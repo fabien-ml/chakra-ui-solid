@@ -5,10 +5,7 @@ import {
   type PropsProviderProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type TimelineVariantProps as TimelineRecipeVariants,
-  timeline as timelineRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { TimelineVariantProps as TimelineRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { Component } from "solid-js";
 
@@ -71,8 +68,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   TimelineRecipeVariants
 >({
   name: "Timeline",
-  recipe: timelineRecipe,
-  variantKeys: ["variant", "showLastSeparator", "size"],
+  recipe: "timeline",
 });
 
 /** The classes the nearest {@link TimelineRoot} resolved, one per slot. */

@@ -4,10 +4,7 @@ import {
   type PresetVariant,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
-import {
-  type EmptyStateVariantProps as EmptyStateRecipeVariants,
-  emptyState as emptyStateRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { EmptyStateVariantProps as EmptyStateRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { Component } from "solid-js";
 
@@ -49,8 +46,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   EmptyStateRecipeVariants
 >({
   name: "EmptyState",
-  recipe: emptyStateRecipe,
-  variantKeys: ["size"],
+  recipe: "emptyState",
 });
 
 /** The classes the nearest {@link EmptyStateRoot} resolved, one per slot. */

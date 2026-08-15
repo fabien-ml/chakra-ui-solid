@@ -5,10 +5,7 @@ import {
   renderStyled,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
-import {
-  type NativeSelectVariantProps as NativeSelectRecipeVariants,
-  nativeSelect as nativeSelectRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { NativeSelectVariantProps as NativeSelectRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, omit, Show } from "solid-js";
 import { useOptionalFieldContext } from "../field/field-context";
@@ -57,8 +54,7 @@ const {
   NativeSelectRecipeVariants
 >({
   name: "NativeSelect",
-  recipe: nativeSelectRecipe,
-  variantKeys: ["variant", "size"],
+  recipe: "nativeSelect",
 });
 
 export { useNativeSelectStyles };

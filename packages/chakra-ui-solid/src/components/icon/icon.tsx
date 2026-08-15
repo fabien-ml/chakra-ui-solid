@@ -3,11 +3,13 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  pickVariantProps,
   renderStyled,
+  useRecipeVariantKeys,
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import { type IconVariantProps, icon } from "@chakra-ui-solid/styled-system/recipes";
+import type { IconVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import type { Component } from "solid-js";
@@ -16,8 +18,8 @@ import { omit } from "solid-js";
 /**
  * The one variant spelled out rather than inherited from the generated `IconVariantProps`, so it
  * carries a description a reader can use and a type they can read — and this is the interface the
- * docs page's props table is built from. Drift is caught by {@link VARIANT_KEYS}, which is typed
- * against the generated variants.
+ * docs page's props table is built from. It names Chakra's own variant; what the body partitions
+ * by is whatever the system's `icon` recipe accepts.
  */
 export interface IconProps extends HTMLChakraProps<"svg"> {
   /**
@@ -45,14 +47,6 @@ export interface IconProps extends HTMLChakraProps<"svg"> {
 
 /** The DOM props Icon forwards to the rendered element, as Box and Button name their own. */
 type IconElementProps = ComponentProps<"svg">;
-
-/**
- * The recipe's own inputs, as literal keys rather than `icon.variantKeys` — `omit` narrows the
- * returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` keeps the
- * two lists one list at compile time, and the test asserts the same equality at runtime.
- */
-const VARIANT_KEYS = ["size"] as const satisfies readonly (keyof IconVariantProps &
-  keyof IconProps)[];
 
 /**
  * The props context on its own — no `withContext`, and no recipe handed to the seam.
@@ -107,8 +101,12 @@ export const Icon: Component<IconProps> = (props) => {
     "aria-hidden": "true",
   } satisfies Partial<IconProps>);
 
-  const recipeClass = createRecipeClass(icon, {
-    variantProps: () => ({ size: merged.size }),
+  // The recipe's own variant names, off the system above.
+  const variantKeys = useRecipeVariantKeys<IconProps>("icon");
+
+  const recipeClass = createRecipeClass("icon", {
+    // Read inside the accessor, so the variant values are tracked rather than snapshotted.
+    variantProps: () => pickVariantProps<IconVariantProps>(merged, variantKeys),
   });
 
   // Every read goes to `merged`, never to `props`: `withDefaults` copies nothing, so
@@ -118,7 +116,7 @@ export const Icon: Component<IconProps> = (props) => {
     render: merged.render,
     // The variant keys are the recipe's inputs, not the element's: forwarded, `size` would reach the
     // DOM as an attribute, and `svg` has no such attribute for it to mean anything.
-    props: omit(merged, ...VARIANT_KEYS) as unknown as IconElementProps,
+    props: omit(merged, ...variantKeys) as unknown as IconElementProps,
     recipeClass,
   });
 };

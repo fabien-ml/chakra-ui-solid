@@ -4,11 +4,13 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  pickVariantProps,
   renderStyled,
+  useRecipeVariantKeys,
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import { type ColorSwatchVariantProps, colorSwatch } from "@chakra-ui-solid/styled-system/recipes";
+import type { ColorSwatchVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { type Component, For, merge, omit, untrack } from "solid-js";
@@ -17,8 +19,8 @@ import { Grid } from "../grid";
 /**
  * The two variants spelled out rather than inherited from the generated `ColorSwatchVariantProps`,
  * so each carries a description a reader can use and a type they can read — a generated type has
- * neither, and this is the interface the docs page's props table is built from. Drift is caught by
- * {@link VARIANT_KEYS}, which is typed against the generated variants.
+ * neither, and this is the interface the docs page's props table is built from. It names Chakra's
+ * own variants; what the body partitions by is whatever the system's `colorSwatch` recipe accepts.
  */
 export interface ColorSwatchProps extends HTMLChakraProps<"span"> {
   /**
@@ -61,14 +63,6 @@ export interface ColorSwatchProps extends HTMLChakraProps<"span"> {
 type ColorSwatchElementProps = ComponentProps<"span">;
 
 /**
- * The recipe's own inputs, as literal keys typed against the generated variants. A variant renamed
- * upstream stops the build here rather than reaching the DOM as an attribute, and the test asserts
- * the same equality at runtime against `colorSwatch.variantKeys`.
- */
-const VARIANT_KEYS = ["size", "shape"] as const satisfies readonly (keyof ColorSwatchVariantProps &
-  keyof ColorSwatchProps)[];
-
-/**
  * The props context on its own — no `withContext`, and no recipe handed to the seam, which is
  * `Button`'s shape and for the same reason: this body is more than the recipe class plus the
  * style-prop pipeline. It writes an inline custom property and a `data-value`.
@@ -97,8 +91,12 @@ export const ColorSwatch: Component<ColorSwatchProps> = (props) => {
   // provider above it, since the key is there to win with (`CLAUDE.md`, *The third hazard*).
   const merged = withContextDefaults(props, usePropsContext());
 
-  const recipeClass = createRecipeClass(colorSwatch, {
-    variantProps: () => ({ size: merged.size, shape: merged.shape }),
+  // The recipe's own variant names, off the system above.
+  const variantKeys = useRecipeVariantKeys<ColorSwatchProps>("colorSwatch");
+
+  const recipeClass = createRecipeClass("colorSwatch", {
+    // Read inside the accessor, so the variant values are tracked rather than snapshotted.
+    variantProps: () => pickVariantProps<ColorSwatchVariantProps>(merged, variantKeys),
   });
 
   // `value` is omitted rather than forwarded: it is not a style prop, so `renderStyled` would pass
@@ -109,7 +107,7 @@ export const ColorSwatch: Component<ColorSwatchProps> = (props) => {
   // `{...localProps}`, so the component's wins. `style` has to be last either way: it is the
   // component's own colour, and `composeStyle` is what lets a caller's `style` layer over it
   // instead of replacing it.
-  const elementProps = merge(omit(merged, ...VARIANT_KEYS, "value", "style"), {
+  const elementProps = merge(omit(merged, ...variantKeys, "value", "style"), {
     get "data-value"() {
       return merged.value;
     },

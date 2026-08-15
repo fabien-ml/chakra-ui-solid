@@ -4,10 +4,7 @@ import {
   type PresetVariant,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
-import {
-  type DataListVariantProps as DataListRecipeVariants,
-  dataList as dataListRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { DataListVariantProps as DataListRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { Component } from "solid-js";
 
@@ -51,8 +48,7 @@ const { withProvider, withContext, useStyles, PropsProvider } = createSlotRecipe
   DataListRecipeVariants
 >({
   name: "DataList",
-  recipe: dataListRecipe,
-  variantKeys: ["orientation", "size", "variant"],
+  recipe: "dataList",
 });
 
 /** The classes the nearest {@link DataListRoot} resolved, one per slot. */

@@ -12,6 +12,7 @@ import type {
 import type { JSX } from "@solidjs/web";
 import { type Accessor, createMemo } from "solid-js";
 import { createComponentContext } from "../internal/create-component-context";
+import type { RecipeFn, SlotRecipeFn } from "../recipe/recipe";
 
 /** One argument to `css()` — a style object, or one of the falsy values it skips. */
 type StyleArgument = SystemStyleObject | undefined | null | false;
@@ -89,8 +90,9 @@ export interface SystemPatterns {
  * import { isCssProperty } from "./styled-system/jsx/is-valid-prop"
  * import { token } from "./styled-system/tokens"
  * import * as patterns from "./styled-system/patterns"
+ * import * as recipes from "./styled-system/recipes"
  *
- * const system = createSystem({ ...css, isCssProperty, token, patterns })
+ * const system = createSystem({ ...css, isCssProperty, token, patterns, recipes })
  *
  * <ChakraProvider value={system}>
  *   <App />
@@ -114,17 +116,38 @@ export interface SystemContext {
   token: TokenFn;
   /** The shorthand → style-object mappings a layout component reuses. */
   patterns: SystemPatterns;
+  /**
+   * The **atomic** recipe a key names — `getRecipeFn("button")` — or `undefined` when the config
+   * carries no such recipe. Chakra's own spelling, and the reason a component names a string here
+   * instead of importing a compiled function: a string is the one thing that can be resolved
+   * against a system nobody knew about at our build time.
+   *
+   * `Variants` is the caller's to state, exactly as it was when the caller wrote
+   * `import { button }`. A string key carries no type, so nothing can infer it.
+   */
+  getRecipeFn: <Variants>(key: string) => RecipeFn<Variants> | undefined;
+  /**
+   * The **slot** recipe a key names — `getSlotRecipeFn("dialog")`.
+   *
+   * The same lookup as {@link SystemContext.getRecipeFn} against the same namespace, because Panda
+   * generates both kinds into one module and marks the difference only on an undocumented
+   * `__recipe__` field. Which kind a key names is the caller's knowledge either way, so the two
+   * differ in what they promise the caller rather than in where they look.
+   */
+  getSlotRecipeFn: <Slot extends string, Variants>(
+    key: string,
+  ) => SlotRecipeFn<Slot, Variants> | undefined;
 }
 
 /**
  * What {@link createSystem} takes: the generated `styled-system/css` namespace, plus
  * `isCssProperty` from `styled-system/jsx/is-valid-prop`, `token` from `styled-system/tokens` and
- * the `styled-system/patterns` namespace.
+ * the `styled-system/patterns` and `styled-system/recipes` namespaces.
  *
  * The names are Panda's, not ours, so the whole thing spreads in — `createSystem({ ...css,
- * isCssProperty, token, patterns })` — and a namespace carrying extra members (`sva`, the sixteen
- * patterns nothing here calls, and whatever a later Panda adds) is accepted rather than a type
- * error.
+ * isCssProperty, token, patterns, recipes })` — and a namespace carrying extra members (`sva`, the
+ * sixteen patterns nothing here calls, and whatever a later Panda adds) is accepted rather than a
+ * type error.
  */
 export interface CreateSystemOptions {
   css: CssFn;
@@ -139,6 +162,15 @@ export interface CreateSystemOptions {
    */
   token: TokenFn<never>;
   patterns: SystemPatterns;
+  /**
+   * The generated `styled-system/recipes` namespace, keyed by each recipe's name in the config.
+   *
+   * Opaque on purpose. Panda emits atomic and slot recipes into one module and gives each its own
+   * named interface (`ButtonRecipe`, `DialogRecipe`), so there is no shared type to declare here
+   * and no exported field that tells the two apart — `__recipe__` is neither documented nor typed
+   * (`CLAUDE.md`, *The fourth hazard*). The two lookups it becomes are typed by their callers.
+   */
+  recipes: Record<string, unknown>;
 }
 
 /**
@@ -149,11 +181,14 @@ export interface CreateSystemOptions {
  * import { isCssProperty } from "./styled-system/jsx/is-valid-prop"
  * import { token } from "./styled-system/tokens"
  * import * as patterns from "./styled-system/patterns"
+ * import * as recipes from "./styled-system/recipes"
  *
- * export const system = createSystem({ ...css, isCssProperty, token, patterns })
+ * export const system = createSystem({ ...css, isCssProperty, token, patterns, recipes })
  * ```
  */
 export function createSystem(options: CreateSystemOptions): SystemContext {
+  const recipes = options.recipes;
+
   return {
     css: options.css,
     cva: options.cva,
@@ -161,6 +196,9 @@ export function createSystem(options: CreateSystemOptions): SystemContext {
     isValidProperty: options.isCssProperty,
     token: options.token as TokenFn,
     patterns: options.patterns,
+    getRecipeFn: <Variants,>(key: string) => recipes[key] as RecipeFn<Variants> | undefined,
+    getSlotRecipeFn: <Slot extends string, Variants>(key: string) =>
+      recipes[key] as SlotRecipeFn<Slot, Variants> | undefined,
   };
 }
 

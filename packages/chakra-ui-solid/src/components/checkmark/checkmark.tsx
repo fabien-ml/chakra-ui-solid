@@ -22,17 +22,19 @@ import {
   createRecipeClass,
   type HTMLChakraProps,
   type PresetVariant,
+  pickVariantProps,
   useChakraContext,
+  useRecipeVariantKeys,
 } from "@chakra-ui-solid/core";
-import { type CheckmarkVariantProps, checkmark } from "@chakra-ui-solid/styled-system/recipes";
+import type { CheckmarkVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import { type Component, Match, omit, Switch } from "solid-js";
 
 /**
  * The three variants spelled out rather than inherited from the generated `CheckmarkVariantProps`,
  * so each carries a description a reader can use and a type they can read — a generated type has
- * neither, and this is the interface the docs page's props table is built from. Drift is caught by
- * {@link VARIANT_KEYS}, which is typed against the generated variants.
+ * neither, and this is the interface the docs page's props table is built from. It names Chakra's
+ * own variants; what the body partitions by is whatever the system's `checkmark` recipe accepts.
  */
 export interface CheckmarkProps extends HTMLChakraProps<"svg"> {
   /**
@@ -64,17 +66,6 @@ export interface CheckmarkProps extends HTMLChakraProps<"svg"> {
   disabled?: boolean;
 }
 
-/**
- * The recipe's own inputs, as literal keys typed against the generated variants. A variant renamed
- * upstream stops the build here rather than reaching the DOM as an attribute, and the test asserts
- * the same equality at runtime against `checkmark.variantKeys`.
- */
-const VARIANT_KEYS = [
-  "size",
-  "variant",
-  "filled",
-] as const satisfies readonly (keyof CheckmarkVariantProps & keyof CheckmarkProps)[];
-
 /** This component's own inputs — state it reports through `data-*`, never as DOM attributes. */
 const STATE_KEYS = ["checked", "indeterminate", "disabled"] as const;
 
@@ -92,8 +83,12 @@ const STATE_KEYS = ["checked", "indeterminate", "disabled"] as const;
 export const Checkmark: Component<CheckmarkProps> = (props) => {
   const system = useChakraContext();
 
-  const recipeClass = createRecipeClass(checkmark, {
-    variantProps: () => ({ size: props.size, variant: props.variant, filled: props.filled }),
+  // The recipe's own variant names, off the system above.
+  const variantKeys = useRecipeVariantKeys<CheckmarkProps>("checkmark");
+
+  const recipeClass = createRecipeClass("checkmark", {
+    // Read inside the accessor, so the variant values are tracked rather than snapshotted.
+    variantProps: () => pickVariantProps<CheckmarkVariantProps>(props, variantKeys),
     // Honoured here rather than by `renderStyled`, because the recipe reaches the element through
     // `class` below rather than through the `recipeClass` seam — see the note on the element.
     unstyled: () => props.unstyled,
@@ -109,7 +104,7 @@ export const Checkmark: Component<CheckmarkProps> = (props) => {
   // Named rather than spread inline. A **call expression** in a JSX spread is compiled to a memo,
   // and the receiving component then reads a reactive value in its own body — `STRICT_READ_UNTRACKED`,
   // reported against `<Anonymous>` with nothing pointing back here.
-  const elementProps = omit(props, ...VARIANT_KEYS, ...STATE_KEYS);
+  const elementProps = omit(props, ...variantKeys, ...STATE_KEYS);
 
   // The five presentation attributes are **style props** on this stack — `isCssProperty` claims
   // `fill`, `stroke` and the three `stroke*` — so they have to be literal attributes on a `chakra.*`

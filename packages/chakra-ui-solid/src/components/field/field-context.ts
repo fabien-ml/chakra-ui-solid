@@ -1,8 +1,5 @@
 import { createComponentContext, createSlotRecipeContext } from "@chakra-ui-solid/core";
-import {
-  type FieldVariantProps as FieldRecipeVariants,
-  field as fieldRecipe,
-} from "@chakra-ui-solid/styled-system/recipes";
+import type { FieldVariantProps as FieldRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { CreateFieldReturn, FieldRootBaseProps } from "./field.types";
 
 /**
@@ -65,6 +62,5 @@ export const {
   usePropsContext,
 } = createSlotRecipeContext<FieldSlot, FieldRootBaseProps, FieldRecipeVariants>({
   name: "Field",
-  recipe: fieldRecipe,
-  variantKeys: ["orientation"],
+  recipe: "field",
 });

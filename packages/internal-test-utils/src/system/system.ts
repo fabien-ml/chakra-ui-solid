@@ -2,6 +2,7 @@ import { createSystem, type SystemContext } from "@chakra-ui-solid/core";
 import * as css from "@chakra-ui-solid/styled-system/css";
 import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
 import * as patterns from "@chakra-ui-solid/styled-system/patterns";
+import * as recipes from "@chakra-ui-solid/styled-system/recipes";
 import { token } from "@chakra-ui-solid/styled-system/tokens";
 
 /**
@@ -15,8 +16,15 @@ import { token } from "@chakra-ui-solid/styled-system/tokens";
  *
  * Every render helper here wraps its tree in a `<ChakraProvider value={testSystem}>`, because
  * nothing styled renders without one — `renderStyled` reads `css`, `cx` and `isValidProperty` off
- * the context, and the layout components read `token` and `patterns`. Sharing one instance across
- * `mount`, `hydrateFixture` and `renderServer` is what makes a hydration round-trip compare the
- * same system on both sides; two would compute two sets of class names and read as a mismatch.
+ * the context, the layout components read `token` and `patterns`, and every recipe is a key looked
+ * up in `recipes`. Sharing one instance across `mount`, `hydrateFixture` and `renderServer` is what
+ * makes a hydration round-trip compare the same system on both sides; two would compute two sets of
+ * class names and read as a mismatch.
  */
-export const testSystem: SystemContext = createSystem({ ...css, isCssProperty, token, patterns });
+export const testSystem: SystemContext = createSystem({
+  ...css,
+  isCssProperty,
+  token,
+  patterns,
+  recipes,
+});
