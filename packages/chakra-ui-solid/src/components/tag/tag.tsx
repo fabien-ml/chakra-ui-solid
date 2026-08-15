@@ -3,6 +3,7 @@ import {
   type HTMLChakraProps,
   type PropsProviderProps,
   renderStyled,
+  type SkinVariant,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import {
@@ -26,12 +27,14 @@ export type TagSlot = "root" | "label" | "closeTrigger" | "startElement" | "endE
  */
 export interface TagVariantProps {
   /** The label's type scale, the tag's minimum height, and the size of a start or end element. */
-  size?: ConditionalValue<"sm" | "md" | "lg" | "xl">;
+  size?: ConditionalValue<"sm" | "md" | "lg" | "xl" | SkinVariant<"tag", "size">>;
   /**
    * How much of the palette the tag spends — `solid` fills it, `subtle` tints it, `outline` is a
    * ring alone, and `surface` is the tint plus the ring.
    */
-  variant?: ConditionalValue<"subtle" | "solid" | "outline" | "surface">;
+  variant?: ConditionalValue<
+    "subtle" | "solid" | "outline" | "surface" | SkinVariant<"tag", "variant">
+  >;
 }
 
 /** The Root's own props, without the element's — what a `Tag.RootPropsProvider` may supply. */

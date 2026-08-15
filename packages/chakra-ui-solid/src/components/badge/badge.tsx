@@ -1,4 +1,4 @@
-import { createRecipeContext, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import { createRecipeContext, type HTMLChakraProps, type SkinVariant } from "@chakra-ui-solid/core";
 import { type BadgeVariantProps, badge } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
@@ -16,13 +16,15 @@ export interface BadgeProps extends HTMLChakraProps<"span"> {
    *
    * @default "subtle"
    */
-  variant?: ConditionalValue<"solid" | "subtle" | "outline" | "surface" | "plain">;
+  variant?: ConditionalValue<
+    "solid" | "subtle" | "outline" | "surface" | "plain" | SkinVariant<"badge", "variant">
+  >;
   /**
    * The text style and horizontal padding together, with a matching minimum height.
    *
    * @default "sm"
    */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg">;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | SkinVariant<"badge", "size">>;
 }
 
 const { withContext, PropsProvider } = createRecipeContext<BadgeProps, BadgeVariantProps>({

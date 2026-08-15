@@ -4,6 +4,7 @@ import {
   type HTMLChakraProps,
   mergeProps,
   renderStyled,
+  type SkinVariant,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
 import { type InputVariantProps, input } from "@chakra-ui-solid/styled-system/recipes";
@@ -25,14 +26,16 @@ export interface InputProps extends HTMLChakraProps<"input"> {
    *
    * @default "md"
    */
-  size?: ConditionalValue<"2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl">;
+  size?: ConditionalValue<
+    "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | SkinVariant<"input", "size">
+  >;
   /**
    * How the field is drawn — `outline` is a full border, `subtle` fills it instead, and `flushed`
    * keeps only the bottom edge with no radius or horizontal padding.
    *
    * @default "outline"
    */
-  variant?: ConditionalValue<"outline" | "subtle" | "flushed">;
+  variant?: ConditionalValue<"outline" | "subtle" | "flushed" | SkinVariant<"input", "variant">>;
 }
 
 /** The DOM props Input forwards to the rendered element. */

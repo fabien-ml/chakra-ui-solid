@@ -4,6 +4,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   renderStyled,
+  type SkinVariant,
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -35,14 +36,25 @@ export interface ColorSwatchProps extends HTMLChakraProps<"span"> {
    *
    * @default "md"
    */
-  size?: ConditionalValue<"2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "inherit" | "full">;
+  size?: ConditionalValue<
+    | "2xs"
+    | "xs"
+    | "sm"
+    | "md"
+    | "lg"
+    | "xl"
+    | "2xl"
+    | "inherit"
+    | "full"
+    | SkinVariant<"colorSwatch", "size">
+  >;
   /**
    * The corner treatment — `rounded` is the theme's own radius, `square` has none, `circle` is a
    * full radius.
    *
    * @default "rounded"
    */
-  shape?: ConditionalValue<"square" | "circle" | "rounded">;
+  shape?: ConditionalValue<"square" | "circle" | "rounded" | SkinVariant<"colorSwatch", "shape">>;
 }
 
 /** The DOM props ColorSwatch forwards to the rendered element. */

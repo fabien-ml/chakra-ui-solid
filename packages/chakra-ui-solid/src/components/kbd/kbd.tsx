@@ -1,4 +1,4 @@
-import { createRecipeContext, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import { createRecipeContext, type HTMLChakraProps, type SkinVariant } from "@chakra-ui-solid/core";
 import { type KbdVariantProps, kbd } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
@@ -15,13 +15,15 @@ export interface KbdProps extends HTMLChakraProps<"kbd"> {
    *
    * @default "raised"
    */
-  variant?: ConditionalValue<"raised" | "outline" | "subtle" | "plain">;
+  variant?: ConditionalValue<
+    "raised" | "outline" | "subtle" | "plain" | SkinVariant<"kbd", "variant">
+  >;
   /**
    * The text style and height together.
    *
    * @default "md"
    */
-  size?: ConditionalValue<"sm" | "md" | "lg">;
+  size?: ConditionalValue<"sm" | "md" | "lg" | SkinVariant<"kbd", "size">>;
 }
 
 const { withContext, PropsProvider } = createRecipeContext<KbdProps, KbdVariantProps>({

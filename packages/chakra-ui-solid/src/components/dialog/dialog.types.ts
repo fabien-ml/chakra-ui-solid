@@ -2,6 +2,7 @@ import type {
   HTMLChakraProps,
   PropsProviderProps,
   PropTypes,
+  SkinVariant,
   UnstyledProp,
 } from "@chakra-ui-solid/core";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -205,14 +206,22 @@ export interface DialogPresenceProps {
  */
 export interface DialogVariantProps {
   /** How wide the surface is allowed to grow. `cover` and `full` also change its height. */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | "xl" | "cover" | "full">;
+  size?: ConditionalValue<
+    "xs" | "sm" | "md" | "lg" | "xl" | "cover" | "full" | SkinVariant<"dialog", "size">
+  >;
   /** Where the surface sits in the viewport. */
-  placement?: ConditionalValue<"center" | "top" | "bottom">;
+  placement?: ConditionalValue<"center" | "top" | "bottom" | SkinVariant<"dialog", "placement">>;
   /** Whether a dialog taller than the viewport scrolls its own body or the page behind it. */
-  scrollBehavior?: ConditionalValue<"inside" | "outside">;
+  scrollBehavior?: ConditionalValue<"inside" | "outside" | SkinVariant<"dialog", "scrollBehavior">>;
   /** Which pair of enter/exit animations the surface plays. */
   motionPreset?: ConditionalValue<
-    "scale" | "slide-in-bottom" | "slide-in-top" | "slide-in-left" | "slide-in-right" | "none"
+    | "scale"
+    | "slide-in-bottom"
+    | "slide-in-top"
+    | "slide-in-left"
+    | "slide-in-right"
+    | "none"
+    | SkinVariant<"dialog", "motionPreset">
   >;
 }
 

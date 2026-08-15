@@ -2,6 +2,7 @@ import type {
   HTMLChakraProps,
   PropsProviderProps,
   PropTypes,
+  SkinVariant,
   UnstyledProp,
 } from "@chakra-ui-solid/core";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -215,7 +216,7 @@ export interface PopoverPresenceProps {
  */
 export interface PopoverVariantProps {
   /** How wide the content is and how much padding it carries. */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg">;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | SkinVariant<"popover", "size">>;
 }
 
 /**

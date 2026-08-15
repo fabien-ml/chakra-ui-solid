@@ -3,6 +3,7 @@ import {
   type HTMLChakraProps,
   type PropsProviderProps,
   renderStyled,
+  type SkinVariant,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import {
@@ -33,9 +34,9 @@ export type BreadcrumbSlot =
  */
 export interface BreadcrumbVariantProps {
   /** Whether a link underlines on hover (`underline`) or only changes colour (`plain`). */
-  variant?: ConditionalValue<"underline" | "plain">;
+  variant?: ConditionalValue<"underline" | "plain" | SkinVariant<"breadcrumb", "variant">>;
   /** The type scale of every part, and the gap between an item and its separator. */
-  size?: ConditionalValue<"sm" | "md" | "lg">;
+  size?: ConditionalValue<"sm" | "md" | "lg" | SkinVariant<"breadcrumb", "size">>;
 }
 
 /** The Root's own props, without the `nav`'s — what a `Breadcrumb.PropsProvider` may supply. */
