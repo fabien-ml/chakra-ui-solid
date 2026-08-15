@@ -159,11 +159,15 @@ defineChakraConfig({ responsive: { button: ["size"] }, include: [] }).theme.exte
 // => ["*", { size: ["*"], responsive: true }]
 ```
 
-The recipe's own list is the only address that works, and it is worth knowing why if you ever write
-`staticCss` by hand. Panda resolves `staticCss.recipes[name]` from the recipe **body** whenever the
-body declares one, discarding what the config asked for — so a config-level rule for a recipe that
-also has a body rule is dropped before it is read. Rules you write under `staticCss.recipes` are
-moved to the body for you, so both spellings work:
+The recipe's own list is where the rule has to land, and the `"*"` in front of it is worth knowing
+about if you ever write `staticCss` by hand. Panda resolves `staticCss.recipes[name]` from the recipe
+**body** whenever the body declares one, assigning it **over** whatever the config asked for that
+recipe. None of ours declares one until an opt-in puts it there — and the config-level entry it then
+replaces is the one deciding whether that recipe reaches your sheet at all, the one
+[`components`](#components) widens. So the list opens by asking for the whole recipe again, and
+opting one variant key into breakpoints never costs you the rest of it.
+
+Rules you write under `staticCss.recipes` are moved to the body for you, so both spellings work:
 
 ```ts title="panda.config.ts"
 export default defineChakraConfig({
@@ -174,8 +178,9 @@ export default defineChakraConfig({
 // button's staticCss => ["*", { size: ["*"], responsive: true }, { variant: ["*"] }]
 ```
 
-Off by default because the stylesheet already carries 488 recipe-variant values, and turning
-responsive on for all of them multiplies that by six — `base` plus five breakpoints.
+Off by default because it multiplies a recipe's variant values by six — `base` plus five
+breakpoints. There are 490 of those values across the 75 recipes, and the `true` grain opts every
+one of them in.
 
 ## conditional
 
@@ -219,10 +224,11 @@ defineChakraConfig({
 Your stylesheet carries the recipes your source **imports**, and nothing else. Panda reads that off
 the import specifiers in the files your `include` globs cover, so it survives an alias, a namespaced
 part and a wrapper of your own alike — all three still name the component in the specifier. Every
-Panda run prints what it found:
+Panda run prints what it found, counting the recipes each component composes — `Button` brings
+`spinner` with it, `Field` brings `fieldset` and `icon`:
 
 ```txt
-🐼 chakra-ui-solid  4 components → 4 recipes: Button, Dialog, Field, Table
+🐼 chakra-ui-solid  4 components → 7 recipes: Button, Dialog, Field, Table
 ```
 
 `components` names the ones no file it scanned could show it:

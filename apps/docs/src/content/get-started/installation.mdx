@@ -128,7 +128,7 @@ setup rather than in a testing guide.
 
 ## Everything renders naked
 
-Three causes, in the order they actually occur.
+Four causes, in the order they actually occur.
 
 1. **Panda never ran**, or it ran before the file that uses a style prop existed. Re-run `codegen`
    and check that the class you expected is in the generated sheet.
@@ -138,6 +138,12 @@ Three causes, in the order they actually occur.
    keys a type error; a hand-written config is what makes it possible. If one gets past the types —
    an untyped `panda.config.js`, or a spread — your Panda run prints
    `[chakra-ui-solid] restoring …` and puts the value back.
-3. **A recipe variant needs the responsive opt-in.** Responsive *style props* work with no
+3. **Your globs never reached the file that uses the component.** Which components' CSS is
+   generated is read off the specifiers your scanned files name us in, so one reached only from a
+   file Panda never parsed gets no recipe rules. Every run prints what it found —
+   `🐼 chakra-ui-solid  4 components → 7 recipes: …`, or a loud `0 components detected` when the
+   answer is none. A component arriving from a dependency rather than your own source is what
+   [`components`](/docs/theming/chakra-config#components) is for.
+4. **A recipe variant needs the responsive opt-in.** Responsive *style props* work with no
    configuration. A responsive *recipe variant* — `<Button size={{ base: "sm", md: "lg" }}>` — is
    generated only for the recipes you opt in, through `defineChakraConfig({ responsive })`.
