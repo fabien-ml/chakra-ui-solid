@@ -396,13 +396,13 @@ describe("defineChakraConfig — the responsive opt-in", () => {
     ]);
   });
 
-  it("expands `true` to all 75 recipes, `swittch` included", () => {
+  it("expands `true` to all 75 recipes, `switchRecipe` included", () => {
     const config = defineChakraConfig({ ...MINIMAL, responsive: true });
     const extend = config.theme?.extend;
     const bodies = { ...extend?.recipes, ...extend?.slotRecipes };
 
     expect(Object.keys(bodies)).toHaveLength(75);
-    expect(bodies.swittch).toBeDefined();
+    expect(bodies.switchRecipe).toBeDefined();
 
     const notResponsive = Object.keys(bodies).filter((name) => {
       const [, rule] = bodyStaticCss(config, name) as [string, { responsive?: boolean }];

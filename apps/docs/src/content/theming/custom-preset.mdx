@@ -53,7 +53,7 @@ export const buttonShape = {
 
 | It pins | Across all 75 |
 | --- | --- |
-| `className` | The string every class for that recipe starts with. Three are not the kebab-cased key, and they are upstream's: `skipNavLink` → `skip-nav`, `swittch` → `switch`, and `colorPicker`, which is simply not kebabbed |
+| `className` | The string every class for that recipe starts with. Three are not the kebab-cased key: `skipNavLink` → `skip-nav` and `colorPicker`, which is simply not kebabbed, are both the React version's; `switchRecipe` → `switch` is ours, because Panda emits a recipe key as a JS identifier in your generated `styled-system/recipes/` and `switch` is a reserved word |
 | `slots` | 476 part names, in the order the recipe declares them |
 | `variants` | 144 keys, and the 490 values under them |
 | `defaultVariants` | What 64 of the 75 resolve when a consumer passes nothing |

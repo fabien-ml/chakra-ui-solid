@@ -111,7 +111,11 @@ export const slotRecipes = {
   splitter: splitterSlotRecipe,
   stat: statSlotRecipe,
   steps: stepsSlotRecipe,
-  swittch: switchSlotRecipe,
+  // Panda emits the key as a JS identifier — `export const <key>` in the consumer's generated
+  // `recipes/<key>.mjs` — so a key named `switch` is a syntax error there. Upstream works around it
+  // with `swittch`; ours is `switchRecipe`, because the key is public API a preset author types.
+  // The `className` stays `switch`, so no CSS moves.
+  switchRecipe: switchSlotRecipe,
   table: tableSlotRecipe,
   tabs: tabsSlotRecipe,
   tag: tagSlotRecipe,

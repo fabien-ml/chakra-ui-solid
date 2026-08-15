@@ -40,9 +40,9 @@ export { recipeContract, slotRecipeContract };
 export interface RecipeShape {
   /**
    * The string Panda puts in front of every class it emits for this recipe — `button--size_md`,
-   * `.action-bar__content`. It is the kebab-cased key for all but three, and the exceptions are
-   * upstream's, not ours: `skipNavLink` → `skip-nav`, `swittch` → `switch`, and `colorPicker`,
-   * which is simply not kebabbed.
+   * `.action-bar__content`. It is the kebab-cased key for all but three: `skipNavLink` →
+   * `skip-nav` and `colorPicker`, which is simply not kebabbed, are both upstream's; `switchRecipe`
+   * → `switch` is ours, because Panda emits the key as a JS identifier and `switch` is reserved.
    *
    * **Getting it wrong is the quietest failure in the package.** Our runtime computes the class
    * from this string, so a preset that spells it differently emits CSS nobody wears — every rule
@@ -84,8 +84,9 @@ export const slotRecipeKeys: string[] = Object.keys(slotRecipeContract);
 
 /**
  * The component name a recipe styles, derived from the recipe's own `className` rather than its
- * contract key — `action-bar` → `ActionBar`. Going through `className` is what keeps the misspelled
- * `swittch` key from producing a `Swittch` hint for a component that is called `Switch`.
+ * contract key — `action-bar` → `ActionBar`. Going through `className` is what keeps the
+ * `switchRecipe` key — spelled that way because Panda emits it as a JS identifier — from producing
+ * a `SwitchRecipe` hint for a component that is called `Switch`.
  */
 export function componentNameFor(recipeKey: string): string {
   const className = shapeByKey[recipeKey]?.className;

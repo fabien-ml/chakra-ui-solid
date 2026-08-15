@@ -68,8 +68,8 @@ describe("theme.extend — the recipe declarations", () => {
     expect(chakraTheme.recipes?.container?.className).toBe("container");
   });
 
-  it("keeps `swittch` under its misspelled key while hinting the real component name", () => {
-    expect(extension?.slotRecipes?.swittch).toEqual({ jsx: ["Switch"] });
+  it("keeps Switch under `switchRecipe` while hinting the real component name", () => {
+    expect(extension?.slotRecipes?.switchRecipe).toEqual({ jsx: ["Switch"] });
   });
 
   it("hints each recipe's jsx name from its `className`", () => {
@@ -84,11 +84,10 @@ describe("theme.extend — the recipe declarations", () => {
 
 describe("theme.extend — the token delta", () => {
   it("declares no tokens of its own", () => {
-    // The library layer owns no part of the token table: tokens are the loaded preset's, and this
-    // one is stacked over whichever preset a consumer names. A key here would be a theme fork that
-    // no swap can dislodge — `cursor.switch` used to be one, patching a token the vendored
-    // `chakra/tokens/cursor.ts` misspelled `swittch`, and it belongs in that file now that the file
-    // is ours.
+    // The library layer owns no part of the token table: tokens belong to the loaded preset, and
+    // this one is stacked under whichever preset a consumer names. A key here would be a theme fork
+    // no swap can dislodge, so a defect in the vendored look is fixed in `chakra/tokens/` rather
+    // than patched over from here.
     expect(extension?.tokens).toBeUndefined();
   });
 

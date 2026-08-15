@@ -122,13 +122,14 @@ describe("the recipe list", () => {
     });
   });
 
-  it("carries `swittch` verbatim, misspelling and all", () => {
-    // Panda names the generated function after the key, and `export const switch` is a syntax
-    // error — which is why upstream's own generator renames it on the way out. A preset satisfying
-    // the contract has to misspell it too; only the `className` is spelled correctly.
-    expect(slotRecipeKeys).toContain("swittch");
+  it("carries Switch under `switchRecipe`, because `switch` is not a legal key", () => {
+    // Panda emits the key as a JS identifier into the consumer's `styled-system/recipes/`, and
+    // `export const switch` is a syntax error there, so the key is `switchRecipe`. A preset
+    // satisfying the contract has to spell it the same way; the `className` is the plain `switch`
+    // either way, so no CSS depends on which.
+    expect(slotRecipeKeys).toContain("switchRecipe");
     expect(slotRecipeKeys).not.toContain("switch");
-    expect(slotRecipeContract.swittch.className).toBe("switch");
+    expect(slotRecipeContract.switchRecipe.className).toBe("switch");
   });
 
   it("keeps the two other `className`s that are not the kebab-cased key", () => {
@@ -139,10 +140,11 @@ describe("the recipe list", () => {
 
 describe("componentNameFor", () => {
   it("derives the name from the recipe's `className`, not its contract key", () => {
-    // The whole reason it goes through `className`: the key is `swittch` and the component is
-    // `Switch`. Going through the key would hand Panda a jsx tracking hint for a component that
-    // does not exist — and a wrong hint fails silently, because a hint is only an optimization.
-    expect(componentNameFor("swittch")).toBe("Switch");
+    // The whole reason it goes through `className`: the key is `switchRecipe` and the component is
+    // `Switch`. Going through the key would hand Panda a jsx tracking hint for a `SwitchRecipe`
+    // that does not exist — and a wrong hint fails silently, because a hint is only an
+    // optimization.
+    expect(componentNameFor("switchRecipe")).toBe("Switch");
   });
 
   it("pascal-cases a hyphenated name", () => {

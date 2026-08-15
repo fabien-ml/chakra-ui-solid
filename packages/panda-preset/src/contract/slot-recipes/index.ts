@@ -58,9 +58,9 @@ import { treeViewShape } from "./tree-view";
 
 /**
  * The 56 slot recipes, one file each, named after the vendored body it pins in
- * `chakra/slot-recipes/` — including `switch.ts`, which holds the misspelled `swittch` key.
- * What a row means, and why these are typed out rather than read off the loaded preset, is in
- * `../index.ts`.
+ * `chakra/slot-recipes/` — including `switch.ts`, whose key is `switchRecipe` because Panda cannot
+ * emit `switch` as an identifier. What a row means, and why these are typed out rather than read
+ * off the loaded preset, is in `../index.ts`.
  *
  * **The key order is upstream's barrel order and is load-bearing** — `preset.ts` and `config.ts`
  * both walk it.
@@ -108,7 +108,7 @@ export const slotRecipeContract = {
   splitter: splitterShape,
   stat: statShape,
   steps: stepsShape,
-  swittch: switchShape,
+  switchRecipe: switchShape,
   table: tableShape,
   tabs: tabsShape,
   tag: tagShape,
