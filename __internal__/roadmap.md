@@ -286,7 +286,10 @@ asks, correct **both** in the same commit.
       row*, the propagation rule): the preset's `radioGroup` slot recipe inlines
       `radiomarkRecipe.base` into `itemControl` plus every size and variant, so those styles are
       already in our generated CSS; and `RadioGroupItemControl` *also* renders `<Radiomark unstyled>`
-      with `css={[styles.itemControl, props.css]}`. The load-bearing prop is `unstyled`
+      with `css={[styles.itemControl, props.css]}`. The load-bearing prop is `unstyled`.
+      **Its item emits `data-ssr`, and no `radioGroup` rule reads it** — the only other emitter is
+      `tabs`, and the only two consumers are the `tabs` and `segmentGroup` recipes, so this machine's
+      attribute is styled entirely by a *different* component's recipe (measured on the `tabs` row)
 - [ ] radio-card — radio-group · S:radioCard · 6/10
       Extends Chakra's *extended* radioGroup anatomy: `+itemContent`, `+itemDescription`.
       Composes `radiomark` the same two ways as `radio-group`, on `itemIndicator` rather than
@@ -297,7 +300,12 @@ asks, correct **both** in the same commit.
 - [ ] scroll-area — S:scrollArea · 6/6
       Browser tests keep real scrollbars (`brief-plan` §2.8)
 - [ ] segment-group — radio-group · S:segmentGroup · 6/6
-      Third public component on the radio-group machine
+      Third public component on the radio-group machine. **The one recipe that styles an attribute
+      its own machine does not emit**: `&[data-state=checked][data-ssr]` on the item reads the flag
+      the *radio-group* machine writes, and `tabs` is the only other emitter/consumer pair in either
+      set (measured on the `tabs` row). It is the pre-hydration stand-in for the indicator, so a
+      served segment keeps its highlight until the machine starts and its `entry` action clears the
+      flag
 - [ ] select — S:select · 15/16 · Z ⚠
       `+indicatorGroup`. Hidden native `<select>` → restrictive-content-model hazard. **No collision
       with `native-select`**, settled on that row's ship: its anatomy is `createAnatomy("select")`
@@ -321,8 +329,25 @@ asks, correct **both** in the same commit.
       `switch`, so the React version renders the pointer and only the Panda preset's rename drops it.
       The port rule's **first** case, measured — where `date-picker`'s focus ring, which reads like
       the same defect, is the second. `+indicator`
-- [ ] tabs — S:tabs · 5/6 · Z
-      Chakra's own `createAnatomy("tabs")`, `+contentGroup`. **`_active` in the recipe is Panda's `:active` pseudo-class, not a Zag `data-active`** (`prior-art.md` §4.3)
+- [x] tabs — S:tabs · 5/6 · Z
+      **Three anatomies carry the name, and only one of them produces DOM.** Zag's
+      `createAnatomy("tabs")` has the five parts the machine writes `data-part` for; Ark re-exports
+      that one unchanged; Chakra declares its own six-part `createAnatomy("tabs")` (`+contentGroup`),
+      whose **only** consumer is the runtime-theme recipe `react/src/theme/recipes/tabs.ts` — the
+      Panda preset hardcodes the same six slot names independently and never reads it. So
+      `contentGroup` is a slot class with no `data-part` and nothing in an anatomy behind it, and the
+      row is `5/6` because that is the shape, not a discrepancy.
+      **The `_active` clause was right for the wrong reason.** Panda's `_active` *is*
+      `&:is(:active, [data-active])`, so it does select a `data-active` — but the recipe nests the
+      rule inside `_disabled`, and a disabled `<button>` never enters `:active`. Dead CSS upstream,
+      with nothing to translate (`prior-art.md` §4.3).
+      **Exactly two machines emit `data-ssr`, exactly two preset recipes select on it, and they
+      cross.** Emitters: `tabs` (on the trigger) and `radio-group` (on the item). Consumers: the
+      `tabs` slot recipe (`&[data-selected][data-ssr]` on the `plain` trigger) and `segmentGroup`
+      (`&[data-state=checked][data-ssr]` on the item) — so radio-group's attribute is read by a
+      recipe named after neither. It is the stand-in for an indicator that has measured nothing yet:
+      `context.ssr` starts `true` and the machine's `entry` action clears it, so a server writes it
+      on every trigger and the client has it off all of them before `hydrate()` returns.
       **`tabs.trigger`'s `currentBg` is already resolved, measured**, and the row inherits it: it and
       `timeline.indicator` are the only two uses of the keyword in the whole preset, and
       `panda-preset/src/current-bg-utilities.ts` compiles both. The trigger is the harder half — it
@@ -335,6 +360,20 @@ asks, correct **both** in the same commit.
       a `transparent` background publishes nothing — reproduces that, and a bare `<button>` in the
       docs now reads `#09090B` too. `generated-css.test.ts` pins the emitted rule for this recipe,
       which is as far as the assertion can go before the component exists.
+      Docs: **13 of upstream's 14 example slots**. *Responsive Orientation* is dropped whole — its
+      example is `useBreakpointValue` and its prose is only that hook's setup — and **there is no row
+      to hang the debt on**: the hook ships no component, nothing in `__internal__/` names it, and
+      the count in *Utilities, providers and re-exports (4)* is of components, so it is recorded
+      here rather than on a row invented for it. `Explorer` is www machinery, on `card`'s precedent.
+      Three glyphs are substituted rather than added to `apps/docs/src/components/ui/icons.tsx`:
+      `at-sign`, `package` and `circle-check` for Lucide's `user`, `folder` and `square-check`. Each
+      is decorative, and the prop its section demonstrates is unaffected.
+      **Two upstream sentences name props that do not exist** — `activationBehavior` for
+      `activationMode`, `_close` for `_closed` — and upstream's own examples under both use the real
+      names. The port writes the real ones: a sentence naming a condition Panda does not ship is a
+      wrong answer rather than a shared wart. *Links* reaches its anchor through `render` where
+      upstream writes `asChild`, and the router snippet is `useNavigate` from `@solidjs/router`, on
+      `link.mdx`'s precedent.
 - [ ] tags-input — S:tagsInput · 10/10
       Repeated part (tags)
 - [ ] toast — S:toast · 6/6

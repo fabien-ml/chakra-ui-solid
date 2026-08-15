@@ -544,8 +544,11 @@ the preset's `data-*` selectors against the machines' emitted attributes. If it 
 slot recipe needs a translation getter per part, which is a per-component tax this blueprint does not
 currently price. **Do not add a translation getter speculatively**: an unnecessary one is invisible.
 
-The one known non-match from the spot check is not a mismatch at all: `tabs`' recipe uses Panda's
-`_active`, which is the `:active` **pseudo-class**, not a Zag attribute.
+The one known non-match from the spot check is still not a mismatch, but **not for the reason this
+line gave until the `tabs` ship**: Panda's `_active` is `&:is(:active, [data-active])`, so it does
+select a `data-active` the tabs machine never emits. What makes it harmless is where the recipe puts
+it — nested inside `_disabled`, and a disabled `<button>` never enters `:active` either. The rule is
+dead CSS upstream, so there is nothing to translate.
 
 `data-slot` — hope-ui's own convention — appears in **zero** Chakra files and is not carried
 (`prior-art.md` §3.3 seam 2).

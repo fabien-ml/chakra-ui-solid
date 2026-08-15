@@ -161,6 +161,17 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/alert/__tests__/alert.ssr-entry.tsx",
   ),
+  // The first subject where the two builds are **supposed to disagree about an attribute**, and the
+  // machine owns it: `data-ssr` is on every trigger the server writes and on none after hydration,
+  // because the machine's `entry` action clears it and `entry` runs when a machine *starts* — which
+  // never happens on a server. Every other subject here asks whether the two sides match; this one
+  // asks whether one of them changed, on the same nodes.
+  //
+  // It is also the first whose **presence-machine count is a consumer's**: `dialog` and `popover`
+  // each run a fixed number, where a set of tabs runs one per `<Tabs.Content>` written in the tree.
+  // Under `lazyMount unmountOnExit` only the selected panel exists on either side, so the hydration
+  // keys inside the `ContentGroup` are decided by how many panels the *page author* wrote.
+  tabs: join(repoRoot, "packages/chakra-ui-solid/src/components/tabs/__tests__/tabs.ssr-entry.tsx"),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

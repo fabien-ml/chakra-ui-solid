@@ -414,9 +414,12 @@ consumer's stylesheet, runtime only setting an attribute on `<html>`; unprobed t
   exists" but "Chakra ships it".
 - **A recipe condition can select on a `data-*` pair no machine emits.** The class is in both the
   emittable and the generated set and never matches, so no coverage diff sees it. Only 6 of 56 slot
-  recipes were ever spot-checked. `tabs`' `_active` is *not* an example — that is Panda's `:active`
-  pseudo-class. Read the machine's `connect()` before assuming a `_condition` has an attribute
-  behind it.
+  recipes were ever spot-checked. `tabs`' `_active` **is** one, corrected at that row's ship: Panda's
+  `_active` is `&:is(:active, [data-active])`, so the `[data-active]` half selects an attribute the
+  tabs machine never emits. It is the harmless kind only because the recipe nests the rule inside
+  `_disabled`, where the `:active` half cannot fire either — dead CSS upstream rather than a
+  translation we owe. Read the machine's `connect()` **and Panda's condition expansion** before
+  assuming a `_condition` has an attribute behind it, or that it does not.
 - **Chakra's Drawer is Ark's *Dialog* wearing the `drawer` slot recipe.** Zag ships a `drawer`
   machine (10 parts, `grabber`/`swipeArea`) and Ark has a component on it; Chakra 3.36.1 uses
   neither, so `@zag-js/drawer` stays unported — and a future Chakra release adopting Ark's Drawer is

@@ -1,0 +1,30 @@
+export type {
+  TabsContentGroupProps as ContentGroupProps,
+  TabsContentProps as ContentProps,
+  TabsContextProps as ContextProps,
+  TabsElementIds as ElementIds,
+  TabsFocusChangeDetails as FocusChangeDetails,
+  TabsIndicatorProps as IndicatorProps,
+  TabsIntlTranslations as IntlTranslations,
+  TabsListProps as ListProps,
+  TabsNavigateDetails as NavigateDetails,
+  TabsPropsProviderProps as PropsProviderProps,
+  TabsRootBaseProps as RootBaseProps,
+  TabsRootProps as RootProps,
+  TabsRootProviderProps as RootProviderProps,
+  TabsTriggerProps as TriggerProps,
+  TabsValueChangeDetails as ValueChangeDetails,
+} from "./tabs.types";
+export {
+  TabsContent as Content,
+  TabsContentGroup as ContentGroup,
+  TabsContext as Context,
+  TabsIndicator as Indicator,
+  TabsList as List,
+  TabsTrigger as Trigger,
+} from "./tabs-parts";
+export {
+  TabsPropsProvider as PropsProvider,
+  TabsRoot as Root,
+  TabsRootProvider as RootProvider,
+} from "./tabs-root";

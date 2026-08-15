@@ -69,6 +69,7 @@
       "sticky": "src/components/sticky/index.ts",
       "strong": "src/components/strong/index.ts",
       "table": "src/components/table/index.ts",
+      "tabs": "src/components/tabs/index.ts",
       "tag": "src/components/tag/index.ts",
       "text": "src/components/text/index.ts",
       "textarea": "src/components/textarea/index.ts",
@@ -105,7 +106,8 @@
     "@zag-js/collapsible": "catalog:",
     "@zag-js/dialog": "catalog:",
     "@zag-js/file-utils": "catalog:",
-    "@zag-js/popover": "catalog:"
+    "@zag-js/popover": "catalog:",
+    "@zag-js/tabs": "catalog:"
   },
   "devDependencies": {
     "@chakra-ui-solid/internal-test-utils": "workspace:*",

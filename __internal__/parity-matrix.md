@@ -708,11 +708,17 @@ grep -rn "aria-controls" __reference-impl__/ark-ui/packages/react/src/components
 dedicated upstream test named *"should not have aria-controls if lazy mounted"* — those four are the
 ones our own tests mirror.
 
-**Not taken, deliberately:** `select`, `combobox`, `hover-card`, `tooltip`, `color-picker`,
-`date-picker` and `tabs` have a presence and **no** `aria-controls` override in Ark. They emit the
-dangling IDREF while unmounted, in Chakra exactly as in ours. Adding it would be an accessibility
-improvement over the port target, which the port rule forbids; the fix belongs upstream in Zag
+**Not taken, deliberately:** `select`, `combobox`, `hover-card`, `tooltip`, `color-picker` and
+`date-picker` have a presence and **no** `aria-controls` override in Ark. They emit the dangling
+IDREF while unmounted, in Chakra exactly as in ours. Adding it would be an accessibility improvement
+over the port target, which the port rule forbids; the fix belongs upstream in Zag
 (`zag-solid-adapter.md` §8).
+
+**`tabs` was on that list and does not belong there** — measured at its ship. It has a presence and
+no override, but its dangling IDREF is *unreachable*: Zag emits `aria-controls` only from the
+**selected** trigger, and the selected panel is the one a render strategy always keeps. So there is
+nothing tolerated here and nothing to fix upstream; a Tabs trigger needs none of Dialog's presence
+gate, and axe finds nothing on any of the five shapes its suite runs.
 
 ---
 
@@ -890,7 +896,7 @@ gain scheduling freedom the single step did not have.
 | Batch | Components | What it proves that the previous one did not |
 |---|---|---|
 | **B1** — reuse | Drawer, ActionBar, Tooltip, HoverCard, Menu | **One machine, two public components, two slot recipes** — twice (dialog→Dialog/Drawer, popover→Popover/ActionBar). Completes the six `lazyMount`/`unmountOnExit` defaults. Floating with an arrow at volume, against 5b's measurement |
-| **B2** — the repeated part | Collapsible, Accordion, Tabs | **The fifth part shape** (§7) and **family M** (§6.2). Chakra-only anatomy inside a repeat (`itemBody`, `contentGroup`). Tabs' `_active`-is-a-pseudo-class trap |
+| **B2** — the repeated part | Collapsible, Accordion, Tabs | **The fifth part shape** (§7) and **family M** (§6.2), **both from Accordion alone** — the `tabs` ship measured that Tabs does *not* exercise §7: its repeated parts take `value` as a plain prop and open no per-item context, and `contentGroup` is a sibling wrapper around the panels rather than a Chakra-only part inside the repeat. What Tabs adds instead is one `@zag-js/presence` **per `Tabs.Content` a consumer wrote**, and the `_active` trap — corrected at the same ship: the condition does select `[data-active]`, and is dead because it is nested inside `_disabled` |
 | **B3** — the field family | Field, Fieldset, NativeSelect, Input, Textarea, InputGroup, InputAddon, InputElement | **A multi-part family with no machine** — the only one. Ark's 226-line `use-field` re-derived from the ARIA contract, never its expression. Atomic recipes composed *into* a slot recipe. `input-group`'s runtime `calc()` converted to route 3 |
 | **B4** — form controls | Checkbox, CheckboxCard, Switch, RadioGroup, RadioCard, SegmentGroup, RatingGroup, PinInput, NumberInput, Editable, Toggle | **Three public components on one machine** (radio-group). `swittch` as a generated function name, and the one measured case where restoring what the preset's rename drops is the port working rather than a divergence. `editable`'s top-level `size` collision — **the live case for `forwardProp`, not for `styleSource`**, which the `dialog` ship measured out of `renderStyled` (`component-blueprint.md` §11's preamble). A recipe key with no recipe (`toggle`). Field's context consumed from outside its own family |
 | **B5** — collections | Listbox, Select, Combobox | `@zag-js/collection` and the `./collection` subpath. `aria-activedescendant`. **The restrictive-content-model compile crash** — a hidden native `<select>` with a static child and a dynamic sibling, visible only in Storybook (`component-blueprint.md` §10.4) |
@@ -1055,7 +1061,7 @@ preset's animations) → closed at P2, resolved the other way. `plan.md` §11.2'
 | **`prior-art.md` §10.5's bundle bytes** | Not reproducible from git; no machine closure exists until step 5, and no library closure until B8 (§11). `zag-solid-adapter.md` §9.2 already moved the re-measurement to milestone 5 | **P7**, which carries the check |
 | **Panda's generated `sva`/`splitVariantProps` surface** | Panda is installed in no checkout (`plan.md` §13, `component-blueprint.md` §14). The matrix says which recipe each component reaches, not what the generated function looks like | Blueprint assumptions **P5-A** and **P5-B**, at steps 4 and 3 |
 | **Whether Ark `5.37.2` matches the `5.38.1` checkout** where the matrix read Ark's *implementation* | Only `5.38.1` is checked out and no `@ark-ui/*` is installed. Every **machine mapping** was taken from Chakra's own imports and is version-proof; the `aria-controls` list (§6.3) and `useCollapsible` (§6.2) are Ark-implementation reads and are not | Assumption **5**, re-checked at step 5 and B2 |
-| **`component-blueprint.md` §12.1's assumption 9** (the `data-*` vocabulary diff) | It needs Panda and a generated stylesheet. §4 records the one known mismatch — Tabs' `_active` — from `prior-art.md` §4.3's spot check, and nothing more | **Step 4**, unchanged |
+| **`component-blueprint.md` §12.1's assumption 9** (the `data-*` vocabulary diff) | It needs Panda and a generated stylesheet. §4 records the one known mismatch — Tabs' `_active` — from `prior-art.md` §4.3's spot check, and nothing more. **The `tabs` ship corrected what it is**: `_active` really does select `[data-active]`, and the rule is dead because it sits inside `_disabled` where `:active` cannot fire either | **Step 4**, unchanged |
 
 **Everything in `prior-art.md` §10, `zag-solid-adapter.md` §10 and `component-blueprint.md` §13/§14
 that reaches P6, P6 acted on:**

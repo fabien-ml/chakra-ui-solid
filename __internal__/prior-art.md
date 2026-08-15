@@ -542,7 +542,7 @@ hand-authored. A five-minute spot check across five components supports it:
 | `combobox` | `_highlighted` `_open` `_closed` `_invalid` | `data-highlighted` `data-state` `data-invalid` | ✅ |
 | `accordion` / `dialog` | `_open` `_closed` | `data-state="open"\|"closed"` | ✅ via Panda's `_open` matching `[data-state=open]` |
 | `switch` | `_checked` | `data-state="checked"` | ✅ same route |
-| `tabs` | `_selected` `_active` | `data-selected` (no `data-active`) | ⚠️ `_active` is Panda's `:active` pseudo-class, not a Zag attribute |
+| `tabs` | `_selected` `_active` | `data-selected` (no `data-active`) | ✅ **corrected at the `tabs` ship** — `_active` is `&:is(:active, [data-active])`, so it *does* select a `data-active` no machine emits; what makes it harmless is that the recipe nests the rule inside `_disabled`, where a disabled `<button>` never enters `:active` either. Dead CSS upstream, nothing to translate |
 
 ```bash
 grep -oE '\b_[a-zA-Z]+:' __reference-impl__/chakra-ui/packages/panda-preset/src/slot-recipes/listbox.ts | sort -u

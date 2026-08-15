@@ -59,6 +59,7 @@ import {
   createCollapsible,
   createDialog,
   createPopover,
+  createTabs,
   DataListItem,
   DataListItemLabel,
   DataListItemValue,
@@ -195,6 +196,15 @@ import {
   TableRootPropsProvider,
   TableRow,
   TableScrollArea,
+  TabsContent,
+  TabsContentGroup,
+  TabsContext,
+  TabsIndicator,
+  TabsList,
+  TabsPropsProvider,
+  TabsRoot,
+  TabsRootProvider,
+  TabsTrigger,
   TagCloseTrigger,
   TagEndElement,
   TagLabel,
@@ -1275,6 +1285,82 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
         </TableBody>
       </TableRoot>
     </TableScrollArea>
+  ),
+  // Every panel builds a presence machine of its own, so a selected `defaultValue` is what makes
+  // this family's gated part render at all — the render strategy's own `false`/`false` keep an
+  // unselected panel in the served markup, hidden.
+  TabsContent: () => (
+    <TabsRoot defaultValue="one">
+      <TabsContent value="one">first</TabsContent>
+    </TabsRoot>
+  ),
+  TabsContentGroup: () => (
+    <TabsRoot defaultValue="one">
+      <TabsContentGroup>
+        <TabsContent value="one">first</TabsContent>
+      </TabsContentGroup>
+    </TabsRoot>
+  ),
+  TabsContext: () => (
+    <TabsRoot defaultValue="one">
+      <TabsContext>{(tabs) => <span>{tabs.value}</span>}</TabsContext>
+    </TabsRoot>
+  ),
+  // Inside the list, which is the only place it positions correctly — and `hidden` on the server,
+  // because the machine's rect starts `null` and nothing has measured a trigger yet.
+  TabsIndicator: () => (
+    <TabsRoot defaultValue="one">
+      <TabsList>
+        <TabsTrigger value="one">First</TabsTrigger>
+        <TabsIndicator />
+      </TabsList>
+    </TabsRoot>
+  ),
+  TabsList: () => (
+    <TabsRoot defaultValue="one">
+      <TabsList>
+        <TabsTrigger value="one">First</TabsTrigger>
+      </TabsList>
+    </TabsRoot>
+  ),
+  TabsPropsProvider: () => (
+    <TabsPropsProvider value={{ variant: "enclosed" }}>
+      <TabsRoot defaultValue="one">
+        <TabsList>
+          <TabsTrigger value="one">First</TabsTrigger>
+        </TabsList>
+      </TabsRoot>
+    </TabsPropsProvider>
+  ),
+  TabsRoot: () => (
+    <TabsRoot defaultValue="one" orientation="vertical">
+      <TabsList>
+        <TabsTrigger value="one">First</TabsTrigger>
+      </TabsList>
+    </TabsRoot>
+  ),
+  // The one subject that starts its machine outside the component that renders it, which is the
+  // path a server render would take through `createTabs` with no Root above it.
+  TabsRootProvider: () => {
+    const Subject = () => {
+      const tabs = createTabs({ defaultValue: "one" });
+      return (
+        <TabsRootProvider value={tabs}>
+          <TabsContent value="one">first</TabsContent>
+        </TabsRootProvider>
+      );
+    };
+    return <Subject />;
+  },
+  TabsTrigger: () => (
+    <TabsRoot defaultValue="one">
+      <TabsList>
+        <TabsTrigger value="one">First</TabsTrigger>
+        <TabsTrigger value="two" disabled>
+          Second
+        </TabsTrigger>
+      </TabsList>
+    </TabsRoot>
   ),
   // Its default ✕ is built inside the component rather than hoisted beside it — JSX at module scope
   // is constructed at *import* time and 500s the route before anything renders.
