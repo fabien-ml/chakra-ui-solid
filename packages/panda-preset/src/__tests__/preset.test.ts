@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { chakraPreset } from "../chakra-preset";
-import { componentNameFor, recipeKeys, slotRecipeKeys } from "../contract";
 import { chakraSolidPreset } from "../preset";
+import { componentNameFor, recipeKeys, slotRecipeKeys } from "../recipe-registry";
 
 /**
  * What the preset declares per recipe, now that it declares no `staticCss`.
@@ -13,7 +12,8 @@ import { chakraSolidPreset } from "../preset";
  * bodies used to be the answer, at 354 kB of CSS for an app that imports Button;
  * `recipe-gate-plugin.ts` is, and `recipe-gate.test.ts` is where that half is asserted.
  *
- * What is left here is one `jsx` hint per recipe, and nothing depends on it.
+ * What is left here is one `jsx` hint per recipe, which nothing depends on, and the `container`
+ * body, which nothing upstream declares.
  */
 
 type RecipeExtension = Record<string, { staticCss?: unknown; jsx?: string[] }>;
@@ -21,23 +21,6 @@ type RecipeExtension = Record<string, { staticCss?: unknown; jsx?: string[] }>;
 const extension = chakraSolidPreset.theme?.extend as
   | { recipes?: RecipeExtension; slotRecipes?: RecipeExtension; tokens?: unknown }
   | undefined;
-
-function presetNamesOf(preset: { presets?: unknown[] }): Array<string | undefined> {
-  return (preset.presets ?? []).map((entry) =>
-    typeof entry === "string" ? entry : (entry as { name?: string }).name,
-  );
-}
-
-/** The library layer's own keys — everything the chain underneath it does not decide. */
-const libraryLayer = chakraSolidPreset as {
-  utilities?: { extend?: object };
-  conditions?: unknown;
-};
-
-const chakraTheme = chakraPreset.theme as {
-  recipes?: Record<string, { className?: string }>;
-  slotRecipes?: object;
-};
 
 describe("theme.extend — the recipe declarations", () => {
   it("declares no `staticCss` on any of the 75 recipes", () => {
@@ -59,17 +42,20 @@ describe("theme.extend — the recipe declarations", () => {
     expect(Object.keys(extension?.slotRecipes ?? {})).toEqual(slotRecipeKeys);
   });
 
-  it("declares `container` as an ordinary recipe rather than a body smuggled through `extend`", () => {
-    // `container` used to arrive here whole, because it was the one recipe the dependency did not
-    // carry and `theme.extend` *creates* a key the base theme lacks. Now that the bodies are
-    // vendored, `chakra/recipes/index.ts` registers it beside the other eighteen and this entry is
-    // the same bare hint every other recipe gets.
-    expect(extension?.recipes?.container).toEqual({ jsx: ["Container"] });
-    expect(chakraTheme.recipes?.container?.className).toBe("container");
+  it("carries the ported `container` body alongside its declaration", () => {
+    // The one recipe with nothing upstream to merge into: `theme.extend` deep-merges, so a key the
+    // inherited theme does not have is *created* by this entry — the body has to arrive through it,
+    // or Panda registers a hint for a recipe that does not exist and `container(…)` is not
+    // generated at all.
+    const container = extension?.recipes?.container as
+      | { className?: string; jsx?: string[] }
+      | undefined;
+    expect(container?.className).toBe("container");
+    expect(container?.jsx).toEqual(["Container"]);
   });
 
-  it("keeps Switch under `switchRecipe` while hinting the real component name", () => {
-    expect(extension?.slotRecipes?.switchRecipe).toEqual({ jsx: ["Switch"] });
+  it("keeps `swittch` under its misspelled key while hinting the real component name", () => {
+    expect(extension?.slotRecipes?.swittch).toEqual({ jsx: ["Switch"] });
   });
 
   it("hints each recipe's jsx name from its `className`", () => {
@@ -83,12 +69,12 @@ describe("theme.extend — the recipe declarations", () => {
 });
 
 describe("theme.extend — the token delta", () => {
-  it("declares no tokens of its own", () => {
-    // The library layer owns no part of the token table: tokens belong to the loaded preset, and
-    // this one is stacked under whichever preset a consumer names. A key here would be a theme fork
-    // no swap can dislodge, so a defect in the vendored look is fixed in `chakra/tokens/` rather
-    // than patched over from here.
-    expect(extension?.tokens).toBeUndefined();
+  it("adds `cursor.switch` and nothing else", () => {
+    // The upstream preset registers this token as `swittch` while its own Switch recipe references
+    // `cursor: "switch"`, so the reference resolves to nothing and Switch silently loses its
+    // pointer cursor. One key restores it. Any *second* token here would be a theme fork, which
+    // `CLAUDE.md`, *Reference use* forbids — this assertion is what keeps the delta one key wide.
+    expect(extension?.tokens).toEqual({ cursor: { switch: { value: "pointer" } } });
   });
 
   it("extends the theme rather than replacing it", () => {
@@ -100,18 +86,14 @@ describe("theme.extend — the token delta", () => {
 
 describe("the preset's own chain and atomic staticCss", () => {
   it("declares the base preset itself, rather than leaving it to a config file", () => {
-    // `eject: true` drops Panda's defaults, and `chakraPreset` declares no base of its own while
-    // reaching for `utilities: { extend }`. Left to a config file the fix **fails open**: a
-    // consumer who omits the line gets no style-prop utilities and no `_hover`/`_open` conditions,
-    // and nothing errors.
-    //
-    // Two entries, and the look is the last of them: a consumer's own preset is appended after this
-    // whole preset by `defineChakraConfig()`, so theirs is later still and its bodies win.
-    expect(presetNamesOf(chakraSolidPreset)).toEqual([
-      "@pandacss/preset-base",
-      "@chakra-ui-solid/chakra",
-    ]);
-    expect((chakraSolidPreset.presets ?? [])[1]).toBe(chakraPreset);
+    // `eject: true` drops Panda's defaults, and `@chakra-ui/panda-preset` declares no base of its
+    // own while reaching for `utilities: { extend }`. Left to a config file the fix **fails open**:
+    // a consumer who omits the line gets no style-prop utilities and no `_hover`/`_open`
+    // conditions, and nothing errors.
+    const names = (chakraSolidPreset.presets ?? []).map((entry) =>
+      typeof entry === "string" ? entry : (entry as { name?: string }).name,
+    );
+    expect(names).toEqual(["@pandacss/preset-base", "@chakra-ui/panda-preset"]);
   });
 
   it("pre-generates the atomic values a component's own logic picks", () => {
@@ -180,44 +162,5 @@ describe("the preset's own chain and atomic staticCss", () => {
     // compete with a consumer's own, because spreading a config is shallow. The per-recipe
     // declarations above ride `theme.extend`'s deep merge instead.
     expect(chakraSolidPreset.staticCss?.recipes).toBeUndefined();
-  });
-});
-
-describe("the look, and the library layer above it", () => {
-  it("claims every theme key the vendored preset declares", () => {
-    // **The invariant the seam rests on**, and the last thing left of it now that there is no
-    // dependency to diff against. Chakra's own `index.ts` declares these nine theme keys plus
-    // `globalCss`, and a key a Chakra bump adds that `chakra-preset.ts` does not claim goes missing
-    // from every consumer's sheet with nothing to say so.
-    expect(new Set(Object.keys(chakraPreset.theme))).toEqual(
-      new Set([
-        "breakpoints",
-        "keyframes",
-        "tokens",
-        "semanticTokens",
-        "recipes",
-        "slotRecipes",
-        "textStyles",
-        "layerStyles",
-        "animationStyles",
-      ]),
-    );
-    expect(chakraPreset.globalCss).toBeTypeOf("object");
-  });
-
-  it("keeps the two keys a preset cannot own in the library layer", () => {
-    // `utilities` and `conditions` are sealed by the same mechanism as a recipe's variant keys:
-    // every name in them is compiled into the published `styled-system/`. Panda merges both per
-    // name, so a consumer's preset can add to them and never replace them — which is why they sit
-    // above the look rather than inside it. `_icon` is the whole of Chakra's own condition: it is
-    // how a recipe reaches the svg inside a control it does not own the markup of.
-    expect(libraryLayer.conditions).toEqual({ extend: { icon: "& :where(svg)" } });
-    expect(chakraPreset).not.toHaveProperty("utilities");
-    expect(chakraPreset).not.toHaveProperty("conditions");
-
-    // Chakra's own, the aliases, and the two `currentBg` transforms, in one object because no two
-    // of the three name the same utility.
-    const declared = Object.keys(libraryLayer.utilities?.extend ?? {});
-    expect(declared).toEqual(expect.arrayContaining(["focusRing", "textDecoration", "background"]));
   });
 });

@@ -1,8 +1,4 @@
-import {
-  createRecipeContext,
-  type HTMLChakraProps,
-  type PresetVariant,
-} from "@chakra-ui-solid/core";
+import { createRecipeContext, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import { type HeadingVariantProps, heading } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
@@ -20,18 +16,7 @@ export interface HeadingProps extends HTMLChakraProps<"h2"> {
    * @default "xl"
    */
   size?: ConditionalValue<
-    | "xs"
-    | "sm"
-    | "md"
-    | "lg"
-    | "xl"
-    | "2xl"
-    | "3xl"
-    | "4xl"
-    | "5xl"
-    | "6xl"
-    | "7xl"
-    | PresetVariant<"heading", "size">
+    "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl"
   >;
 }
 

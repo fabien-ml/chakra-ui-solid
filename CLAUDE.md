@@ -1,13 +1,9 @@
 # CLAUDE.md
 
-**UX > DX > simpler > smarter.** When two designs both work, the one that is better to live in wins —
-the consumer's experience first, then the experience of whoever maintains this. Fewer files is a
-tiebreaker between designs that are equally good to work in, never an argument against a layout that
-is easier to navigate: one declaration per file beats one file holding all of them, and mirroring an
-upstream tree beats inventing a flatter one. A session ends with an exported component, not with a
-new script, document, ledger or gate — if the work seems to need one, say so and ask. Keep replies
-and commits short; that is a habit, not a rule with a number attached, and nothing in this repo caps
-a file's length.
+**simpler > smarter.** When two designs both work, fewer files wins. A session ends with an exported
+component, not with a new script, document, ledger or gate — if the work seems to need one, say so
+and ask. Keep replies and commits short; that is a habit, not a rule with a number attached, and
+nothing in this repo caps a file's length.
 
 `chakra-ui-solid` is Chakra UI v3's component API for SolidJS — *as close to v3 parity as is
 achievable without runtime CSS-in-JS*. Everything that is not code is in `__internal__/`:
@@ -137,15 +133,7 @@ already answered it. `roadmap.md` §*Reading a row* carries the detail.
 Reading a reference for reasoning, public API shape, or an ARIA pattern owes nothing. Reproducing its
 expression makes the file a derivative: *could someone diff my file against theirs and see the same
 structure and sequence?* Ark is **what**, never **how**; it is not a dependency and never will be.
-
-**Chakra v3's preset is the one thing we vendor rather than depend on.** The components are headless
-and their styling is a *skin* — a token table plus a full set of recipe bodies, authored from zero
-against a shape contract the components pin (which recipes exist, their slots, their variant keys and
-values). Chakra v3's look is one such skin; the only thing separating it from a consumer's is that we
-wrote it. A shape contract cannot be designed around a dependency whose bodies we cannot see, and a
-skin that can only override `@chakra-ui/panda-preset` is `theme.extend` with extra steps — so that
-package is copied in and becomes ours to maintain. **This makes those files derivatives, and they owe
-the four things below.** It is the single exception; nothing else here is vendored.
+Depend on `@chakra-ui/panda-preset`; never re-emit a recipe body or a token table.
 
 **A derivative owes four things, in the same commit as the code:** an entry in
 `attribution.config.ts`, an `@license` header naming the upstream file, a row in the root and owning

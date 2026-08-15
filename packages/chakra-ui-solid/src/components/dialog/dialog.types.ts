@@ -1,6 +1,5 @@
 import type {
   HTMLChakraProps,
-  PresetVariant,
   PropsProviderProps,
   PropTypes,
   UnstyledProp,
@@ -206,24 +205,14 @@ export interface DialogPresenceProps {
  */
 export interface DialogVariantProps {
   /** How wide the surface is allowed to grow. `cover` and `full` also change its height. */
-  size?: ConditionalValue<
-    "xs" | "sm" | "md" | "lg" | "xl" | "cover" | "full" | PresetVariant<"dialog", "size">
-  >;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | "xl" | "cover" | "full">;
   /** Where the surface sits in the viewport. */
-  placement?: ConditionalValue<"center" | "top" | "bottom" | PresetVariant<"dialog", "placement">>;
+  placement?: ConditionalValue<"center" | "top" | "bottom">;
   /** Whether a dialog taller than the viewport scrolls its own body or the page behind it. */
-  scrollBehavior?: ConditionalValue<
-    "inside" | "outside" | PresetVariant<"dialog", "scrollBehavior">
-  >;
+  scrollBehavior?: ConditionalValue<"inside" | "outside">;
   /** Which pair of enter/exit animations the surface plays. */
   motionPreset?: ConditionalValue<
-    | "scale"
-    | "slide-in-bottom"
-    | "slide-in-top"
-    | "slide-in-left"
-    | "slide-in-right"
-    | "none"
-    | PresetVariant<"dialog", "motionPreset">
+    "scale" | "slide-in-bottom" | "slide-in-top" | "slide-in-left" | "slide-in-right" | "none"
   >;
 }
 

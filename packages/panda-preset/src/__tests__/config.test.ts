@@ -2,8 +2,8 @@ import { readFileSync } from "node:fs";
 import type { Config } from "@pandacss/dev";
 import { describe, expect, it, vi } from "vitest";
 import { type ChakraConfigOverrides, defineChakraConfig } from "../config";
-import { variantKeysFor } from "../contract";
 import { chakraSolidPreset } from "../preset";
+import { variantKeysFor } from "../recipe-registry";
 
 /**
  * `defineChakraConfig()` exists for one failure mode with no other guard. In Panda's external-package
@@ -253,7 +253,6 @@ describe("defineChakraConfig — the keys it merges rather than replaces", () =>
     expect(plugins.map((plugin) => plugin.name)).toEqual([
       "mine",
       "chakra-ui-solid:recipe-gate",
-      "chakra-ui-solid:preset-contract",
       "chakra-ui-solid:locked-keys",
     ]);
     expect(plugins[0]).toBe(theirs);
@@ -396,13 +395,13 @@ describe("defineChakraConfig — the responsive opt-in", () => {
     ]);
   });
 
-  it("expands `true` to all 75 recipes, `switchRecipe` included", () => {
+  it("expands `true` to all 75 recipes, `swittch` included", () => {
     const config = defineChakraConfig({ ...MINIMAL, responsive: true });
     const extend = config.theme?.extend;
     const bodies = { ...extend?.recipes, ...extend?.slotRecipes };
 
     expect(Object.keys(bodies)).toHaveLength(75);
-    expect(bodies.switchRecipe).toBeDefined();
+    expect(bodies.swittch).toBeDefined();
 
     const notResponsive = Object.keys(bodies).filter((name) => {
       const [, rule] = bodyStaticCss(config, name) as [string, { responsive?: boolean }];

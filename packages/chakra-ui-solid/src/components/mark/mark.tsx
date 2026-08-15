@@ -1,8 +1,4 @@
-import {
-  createRecipeContext,
-  type HTMLChakraProps,
-  type PresetVariant,
-} from "@chakra-ui-solid/core";
+import { createRecipeContext, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import { type MarkVariantProps, mark } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
@@ -20,9 +16,7 @@ export interface MarkProps extends HTMLChakraProps<"mark"> {
    * How the run is highlighted — `subtle` and `solid` fill it from `colorPalette`, `text` only
    * thickens the weight, and `plain` adds nothing to the base.
    */
-  variant?: ConditionalValue<
-    "subtle" | "solid" | "text" | "plain" | PresetVariant<"mark", "variant">
-  >;
+  variant?: ConditionalValue<"subtle" | "solid" | "text" | "plain">;
 }
 
 const { withContext, PropsProvider } = createRecipeContext<MarkProps, MarkVariantProps>({

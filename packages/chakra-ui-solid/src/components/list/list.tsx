@@ -1,7 +1,6 @@
 import {
   createSlotRecipeContext,
   type HTMLChakraProps,
-  type PresetVariant,
   type PropsProviderProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -27,9 +26,9 @@ export interface ListVariantProps {
    * Whether the browser draws its own bullets or numbers — `marker` restores them and tints them
    * `fg.subtle`, `plain` leaves the item an `inline-flex` row for a {@link ListIndicator} to sit in.
    */
-  variant?: ConditionalValue<"marker" | "plain" | PresetVariant<"list", "variant">>;
+  variant?: ConditionalValue<"marker" | "plain">;
   /** How an item's own children line up across its cross axis. Only visible on `plain`. */
-  align?: ConditionalValue<"center" | "start" | "end" | PresetVariant<"list", "align">>;
+  align?: ConditionalValue<"center" | "start" | "end">;
 }
 
 /** The Root's own props, without the `ul`'s — what a `List.RootPropsProvider` may supply. */

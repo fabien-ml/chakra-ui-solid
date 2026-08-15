@@ -1,8 +1,7 @@
 import type { Config } from "@pandacss/dev";
-import { recipeKeys, slotRecipeKeys, variantKeysFor } from "./contract";
-import { createChakraSolidPreset } from "./preset";
-import { presetContractPlugin } from "./preset-contract";
+import { chakraSolidPreset } from "./preset";
 import { recipeGatePlugin } from "./recipe-gate-plugin";
+import { recipeKeys, slotRecipeKeys, variantKeysFor } from "./recipe-registry";
 
 /**
  * Which recipe variants should also be generated at every breakpoint, so a consumer can write
@@ -189,9 +188,7 @@ const LOCKED = {
  *   `lockedKeysPlugin`.
  * - **Merged** — `presets` and `plugins` concatenate after ours; `theme` is narrowed to its
  *   `extend`, which is the form Panda deep-merges rather than replaces; `staticCss` has no such
- *   form and is unioned by `chakraStaticCss`. **`presets` is also how a different look is loaded**:
- *   a preset written with `defineChakraPreset` lands after `chakraPreset` and its bare
- *   `theme.recipes` replaces every body, while this layer's `theme.extend` survives on top.
+ *   form and is unioned by `chakraStaticCss`.
  * - **Theirs** — `include`, `outdir`, `globalCss`, `preflight`, `conditions`, `cssVarRoot`, `hooks`
  *   and the rest, passed straight through. `conditions`, `utilities`, `globalCss` and `patterns`
  *   are safe unnarrowed because Panda merges those **per name**, so a clash is only ever on the one
@@ -204,7 +201,6 @@ const LOCKED = {
 export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
   const { responsive, conditional, components, presets, theme, staticCss, plugins, ...rest } =
     overrides;
-  const preset = createChakraSolidPreset();
   const { extend, ...bareStaticCss } = staticCss ?? {};
   // Both opt-ins and the consumer's own `staticCss.recipes`, in one list per recipe. Ours first, so
   // two writers on one recipe read as two rules and neither replaces the other.
@@ -221,18 +217,12 @@ export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
     ...(rest as Config),
     ...LOCKED,
     // Ours first, so a consumer's preset is later and therefore wins on a conflict.
-    presets: [preset, ...(presets ?? [])],
+    presets: [chakraSolidPreset, ...(presets ?? [])],
     theme: themeWithRecipeRules(theme, placed.bodies),
-    staticCss: chakraStaticCss(placed.unplaceable, { extend, ...bareStaticCss }, preset),
-    // The gate reads the consumer's imports and adds the recipes they reach, the contract check
-    // reads the result and only warns; `lockedKeysPlugin` stays last, so it corrects after a
-    // consumer's own plugins have had their say.
-    plugins: [
-      ...(plugins ?? []),
-      recipeGatePlugin(components),
-      presetContractPlugin(),
-      lockedKeysPlugin,
-    ],
+    staticCss: chakraStaticCss(placed.unplaceable, { extend, ...bareStaticCss }),
+    // The gate reads the consumer's imports and adds the recipes they reach; `lockedKeysPlugin`
+    // stays last, so it corrects after a consumer's own plugins have had their say.
+    plugins: [...(plugins ?? []), recipeGatePlugin(components), lockedKeysPlugin],
   };
 }
 
@@ -299,9 +289,8 @@ type ThemeExtend = NonNullable<ThemeOption["extend"]>;
  * The consumer's `theme.extend` with each placed rule list appended to its recipe's own `staticCss`.
  *
  * Merged into their body rather than assigned over it, so a consumer who extends `recipes.button`
- * with a `base` keeps it. The library layer's own `jsx` hint survives on its own — it is a key on a
- * body Panda deep-merges, written one preset layer below this one, and only the `staticCss` array is
- * replaced.
+ * with a `base` keeps it. The preset's `jsx` hint survives on its own — it is a different key on a
+ * body Panda deep-merges, and only the `staticCss` array is replaced.
  */
 function themeWithRecipeRules(
   theirs: ChakraConfigOverrides["theme"],
@@ -368,7 +357,6 @@ function withStaticCssBodies<Key extends "recipes" | "slotRecipes">(
 function chakraStaticCss(
   unplaceableRecipes: RecipeRules | undefined,
   theirs: StaticCssOption | undefined,
-  preset: ReturnType<typeof createChakraSolidPreset>,
 ): StaticCssOption {
   // `extend` is **folded in here rather than passed through**, and that is the whole subtlety of
   // this key. Panda's `extend` path does not add to a top-level `css` array, it replaces it
@@ -392,7 +380,7 @@ function chakraStaticCss(
     // `patterns` and `themes` from whichever spelling carried them; theirs wins on a clash.
     ...extendRest,
     ...bareRest,
-    css: [...(preset.staticCss?.css ?? []), ...(extendCss ?? []), ...(bareCss ?? [])],
+    css: [...(chakraSolidPreset.staticCss?.css ?? []), ...(extendCss ?? []), ...(bareCss ?? [])],
     ...withRecipes(unplaceableRecipes),
   };
 }

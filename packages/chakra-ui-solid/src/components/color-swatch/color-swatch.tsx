@@ -3,7 +3,6 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
-  type PresetVariant,
   renderStyled,
   withContextDefaults,
   withDefaults,
@@ -36,25 +35,14 @@ export interface ColorSwatchProps extends HTMLChakraProps<"span"> {
    *
    * @default "md"
    */
-  size?: ConditionalValue<
-    | "2xs"
-    | "xs"
-    | "sm"
-    | "md"
-    | "lg"
-    | "xl"
-    | "2xl"
-    | "inherit"
-    | "full"
-    | PresetVariant<"colorSwatch", "size">
-  >;
+  size?: ConditionalValue<"2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "inherit" | "full">;
   /**
    * The corner treatment — `rounded` is the theme's own radius, `square` has none, `circle` is a
    * full radius.
    *
    * @default "rounded"
    */
-  shape?: ConditionalValue<"square" | "circle" | "rounded" | PresetVariant<"colorSwatch", "shape">>;
+  shape?: ConditionalValue<"square" | "circle" | "rounded">;
 }
 
 /** The DOM props ColorSwatch forwards to the rendered element. */

@@ -321,16 +321,14 @@ asks, correct **both** in the same commit.
       **Duplicate slot `resizeTriggerIndicator`**. `+resizeTriggerSeparator`. The machine writes a gesture cursor rule — **audited and cleared** at P4 (`zag-solid-adapter.md` §5.3)
 - [ ] steps — S:steps · 10/12
       Chakra's anatomy is its **own** `createAnatomy("steps")` with 12 parts, not Zag's 10 (`+title`, `+description`)
-- [ ] switch — S:switchRecipe · 4/5
-      **Both halves of upstream's `swittch` are settled, in the preset.** The recipe key is
-      `switchRecipe`, not `swittch`: Panda emits the key as a JS identifier into the consumer's
-      `styled-system/recipes/`, so it cannot be `switch`, but the workaround is ours to name now that
-      the preset is vendored. The `className` is still `switch`. And the `cursor: "switch"` token the
-      preset used to register as `swittch` — silently dropping the pointer cursor, where the React
-      version's `theme/tokens/cursor.ts` spells it `switch` and renders it — is spelled `switch` in
-      `chakra/tokens/cursor.ts`. That restoration was **the port working, not a divergence**: the port
-      rule's **first** case, measured, where `date-picker`'s focus ring, which reads like the same
-      defect, is the second. `+indicator`
+- [ ] switch — S:swittch · 4/5
+      **The generated recipe function will be named `swittch`** (§1.3c). **And its `cursor: "switch"`
+      references a token the preset registers as `swittch`, so the pointer cursor is silently lost** —
+      one `theme.extend.tokens.cursor.switch` key in our preset restores it, and **that restoration is
+      the port working, not a divergence**: upstream's `theme/tokens/cursor.ts` registers the key as
+      `switch`, so the React version renders the pointer and only the Panda preset's rename drops it.
+      The port rule's **first** case, measured — where `date-picker`'s focus ring, which reads like
+      the same defect, is the second. `+indicator`
 - [x] tabs — S:tabs · 5/6 · Z
       **Three anatomies carry the name, and only one of them produces DOM.** Zag's
       `createAnatomy("tabs")` has the five parts the machine writes `data-part` for; Ark re-exports

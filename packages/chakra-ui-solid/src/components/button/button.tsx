@@ -2,7 +2,6 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
-  type PresetVariant,
   renderStyled,
   withContextDefaults,
   withDefaults,
@@ -22,13 +21,7 @@ import { Loader } from "../loader";
  * background or border at all.
  */
 export type ButtonVariant = ConditionalValue<
-  | "solid"
-  | "subtle"
-  | "surface"
-  | "outline"
-  | "ghost"
-  | "plain"
-  | PresetVariant<"button", "variant">
+  "solid" | "subtle" | "surface" | "outline" | "ghost" | "plain"
 >;
 
 /**
@@ -43,9 +36,7 @@ export interface ButtonProps extends HTMLChakraProps<"button"> {
    *
    * @default "md"
    */
-  size?: ConditionalValue<
-    "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | PresetVariant<"button", "size">
-  >;
+  size?: ConditionalValue<"2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl">;
   /**
    * How much of the colour palette the button spends — `solid` is the filled one, `plain` carries
    * no background or border at all.

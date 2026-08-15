@@ -1,7 +1,6 @@
 import {
   createSlotRecipeContext,
   type HTMLChakraProps,
-  type PresetVariant,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
 import {
@@ -23,13 +22,11 @@ export type DataListSlot = "root" | "item" | "itemLabel" | "itemValue";
  */
 export interface DataListVariantProps {
   /** Whether a label sits above its value or beside it, in a 120px-wide column. */
-  orientation?: ConditionalValue<
-    "horizontal" | "vertical" | PresetVariant<"dataList", "orientation">
-  >;
+  orientation?: ConditionalValue<"horizontal" | "vertical">;
   /** The type scale of an item, and the gap between items. */
-  size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"dataList", "size">>;
+  size?: ConditionalValue<"sm" | "md" | "lg">;
   /** Which half is muted — `subtle` dims the label, `bold` dims the value and weights the label. */
-  variant?: ConditionalValue<"subtle" | "bold" | PresetVariant<"dataList", "variant">>;
+  variant?: ConditionalValue<"subtle" | "bold">;
 }
 
 /** The Root's own props, without the `dl`'s — what a `DataList.PropsProvider` may supply. */

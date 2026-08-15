@@ -77,7 +77,7 @@ stand in for yours — if your own globs match nothing, the run says so instead 
 ### theme takes `extend` only
 
 `extend` deep-merges; the key beside it replaces. A bare `theme` would drop Chakra's whole token
-table and all 75 recipes, so `theme` here accepts `extend` and nothing else:
+table and all 19 recipes, so `theme` here accepts `extend` and nothing else:
 
 ```ts title="panda.config.ts"
 export default defineChakraConfig({
@@ -120,10 +120,9 @@ rule is the only thing that makes the prop do anything. Lose them and those prop
 > the peer dependency cannot reach it, and it returns `any` — discarding the `Config` types this
 > function exists to supply.
 
-## presets
+### An extra preset
 
-Panda's own key, and how a **different look** reaches your stylesheet. Ours stays first, so yours is
-later and wins on a conflict:
+Ours stays first, so yours is later and wins on a conflict:
 
 ```ts title="panda.config.ts"
 export default defineChakraConfig({
@@ -131,23 +130,6 @@ export default defineChakraConfig({
   include: [...],
 });
 ```
-
-There is no key of ours for this, deliberately: a look already has a name in Panda, and that name is
-*preset*. Chakra v3's is `chakraPreset` — the token tables, plus a body for each of the 75 recipes
-our components compute their class names through — and yours is the same kind of object in a later
-position.
-
-What the later position does depends on the key you write. A theme key you **declare** replaces ours
-whole: a preset whose `theme.recipes` names `button` alone leaves the other 18 with no body, no
-rules in your sheet, and no error anywhere. A key you **leave out** falls through from ours, so a
-preset declaring only `recipes` and `slotRecipes` keeps Chakra's tokens. Both halves are Panda's own
-merge, and the replacing half is the point rather than the hazard — it is the one thing a preset can
-do that a `theme.extend` delta cannot, since `extend` deep-merges and can never delete.
-
-[Writing a preset](/docs/theming/custom-preset) is the walkthrough: what our recipe contract requires
-of one, and how `defineChakraPreset()` turns "the other 18" into a type error that names them. For a
-brand colour or one more `button` size, stay in [`theme.extend`](#theme-takes-extend-only) instead —
-your config is the last layer in the chain, so it wins over every preset, yours included.
 
 ## responsive
 
@@ -274,8 +256,8 @@ that found nothing is a broken `include` rather than an app with no components:
 
 ## The recipe registry
 
-Three more exports, read off the **recipe contract** — the authored table of what a preset for this
-library has to contain, one file per recipe under `packages/panda-preset/src/contract/`:
+Three more exports, read off the preset rather than typed out, so a Chakra release that adds a
+recipe is covered by the version bump alone:
 
 ```ts
 import { recipeKeys, slotRecipeKeys, variantKeysFor } from "@chakra-ui-solid/panda-preset";
@@ -285,12 +267,6 @@ slotRecipeKeys.length; // => 56
 variantKeysFor().find((entry) => entry.recipe === "button");
 // => { recipe: "button", keys: ["size", "variant"] }
 ```
-
-Authored rather than read off whichever preset happens to be loaded, and that is a difference you can
-observe: these names were compiled into our published runtime before your config existed, so a preset
-[replacing every body](/docs/theming/custom-preset) must not be able to change what `responsive: true`
-expands to or what a props table prints. A Chakra release that adds a recipe adds a row here in the
-same version bump as the body.
 
 `variantKeysFor()` is what expands the coarser grains of both opt-ins: `responsive: ["button"]` and
 `conditional: { button: ["selected"] }` each mean every variant key on Button, and nothing else knows

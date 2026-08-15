@@ -46,8 +46,8 @@ execFileSync(
 // Panda records a recipe variant for every `<Spinner size="inherit">` or `<Skeleton>` our own
 // components write inside their own JSX, because the preset's recipe bodies carry `jsx` tracking
 // hints that match those tags. Replayed into a consumer's build those entries are ungated: a
-// Button-only app was getting `colorSwatch`, `skeleton` and `switchRecipe` rules for components it
-// never imported — 5,849 bytes of them — and that leak grows with every port.
+// Button-only app was getting `colorSwatch`, `skeleton` and `swittch` rules for components it never
+// imported — 5,849 bytes of them — and that leak grows with every port.
 //
 // Nothing is lost by dropping them. Which recipes a consumer's sheet needs is decided by the import
 // gate from `component-recipes.ts`, which is derived from the import graph and therefore already

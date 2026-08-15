@@ -3,7 +3,6 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   mergeProps,
-  type PresetVariant,
   renderStyled,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
@@ -25,16 +24,14 @@ export interface TextareaProps extends HTMLChakraProps<"textarea"> {
    *
    * @default "md"
    */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | "xl" | PresetVariant<"textarea", "size">>;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | "xl">;
   /**
    * How the field is drawn — `outline` is a full border, `subtle` fills it instead, and `flushed`
    * keeps only the bottom edge with no radius or horizontal padding.
    *
    * @default "outline"
    */
-  variant?: ConditionalValue<
-    "outline" | "subtle" | "flushed" | PresetVariant<"textarea", "variant">
-  >;
+  variant?: ConditionalValue<"outline" | "subtle" | "flushed">;
   /**
    * Whether the box grows to fit its value as you type, instead of scrolling.
    *

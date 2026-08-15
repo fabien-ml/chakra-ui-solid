@@ -80,19 +80,9 @@ OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWA
 - **License:** MIT License
 - **Copyright:** Copyright (c) 2019 Chakra Systems Inc.
 
-**`@chakra-ui/panda-preset` is vendored rather than consumed**, and it is the only thing in this
-repository that is. Chakra v3's look is a *skin* here — one preset among several a consumer may
-write — and a skin that can only override a dependency is `theme.extend` with extra steps, so the
-preset is copied in and maintained as ours. One file per upstream file, so a Chakra release is a
-`diff -r` against their `src/`; every copied file carries an `@license` header and a row below.
-
-**Vendored: the whole of it** — 105 files under `packages/panda-preset/src/chakra/`, being the token
-tables, the compositions and all 74 recipe bodies. `@chakra-ui/panda-preset` is no longer a
-dependency of anything here. Two modifications, both mechanical: the import specifier, since
-Chakra's own `src/def.ts` is not copied and `@pandacss/dev` exports the same helpers, and — in
-`utilities.ts` alone — a type annotation standing in for the one helper it does not export,
-`defineUtilities`. The one addition is in `recipes/index.ts`, which registers the `container` body
-described below.
+`@chakra-ui/panda-preset` is consumed as a published npm dependency — the design tokens, recipes,
+and slot recipes are used as shipped, not copied into this repository. No obligation beyond this
+notice.
 
 `@chakra-ui/react` is a **read reference** for public API shape, prop names, component anatomy, and
 naming. Its `src/styled-system/` is an Emotion serializer and is read for API shape, not for
@@ -101,11 +91,11 @@ that reproduce Chakra's expression get a row, and `factory.tsx` is one: its `exc
 seven SVG tags whose geometry attributes must reach the DOM rather than be folded into a class — is
 carried over verbatim, because a data table is expression where the API around it is not.
 
-**One recipe body comes from `@chakra-ui/react` rather than from the preset, because the preset
-omits it.** `container` is a key Chakra's own theme defines and their preset generator deletes on
-its way out, since Panda ships a `container` pattern of its own. Its body is ported into
-`packages/panda-preset/src/container-recipe.ts` with one modification — the `className` — and it is
-the one recipe here whose upstream is the theme rather than the preset.
+**One recipe body is reproduced, and only because the preset omits it.** `container` is a key
+`@chakra-ui/react`'s own theme defines and `@chakra-ui/panda-preset` does not ship, so a Container
+resolved against the dependency would compute a class with no rule behind it. Its body is ported
+into `packages/panda-preset/src/container-recipe.ts` with one modification — the `className` — and
+no other recipe or token table is re-emitted anywhere in this repository.
 
 **One utility transform is reproduced, for the same reason.** `currentBg` is a Chakra keyword that
 two of the preset's own recipes write, and the transform compiling it — the keyword to a custom
@@ -163,111 +153,6 @@ fold on the docs home and in every page's footer.
 | `packages/chakra-ui-solid/src/components/link/link-box.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/link/link-box.tsx` |
 | `packages/panda-preset/src/container-recipe.ts` | `chakra-ui/chakra-ui` — `packages/react/src/theme/recipes/container.ts` |
 | `packages/panda-preset/src/current-bg-utilities.ts` | `chakra-ui/chakra-ui` — `packages/react/src/preset-base.ts` |
-| `packages/panda-preset/src/chakra/tokens/animations.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/animations.ts` |
-| `packages/panda-preset/src/chakra/tokens/aspect-ratios.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/aspect-ratios.ts` |
-| `packages/panda-preset/src/chakra/tokens/blurs.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/blurs.ts` |
-| `packages/panda-preset/src/chakra/tokens/borders.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/borders.ts` |
-| `packages/panda-preset/src/chakra/tokens/colors.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/colors.ts` |
-| `packages/panda-preset/src/chakra/tokens/cursor.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/cursor.ts` |
-| `packages/panda-preset/src/chakra/tokens/durations.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/durations.ts` |
-| `packages/panda-preset/src/chakra/tokens/easings.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/easings.ts` |
-| `packages/panda-preset/src/chakra/tokens/font-sizes.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/font-sizes.ts` |
-| `packages/panda-preset/src/chakra/tokens/font-weights.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/font-weights.ts` |
-| `packages/panda-preset/src/chakra/tokens/fonts.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/fonts.ts` |
-| `packages/panda-preset/src/chakra/tokens/index.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/index.ts` |
-| `packages/panda-preset/src/chakra/tokens/letter-spacings.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/letter-spacings.ts` |
-| `packages/panda-preset/src/chakra/tokens/line-heights.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/line-heights.ts` |
-| `packages/panda-preset/src/chakra/tokens/radii.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/radii.ts` |
-| `packages/panda-preset/src/chakra/tokens/sizes.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/sizes.ts` |
-| `packages/panda-preset/src/chakra/tokens/spacing.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/spacing.ts` |
-| `packages/panda-preset/src/chakra/tokens/z-index.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/tokens/z-index.ts` |
-| `packages/panda-preset/src/chakra/semantic-tokens/colors.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/semantic-tokens/colors.ts` |
-| `packages/panda-preset/src/chakra/semantic-tokens/index.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/semantic-tokens/index.ts` |
-| `packages/panda-preset/src/chakra/semantic-tokens/radii.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/semantic-tokens/radii.ts` |
-| `packages/panda-preset/src/chakra/semantic-tokens/shadows.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/semantic-tokens/shadows.ts` |
-| `packages/panda-preset/src/chakra/animation-styles.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/animation-styles.ts` |
-| `packages/panda-preset/src/chakra/breakpoints.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/breakpoints.ts` |
-| `packages/panda-preset/src/chakra/global-css.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/global-css.ts` |
-| `packages/panda-preset/src/chakra/keyframes.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/keyframes.ts` |
-| `packages/panda-preset/src/chakra/layer-styles.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/layer-styles.ts` |
-| `packages/panda-preset/src/chakra/text-styles.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/text-styles.ts` |
-| `packages/panda-preset/src/chakra/utilities.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/utilities.ts` |
-| `packages/panda-preset/src/chakra/recipes/badge.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/badge.ts` |
-| `packages/panda-preset/src/chakra/recipes/button.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/button.ts` |
-| `packages/panda-preset/src/chakra/recipes/checkmark.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/checkmark.ts` |
-| `packages/panda-preset/src/chakra/recipes/code.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/code.ts` |
-| `packages/panda-preset/src/chakra/recipes/color-swatch.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/color-swatch.ts` |
-| `packages/panda-preset/src/chakra/recipes/heading.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/heading.ts` |
-| `packages/panda-preset/src/chakra/recipes/icon.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/icon.ts` |
-| `packages/panda-preset/src/chakra/recipes/index.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/index.ts` |
-| `packages/panda-preset/src/chakra/recipes/input-addon.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/input-addon.ts` |
-| `packages/panda-preset/src/chakra/recipes/input.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/input.ts` |
-| `packages/panda-preset/src/chakra/recipes/kbd.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/kbd.ts` |
-| `packages/panda-preset/src/chakra/recipes/link.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/link.ts` |
-| `packages/panda-preset/src/chakra/recipes/mark.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/mark.ts` |
-| `packages/panda-preset/src/chakra/recipes/radiomark.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/radiomark.ts` |
-| `packages/panda-preset/src/chakra/recipes/separator.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/separator.ts` |
-| `packages/panda-preset/src/chakra/recipes/skeleton.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/skeleton.ts` |
-| `packages/panda-preset/src/chakra/recipes/skip-nav-link.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/skip-nav-link.ts` |
-| `packages/panda-preset/src/chakra/recipes/spinner.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/spinner.ts` |
-| `packages/panda-preset/src/chakra/recipes/textarea.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/recipes/textarea.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/accordion.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/accordion.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/action-bar.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/action-bar.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/alert.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/alert.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/avatar.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/avatar.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/blockquote.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/blockquote.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/breadcrumb.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/breadcrumb.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/card.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/card.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/carousel.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/carousel.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/checkbox-card.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/checkbox-card.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/checkbox.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/checkbox.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/code-block.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/code-block.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/collapsible.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/collapsible.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/color-picker.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/color-picker.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/combobox.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/combobox.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/data-list.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/data-list.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/date-picker.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/date-picker.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/dialog.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/dialog.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/drawer.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/drawer.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/editable.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/editable.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/empty-state.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/empty-state.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/field.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/field.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/fieldset.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/fieldset.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/file-upload.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/file-upload.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/floating-panel.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/floating-panel.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/hover-card.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/hover-card.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/index.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/index.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/list.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/list.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/listbox.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/listbox.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/marquee.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/marquee.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/menu.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/menu.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/native-select.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/native-select.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/number-input.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/number-input.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/pin-input.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/pin-input.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/popover.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/popover.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/progress-circle.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/progress-circle.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/progress.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/progress.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/qr-code.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/qr-code.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/radio-card.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/radio-card.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/radio-group.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/radio-group.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/rating-group.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/rating-group.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/scroll-area.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/scroll-area.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/segment-group.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/segment-group.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/select.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/select.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/slider.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/slider.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/splitter.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/splitter.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/stat.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/stat.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/status.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/status.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/steps.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/steps.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/switch.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/switch.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/table.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/table.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/tabs.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/tabs.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/tag.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/tag.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/tags-input.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/tags-input.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/timeline.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/timeline.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/toast.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/toast.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/tooltip.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/tooltip.ts` |
-| `packages/panda-preset/src/chakra/slot-recipes/tree-view.ts` | `chakra-ui/chakra-ui` — `packages/panda-preset/src/slot-recipes/tree-view.ts` |
 | `apps/docs/src/content` | `chakra-ui/chakra-ui` — `apps/www/content/docs` |
 | `apps/docs/src/components/ui/logo.tsx` | `chakra-ui/chakra-ui` — `apps/www/components/site/icons.tsx`, `apps/www/components/logo.tsx` |
 | `apps/docs/src/examples/decorative-box.tsx` | `chakra-ui/chakra-ui` — `apps/compositions/src/lib/decorative-box.tsx` |

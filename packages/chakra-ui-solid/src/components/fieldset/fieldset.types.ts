@@ -1,4 +1,4 @@
-import type { HTMLChakraProps, PresetVariant } from "@chakra-ui-solid/core";
+import type { HTMLChakraProps } from "@chakra-ui-solid/core";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
 
@@ -115,7 +115,7 @@ export interface CreateFieldsetReturn {
  */
 export interface FieldsetVariantProps {
   /** The gap between the legend, the texts and the content, and the two texts' type scale. */
-  size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"fieldset", "size">>;
+  size?: ConditionalValue<"sm" | "md" | "lg">;
 }
 
 /** The Root's own props, without the `fieldset`'s — the recipe's variant plus the store's inputs. */

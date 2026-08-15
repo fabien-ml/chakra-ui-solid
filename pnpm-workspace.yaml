@@ -141,15 +141,11 @@ catalog:
   #
   # `@pandacss/preset-base` is a direct dependency of `@chakra-ui-solid/panda-preset` rather than
   # something Panda supplies, because we set `eject: true`: that drops Panda's default presets,
-  # and Chakra's preset declares no base of its own while reaching for `utilities: { extend }` and
-  # `conditions: { extend }` (`plan.md` §3.2).
-  #
-  # `@chakra-ui/panda-preset` was here until its 105 files were vendored under
-  # `packages/panda-preset/src/chakra/`. It is the one thing this repo copies rather than depends
-  # on, and `CLAUDE.md` says why: a skin that can only override a dependency is `theme.extend` with
-  # extra steps.
+  # and `@chakra-ui/panda-preset` declares no base of its own while reaching for
+  # `utilities: { extend }` and `conditions: { extend }` (`plan.md` §3.2).
   "@pandacss/dev": 1.12.0
   "@pandacss/preset-base": 1.12.0
+  "@chakra-ui/panda-preset": 3.36.1
 
   # TanStack Start and Router — the docs app's framework (`docs-site.md` §1.1). They are here
   # rather than in `apps/docs/package.json` for a reason no other entry in this file has: **two of

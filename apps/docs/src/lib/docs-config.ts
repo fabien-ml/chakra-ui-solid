@@ -325,10 +325,6 @@ export const docsNav: NavItem[] = [
           // than in a fifth `reference/` tier, which the top bar does not have and
           // `check:docs-inventory` rejects outright.
           { title: "defineChakraConfig", url: "chakra-config" },
-          // Same reasoning, and it sits next to the config page because that is where the
-          // `presets` key sends a reader: a look is a Panda preset, so replacing one has no
-          // Chakra counterpart either.
-          { title: "Writing a preset", url: "custom-preset" },
         ],
       },
       {

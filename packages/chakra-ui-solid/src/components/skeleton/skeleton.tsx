@@ -2,7 +2,6 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   mergeProps,
-  type PresetVariant,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import { type SkeletonVariantProps, skeleton } from "@chakra-ui-solid/styled-system/recipes";
@@ -31,7 +30,7 @@ export interface SkeletonProps extends HTMLChakraProps<"div"> {
    *
    * @default "pulse"
    */
-  variant?: ConditionalValue<"pulse" | "shine" | "none" | PresetVariant<"skeleton", "variant">>;
+  variant?: ConditionalValue<"pulse" | "shine" | "none">;
 }
 
 const { withContext, PropsProvider } = createRecipeContext<SkeletonProps, SkeletonVariantProps>({
