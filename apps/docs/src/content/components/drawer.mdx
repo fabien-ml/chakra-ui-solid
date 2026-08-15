@@ -1,0 +1,148 @@
+---
+title: Drawer
+description: Used to render a content that slides in from the side of the screen
+links:
+  source: packages/chakra-ui-solid/src/components/drawer
+  chakra: https://chakra-ui.com/docs/components/drawer
+---
+
+<Example name="drawer-basic" />
+
+## Usage
+
+```tsx
+import { Drawer } from "chakra-ui-solid";
+```
+
+```tsx
+<Drawer.Root>
+  <Drawer.Backdrop />
+  <Drawer.Trigger />
+  <Drawer.Positioner>
+    <Drawer.Content>
+      <Drawer.CloseTrigger />
+      <Drawer.Header>
+        <Drawer.Title />
+      </Drawer.Header>
+      <Drawer.Body />
+      <Drawer.Footer />
+    </Drawer.Content>
+  </Drawer.Positioner>
+</Drawer.Root>
+```
+
+A drawer runs the **dialog machine** — `@zag-js/dialog`, the same state machine
+[Dialog](/docs/components/dialog) runs, dressed by a different style definition. So every behavioural
+prop on `Drawer.Root` is one of Dialog's, and `createDrawer` is `createDialog` under a second name.
+The React version is built the same way.
+
+## Examples
+
+### Controlled
+
+Use the `open` and `onOpenChange` props to control the drawer component.
+
+<Example name="drawer-controlled" />
+
+### Sizes
+
+Use the `size` prop to change the size of the drawer component.
+
+<Example name="drawer-with-sizes" />
+
+### Context
+
+Use the `Drawer.Context` component to access the drawer state and methods from outside the drawer.
+
+Its render prop is called in the part's own body, which is not a tracking scope — so it has to
+return JSX. A callback returning a bare ternary reads the state untracked and freezes on the value
+it had at mount.
+
+<Example name="drawer-with-context" />
+
+### Offset
+
+Use the `padding` CSS property on `Drawer.Positioner` to adjust the offset of the drawer component.
+
+<Example name="drawer-with-offset" />
+
+### Placement
+
+Use the `placement` prop to change the placement of the drawer component. `start` and `end` follow
+the writing direction, so `end` is the right edge in LTR and the left edge in RTL.
+
+<Example name="drawer-with-placement" />
+
+### Initial Focus
+
+Use the `initialFocusEl` prop to set the initial focus of the drawer component. It is a function, so
+it can read a ref that is still `undefined` when the drawer is created.
+
+<Example name="drawer-with-initial-focus" />
+
+### Custom Container
+
+Here's an example of how to render the drawer component in a custom container.
+
+Consider setting `closeOnInteractOutside` to `false` to prevent the drawer from closing when
+interacting outside the drawer.
+
+Solid's `Portal` takes the container as `mount`, and reads it **once**, when the portal is created —
+so the container element has to exist by then. Holding it in a signal and gating the portal on that
+signal is what guarantees the order; a plain variable can still be `undefined` at the moment the
+portal reads it, and a portal that finds nothing silently attaches to `document.body` instead.
+
+<Example name="drawer-with-custom-container" />
+
+### Header Actions
+
+Here's an example of rendering actions in the header of the drawer component.
+
+<Example name="drawer-with-header-actions" />
+
+### Drawer with conditional variants
+
+Here is an example of how to change variants based on the different breakpoints.
+
+This example uses the `mdDown` breakpoint to change the drawer's placement on smaller screens. This
+approach is recommended because both conditions are translated into CSS media queries, which helps
+avoid base style merging issues.
+
+If you really want to use the base condition instead, you'll also need to define corresponding
+sizes. For example:
+
+```tsx
+<Drawer.Root placement={{ base: "bottom", md: "end" }} size={{ base: "xs", md: "md" }}>
+```
+
+`placement` is a **recipe variant**, not a style prop, so a responsive value needs the opt-in that
+pre-generates it at every breakpoint. Without it the drawer renders with no placement rules at all
+and nothing errors:
+
+```ts title="panda.config.ts"
+export default defineChakraConfig({
+  responsive: { drawer: ["placement"] },
+  include: [...],
+});
+```
+
+[defineChakraConfig](/docs/theming/chakra-config#responsive) covers the three grains it accepts.
+
+<Example name="drawer-with-conditional-variants" />
+
+### Non-Modal Drawer
+
+We don't recommend using a non-modal drawer due to the accessibility concerns they present. In event
+you need it, here's what you can do:
+
+- set the `modal` prop to `false`
+- set `pointerEvents` to `none` on the `Drawer.Positioner` component
+- (optional)set the `closeOnInteractOutside` prop to `false`
+
+<Example name="drawer-non-modal" />
+
+## Props
+
+### Root
+
+<PropsTable component="drawer" interface="DrawerRootProps" />

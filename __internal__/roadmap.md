@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 61 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 62 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -191,12 +191,38 @@ asks, correct **both** in the same commit.
       (`useDialogContext().slots`), which is the same `Accessor<Record<Slot, string>>` the 13
       machine-less rows' `use*Styles` already hand back. Upstream's yields `SystemStyleObject`s and
       ours yields class strings, which is the seam's standing difference, not this row's.
-- [ ] drawer — dialog · S:drawer · 7/10 · D ⚠
-      Runs on `dialog`, not `@zag-js/drawer` (§2.2). Its duplicate `backdrop` slot is source-only,
-      for the reason measured on the `dialog` row — it is Panda's generator, not the recipe.
-      **Its page needs `responsive: { drawer: ["placement"] }`**, on the `dialog` row's measurement:
-      `drawer-with-conditional-variants` writes `placement={{ mdDown: "bottom", md: "end" }}`, and
-      without the line the drawer renders with no placement rule at any width and nothing errors
+- [x] drawer — dialog · S:drawer · 7/10 · D ⚠
+      Runs on `dialog`, not `@zag-js/drawer` (§2.2), so there is **no `create-drawer.ts`**:
+      `createDrawer` is `createDialog` re-exported, and `CreateDrawerProps` is `CreateDialogProps`.
+      Six files stamped from `dialog/`, with real deltas in three places only — the variant
+      interface (`size` has no `cover`, `placement` is four *edges* rather than Dialog's vertical
+      alignments, `contained` is new, and there is no `scrollBehavior` or `motionPreset`), the
+      recipe binding, and `ActionTrigger`, which must call `useDrawerContext()` where upstream calls
+      `useDialogContext()` — in React both names resolve to Ark's one dialog context and here they
+      are two distinct Solid contexts. Its duplicate `backdrop` slot is source-only, for the reason
+      measured on the `dialog` row — it is Panda's generator, not the recipe.
+      **The `responsive: { drawer: ["placement"] }` prediction below was wrong the way `dialog`'s
+      was**, and measuring it is what settled the shape of the claim. Deleting the line and running
+      `pnpm cssgen` leaves **both** classes the example needs —
+      `mdDown:drawer__positioner--placement_bottom` and `md:…--placement_end` — in the docs sheet,
+      because the object literal is in this app's own scanned source and Panda extracts it. What the
+      line adds is the other three placements at every named breakpoint: 25 positioner rules against
+      extraction's 6, and 12kB. The line stays for the reason `dialog`'s does — a consumer who
+      aliases, wraps or re-exports `Drawer.Root` loses the `jsx` tracking hint and gets nothing — but
+      **"without it the drawer renders with no placement rule at any width" is not what happens in an
+      app that writes the literal**, and the `button` and `separator` rows' clauses inherit that
+      correction.
+      **Its props table is the first to need the fold widened past one directory.**
+      `scripts/generate-props-tables.mjs` folded a base interface into its subtype only when the base
+      lived in the same component directory, so `CreateDrawerProps extends CreateDialogProps` left
+      the Root with 9 rows and a pointer to a name **no page renders** — Dialog's own page folds it
+      away. The index is now every component directory, which is what that boundary was always a
+      proxy for: `HTMLChakraProps` / `JsxStyleProps` / `UnstyledProp` live in `core` and
+      `styled-system`, never under `components/`, so they stay named rather than expanded. Three
+      other subtypes come along — `ButtonGroupProps`←`GroupProps`, `CircleProps`←`SquareProps`,
+      `FieldErrorIconProps`←`IconProps` — and only `circle`'s is on a live page, where `center.mdx`
+      already says in prose that Circle takes Square's props. Aliases are resolved per directory
+      *before* the fold, because `SpanProps` is a different local alias in three of them
 - [ ] editable — S:editable · 9/10 ⚠
       **`connect()` emits a top-level `size: 1`** when `autoResize` — collides with the `size` style
       prop. **`styleSource` is not what closes it, because `styleSource` does not exist**: the
@@ -1031,9 +1057,13 @@ The seam's own suite gained the test that would have caught it.
       rule the dropped `.radiomark` class would have supplied. Four `variant` values, not five: no
       `plain`
 - [x] separator — A:separator · —/1
-      **Its page needs `responsive: { separator: ["orientation"] }`**, and the prediction held:
-      `separator-with-responsive-orientation` writes `orientation={{ base: "vertical", sm:
-      "horizontal" }}`, which no default `staticCss` run generates. One line in `apps/docs/
+      **Its page needs `responsive: { separator: ["orientation"] }`**, and the prediction held only
+      in the weak sense: `separator-with-responsive-orientation` writes `orientation={{ base:
+      "vertical", sm: "horizontal" }}`, which no default `staticCss` run generates — but the `drawer`
+      ship re-measured this row too, and *this app* generates
+      `sm:separator--orientation_horizontal` with the line deleted, by extracting the literal out of
+      the example file. The line buys the full matrix a consumer needs and this page never renders:
+      both values at all five named breakpoints, against extraction's one. One line in `apps/docs/
       panda.config.ts` beside `dialog`'s; the rule lands in the recipe **body** as `["*", …]`, which
       is `defineChakraConfig`'s own doing and needed no code change here.
       **The one row in this batch with a body of its own.** `orientation` is a recipe variant *and* a

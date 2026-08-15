@@ -57,6 +57,13 @@ export default defineChakraConfig({
   // the recipe *body* as `["*", …]` — a body's `staticCss` is assigned over whatever the config
   // asked for that recipe, so the body is the only place a rule for one of ours lands, and the
   // `"*"` in front of it is what keeps the import gate's own entry for that recipe.
-  responsive: { dialog: ["size"], separator: ["orientation"] },
+  //
+  // `drawer` is the third, and it measured the same as `dialog` did rather than the way the roadmap
+  // predicted. `drawer-with-conditional-variants` writes `placement={{ mdDown: "bottom", md: "end"
+  // }}`; deleting the line leaves **both** of those classes in the sheet, because the object literal
+  // is in this app's own scanned source. What the line actually adds here is the other three
+  // placements at every named breakpoint — 25 positioner rules where extraction alone leaves 6, and
+  // 12kB of sheet — which is the surface a consumer needs and this app never renders.
+  responsive: { dialog: ["size"], drawer: ["placement"], separator: ["orientation"] },
   outdir: "styled-system",
 });

@@ -34,13 +34,14 @@ progress fills work.
 
 ## Status
 
-**Pre-release. Nothing is published.** 61 of the roadmap's 110 components ship from the package:
+**Pre-release. Nothing is published.** 62 of the roadmap's 110 components ship from the package:
 every layout and typography primitive but `image`, `input-element` and `input-group`; every
 atomic-recipe component but `input-addon`; all fifteen multi-part components that need no state
-machine; and the first four rows that run on one — Collapsible, Dialog, Popover and Tabs, each over
-its Zag machine. Forty-one machine-backed rows and the four utility rows are still ahead.
+machine; and the first five rows that run on one — Collapsible, Dialog, Drawer, Popover and Tabs.
+Drawer shares Dialog's machine; the rest each have their own. Forty machine-backed rows and the four
+utility rows are still ahead.
 
-Around them: the `chakra` factory and the style-prop surface, the Panda preset, a docs site (54
+Around them: the `chakra` factory and the style-prop surface, the Panda preset, a docs site (55
 component pages plus the get-started, styling and theming tracks) that installs the packages by name
 and runs its own Panda build, and a three-project Vitest harness — client, server-render, and real
 Chromium, where every computed-style assertion lives.

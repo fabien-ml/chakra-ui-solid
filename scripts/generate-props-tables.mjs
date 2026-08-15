@@ -188,14 +188,22 @@ function interfacesIn(sourceFile) {
  * `FlexProps` is that plus the element's — so a table built from `*Props` alone comes out **empty**
  * for half this tier: a page with a heading, column titles and no rows.
  *
- * So every exported interface is read, and the ones a `*Props` extends *from the same component*
- * are folded into it: their rows become its rows, and their names leave its `extends` list, which
- * otherwise sends a reader after a name no page documents. What stays in that list is the
- * genuinely inherited surface — `HTMLChakraProps`, `JsxStyleProps` — which is named rather than
- * expanded.
+ * So every exported interface is read, and the ones a `*Props` extends *from anywhere under
+ * `components/`* are folded into it: their rows become its rows, and their names leave its
+ * `extends` list, which otherwise sends a reader after a name no page documents. What stays in that
+ * list is the genuinely inherited surface — `HTMLChakraProps`, `JsxStyleProps`, `UnstyledProp` —
+ * which lives in `core` and `styled-system`, is named rather than expanded, and is documented once
+ * on the Composition page.
+ *
+ * **The index is the whole library, not the one directory**, because the directory boundary was
+ * only ever a proxy for that distinction. `CreateDrawerProps extends CreateDialogProps` crosses it,
+ * and a directory-scoped index left Drawer's Root with nine rows and a pointer to a name Dialog's
+ * own page had already folded away — a reader following it lands nowhere. Names cannot collide
+ * across the index: every one of these is exported from the same package barrel, so two components
+ * declaring the same interface name is already a build error upstream of here.
  */
-function foldLocalOptions(interfaces) {
-  const byName = new Map(interfaces.map((entry) => [entry.name, entry]));
+function foldLocalOptions(interfaces, index) {
+  const byName = new Map(index.map((entry) => [entry.name, entry]));
 
   /**
    * The whole local chain, not one link of it. Collapsible is three deep — `CreateCollapsibleProps`
@@ -319,17 +327,17 @@ function leadWithTheNamesakeOf(component, interfaces) {
   return [...interfaces].sort((a, b) => Number(b.name === namesake) - Number(a.name === namesake));
 }
 
-// `__tests__` is a directory beside the components, not one of them. Left in, it emits a
-// `__tests__` "component" whose only rows are the universal three — a table no page asks for and
-// every consumer of this file then has to filter out by name.
-const componentDirs = readdirSync(componentsSrc, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && !entry.name.startsWith("__"))
-  .map((entry) => entry.name)
-  .sort();
-
-const tables = {};
-for (const component of componentDirs) {
-  const files = sourceFilesFor(join(componentsSrc, component));
+/**
+ * Every exported interface one directory declares, each row's type already spelled out through that
+ * directory's own aliases.
+ *
+ * Aliases are resolved here rather than after the fold because they are **local by name**:
+ * `SpanProps` is `ComponentProps<"span">` in three directories and a different helper in a fourth,
+ * so one library-wide alias map would print one component's spelling on another's table. Resolving
+ * before anything is folded means a row carries the text its own author wrote wherever it lands.
+ */
+function interfacesUnder(componentDir) {
+  const files = sourceFilesFor(componentDir);
   const program = ts.createProgram(files, {
     target: ts.ScriptTarget.ES2022,
     jsx: ts.JsxEmit.Preserve,
@@ -341,26 +349,45 @@ for (const component of componentDirs) {
   });
 
   const aliases = new Map();
+  const declared = [];
   for (const file of files) {
     const sourceFile = program.getSourceFile(file);
-    if (sourceFile !== undefined) {
-      for (const [name, text] of typeAliasesIn(sourceFile)) {
-        aliases.set(name, text);
-      }
+    if (sourceFile === undefined) {
+      continue;
     }
+    for (const [name, text] of typeAliasesIn(sourceFile)) {
+      aliases.set(name, text);
+    }
+    declared.push(...interfacesIn(sourceFile));
   }
 
+  return declared.map((entry) => ({
+    ...entry,
+    props: entry.props.map((row) => ({ ...row, type: aliases.get(row.type) ?? row.type })),
+  }));
+}
+
+// `__tests__` is a directory beside the components, not one of them. Left in, it emits a
+// `__tests__` "component" whose only rows are the universal three — a table no page asks for and
+// every consumer of this file then has to filter out by name.
+const componentDirs = readdirSync(componentsSrc, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory() && !entry.name.startsWith("__"))
+  .map((entry) => entry.name)
+  .sort();
+
+// Parsed up front rather than inside the emit loop, because the fold reads across directories: a
+// Drawer is the dialog machine under a second name, so `CreateDrawerProps extends CreateDialogProps`
+// and Dialog has to be on hand before Drawer's first table is built.
+const interfacesByComponent = new Map(
+  componentDirs.map((component) => [component, interfacesUnder(join(componentsSrc, component))]),
+);
+const everyInterface = [...interfacesByComponent.values()].flat();
+
+const tables = {};
+for (const component of componentDirs) {
   const interfaces = withRecipeDefaults(
     component,
-    foldLocalOptions(
-      files.flatMap((file) => {
-        const sourceFile = program.getSourceFile(file);
-        return sourceFile === undefined ? [] : interfacesIn(sourceFile);
-      }),
-    ).map((entry) => ({
-      ...entry,
-      props: entry.props.map((row) => ({ ...row, type: aliases.get(row.type) ?? row.type })),
-    })),
+    foldLocalOptions(interfacesByComponent.get(component), everyInterface),
   );
 
   // A component that is one bare `chakra()` call declares no `*Props` interface at all — Center and
