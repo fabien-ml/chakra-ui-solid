@@ -3,11 +3,13 @@
 **UX > DX > simpler > smarter.** When two designs both work, the one that is better to live in wins —
 the consumer's experience first, then the experience of whoever maintains this. Fewer files is a
 tiebreaker between designs that are equally good to work in, never an argument against a layout that
-is easier to navigate: one declaration per file beats one file holding all of them, and mirroring an
-upstream tree beats inventing a flatter one. A session ends with an exported component, not with a
-new script, document, ledger or gate — if the work seems to need one, say so and ask. Keep replies
-and commits short; that is a habit, not a rule with a number attached, and nothing in this repo caps
-a file's length.
+is easier to navigate, and mirroring an upstream tree beats inventing a flatter one. **Weigh a file
+by what it costs to maintain, never by counting the declarations in it** — a thousand lines holding
+unrelated concerns wants splitting, while two hundred lines of sibling part components that differ
+in one dimension is a single thing to read and does not. A session ends with an exported component,
+not with a new script, document, ledger or gate — if the work seems to need one, say so and ask.
+Keep replies and commits short; that is a habit, not a rule with a number attached, and nothing in
+this repo caps a file's length.
 
 `chakra-ui-solid` is Chakra UI v3's component API for SolidJS — *as close to v3 parity as is
 achievable without runtime CSS-in-JS*. Everything that is not code is in `__internal__/`:
