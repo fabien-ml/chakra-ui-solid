@@ -2,9 +2,8 @@ import { expectNoA11yViolations, mount } from "@chakra-ui-solid/internal-test-ut
 import { button } from "@chakra-ui-solid/styled-system/recipes";
 import type { JsxStyleProps } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
-import { createSignal, flush } from "solid-js";
+import { createSignal, flush, omit } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
-import { omitProps } from "../../utils/omit-props";
 import { mergeProps } from "../../zag/merge-props";
 import { renderStyled } from "../render-styled";
 
@@ -47,7 +46,7 @@ interface StyleProbeProps extends StyledProps {
 function StyleProbe(props: StyleProbeProps): JSX.Element {
   return renderStyled<StyledProps>({
     as: "button",
-    props: omitProps(props, "recipeSize") as StyledProps,
+    props: omit(props, "recipeSize") as StyledProps,
     recipeClass: () => (props.recipeSize ? button({ size: props.recipeSize }) : undefined),
   });
 }

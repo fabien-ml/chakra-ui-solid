@@ -1,6 +1,5 @@
-import { omitProps } from "@chakra-ui-solid/core";
 import { token } from "@chakra-ui-solid/styled-system/tokens";
-import { type Component, merge } from "solid-js";
+import { type Component, merge, omit } from "solid-js";
 import { Grid, type GridProps } from "../grid";
 
 export interface SimpleGridProps extends Omit<GridProps, "columns"> {
@@ -38,7 +37,7 @@ function toPx(value: string | number): string {
  * `minChildWidth` wins when both are given, which is Chakra's precedence.
  */
 export const SimpleGrid: Component<SimpleGridProps> = (props) => {
-  const gridProps = merge(omitProps(props, "columns", "minChildWidth"), {
+  const gridProps = merge(omit(props, "columns", "minChildWidth"), {
     get templateColumns(): string | undefined {
       const minChildWidth = props.minChildWidth;
       if (minChildWidth !== undefined) {

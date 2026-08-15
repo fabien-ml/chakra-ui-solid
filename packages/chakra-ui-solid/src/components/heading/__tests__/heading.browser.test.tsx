@@ -63,7 +63,7 @@ describe("Heading", () => {
     mounted = mountElement(() => <Heading size="lg">Some heading text</Heading>);
 
     expect(mounted.element.hasAttribute("size")).toBe(false);
-    // The seam omits those keys by literal name, because `omitProps` narrows by the keys it is
+    // The seam omits those keys by literal name, because `omit` narrows by the keys it is
     // handed and a `string[]` narrows nothing. This is what keeps the two lists one list: a variant
     // added to the recipe upstream and not to the tuple would reach the DOM as an attribute.
     expect(heading.variantKeys).toEqual(["size"]);

@@ -4,12 +4,11 @@ import {
   createRenderStrategy,
   type HTMLChakraProps,
   mergeProps,
-  omitProps,
   renderStyled,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, merge, Show } from "solid-js";
+import { type Component, merge, omit, Show } from "solid-js";
 import type {
   DrawerActionTriggerProps,
   DrawerBackdropProps,
@@ -46,8 +45,8 @@ export const DrawerTrigger: Component<DrawerTriggerProps> = (props) => {
   const ctx = useDrawerContext();
 
   // `value` is a machine argument, not a DOM attribute — Ark splits it out for the same reason.
-  // `omitProps` on a lazy props source stays lazy.
-  const localProps = omitProps(props, "value");
+  // `omit` on a lazy props source stays lazy.
+  const localProps = omit(props, "value");
 
   const elementProps = mergeProps(() => {
     const triggerProps = ctx.getTriggerProps({ value: props.value });

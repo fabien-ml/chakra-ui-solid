@@ -1,6 +1,6 @@
-import { chakra, type HTMLChakraProps, omitProps, withDefaults } from "@chakra-ui-solid/core";
+import { chakra, type HTMLChakraProps, withDefaults } from "@chakra-ui-solid/core";
 import type { ComponentProps, JSX } from "@solidjs/web";
-import { type Component, children, Match, Show, Switch } from "solid-js";
+import { type Component, children, Match, omit, Show, Switch } from "solid-js";
 import { AbsoluteCenter } from "../absolute-center";
 import { Span } from "../span";
 import { Spinner } from "../spinner";
@@ -60,14 +60,7 @@ export const Loader: Component<LoaderProps> = (props) => {
     spinnerPlacement: "start",
   } satisfies Partial<LoaderProps>);
 
-  const wrapperProps = omitProps(
-    merged,
-    "children",
-    "spinner",
-    "spinnerPlacement",
-    "text",
-    "visible",
-  );
+  const wrapperProps = omit(merged, "children", "spinner", "spinnerPlacement", "text", "visible");
 
   // **Both slots are resolved once and read only through the accessor.** A JSX-valued *prop*
   // compiles to a lazy getter that runs `createComponent` on **every** read, and each of these is

@@ -2,7 +2,6 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
-  omitProps,
   type PresetVariant,
   renderStyled,
   withContextDefaults,
@@ -12,6 +11,7 @@ import { type IconVariantProps, icon } from "@chakra-ui-solid/styled-system/reci
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import type { Component } from "solid-js";
+import { omit } from "solid-js";
 
 /**
  * The one variant spelled out rather than inherited from the generated `IconVariantProps`, so it
@@ -47,7 +47,7 @@ export interface IconProps extends HTMLChakraProps<"svg"> {
 type IconElementProps = ComponentProps<"svg">;
 
 /**
- * The recipe's own inputs, as literal keys rather than `icon.variantKeys` — `omitProps` narrows the
+ * The recipe's own inputs, as literal keys rather than `icon.variantKeys` — `omit` narrows the
  * returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` keeps the
  * two lists one list at compile time, and the test asserts the same equality at runtime.
  */
@@ -112,13 +112,13 @@ export const Icon: Component<IconProps> = (props) => {
   });
 
   // Every read goes to `merged`, never to `props`: `withDefaults` copies nothing, so
-  // `omitProps(props, …)` would hand the element a bag with both defaults missing.
+  // `omit(props, …)` would hand the element a bag with both defaults missing.
   return renderStyled<IconElementProps>({
     as: (merged.as ?? "svg") as ValidComponent,
     render: merged.render,
     // The variant keys are the recipe's inputs, not the element's: forwarded, `size` would reach the
     // DOM as an attribute, and `svg` has no such attribute for it to mean anything.
-    props: omitProps(merged, ...VARIANT_KEYS) as unknown as IconElementProps,
+    props: omit(merged, ...VARIANT_KEYS) as unknown as IconElementProps,
     recipeClass,
   });
 };

@@ -108,7 +108,7 @@ describe("Button", () => {
     for (const attribute of ["size", "variant", "loading", "spinnerPlacement"]) {
       expect(mounted.element.hasAttribute(attribute)).toBe(false);
     }
-    // `omitProps` narrows by the literal keys it is handed, so a variant added to the recipe
+    // `omit` narrows by the literal keys it is handed, so a variant added to the recipe
     // upstream and not to the tuple would reach the DOM as an attribute — with nothing else to say
     // so.
     expect(button.variantKeys).toEqual([...VARIANT_KEYS]);

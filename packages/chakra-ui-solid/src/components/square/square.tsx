@@ -1,13 +1,7 @@
-import {
-  type CssProp,
-  chakra,
-  composeCss,
-  type HTMLChakraProps,
-  omitProps,
-} from "@chakra-ui-solid/core";
+import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
 import { square } from "@chakra-ui-solid/styled-system/patterns";
 import type { SystemProperties } from "@chakra-ui-solid/styled-system/types";
-import { type Component, merge } from "solid-js";
+import { type Component, merge, omit } from "solid-js";
 
 export interface SquareProps extends Omit<HTMLChakraProps<"div">, "size"> {
   /** The width and height of the square — one value for both, taking whatever `width` takes. */
@@ -28,7 +22,7 @@ export interface SquareProps extends Omit<HTMLChakraProps<"div">, "size"> {
  * whichever scope reads the class — that is what keeps a signal-backed `size` reactive.
  */
 export const Square: Component<SquareProps> = (props) => {
-  const elementProps = merge(omitProps(props, "size", "css"), {
+  const elementProps = merge(omit(props, "size", "css"), {
     get css(): CssProp {
       return composeCss(square.raw({ size: props.size }), props.css);
     },

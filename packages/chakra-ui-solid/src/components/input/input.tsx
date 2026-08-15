@@ -3,7 +3,6 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   mergeProps,
-  omitProps,
   type PresetVariant,
   renderStyled,
   withContextDefaults,
@@ -12,6 +11,7 @@ import { type InputVariantProps, input } from "@chakra-ui-solid/styled-system/re
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import type { Component } from "solid-js";
+import { omit } from "solid-js";
 import { useOptionalFieldContext } from "../field/field-context";
 
 /**
@@ -43,7 +43,7 @@ export interface InputProps extends HTMLChakraProps<"input"> {
 type InputElementProps = ComponentProps<"input">;
 
 /**
- * The recipe's own inputs, as literal keys rather than `input.variantKeys` — `omitProps` narrows
+ * The recipe's own inputs, as literal keys rather than `input.variantKeys` — `omit` narrows
  * the returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` keeps
  * the two lists one list at compile time, and the test asserts the same equality at runtime.
  */
@@ -103,7 +103,7 @@ export const Input: Component<InputProps> = (props) => {
     render: fromContext.render,
     // The variant keys are the recipe's inputs, not the element's: forwarded, `size` would reach
     // the DOM as an attribute.
-    props: omitProps(merged, ...VARIANT_KEYS) as unknown as InputElementProps,
+    props: omit(merged, ...VARIANT_KEYS) as unknown as InputElementProps,
     recipeClass,
   });
 };

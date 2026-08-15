@@ -3,7 +3,6 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   mergeProps,
-  omitProps,
   type PresetVariant,
   renderStyled,
   withContextDefaults,
@@ -12,7 +11,7 @@ import { type TextareaVariantProps, textarea } from "@chakra-ui-solid/styled-sys
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { autoresizeTextarea } from "@zag-js/auto-resize";
-import { type Component, createEffect, createSignal } from "solid-js";
+import { type Component, createEffect, createSignal, omit } from "solid-js";
 import { useOptionalFieldContext } from "../field/field-context";
 
 /**
@@ -52,7 +51,7 @@ export interface TextareaProps extends HTMLChakraProps<"textarea"> {
 type TextareaElementProps = ComponentProps<"textarea">;
 
 /**
- * The recipe's own inputs, as literal keys rather than `textarea.variantKeys` — `omitProps` narrows
+ * The recipe's own inputs, as literal keys rather than `textarea.variantKeys` — `omit` narrows
  * the returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` keeps
  * the two lists one list at compile time, and the test asserts the same equality at runtime.
  *
@@ -130,7 +129,7 @@ export const Textarea: Component<TextareaProps> = (props) => {
     // these keys, so the two bags answer the same thing.
     as: (fromContext.as ?? "textarea") as ValidComponent,
     render: fromContext.render,
-    props: omitProps(merged, ...NON_ELEMENT_KEYS) as unknown as TextareaElementProps,
+    props: omit(merged, ...NON_ELEMENT_KEYS) as unknown as TextareaElementProps,
     recipeClass,
     ref: setElement,
   });

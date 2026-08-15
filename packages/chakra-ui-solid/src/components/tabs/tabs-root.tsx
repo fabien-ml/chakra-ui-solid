@@ -1,7 +1,6 @@
 import {
   createSlotClasses,
   mergeProps,
-  omitProps,
   type RenderProp,
   type RenderStrategyProps,
   renderStyled,
@@ -12,7 +11,7 @@ import {
   tabs as tabsRecipe,
 } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, merge } from "solid-js";
+import { type Component, merge, omit } from "solid-js";
 import { createTabs } from "./create-tabs";
 import type {
   CreateTabsReturn,
@@ -27,7 +26,7 @@ type DivProps = ComponentProps<"div">;
 
 /**
  * The Root's own inputs, which are machine arguments, mounting props or recipe variants rather than
- * DOM attributes. Literal keys rather than `tabs.props`, because `omitProps` narrows the returned
+ * DOM attributes. Literal keys rather than `tabs.props`, because `omit` narrows the returned
  * props by the keys it is handed and a `string[]` narrows nothing; `satisfies` is what keeps this
  * list and the interface one list.
  *
@@ -159,7 +158,7 @@ export const TabsRoot: Component<TabsRootProps> = (props) => {
 
   const elementProps = mergeProps(
     () => store.getRootProps(),
-    omitProps(merged, ...ROOT_OWN_KEYS),
+    omit(merged, ...ROOT_OWN_KEYS),
   ) as DivProps;
 
   return renderRoot(store, merged, elementProps);
@@ -175,12 +174,12 @@ export const TabsRootProvider: Component<TabsRootProviderProps> = (props) => {
   // Letting it through would hand this Root a string where a machine belongs.
   const merged = withContextDefaults<TabsRootProviderProps>(
     props,
-    omitProps(usePropsContext(), "value"),
+    omit(usePropsContext(), "value"),
   );
 
   const elementProps = mergeProps(
     () => merged.value.getRootProps(),
-    omitProps(merged, ...ROOT_PROVIDER_OWN_KEYS),
+    omit(merged, ...ROOT_PROVIDER_OWN_KEYS),
   ) as DivProps;
 
   return renderRoot(merged.value, merged, elementProps);

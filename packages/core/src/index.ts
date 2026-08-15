@@ -102,8 +102,6 @@ export type { EventHandlerEvent } from "./utils/events";
 export { composeEventHandlers } from "./utils/events";
 export type { KeyboardEventFor, KeyboardHandler } from "./utils/keymap";
 export { createKeyboardHandler } from "./utils/keymap";
-export type { OmitProps } from "./utils/omit-props";
-export { omitProps } from "./utils/omit-props";
 export { runIfFunction } from "./utils/run-if-function";
 export { useMachine } from "./zag/machine";
 export { mergeProps } from "./zag/merge-props";

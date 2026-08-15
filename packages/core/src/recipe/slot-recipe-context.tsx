@@ -1,10 +1,10 @@
 import type { JSX, ValidComponent } from "@solidjs/web";
 import type { Accessor, Component, Context } from "solid-js";
+import { omit } from "solid-js";
 import { createComponentContext } from "../internal/create-component-context";
 import type { RenderProp } from "../render/render";
 import { renderStyled } from "../render-styled/render-styled";
 import { withContextDefaults } from "../utils/defaults";
-import { omitProps } from "../utils/omit-props";
 import { createPropsContext, type PropsProviderProps } from "./props-context";
 import { createSlotClasses, type SlotRecipeFn } from "./recipe";
 
@@ -34,7 +34,7 @@ export interface SlotRecipeContextOptions<
    */
   recipe?: SlotRecipeFn<Slot, Variants>;
   /**
-   * The recipe's own inputs, as **literal** keys rather than `recipe.variantKeys` — `omitProps`
+   * The recipe's own inputs, as **literal** keys rather than `recipe.variantKeys` — `omit`
    * narrows by the keys it is given, and a `string[]` narrows nothing. Never Panda's
    * `splitVariantProps`, which destructures eagerly and so snapshots every style prop passed beside
    * the variant.
@@ -175,8 +175,7 @@ export function createSlotRecipeContext<
           render: bag.render,
           // The variant keys are the recipe's inputs, not the element's: forwarded, `size` would
           // reach the DOM as an attribute, and it is not a style prop for `renderStyled` to swallow.
-          props:
-            variantKeys.length === 0 ? bag : (omitProps(bag, ...variantKeys) as ElementPropsBag),
+          props: variantKeys.length === 0 ? bag : (omit(bag, ...variantKeys) as ElementPropsBag),
           recipeClass: () => slots()[slot],
         });
 

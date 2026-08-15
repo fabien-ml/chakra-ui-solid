@@ -1,12 +1,7 @@
-import {
-  mergeProps,
-  omitProps,
-  renderStyled,
-  withContextDefaults,
-  withDefaults,
-} from "@chakra-ui-solid/core";
+import { mergeProps, renderStyled, withContextDefaults, withDefaults } from "@chakra-ui-solid/core";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import type { Component } from "solid-js";
+import { omit } from "solid-js";
 import { createField } from "./create-field";
 import type { FieldRootProps } from "./field.types";
 import {
@@ -80,7 +75,7 @@ export const FieldRoot: Component<FieldRootProps> = (props) => {
 
   const elementProps = mergeProps(
     () => store.getRootProps(),
-    omitProps(merged, ...ROOT_ONLY_KEYS),
+    omit(merged, ...ROOT_ONLY_KEYS),
   ) as DivProps;
 
   return (

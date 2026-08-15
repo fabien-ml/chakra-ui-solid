@@ -2,13 +2,12 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   mergeProps,
-  omitProps,
   type PresetVariant,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import { type SkeletonVariantProps, skeleton } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
-import { type Component, For } from "solid-js";
+import { type Component, For, omit } from "solid-js";
 import { Circle, type CircleProps } from "../circle";
 import { Stack, type StackProps } from "../stack";
 
@@ -118,11 +117,11 @@ export const SkeletonText: Component<SkeletonTextProps> = (props) => {
     Array.from({ length: merged.loading ? merged.noOfLines : 1 }, (_, index) => index);
 
   // Every read goes to `merged`, never to `props`: `withDefaults` copies nothing, so
-  // `omitProps(props, …)` would hand the lines a bag with the defaults missing. Bound to a name
+  // `omit(props, …)` would hand the lines a bag with the defaults missing. Bound to a name
   // rather than spread as a call expression — Solid's compiler wraps a call in a JSX spread in a
   // memo, and reading that memo inside the child's body is the `STRICT_READ_UNTRACKED` diagnostic
   // `mount()` fails on.
-  const lineProps = omitProps(merged, ...TEXT_KEYS, "loading");
+  const lineProps = omit(merged, ...TEXT_KEYS, "loading");
 
   // `merged.rootProps` is bound to a name for the same reason, and it is the sharper case: a JSX
   // spread of a **member expression** compiles to a memo, and the untracked read then lands in the

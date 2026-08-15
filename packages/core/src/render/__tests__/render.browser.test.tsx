@@ -3,9 +3,9 @@
 // tests. Same author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
 import { expectNoA11yViolations, mount } from "@chakra-ui-solid/internal-test-utils";
+import { omit } from "solid-js";
 import { describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { omitProps } from "../../utils/omit-props";
 import { renderElement } from "../render";
 
 describe("renderElement", () => {
@@ -119,7 +119,7 @@ describe("renderElement", () => {
           (consumerRef as (element: HTMLElement) => void)(element);
         }
       };
-      return <a href="/docs" {...omitProps(props, "ref")} ref={applyFunctionRefOnly} />;
+      return <a href="/docs" {...omit(props, "ref")} ref={applyFunctionRefOnly} />;
     }
 
     let internal: HTMLElement | undefined;

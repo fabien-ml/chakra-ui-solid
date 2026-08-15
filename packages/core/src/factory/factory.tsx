@@ -19,12 +19,11 @@ import type {
   RecipeVariantRecord,
 } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-
+import { omit } from "solid-js";
 import type { RenderProp } from "../render/render";
 import type { PatchHtmlProps } from "../render-styled/html-props";
 import { type RenderStyledOptions, renderStyled } from "../render-styled/render-styled";
 import { withDefaults } from "../utils/defaults";
-import { omitProps } from "../utils/omit-props";
 
 /**
  * The seven tags whose SVG geometry attributes Panda claims as style props.
@@ -200,7 +199,7 @@ function chakraFactory<Element extends ValidComponent, Variants extends RecipeVa
     // every key of the bag eagerly, which snapshots each one and collapses the reactivity of every
     // style prop passed alongside a variant. `variantKeys` is fixed for a given recipe, so
     // partitioning by it reads nothing.
-    const elementProps = variantKeys.length === 0 ? merged : omitProps(merged, ...variantKeys);
+    const elementProps = variantKeys.length === 0 ? merged : omit(merged, ...variantKeys);
 
     return renderStyled<ElementPropsBag>({
       as: (merged.as ?? element) as ValidComponent,

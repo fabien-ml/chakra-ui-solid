@@ -111,7 +111,7 @@ describe("Icon", () => {
     mounted = mountElement<SVGElement>(() => <Icon size="lg" />);
 
     expect(mounted.element.hasAttribute("size")).toBe(false);
-    // The tuple omits by literal name, because `omitProps` narrows by the keys it is handed and a
+    // The tuple omits by literal name, because `omit` narrows by the keys it is handed and a
     // `string[]` narrows nothing. This is what keeps the two lists one list: a variant added to the
     // recipe upstream and not to the tuple would reach the DOM as an attribute.
     expect(icon.variantKeys).toEqual(["size"]);

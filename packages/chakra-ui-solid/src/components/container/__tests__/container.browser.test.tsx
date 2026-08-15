@@ -79,7 +79,7 @@ describe("Container", () => {
 
     expect(mounted.element.hasAttribute("centerContent")).toBe(false);
     expect(mounted.element.hasAttribute("centercontent")).toBe(false);
-    // The seam omits those keys by literal name, because `omitProps` narrows by the keys it is
+    // The seam omits those keys by literal name, because `omit` narrows by the keys it is
     // handed and a `string[]` narrows nothing. This is what keeps the two lists one list: a variant
     // added to the recipe and not to the tuple would reach the DOM as an attribute.
     expect(container.variantKeys).toEqual(["centerContent", "fluid"]);

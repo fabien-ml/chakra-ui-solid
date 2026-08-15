@@ -1,13 +1,7 @@
-import {
-  chakra,
-  composeStyle,
-  type HTMLChakraProps,
-  omitProps,
-  withDefaults,
-} from "@chakra-ui-solid/core";
+import { chakra, composeStyle, type HTMLChakraProps, withDefaults } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import type { JSX } from "@solidjs/web";
-import { type Component, merge } from "solid-js";
+import { type Component, merge, omit } from "solid-js";
 
 export interface AspectRatioProps extends Omit<HTMLChakraProps<"div">, "aspectRatio"> {
   /** Width over height — `16 / 9`, `4 / 3`, `1`. @default 4 / 3 */
@@ -62,7 +56,7 @@ const DEFAULT_RATIO = 4 / 3;
 export const AspectRatio: Component<AspectRatioProps> = (props) => {
   const merged = withDefaults(props, { ratio: DEFAULT_RATIO } satisfies Partial<AspectRatioProps>);
 
-  const elementProps = merge(omitProps(merged, "ratio", "style", "class"), {
+  const elementProps = merge(omit(merged, "ratio", "style", "class"), {
     get style(): JSX.HTMLAttributes<HTMLElement>["style"] {
       return composeStyle(
         { "--aspect-ratio-padding": `${(1 / merged.ratio) * 100}%` },

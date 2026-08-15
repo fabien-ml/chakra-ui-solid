@@ -2,7 +2,6 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
-  omitProps,
   type PresetVariant,
   renderStyled,
   withContextDefaults,
@@ -10,7 +9,7 @@ import {
 import { type SeparatorVariantProps, separator } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
-import { type Component, merge } from "solid-js";
+import { type Component, merge, omit } from "solid-js";
 
 /**
  * The three variants spelled out rather than inherited from the generated `SeparatorVariantProps`,
@@ -46,7 +45,7 @@ export interface SeparatorProps extends Omit<HTMLChakraProps<"span">, "orientati
 type SeparatorElementProps = ComponentProps<"span">;
 
 /**
- * The recipe's own inputs, as literal keys rather than `separator.variantKeys` — `omitProps`
+ * The recipe's own inputs, as literal keys rather than `separator.variantKeys` — `omit`
  * narrows the returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies`
  * keeps the two lists one list at compile time, and the test asserts the same equality at runtime.
  */
@@ -112,7 +111,7 @@ export const Separator: Component<SeparatorProps> = (props) => {
         return plainOrientation();
       },
     },
-    omitProps(merged, ...VARIANT_KEYS),
+    omit(merged, ...VARIANT_KEYS),
   );
 
   return renderStyled<SeparatorElementProps>({

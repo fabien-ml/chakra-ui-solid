@@ -1,5 +1,5 @@
-import { omitProps } from "@chakra-ui-solid/core";
 import type { Component } from "solid-js";
+import { omit } from "solid-js";
 import { Group, type GroupProps } from "../group";
 import { type ButtonProps, ButtonPropsProvider, VARIANT_KEYS } from "./button";
 
@@ -49,7 +49,7 @@ export const ButtonGroup: Component<ButtonGroupProps> = (props) => {
   // compiler in a function, `merge` turns a function source into a memo, and the receiving
   // component then reads that memo in its body — the `STRICT_READ_UNTRACKED` diagnostic `mount()`
   // fails on (measured). The same reason `Group` and `Loader` name theirs.
-  const groupProps = omitProps(props, ...VARIANT_KEYS);
+  const groupProps = omit(props, ...VARIANT_KEYS);
 
   return (
     <ButtonPropsProvider value={variantProps}>

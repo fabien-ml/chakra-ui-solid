@@ -12,7 +12,7 @@
  */
 
 import { mergeProps as composeProps } from "@zag-js/core";
-import { $PROXY, createMemo, untrack } from "solid-js";
+import { createMemo, untrack } from "solid-js";
 
 export type MaybeAccessor<T> = T | (() => T);
 
@@ -119,8 +119,19 @@ export function mergeProps<T, U, V, W>(
  * at construction. A proxy has neither problem, and the untracked-read workaround this file used to
  * carry is gone rather than silenced.
  *
- * Reporting `$PROXY` matters: it is how `merge`/`omit` recognise a lazy props source and stay lazy
- * themselves instead of falling back to copying descriptors once.
+ * **`$PROXY` is deliberately not reported**, which is what keeps SolidJS's own `omit` usable on the
+ * result. `omit` returns a proxy for a source that claims `$PROXY` and forwards every key it is not
+ * hiding — including the internal symbol `merge` tags its results with, listing the sources they
+ * were built from. `merge` unwraps that tag whenever it finds it, so an omit of a merged bag was
+ * mistaken for the bag itself and the hidden keys came back: recipe variants and style props
+ * reached the DOM as attributes on every component composed through a `render` prop. Staying
+ * unrecognised sends `merge`/`omit` down their non-proxy path, which copies descriptors — the
+ * getters below, so values stay live — and cannot carry a symbol across.
+ *
+ * What that costs is a key set frozen at each copy, rather than re-enumerated. The bag itself stays
+ * dynamic (`ownKeys` is still a trap), so a key that appears later is visible to anything reading
+ * this object directly; only a downstream copy predates it. `renderStyled` already partitions its
+ * style props once for the same reason.
  */
 export function mergeProps(...rawSources: unknown[]) {
   // Each accessor source becomes a memo, exactly as SolidJS's own `merge` does. Without it every
@@ -134,14 +145,11 @@ export function mergeProps(...rawSources: unknown[]) {
   return new Proxy(
     {},
     {
-      get(_, key, receiver) {
-        if (key === $PROXY) {
-          return receiver;
-        }
+      get(_, key) {
         return typeof key === "string" ? readKey(sources, key) : undefined;
       },
       has(_, key) {
-        return key === $PROXY || hasKey(sources, key);
+        return hasKey(sources, key);
       },
       ownKeys() {
         return unionOfKeys(sources);

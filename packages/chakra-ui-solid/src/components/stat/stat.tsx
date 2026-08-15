@@ -2,7 +2,6 @@ import {
   chakra,
   createSlotRecipeContext,
   type HTMLChakraProps,
-  omitProps,
   type PresetVariant,
   type PropsProviderProps,
   renderStyled,
@@ -14,7 +13,7 @@ import {
 } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
-import { type Component, merge } from "solid-js";
+import { type Component, merge, omit } from "solid-js";
 import { ArrowDownIcon, ArrowUpIcon } from "../icons";
 
 /** The six names the slot recipe carries — the anatomy's parts exactly. */
@@ -36,7 +35,7 @@ export interface StatVariantProps {
 
 /**
  * Shared by the Root and {@link StatGroup}, so the two cannot disagree about which keys belong to
- * the recipe. Never `recipe.variantKeys`: `omitProps` narrows by the keys it is given, and a
+ * the recipe. Never `recipe.variantKeys`: `omit` narrows by the keys it is given, and a
  * `string[]` narrows nothing.
  */
 const VARIANT_KEYS = ["size"] as const;
@@ -188,7 +187,7 @@ export const StatDownIndicator: Component<StatDownIndicatorProps> = createTrendI
  * The one component in this family the styling seam does not mint: it is a plain `div` with no slot
  * of its own, and its job is to supply `size` to every Stat below it. That makes it the library's
  * second props-context writer, after `ButtonGroup`, and it splits the variant off the same way —
- * a named object of getters into the provider, `omitProps` for the element — rather than through
+ * a named object of getters into the provider, `omit` for the element — rather than through
  * Panda's `splitVariantProps`, which destructures eagerly and would stop a changed `size`
  * re-resolving.
  *
@@ -216,7 +215,7 @@ export const StatGroup: Component<StatGroupProps> = (props) => {
   } satisfies Partial<StatGroupProps>);
   // Named, and spread as an identifier — a call expression in a JSX spread compiles to a memo the
   // receiving component then reads untracked.
-  const groupProps = omitProps(merged, ...VARIANT_KEYS);
+  const groupProps = omit(merged, ...VARIANT_KEYS);
 
   return (
     <StatPropsProvider value={variantProps}>

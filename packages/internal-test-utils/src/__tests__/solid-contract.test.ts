@@ -53,7 +53,8 @@ describe("solid-js contract", () => {
   });
 
   describe("merge undoes an omit of a proxied source", () => {
-    // Depended on by `omitProps` in `@chakra-ui-solid/core`, which exists *only* because of this.
+    // **What the adapter's `mergeProps` withholds `$PROXY` for.** This is the defect it steers
+    // around, and the pair below is the tripwire on that decision.
     //
     // `merge` tags its result with an internal symbol holding the sources it was built from, and
     // unwraps that tag whenever it finds it on a source it is handed. `omit` forwards every key of
@@ -63,8 +64,11 @@ describe("solid-js contract", () => {
     // this put recipe variants and style props on the DOM as attributes wherever the props bag was
     // a proxy, which is every component reached through a `render` prop.
     //
-    // If stable stops flattening a source it did not build — or stops letting `omit` forward the
-    // tag — `omitProps` becomes a rename of `omit`: delete it.
+    // Both branches are pinned because the fix rests on the *difference* between them: a bag that
+    // does not claim `$PROXY` takes the second path, where the tag cannot survive. If stable stops
+    // flattening a source it did not build, stops letting `omit` forward the tag, or stops
+    // branching on `$PROXY` at all, the adapter can report `$PROXY` again — and if only the last
+    // of those changes, it *must*, or the first test here goes green while components break.
     it("restores the omitted keys", () => {
       const lazy = merge(() => ({ id: "x", size: "sm" }));
       const rest = omit(lazy, "size");
