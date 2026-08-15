@@ -57,14 +57,15 @@ describe("the generated stylesheet", () => {
     expect(scopes).toContain(".dark");
   });
 
-  it("resolves the Switch cursor our one-key delta restores", () => {
-    // `@chakra-ui/panda-preset` registers the Switch `cursor` token under the misspelled key
-    // `swittch` while its own Switch recipe references `cursor: "switch"`. Panda emits the raw
-    // value when a token does not resolve, so upstream emits `cursor: switch` — which no browser
-    // parses. `@chakra-ui/react`'s runtime theme spells both `switch` and loses nothing, which
-    // makes this a preset defect rather than Chakra behavior, so inheriting it would be a
-    // divergence from the thing we are porting. Our preset adds one token key, `cursor.switch`.
+  it("resolves the Switch cursor upstream's misspelled token key drops", () => {
+    // `@chakra-ui/panda-preset` registers the Switch `cursor` token under the key `swittch` while
+    // its own Switch recipe references `cursor: "switch"`. Panda emits the raw value when a token
+    // does not resolve, so upstream emits `cursor: switch` — which no browser parses.
+    // `@chakra-ui/react`'s runtime theme spells both `switch` and loses nothing, which makes this a
+    // preset defect rather than Chakra behavior. The vendored `chakra/tokens/cursor.ts` is ours, so
+    // the key is simply spelled `switch` there and no dead variable is emitted beside it.
     expect(css).toMatch(/--chakra-cursor-switch:/);
+    expect(css).not.toMatch(/--chakra-cursor-swittch/);
     expect(css).not.toMatch(/cursor:\s*switch\s*[;}]/);
   });
 

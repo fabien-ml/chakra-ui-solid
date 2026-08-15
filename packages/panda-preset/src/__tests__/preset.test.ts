@@ -83,12 +83,13 @@ describe("theme.extend — the recipe declarations", () => {
 });
 
 describe("theme.extend — the token delta", () => {
-  it("adds `cursor.switch` and nothing else", () => {
-    // The upstream preset registers this token as `swittch` while its own Switch recipe references
-    // `cursor: "switch"`, so the reference resolves to nothing and Switch silently loses its
-    // pointer cursor. One key restores it. Any *second* token here would be a theme fork, which
-    // `CLAUDE.md`, *Reference use* forbids — this assertion is what keeps the delta one key wide.
-    expect(extension?.tokens).toEqual({ cursor: { switch: { value: "pointer" } } });
+  it("declares no tokens of its own", () => {
+    // The library layer owns no part of the token table: tokens are the loaded preset's, and this
+    // one is stacked over whichever preset a consumer names. A key here would be a theme fork that
+    // no swap can dislodge — `cursor.switch` used to be one, patching a token the vendored
+    // `chakra/tokens/cursor.ts` misspelled `swittch`, and it belongs in that file now that the file
+    // is ours.
+    expect(extension?.tokens).toBeUndefined();
   });
 
   it("extends the theme rather than replacing it", () => {

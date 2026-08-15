@@ -35,7 +35,10 @@ export const cursor = defineTokens.cursor({
   slider: {
     value: "default",
   },
-  swittch: {
+  // Deliberate divergence from the vendored file: upstream spells this key `swittch` while its own
+  // Switch slot recipe references `cursor: "switch"`, so the token never resolved and Switch lost
+  // its pointer cursor.
+  switch: {
     value: "pointer",
   },
 });

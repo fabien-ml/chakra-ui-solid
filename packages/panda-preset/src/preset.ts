@@ -127,8 +127,8 @@ function jsxHintsForEvery(keys: string[]): Record<string, { jsx: string[] }> {
  * **Everything below the chain is the library layer, and it survives a preset swap.** A consumer's
  * own preset is appended after this one by `defineChakraConfig()`, so its bare `theme.recipes`
  * replaces all 75 bodies — measured — while an earlier preset's `theme.extend` merges back on top of
- * whatever replaced them. That is what keeps the `jsx` hints and the `cursor.switch` token alive
- * across the swap, and why they are written in this position rather than in `chakraPreset`.
+ * whatever replaced them. That is what keeps the `jsx` hints alive across the swap, and why they are
+ * written in this position rather than in `chakraPreset`.
  *
  * `utilities` and `conditions` are in the same position for a different reason: they are not
  * swappable at all. Every name in them is compiled into the published `styled-system/` — a utility's
@@ -145,18 +145,6 @@ export function createChakraSolidPreset() {
       extend: {
         recipes: jsxHintsForEvery(recipeKeys),
         slotRecipes: jsxHintsForEvery(slotRecipeKeys),
-
-        tokens: {
-          cursor: {
-            // The preset registers this token as `swittch` while its own Switch recipe references
-            // `cursor: "switch"` — so the reference resolves to nothing and Switch silently loses
-            // its `cursor: pointer`, where Chakra's runtime theme (which spells both `switch`) does
-            // not. That makes it a preset defect rather than Chakra behavior, and inheriting it
-            // would be a divergence from what we are porting. One token key restores it; the
-            // slot-recipe key stays misspelled and untouched (`roadmap.md` §1.3c).
-            switch: { value: "pointer" },
-          },
-        },
       },
     },
 

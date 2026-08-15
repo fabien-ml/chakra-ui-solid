@@ -27,8 +27,8 @@ describe("defineChakraConfig — where a consumer's preset lands", () => {
   it("puts it after ours, which is the position that replaces bodies", () => {
     // Panda resolves each theme key from the **last** preset that declares it and takes that value
     // whole. Ours first is therefore the whole mechanism: a consumer's `theme.recipes` outranks
-    // `chakraPreset`'s, while our `theme.extend` — the `jsx` hints and the `cursor.switch` token —
-    // merges back on top of whatever replaced them.
+    // `chakraPreset`'s, while our `theme.extend` — the `jsx` hints — merges back on top of whatever
+    // replaced them.
     const presets = defineChakraConfig({ ...MINIMAL, presets: [fixturePreset] }).presets ?? [];
 
     expect(presets).toHaveLength(2);
