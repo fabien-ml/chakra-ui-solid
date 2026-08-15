@@ -1,4 +1,5 @@
 import buttonServerHtml from "virtual:hydration-fixture?id=button";
+import { registerRecipeDefaults } from "@chakra-ui-solid/core";
 import {
   hydrateFixture,
   type MountedElement,
@@ -8,7 +9,7 @@ import { button } from "@chakra-ui-solid/styled-system/recipes";
 import type { JSX } from "@solidjs/web";
 import { createSignal, flush } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
-import { Button, VARIANT_KEYS } from "../button";
+import { Button, ButtonPropsProvider, VARIANT_KEYS } from "../button";
 import { ButtonGroup } from "../button-group";
 import { CloseButton } from "../close-button";
 import { IconButton } from "../icon-button";
@@ -365,5 +366,69 @@ describe("Button — server render, then hydrate", () => {
     expect(getComputedStyle(hidden).visibility).toBe("hidden");
 
     dispose();
+  });
+});
+
+/**
+ * A consumer's `defaultVariants` are invisible to the recipe function we call — it was compiled
+ * against *ours*, with `{ size: "md", variant: "solid" }` baked in — so `registerRecipeDefaults`
+ * hands them over at runtime. Button is the atomic half of that; the slot half is in
+ * `packages/core/src/recipe/__tests__/slot-recipe-context.browser.test.tsx`.
+ *
+ * Heights rather than classes, because `button--size_sm` is a class Panda computes and never
+ * injects: `sm` is 36px and our `md` is 40px, so the pixel is the only thing that says the
+ * registered value reached a rule.
+ */
+describe("Button — a consumer's registered recipe defaults", () => {
+  /** A consumer's own generated `button`, whose `defaultVariants` say `sm` where Chakra's say `md`. */
+  const consumerButton = (size: string) => ({
+    button: { __name__: "button", getVariantProps: () => ({ button: "__ignore__", size }) },
+  });
+
+  // The registry is module-global, so a registration here would otherwise outlive its test.
+  afterEach(() => registerRecipeDefaults({}));
+
+  it("sizes a bare Button off the consumer's default, not ours", () => {
+    registerRecipeDefaults(consumerButton("sm"));
+    mounted = mountElement(() => <Button>Save</Button>);
+
+    expect(getComputedStyle(mounted.element).height).toBe("36px");
+    // `variant` is unregistered, so our compiled `solid` still fills it — registering is overriding
+    // the keys named, never opting out of the rest.
+    expect(getComputedStyle(mounted.element).backgroundColor).not.toBe(TRANSPARENT);
+  });
+
+  it("keeps the consumer's default when a wrapper forwards an unset `size`", () => {
+    // Button builds its variant bag as `() => ({ size: merged.size, variant: merged.variant })`, so
+    // an unset `size` is a key that *exists* with `undefined`. Merged by presence — a spread — that
+    // key wins, deletes the registered `sm`, and every button silently returns to our 40px.
+    registerRecipeDefaults(consumerButton("sm"));
+    mounted = mountElement(() => <Button size={undefined}>Save</Button>);
+
+    expect(getComputedStyle(mounted.element).height).toBe("36px");
+  });
+
+  it("loses to a props context, which still loses to a prop", () => {
+    // Four layers over one recipe key, and they are four different mechanisms:
+    // `ButtonPropsProvider` is a per-subtree override, a registration is app-wide, and the compiled
+    // `md` is what the recipe function was built with. `lg` is 44px, `xl` 48px, `sm` 36px, `md` 40px
+    // — so the two heights here place the registration below the provider, and the test above
+    // places it above the compiled default.
+    registerRecipeDefaults(consumerButton("sm"));
+    mounted = mountElement(() => (
+      <ButtonPropsProvider value={{ size: "xl" }}>
+        <Button data-probe="local" size="lg">
+          Local
+        </Button>
+        <Button data-probe="provided">Provided</Button>
+      </ButtonPropsProvider>
+    ));
+
+    expect(getComputedStyle(queryElement(mounted.container, '[data-probe="local"]')).height).toBe(
+      "44px",
+    );
+    expect(
+      getComputedStyle(queryElement(mounted.container, '[data-probe="provided"]')).height,
+    ).toBe("48px");
   });
 });

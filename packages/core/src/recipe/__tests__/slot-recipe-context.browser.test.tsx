@@ -5,6 +5,7 @@ import { createContext, createSignal, flush, useContext } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import { renderStyled } from "../../render-styled/render-styled";
 import { withContextDefaults } from "../../utils/defaults";
+import { registerRecipeDefaults } from "../recipe-defaults";
 import { createSlotRecipeContext } from "../slot-recipe-context";
 
 /**
@@ -263,5 +264,67 @@ describe("createSlotRecipeContext — the seams a hand-written body uses", () =>
     ));
 
     expect(probe(container, "reader").textContent).toBe("inside");
+  });
+});
+
+/**
+ * A slot recipe's half of `registerRecipeDefaults`. The atomic half is in
+ * `button.browser.test.tsx`; what is specific here is that one registered value has to reach *every*
+ * slot, since `createSlotClasses` resolves the recipe once for all of them.
+ *
+ * `--card-padding` is set per size on the root and read by the body, so the body's padding is the
+ * measurement: `md` (ours) is 24px, `sm` (the consumer's) is 16px, `lg` is 28px.
+ */
+describe("createSlotRecipeContext — a consumer's registered recipe defaults", () => {
+  /** A consumer's own generated `card`, whose `defaultVariants` say `sm` where Chakra's say `md`. */
+  const consumerCard = (size: string) => ({
+    card: { __name__: "card", getVariantProps: () => ({ size }) },
+  });
+
+  // The registry is module-global, so a registration here would otherwise outlive its test.
+  afterEach(() => registerRecipeDefaults({}));
+
+  it("dresses every slot at the consumer's default size", () => {
+    registerRecipeDefaults(consumerCard("sm"));
+
+    const container = render(() => (
+      <Root data-probe="root">
+        <Body data-probe="body" />
+      </Root>
+    ));
+
+    expect(getComputedStyle(probe(container, "body")).padding).toBe("16px");
+  });
+
+  it("still loses to a size on the Root, and to one supplied from above", () => {
+    registerRecipeDefaults(consumerCard("sm"));
+
+    const container = render(() => (
+      <PropsProvider value={{ size: "md" }}>
+        <Root size="lg">
+          <Body data-probe="local" />
+        </Root>
+        <Root>
+          <Body data-probe="provided" />
+        </Root>
+      </PropsProvider>
+    ));
+
+    expect(getComputedStyle(probe(container, "local")).padding).toBe("28px");
+    expect(getComputedStyle(probe(container, "provided")).padding).toBe("24px");
+  });
+
+  it("keeps the consumer's default when a Root forwards `size` unset", () => {
+    // The seam builds its variant bag as `{ size: props.size }`, so an unset `size` is a key that
+    // exists with `undefined` — and a spread would let it delete what was registered.
+    registerRecipeDefaults(consumerCard("sm"));
+
+    const container = render(() => (
+      <Root size={undefined}>
+        <Body data-probe="body" />
+      </Root>
+    ));
+
+    expect(getComputedStyle(probe(container, "body")).padding).toBe("16px");
   });
 });

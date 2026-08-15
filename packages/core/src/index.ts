@@ -81,6 +81,7 @@ export type { RecipeClassOptions, RecipeFn, SlotRecipeFn } from "./recipe/recipe
 export { createRecipeClass, createSlotClasses } from "./recipe/recipe";
 export type { RecipeContext, RecipeContextOptions } from "./recipe/recipe-context";
 export { createRecipeContext } from "./recipe/recipe-context";
+export { registerRecipeDefaults } from "./recipe/recipe-defaults";
 export type {
   SlotRecipeContext,
   SlotRecipeContextOptions,

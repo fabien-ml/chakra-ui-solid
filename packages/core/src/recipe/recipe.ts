@@ -1,4 +1,5 @@
 import { type Accessor, createMemo } from "solid-js";
+import { applyRegisteredDefaults } from "./recipe-defaults";
 
 /**
  * The shape Panda generates for an **atomic** recipe — `button`, `heading`, `badge`. Calling it
@@ -9,6 +10,13 @@ import { type Accessor, createMemo } from "solid-js";
  */
 export interface RecipeFn<Variants> {
   (variantProps?: Variants): string;
+  /**
+   * The recipe's key in the consumer's config, and what `registerRecipeDefaults` records against.
+   * Optional only because Panda's generated `.d.ts` omits it — every recipe its generator emits
+   * carries the property at runtime, so requiring it here would leave `ButtonRecipe` and every
+   * sibling failing to satisfy this interface.
+   */
+  __name__?: string;
   variantKeys: Array<keyof Variants & string>;
   splitVariantProps<Props extends Variants>(props: Props): [Variants, Record<string, unknown>];
 }
@@ -19,6 +27,13 @@ export interface RecipeFn<Variants> {
  */
 export interface SlotRecipeFn<Slot extends string, Variants> {
   (variantProps?: Variants): Record<Slot, string>;
+  /**
+   * The recipe's key in the consumer's config, and what `registerRecipeDefaults` records against.
+   * Optional only because Panda's generated `.d.ts` omits it — every recipe its generator emits
+   * carries the property at runtime, so requiring it here would leave `ButtonRecipe` and every
+   * sibling failing to satisfy this interface.
+   */
+  __name__?: string;
   variantKeys: Array<keyof Variants & string>;
   splitVariantProps<Props extends Variants>(props: Props): [Variants, Record<string, unknown>];
 }
@@ -36,13 +51,19 @@ export interface RecipeClassOptions<Variants> {
  * `useChakraContext()` → `sys.cva(...)`; we import the generated function directly, so the variant
  * **API** is Chakra's — same variant names, same defaults, same `unstyled` opt-out — and only the
  * resolution differs (`plan.md` §3.6).
+ *
+ * The one thing the imported function cannot know is the consumer's own `defaultVariants`, since it
+ * was compiled against ours. `applyRegisteredDefaults` supplies them, and it is read **inside** the
+ * memo so a re-resolve picks up a registration that happened after this component's module loaded.
  */
 export function createRecipeClass<Variants>(
   recipe: RecipeFn<Variants>,
   options: RecipeClassOptions<Variants>,
 ): Accessor<string | undefined> {
   return createMemo(() =>
-    options.unstyled?.() === true ? undefined : recipe(options.variantProps()),
+    options.unstyled?.() === true
+      ? undefined
+      : recipe(applyRegisteredDefaults(recipe.__name__, options.variantProps())),
   );
 }
 
@@ -58,13 +79,16 @@ export function createRecipeClass<Variants>(
  * `unstyled` here is the Root-level opt-out and empties every slot. A part can also opt out for
  * itself by passing `unstyled` to `renderStyled`, which suppresses its own `recipeClass`
  * (`component-blueprint.md` §4.4).
+ *
+ * `applyRegisteredDefaults` supplies the consumer's own `defaultVariants`, which the precompiled
+ * recipe cannot see, and one registered value reaches every slot because the recipe resolves once.
  */
 export function createSlotClasses<Slot extends string, Variants>(
   recipe: SlotRecipeFn<Slot, Variants>,
   options: RecipeClassOptions<Variants>,
 ): Accessor<Record<Slot, string>> {
   return createMemo(() => {
-    const slots = recipe(options.variantProps());
+    const slots = recipe(applyRegisteredDefaults(recipe.__name__, options.variantProps()));
     if (options.unstyled?.() !== true) {
       return slots;
     }
