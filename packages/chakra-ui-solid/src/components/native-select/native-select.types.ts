@@ -1,4 +1,4 @@
-import type { HTMLChakraProps, PropsProviderProps, SkinVariant } from "@chakra-ui-solid/core";
+import type { HTMLChakraProps, PresetVariant, PropsProviderProps } from "@chakra-ui-solid/core";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
 /** The two states the Root resolves once and the two parts below it read. */
@@ -18,10 +18,10 @@ export interface NativeSelectVariantProps {
   /** How the control is drawn — `outline` is a full border, `subtle` fills it, `plain` and `ghost`
    * drop the box. */
   variant?: ConditionalValue<
-    "outline" | "subtle" | "plain" | "ghost" | SkinVariant<"nativeSelect", "variant">
+    "outline" | "subtle" | "plain" | "ghost" | PresetVariant<"nativeSelect", "variant">
   >;
   /** The height, horizontal padding and text style together. */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | "xl" | SkinVariant<"nativeSelect", "size">>;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | "xl" | PresetVariant<"nativeSelect", "size">>;
 }
 
 /** The Root's own props, without the `div`'s — what a `NativeSelect.PropsProvider` may supply. */

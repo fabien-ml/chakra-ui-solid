@@ -21,7 +21,7 @@ import {
   chakra,
   createRecipeClass,
   type HTMLChakraProps,
-  type SkinVariant,
+  type PresetVariant,
 } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import { type CheckmarkVariantProps, checkmark } from "@chakra-ui-solid/styled-system/recipes";
@@ -41,7 +41,7 @@ export interface CheckmarkProps extends HTMLChakraProps<"svg"> {
    *
    * @default "md"
    */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | SkinVariant<"checkmark", "size">>;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | PresetVariant<"checkmark", "size">>;
   /**
    * How the box is painted once it is checked — `solid` fills it with the palette, `outline` and
    * `inverted` only recolour the border, `subtle` tints it, and `plain` draws no box at all.
@@ -49,7 +49,7 @@ export interface CheckmarkProps extends HTMLChakraProps<"svg"> {
    * @default "solid"
    */
   variant?: ConditionalValue<
-    "solid" | "outline" | "subtle" | "plain" | "inverted" | SkinVariant<"checkmark", "variant">
+    "solid" | "outline" | "subtle" | "plain" | "inverted" | PresetVariant<"checkmark", "variant">
   >;
   /**
    * Give the box an opaque background, so it covers whatever it sits on rather than letting it

@@ -2,8 +2,8 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   renderStyled,
-  type SkinVariant,
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -28,7 +28,7 @@ export interface IconProps extends HTMLChakraProps<"svg"> {
    * @default "inherit"
    */
   size?: ConditionalValue<
-    "inherit" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | SkinVariant<"icon", "size">
+    "inherit" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | PresetVariant<"icon", "size">
   >;
   /**
    * Whether the glyph can take focus. Chakra sets it, so we do — it is the attribute that keeps a

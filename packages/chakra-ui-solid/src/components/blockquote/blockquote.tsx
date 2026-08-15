@@ -1,8 +1,8 @@
 import {
   createSlotRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   type PropsProviderProps,
-  type SkinVariant,
 } from "@chakra-ui-solid/core";
 import {
   type BlockquoteVariantProps as BlockquoteRecipeVariants,
@@ -24,12 +24,12 @@ export type BlockquoteSlot = "root" | "icon" | "content" | "caption";
  */
 export interface BlockquoteVariantProps {
   /** Which edge the quote and its caption line up against, and how the text is aligned. */
-  justify?: ConditionalValue<"start" | "center" | "end" | SkinVariant<"blockquote", "justify">>;
+  justify?: ConditionalValue<"start" | "center" | "end" | PresetVariant<"blockquote", "justify">>;
   /**
    * The rule down the leading edge — `subtle` draws it in the muted palette step, `solid` in the
    * solid one, and `plain` leaves the padding without the rule.
    */
-  variant?: ConditionalValue<"subtle" | "solid" | "plain" | SkinVariant<"blockquote", "variant">>;
+  variant?: ConditionalValue<"subtle" | "solid" | "plain" | PresetVariant<"blockquote", "variant">>;
 }
 
 /** The Root's own props, without the `figure`'s — what a `Blockquote.PropsProvider` may supply. */

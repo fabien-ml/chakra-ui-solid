@@ -1,8 +1,8 @@
 import {
   createSlotRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   type PropsProviderProps,
-  type SkinVariant,
 } from "@chakra-ui-solid/core";
 import {
   type StatusVariantProps as StatusRecipeVariants,
@@ -25,7 +25,7 @@ export interface StatusVariantProps {
    * The label's type scale. The dot follows it rather than taking a size of its own — it is
    * `0.64em`, so it scales with whatever the root's font size resolves to.
    */
-  size?: ConditionalValue<"sm" | "md" | "lg" | SkinVariant<"status", "size">>;
+  size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"status", "size">>;
 }
 
 /** The Root's own props, without the `div`'s — what a `Status.PropsProvider` may supply. */

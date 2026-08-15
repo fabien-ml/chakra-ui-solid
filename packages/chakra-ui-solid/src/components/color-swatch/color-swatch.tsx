@@ -3,8 +3,8 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   renderStyled,
-  type SkinVariant,
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -46,7 +46,7 @@ export interface ColorSwatchProps extends HTMLChakraProps<"span"> {
     | "2xl"
     | "inherit"
     | "full"
-    | SkinVariant<"colorSwatch", "size">
+    | PresetVariant<"colorSwatch", "size">
   >;
   /**
    * The corner treatment — `rounded` is the theme's own radius, `square` has none, `circle` is a
@@ -54,7 +54,7 @@ export interface ColorSwatchProps extends HTMLChakraProps<"span"> {
    *
    * @default "rounded"
    */
-  shape?: ConditionalValue<"square" | "circle" | "rounded" | SkinVariant<"colorSwatch", "shape">>;
+  shape?: ConditionalValue<"square" | "circle" | "rounded" | PresetVariant<"colorSwatch", "shape">>;
 }
 
 /** The DOM props ColorSwatch forwards to the rendered element. */

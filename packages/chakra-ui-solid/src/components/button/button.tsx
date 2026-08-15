@@ -2,8 +2,8 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   renderStyled,
-  type SkinVariant,
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -22,7 +22,13 @@ import { Loader } from "../loader";
  * background or border at all.
  */
 export type ButtonVariant = ConditionalValue<
-  "solid" | "subtle" | "surface" | "outline" | "ghost" | "plain" | SkinVariant<"button", "variant">
+  | "solid"
+  | "subtle"
+  | "surface"
+  | "outline"
+  | "ghost"
+  | "plain"
+  | PresetVariant<"button", "variant">
 >;
 
 /**
@@ -38,7 +44,7 @@ export interface ButtonProps extends HTMLChakraProps<"button"> {
    * @default "md"
    */
   size?: ConditionalValue<
-    "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | SkinVariant<"button", "size">
+    "2xs" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | PresetVariant<"button", "size">
   >;
   /**
    * How much of the colour palette the button spends — `solid` is the filled one, `plain` carries

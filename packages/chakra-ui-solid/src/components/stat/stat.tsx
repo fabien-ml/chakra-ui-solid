@@ -2,9 +2,9 @@ import {
   chakra,
   createSlotRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   type PropsProviderProps,
   renderStyled,
-  type SkinVariant,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import {
@@ -30,7 +30,7 @@ export interface StatVariantProps {
    * The type scale of the **value alone** — `xl`, `2xl`, `3xl`. The label, the help text and the
    * unit hold their own sizes at every step, so this is the one number that grows.
    */
-  size?: ConditionalValue<"sm" | "md" | "lg" | SkinVariant<"stat", "size">>;
+  size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"stat", "size">>;
 }
 
 /**

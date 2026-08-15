@@ -2,8 +2,8 @@ import {
   chakra,
   createSlotRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   type PropsProviderProps,
-  type SkinVariant,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import {
@@ -45,9 +45,9 @@ export interface TableVariantProps {
   /** Draw a rule between columns as well as between rows. */
   showColumnBorder?: ConditionalValue<boolean>;
   /** `line` rules each row off; `outline` boxes the whole table and tints the header. */
-  variant?: ConditionalValue<"line" | "outline" | SkinVariant<"table", "variant">>;
+  variant?: ConditionalValue<"line" | "outline" | PresetVariant<"table", "variant">>;
   /** The cell padding and the table's type scale. */
-  size?: ConditionalValue<"sm" | "md" | "lg" | SkinVariant<"table", "size">>;
+  size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"table", "size">>;
 }
 
 /** The Root's own props, without the `table`'s — what a `Table.RootPropsProvider` may supply. */

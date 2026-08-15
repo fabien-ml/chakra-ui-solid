@@ -74,13 +74,13 @@ export { LocaleProvider, useFilter, useLocaleContext } from "./locale/locale";
 export { createMachineStore } from "./machine-store/machine-store";
 export type { CreatePresenceProps, Presence } from "./presence/presence";
 export { createPresence } from "./presence/presence";
+export type { PresetVariant, RecipeVariantOverrides } from "./recipe/preset-variants";
 export type { PropsContext, PropsProviderProps } from "./recipe/props-context";
 export { createPropsContext } from "./recipe/props-context";
 export type { RecipeClassOptions, RecipeFn, SlotRecipeFn } from "./recipe/recipe";
 export { createRecipeClass, createSlotClasses } from "./recipe/recipe";
 export type { RecipeContext, RecipeContextOptions } from "./recipe/recipe-context";
 export { createRecipeContext } from "./recipe/recipe-context";
-export type { RecipeVariantOverrides, SkinVariant } from "./recipe/skin-variants";
 export type {
   SlotRecipeContext,
   SlotRecipeContextOptions,

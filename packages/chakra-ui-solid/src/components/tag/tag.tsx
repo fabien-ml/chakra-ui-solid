@@ -1,9 +1,9 @@
 import {
   createSlotRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   type PropsProviderProps,
   renderStyled,
-  type SkinVariant,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import {
@@ -27,13 +27,13 @@ export type TagSlot = "root" | "label" | "closeTrigger" | "startElement" | "endE
  */
 export interface TagVariantProps {
   /** The label's type scale, the tag's minimum height, and the size of a start or end element. */
-  size?: ConditionalValue<"sm" | "md" | "lg" | "xl" | SkinVariant<"tag", "size">>;
+  size?: ConditionalValue<"sm" | "md" | "lg" | "xl" | PresetVariant<"tag", "size">>;
   /**
    * How much of the palette the tag spends — `solid` fills it, `subtle` tints it, `outline` is a
    * ring alone, and `surface` is the tint plus the ring.
    */
   variant?: ConditionalValue<
-    "subtle" | "solid" | "outline" | "surface" | SkinVariant<"tag", "variant">
+    "subtle" | "solid" | "outline" | "surface" | PresetVariant<"tag", "variant">
   >;
 }
 

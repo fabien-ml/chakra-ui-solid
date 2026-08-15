@@ -1,4 +1,8 @@
-import { createRecipeContext, type HTMLChakraProps, type SkinVariant } from "@chakra-ui-solid/core";
+import {
+  createRecipeContext,
+  type HTMLChakraProps,
+  type PresetVariant,
+} from "@chakra-ui-solid/core";
 import { type LinkVariantProps, link } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
@@ -13,7 +17,7 @@ export interface LinkProps extends HTMLChakraProps<"a"> {
    *
    * @default "plain"
    */
-  variant?: ConditionalValue<"underline" | "plain" | SkinVariant<"link", "variant">>;
+  variant?: ConditionalValue<"underline" | "plain" | PresetVariant<"link", "variant">>;
 }
 
 const { withContext, PropsProvider } = createRecipeContext<LinkProps, LinkVariantProps>({
