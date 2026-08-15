@@ -2,6 +2,7 @@ import type { Config } from "@pandacss/dev";
 import { chakraSolidPreset } from "./preset";
 import { recipeGatePlugin } from "./recipe-gate-plugin";
 import { recipeKeys, slotRecipeKeys, variantKeysFor } from "./recipe-registry";
+import { systemModulePlugin } from "./system-module-plugin";
 
 /**
  * Which recipe variants should also be generated at every breakpoint, so a consumer can write
@@ -39,28 +40,24 @@ export type ResponsiveGrain = true | string[] | Record<string, string[]>;
 export type ConditionalGrain = Record<string, string[] | Record<string, string[]>>;
 
 /**
- * The keys that decide a class *name* on both sides of the published-runtime boundary.
+ * The keys that decide what Panda **extracts**, and which theme it extracts against.
  *
- * In Panda's external-package model the consumer does not regenerate the runtime: `css()` comes from
- * our published `@chakra-ui-solid/styled-system` and their Panda run produces only the stylesheet.
- * Our runtime emits `p_4`, so a config that hashes, prefixes or re-separates produces a sheet in
- * which every class we compute is absent. Nothing errors; every component renders naked.
+ * None of them names a class: `hash`, `prefix` and `separator` used to sit here too, because a
+ * precompiled runtime had already committed to a spelling and a sheet that named its rules
+ * differently contained none of them. One Panda run now produces both the names and the rules, so
+ * that whole failure is unconstructable and those three are the consumer's again.
+ *
+ * These four are not, and each fails the same way if it is changed: a stylesheet that is missing
+ * rules nobody asked Panda for, with nothing anywhere to say so.
  */
-type LockedKey =
-  | "eject"
-  | "hash"
-  | "prefix"
-  | "separator"
-  | "jsxFramework"
-  | "jsxFactory"
-  | "importMap";
+type LockedKey = "eject" | "jsxFramework" | "jsxFactory" | "importMap";
 
 /**
  * Locked keys carry a message *as their type*, so passing one reads as a sentence in the editor
  * rather than as `Type 'boolean' is not assignable to type 'never'`.
  */
 type LockedKeys = {
-  [Key in LockedKey]?: `\`${Key}\` is set by defineChakraConfig, because our published runtime already committed to these names`;
+  [Key in LockedKey]?: `\`${Key}\` is set by defineChakraConfig, because it decides what Panda extracts rather than what it names`;
 };
 
 /**
@@ -120,25 +117,13 @@ export type ChakraConfigOverrides = Omit<Config, LockedKey | "theme" | "staticCs
     components?: string[];
   };
 
-/** Every knob a consumer's stylesheet has to agree with our published runtime on. */
+/** Every knob whose value decides whether a rule is generated at all. */
 const LOCKED = {
   // Drops `@pandacss/preset-panda`, Panda's default theme. Without it Panda's token palette merges
   // alongside Chakra's, the two disagree about `colors.gray.*`, and the result is a theme that is
   // neither — with nothing to say so. It costs the consumer no utilities, because
   // `chakraSolidPreset` declares `@pandacss/preset-base` itself.
   eject: true,
-  // Must match the setting our published `styled-system` was generated with. See `LockedKey`.
-  hash: false,
-  // `cssVar` only, so class names keep their bare `p_4` spelling and everything above about `hash`
-  // and `separator` still holds. `chakra` is the React version's own `cssVarsPrefix` default, and
-  // the namespace earns its keep twice: it is what a reader who knows Chakra expects to find, and
-  // it keeps our ~547 token variables — `--spacing-4`, `--colors-red-500`, `--sizes-md` — out of
-  // a collision with the identically-named ones an app declares for itself.
-  prefix: { cssVar: "chakra" },
-  // Set rather than inherited. Panda's default is `_` on both sides, so today the two agree by
-  // coincidence and a consumer who wrote `separator: "="` met no resistance at all — their sheet
-  // would carry `p=4` while our runtime went on computing `p_4`.
-  separator: "_",
   // With this set, Panda's default `jsxStyleProps: "all"` extracts style props from **any**
   // capitalized JSX component in the consumer's source, with no factory and no registration —
   // which is the only reason `<Box p={4}>` in their files produces a rule at all.
@@ -180,8 +165,8 @@ const LOCKED = {
  *
  * It owns the merge, which is the whole reason it is a function rather than a fragment to spread.
  * Spreading is shallow, so a fragment puts the merge burden on the consumer and every key they get
- * wrong fails the same way: a stylesheet whose class names our compiled runtime never emits. Three
- * classes of key, and the type carries all three:
+ * wrong fails the same way: a stylesheet that is missing rules, with nothing anywhere to say so.
+ * Three classes of key, and the type carries all three:
  *
  * - **Locked** — `LockedKey` above. A type error to pass, stripped by `...LOCKED` if one arrives
  *   from an untyped `panda.config.js`, and re-imposed on the fully merged config by
@@ -189,10 +174,11 @@ const LOCKED = {
  * - **Merged** — `presets` and `plugins` concatenate after ours; `theme` is narrowed to its
  *   `extend`, which is the form Panda deep-merges rather than replaces; `staticCss` has no such
  *   form and is unioned by `chakraStaticCss`.
- * - **Theirs** — `include`, `outdir`, `globalCss`, `preflight`, `conditions`, `cssVarRoot`, `hooks`
- *   and the rest, passed straight through. `conditions`, `utilities`, `globalCss` and `patterns`
- *   are safe unnarrowed because Panda merges those **per name**, so a clash is only ever on the one
- *   name the consumer wrote.
+ * - **Theirs** — `include`, `outdir`, `globalCss`, `conditions`, `cssVarRoot`, `hooks`, and the
+ *   naming knobs `hash`, `separator` and `prefix`, passed straight through. `conditions`,
+ *   `utilities`, `globalCss` and `patterns` are safe unnarrowed because Panda merges those **per
+ *   name**, so a clash is only ever on the one name the consumer wrote. `preflight` and `prefix`
+ *   are theirs with a **default**: ours is written before their keys, so whatever they pass wins.
  *
  * **Not `mergeConfigs`.** It is not exported from `@pandacss/dev`, so a consumer who installed only
  * the peer dependency cannot reach it, and it returns `any` — which discards the `Config` types
@@ -214,15 +200,28 @@ export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
     // Before their keys, so `preflight: false` and `preflight: { scope }` both win. After their
     // keys is where the locked ones go, for the opposite reason.
     preflight: true,
+    // A default rather than a lock, and `cssVar` rather than the string spelling, which prefixes
+    // class names too. `chakra` is the React version's own `cssVarsPrefix` default: it is what a
+    // reader who knows Chakra expects to find, and it keeps ~547 token variables — `--spacing-4`,
+    // `--colors-red-500`, `--sizes-md` — out of a collision with the identically-named ones an app
+    // declares for itself. A consumer who wants their own namespace now takes it, because the
+    // variables their sheet declares and the ones their `token.var()` names come out of one run.
+    prefix: { cssVar: "chakra" },
     ...(rest as Config),
     ...LOCKED,
     // Ours first, so a consumer's preset is later and therefore wins on a conflict.
     presets: [chakraSolidPreset, ...(presets ?? [])],
     theme: themeWithRecipeRules(theme, placed.bodies),
     staticCss: chakraStaticCss(placed.unplaceable, { extend, ...bareStaticCss }),
-    // The gate reads the consumer's imports and adds the recipes they reach; `lockedKeysPlugin`
-    // stays last, so it corrects after a consumer's own plugins have had their say.
-    plugins: [...(plugins ?? []), recipeGatePlugin(components), lockedKeysPlugin],
+    // The gate reads the consumer's imports and adds the recipes they reach; the system module is
+    // written into `outdir` once the run's artifacts are on disk; `lockedKeysPlugin` stays last, so
+    // it corrects after a consumer's own plugins have had their say.
+    plugins: [
+      ...(plugins ?? []),
+      recipeGatePlugin(components),
+      systemModulePlugin(),
+      lockedKeysPlugin,
+    ],
   };
 }
 
@@ -433,10 +432,11 @@ const lockedKeysPlugin: Plugin = {
       // which respects a level a consumer may have turned down. This one is about a config that
       // would otherwise fail in total silence.
       console.warn(
-        `[chakra-ui-solid] restoring ${overridden.join(", ")} in panda.config — our published ` +
-          `runtime emits class names like "p_4" and variables like "--chakra-spacing-4", and a ` +
-          `stylesheet naming either differently contains no such rule and declares no such ` +
-          `variable, so every component would render unstyled with no error anywhere.`,
+        `[chakra-ui-solid] restoring ${overridden.join(", ")} in panda.config — these four decide ` +
+          `what Panda extracts, and which theme it extracts against. Changed, the stylesheet comes ` +
+          `out missing rules nobody asked for: every \`<chakra.button>\` in your source, every ` +
+          `style prop, or Chakra's palette merged with Panda's. Nothing errors, and the page is ` +
+          `simply unstyled.`,
       );
 
       return { ...config, ...LOCKED };
@@ -448,9 +448,8 @@ function lockedKeysOverriddenIn(config: Config): string[] {
   return Object.entries(LOCKED)
     .filter(([key, locked]) => {
       const actual = config[key as keyof Config];
-      // `importMap` and `prefix` are the two structural values in the table, so identity says
-      // nothing about them — and for `prefix` this branch is also what catches the string
-      // spelling, since `"chakra"` would prefix class names too.
+      // `importMap` is the one structural value left in the table, so identity says nothing about
+      // it — a consumer who spelled the same array is not overriding anything.
       return typeof locked === "object"
         ? JSON.stringify(actual) !== JSON.stringify(locked)
         : actual !== locked;

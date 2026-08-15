@@ -6,12 +6,11 @@ import { chakraSolidPreset } from "../preset";
 import { variantKeysFor } from "../recipe-registry";
 
 /**
- * `defineChakraConfig()` exists for one failure mode with no other guard. In Panda's external-package
- * model the consumer does **not** regenerate the runtime — `css()` comes from our published
- * `@chakra-ui-solid/styled-system` and their Panda run produces only a stylesheet — so the knobs
- * that decide class *names* have to agree across that boundary. Ours emits `p_4`; a consumer whose
- * config hashes gets a sheet full of hashed rules, and every class we compute is absent from it.
- * Nothing errors and every component renders naked.
+ * `defineChakraConfig()` exists for one failure mode with no other guard: a knob whose value decides
+ * whether Panda emits a rule *at all*. `jsxFactory` is the sharpest of the four — `chakra.button` is
+ * lowercase, so without it Panda's `isUpperCase` fallback declines the tag and every
+ * `<chakra.button bg="…">` in a consumer's source produces zero rules, with no error and an
+ * unstyled page.
  *
  * So each knob is asserted **twice**: once against what `defineChakraConfig()` returns, and once
  * against what `packages/styled-system/panda.config.ts` sets. The second half reads that file as
@@ -19,6 +18,11 @@ import { variantKeysFor } from "../recipe-registry";
  * package's `exports` map — pulling it into this package's own program would be a cycle through our
  * `dist/` (D-120). A reformat of that file is a loud failure here; a changed value is the one this
  * catches.
+ *
+ * `hash`, `prefix` and `separator` were asserted the same way and are not any more: they name
+ * classes and variables rather than deciding what is extracted, and a consumer's own Panda run now
+ * produces both the names and the rules. The tests that hold that open are below, under *the knobs
+ * that are the consumer's again*.
  */
 
 /** The one key the function requires, and the shortest value that satisfies it. */
@@ -40,18 +44,10 @@ const bodyStaticCss = (config: Config, recipe: string): unknown => {
   return body?.staticCss;
 };
 
-/** Every knob that shapes a class name, and the value both sides must carry. */
+/** Every knob that decides whether a rule exists, and the value both configs must carry. */
 const SHARED_KNOBS = {
-  hash: false,
-  // Panda's own default on both sides, so leaving it inherited made them agree by coincidence and
-  // gave a consumer who wrote `separator: "="` nothing to push back. Written out in both configs
-  // now, and asserted here, so the agreement is a decision.
-  separator: "_",
   eject: true,
   jsxFramework: "solid",
-  // Not a name-shaping knob but a name-*existence* one, and it fails the same way: `chakra.button`
-  // is lowercase, so without this Panda's `isUpperCase` fallback declines the tag and emits no rule
-  // at all for it. Both configs carry it or one of the two sheets is missing every factory rule.
   jsxFactory: "chakra",
   preflight: true,
 } as const;
@@ -73,17 +69,6 @@ describe("defineChakraConfig — the knobs that must match ours", () => {
         `packages/styled-system/panda.config.ts must set ${knob}: ${value}`,
       ).toMatch(new RegExp(`^\\s*${knob}: ${JSON.stringify(value)},`, "m"));
     }
-  });
-
-  it("namespaces every token variable, and only the variables", () => {
-    // `prefix` is the one locked key whose value is an object, so it is asserted here rather than
-    // in `SHARED_KNOBS` above — that loop matches source text through `JSON.stringify`, which
-    // spells an object nothing in a `.ts` file looks like.
-    //
-    // `cssVar` alone is the whole point. Panda's string spelling — `prefix: "chakra"` — would
-    // prefix class names too, and our published runtime computes `p_4`.
-    expect(defineChakraConfig(MINIMAL).prefix).toEqual({ cssVar: "chakra" });
-    expect(ourConfigSource).toMatch(/^\s*prefix: \{ cssVar: "chakra" \},/m);
   });
 
   it("points the extractor at our published package, on both sides", () => {
@@ -110,18 +95,18 @@ describe("defineChakraConfig — the knobs that must match ours", () => {
   it("is a type error to pass one, which is the whole point of the wrapper", () => {
     defineChakraConfig({
       ...MINIMAL,
-      // @ts-expect-error — locked: our runtime emits `p_4`, a hashed sheet has no such rule
-      hash: true,
+      // @ts-expect-error — locked: Panda's own theme would merge alongside Chakra's
+      eject: false,
     });
     defineChakraConfig({
       ...MINIMAL,
-      // @ts-expect-error — locked: `cssVar` is `chakra`, and this spelling renames the rules too
-      prefix: "ck",
+      // @ts-expect-error — locked: every `<chakra.button>` in their source would emit nothing
+      jsxFactory: "styled",
     });
     defineChakraConfig({
       ...MINIMAL,
-      // @ts-expect-error — locked: the sheet would carry `p=4`
-      separator: "=",
+      // @ts-expect-error — locked: no `jsx/is-valid-prop`, and no style props off a bare JSX tag
+      jsxFramework: "react",
     });
     defineChakraConfig({
       ...MINIMAL,
@@ -135,12 +120,50 @@ describe("defineChakraConfig — the knobs that must match ours", () => {
     // is what stops the key: their bag first, `LOCKED` after it.
     const config = defineChakraConfig({
       ...MINIMAL,
-      hash: true,
-      prefix: "ck",
+      eject: false,
+      jsxFactory: "styled",
     } as unknown as ChakraConfigOverrides);
 
-    expect(config.hash).toBe(false);
-    expect(config.prefix).toEqual({ cssVar: "chakra" });
+    expect(config.eject).toBe(true);
+    expect(config.jsxFactory).toBe("chakra");
+  });
+});
+
+describe("defineChakraConfig — the knobs that are the consumer's again", () => {
+  /**
+   * `hash`, `prefix` and `separator` decide what a class is *called*. They were locked while a
+   * precompiled runtime carried our spelling and the consumer's Panda run carried theirs; one run
+   * now produces both, so the disagreement they guarded against is unconstructable and all three
+   * pass straight through.
+   *
+   * The proof that this really holds is not here — it is the `hash: true` consumer fixture in
+   * `packages/chakra-ui-solid`, which renders our components against a stylesheet in which every
+   * class name is a hash and asserts the computed styles.
+   */
+  it("passes `hash`, `separator` and a full `prefix` through untouched", () => {
+    const config = defineChakraConfig({
+      ...MINIMAL,
+      hash: true,
+      separator: "=",
+      prefix: { className: "ck", cssVar: "ck" },
+    });
+
+    expect(config.hash).toBe(true);
+    expect(config.separator).toBe("=");
+    expect(config.prefix).toEqual({ className: "ck", cssVar: "ck" });
+  });
+
+  it("defaults the variable namespace to Chakra's own, and only the variables", () => {
+    // Chakra v3's `cssVarsPrefix` default, so `--chakra-spacing-4` is what a reader who knows
+    // Chakra finds. Panda's string spelling — `prefix: "ck"` — would prefix class names too, which
+    // is why the default names `cssVar` on its own rather than being written as a string.
+    expect(defineChakraConfig(MINIMAL).prefix).toEqual({ cssVar: "chakra" });
+    expect(defineChakraConfig({ ...MINIMAL, prefix: "ck" }).prefix).toBe("ck");
+  });
+
+  it("leaves `hash` and `separator` unset, so Panda's defaults answer for them", () => {
+    expect(defineChakraConfig(MINIMAL).hash).toBeUndefined();
+    expect(defineChakraConfig(MINIMAL).separator).toBeUndefined();
   });
 });
 
@@ -253,6 +276,7 @@ describe("defineChakraConfig — the keys it merges rather than replaces", () =>
     expect(plugins.map((plugin) => plugin.name)).toEqual([
       "mine",
       "chakra-ui-solid:recipe-gate",
+      "chakra-ui-solid:system-module",
       "chakra-ui-solid:locked-keys",
     ]);
     expect(plugins[0]).toBe(theirs);
@@ -280,15 +304,15 @@ describe("defineChakraConfig — the plugin that catches what the types cannot",
 
     const corrected = resolveConfig({
       ...defineChakraConfig(MINIMAL),
-      hash: true,
-      prefix: "ck",
-      separator: "=",
+      eject: false,
+      jsxFactory: "styled",
+      jsxFramework: "react",
     }) as Config;
 
-    expect(corrected.hash).toBe(false);
-    expect(corrected.prefix).toEqual({ cssVar: "chakra" });
-    expect(corrected.separator).toBe("_");
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining("hash, prefix, separator"));
+    expect(corrected.eject).toBe(true);
+    expect(corrected.jsxFactory).toBe("chakra");
+    expect(corrected.jsxFramework).toBe("solid");
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("eject, jsxFramework, jsxFactory"));
 
     warn.mockRestore();
   });
@@ -297,12 +321,19 @@ describe("defineChakraConfig — the plugin that catches what the types cannot",
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     const corrected = resolveConfig({
-      ...defineChakraConfig({ ...MINIMAL, outdir: "styled-system-app", preflight: false }),
-      hash: true,
+      ...defineChakraConfig({
+        ...MINIMAL,
+        outdir: "styled-system-app",
+        preflight: false,
+        hash: true,
+      }),
+      jsxFactory: "styled",
     }) as Config;
 
     expect(corrected.outdir).toBe("styled-system-app");
     expect(corrected.preflight).toBe(false);
+    // The knob this phase unlocked, surviving the plugin that used to put it back.
+    expect(corrected.hash).toBe(true);
 
     warn.mockRestore();
   });

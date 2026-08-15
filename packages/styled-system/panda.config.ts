@@ -6,8 +6,9 @@ import { defineConfig } from "@pandacss/dev";
  * repo publishes, and the dev stylesheet the browser tests assert against.
  *
  * It is not the consumer's config and does not try to be: a consumer calls `defineChakraConfig()`
- * from `@chakra-ui-solid/panda-preset`, which sets the knobs that must match this one and takes
- * `include` and `outdir` from them. Two knobs differ deliberately, and both are commented below.
+ * from `@chakra-ui-solid/panda-preset`, which sets the knobs that decide what Panda extracts and
+ * takes `include` and `outdir` from them. Two knobs differ deliberately, and both are commented
+ * below.
  */
 export default defineConfig({
   // Drops `@pandacss/preset-panda` — Panda's default *theme*. Without it Panda's token palette
@@ -29,24 +30,16 @@ export default defineConfig({
   // this Panda's `isUpperCase` fallback declines the tag and every factory element in our own
   // source — tests and stories included — emits zero rules with no error.
   jsxFactory: "chakra",
-  // Unhashed class names, and it is load-bearing across the library/consumer boundary rather than
-  // merely tidy: our published runtime computes `p_4`, and a consumer whose config hashes gets a
-  // stylesheet carrying different names — every class we emit is then absent from their sheet,
-  // silently. `defineChakraConfig()` is what stops that being constructable (`plan.md` §3.4).
-  hash: false,
-  // Chakra v3's own `cssVarsPrefix` default, and it namespaces ~547 token variables away from the
-  // identically-named ones a consumer's app declares for itself. `cssVar` alone, so class names
-  // stay bare and `hash` above still describes them.
+  // Three name-shaping knobs, written out rather than inherited, and none of them is load-bearing
+  // across a boundary any more: this run produces the runtime the test harness hands to
+  // `<ChakraProvider>` *and* the sheet those tests assert against, so the names agree with
+  // themselves by construction. A consumer's run answers the same question for their own app, with
+  // whatever values they like — `defineChakraConfig()` locks none of the three.
   //
-  // It has to be written here as well as in `defineChakraConfig()`, and this is the one knob where
-  // a disagreement survives a green suite: the *class* names would still match, so every rule
-  // would be found — and then resolve against a variable nobody declared. `token.var()` is
-  // compiled from this config into the package we publish.
+  // Unhashed and bare is what the extraction tests read: they compute a class with this runtime and
+  // look it up as text in a stylesheet, and a hashed pair would be just as correct and unreadable.
+  hash: false,
   prefix: { cssVar: "chakra" },
-  // Panda's own default, written out because `defineChakraConfig()` writes it out too. Left
-  // inherited on both sides the two agreed by coincidence, and a consumer who set `separator: "="`
-  // met nothing to stop them: their sheet would carry `p=4` while this runtime went on computing
-  // `p_4`, and every component would render naked with no error anywhere.
   separator: "_",
   preflight: true,
   // **Every recipe variant, unconditionally — the one knob a consumer's config does not have.**

@@ -1,11 +1,11 @@
 {
   "name": "@chakra-ui-solid/styled-system",
   "version": "0.0.0",
-  "description": "Panda CSS's generated output for chakra-ui-solid — published so the library and the consumer app share one css() runtime instance. Never exports Panda's /jsx factory, which targets Solid 1.x",
+  "description": "Panda CSS's generated types for chakra-ui-solid — declarations only. The runtime is the consumer's own `panda codegen` output, handed to <ChakraProvider>; this package is what our published .d.ts files reference by bare specifier",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "files": ["styled-system", "LICENSE", "NOTICE.md"],
+  "files": ["styled-system/**/*.d.ts", "LICENSE", "NOTICE.md"],
   "exports": {
     "./css": {
       "types": "./styled-system/css/index.d.ts",

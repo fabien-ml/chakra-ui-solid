@@ -93,7 +93,9 @@
   "scripts": {
     "build": "tsdown && node ../../scripts/ship-buildinfo.mjs",
     "typecheck": "tsc --noEmit",
-    "cssgen": "panda cssgen --cwd src/components/box/__tests__/__fixtures__/consumer --outfile src/components/box/__tests__/__fixtures__/consumer/consumer.css"
+    "cssgen": "pnpm cssgen:consumer && pnpm cssgen:consumer-hashed",
+    "cssgen:consumer": "panda codegen --cwd src/components/box/__tests__/__fixtures__/consumer && panda cssgen --cwd src/components/box/__tests__/__fixtures__/consumer --outfile src/components/box/__tests__/__fixtures__/consumer/consumer.css",
+    "cssgen:consumer-hashed": "panda codegen --cwd src/components/box/__tests__/__fixtures__/consumer --config panda.hashed.config.ts && panda cssgen --cwd src/components/box/__tests__/__fixtures__/consumer --config panda.hashed.config.ts --outfile src/components/box/__tests__/__fixtures__/consumer/consumer-hashed.css"
   },
   "peerDependencies": {
     "@pandacss/dev": "catalog:",

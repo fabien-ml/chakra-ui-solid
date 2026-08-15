@@ -6,7 +6,11 @@
 //      *is*. A transitive edge is the one nobody adds deliberately, so this reads the installed
 //      tree and cross-checks the lockfile, which sees packages `pnpm ls` prunes.
 //   B. None of OUR source writes a stylesheet at runtime. Judges what our code *does*.
-//   C. No published package exposes a `.css` file, through `exports`, `files`, or `style`.
+//   C. What we PUBLISH: no `.css` anywhere in a tarball or an `exports` map, and no Panda-generated
+//      styled-system runtime either. The second half is the same rule one step out — Panda in the
+//      consumer's build is the prerequisite, so they generate the runtime their sheet agrees with,
+//      and a precompiled copy of ours in the tarball is a second set of class names for the same
+//      page.
 //
 // The three stay separate assertions in one file. Merging B into A would flag an audited inline
 // `style` attribute as a styling engine; merging A into B would miss the dependency that ships one.
@@ -26,7 +30,11 @@ import {
   parseLockfilePackages,
 } from "./lib/no-cij-manifest.mjs";
 import { formatRuntimeSheetHits, scanForRuntimeSheets } from "./lib/no-runtime-sheet.mjs";
-import { flattenExports, listPublishedPackages } from "./lib/published-packages.mjs";
+import {
+  flattenExports,
+  listPackedFiles,
+  listPublishedPackages,
+} from "./lib/published-packages.mjs";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -93,21 +101,49 @@ if (hits.length > 0) {
 
 // C — what we publish.
 
-const cssExposures = [];
+/**
+ * A module out of Panda's own `codegen` — `css/index.mjs`, `recipes/button.mjs`, and their ~270
+ * siblings. Matched by the directory it is generated into rather than by package name, so this
+ * catches a copy vendored into any package's tarball.
+ */
+const STYLED_SYSTEM_RUNTIME = /(^|\/)styled-system\/.+\.(mjs|cjs|js|jsx)$/;
 
-for (const { name, manifest } of listPublishedPackages(repoRoot)) {
+const cssExposures = [];
+const runtimeExposures = [];
+
+for (const { name, directory, manifest } of listPublishedPackages(repoRoot)) {
   for (const { subpath, target } of flattenExports(manifest.exports ?? {})) {
     if (target.endsWith(".css")) {
       cssExposures.push(`  ${name}\n      \`${subpath}\` resolves to \`${target}\``);
     }
   }
-  for (const listed of manifest.files ?? []) {
-    if (listed.endsWith(".css")) {
-      cssExposures.push(`  ${name}\n      \`files\` ships \`${listed}\``);
-    }
-  }
   if (typeof manifest.style === "string") {
     cssExposures.push(`  ${name}\n      has a \`style\` field (\`${manifest.style}\`)`);
+  }
+
+  // The tarball rather than the `files` entries, because a directory entry is not a suffix: `files:
+  // ["styled-system"]` reads as one harmless line and ships everything Panda wrote into it.
+  let packed;
+  try {
+    packed = listPackedFiles(directory);
+  } catch (error) {
+    fail(`could not ask npm what \`${name}\` would publish.\n  ${error.message}`);
+  }
+  // Never empty: `package.json`, `LICENSE` and the readme are always packed. Zero means npm
+  // answered something this script did not understand, which is a check reporting success.
+  if (packed.length === 0) {
+    fail(
+      `read an EMPTY tarball listing for \`${name}\`. That is a broken check reporting success, ` +
+        "not a clean package.",
+    );
+  }
+  for (const file of packed) {
+    if (file.endsWith(".css")) {
+      cssExposures.push(`  ${name}\n      the tarball would contain \`${file}\``);
+    }
+    if (STYLED_SYSTEM_RUNTIME.test(file)) {
+      runtimeExposures.push(`  ${name}\n      the tarball would contain \`${file}\``);
+    }
   }
 }
 
@@ -119,8 +155,21 @@ if (cssExposures.length > 0) {
   );
 }
 
+if (runtimeExposures.length > 0) {
+  fail(
+    `${runtimeExposures.length} published package(s) ship a styled-system runtime:\n\n` +
+      `${runtimeExposures.join("\n")}\n\n` +
+      "The consumer generates the styled-system and hands it to `<ChakraProvider>`, so the class " +
+      "names on the element and the rules in their sheet come out of one Panda run. A published " +
+      "runtime is a second set of names for the same page: it computes `p_4` against a sheet that " +
+      "may hash, prefix or re-separate, and every component then renders unstyled with no error " +
+      "anywhere. `@chakra-ui-solid/styled-system` publishes declarations alone — the generated " +
+      "instance in this repo is for our own tests, Storybook and the browser suite.",
+  );
+}
+
 console.log(
   `check:no-runtime-css — no CSS-in-JS engine across ${installed.length} installed packages ` +
     `(${lockfile.length} lockfile entries cross-checked); no runtime stylesheet in ${scanned.length} ` +
-    "source file(s); no published package exposes CSS.",
+    "source file(s); no published package exposes CSS or ships a styled-system runtime.",
 );
