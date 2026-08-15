@@ -80,6 +80,7 @@ export type { RecipeClassOptions, RecipeFn, SlotRecipeFn } from "./recipe/recipe
 export { createRecipeClass, createSlotClasses } from "./recipe/recipe";
 export type { RecipeContext, RecipeContextOptions } from "./recipe/recipe-context";
 export { createRecipeContext } from "./recipe/recipe-context";
+export type { RecipeVariantOverrides, SkinVariant } from "./recipe/skin-variants";
 export type {
   SlotRecipeContext,
   SlotRecipeContextOptions,
