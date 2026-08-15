@@ -1,4 +1,4 @@
-import { renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import { describe, expect, it } from "vitest";
 import { Collapsible } from "../index";
 
@@ -17,7 +17,7 @@ function idOfPart(html: string, part: string): string | undefined {
  */
 describe("Collapsible on the server", () => {
   it("renders all four parts, closed", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Collapsible.Root>
         <Collapsible.Trigger>
           Show
@@ -38,7 +38,7 @@ describe("Collapsible on the server", () => {
     // The IDREF and the element it names are produced by two different `connect()` getters reading
     // one scope. A generated id that moved between them would leave a dangling reference that axe
     // reports and nothing else does.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Collapsible.Root>
         <Collapsible.Trigger>Show</Collapsible.Trigger>
         <Collapsible.Content>body</Collapsible.Content>
@@ -56,7 +56,7 @@ describe("Collapsible on the server", () => {
     // Zag emits `aria-expanded: false`, and Solid's `setAttribute` removes an attribute whose value
     // is `false` — so without the adapter's boolean-ARIA stringification a closed trigger ships with
     // no `aria-expanded` at all, and a screen reader is told nothing.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Collapsible.Root>
         <Collapsible.Trigger>Show</Collapsible.Trigger>
       </Collapsible.Root>
@@ -66,12 +66,12 @@ describe("Collapsible on the server", () => {
   });
 
   it("hides a closed content, and leaves `hidden` off an open one", async () => {
-    const closed = await renderToStream(() => (
+    const closed = await renderServer(() => (
       <Collapsible.Root>
         <Collapsible.Content>body</Collapsible.Content>
       </Collapsible.Root>
     ));
-    const open = await renderToStream(() => (
+    const open = await renderServer(() => (
       <Collapsible.Root defaultOpen>
         <Collapsible.Content>body</Collapsible.Content>
       </Collapsible.Root>
@@ -88,7 +88,7 @@ describe("Collapsible on the server", () => {
     // `animationName` off `[data-state]`, so this is what stops a `defaultOpen` panel from playing
     // its enter animation as the page loads. The ROOT still says `open`, which is what a consumer
     // styles against.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Collapsible.Root defaultOpen>
         <Collapsible.Content>body</Collapsible.Content>
       </Collapsible.Root>
@@ -105,7 +105,7 @@ describe("Collapsible on the server", () => {
     // Every part id is derived from one `createUniqueId()` per Root. Two roots sharing an id would
     // give both triggers the same `aria-controls`, and the machine's own `getElementById` would find
     // the wrong content.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <div>
         <Collapsible.Root>
           <Collapsible.Content>first</Collapsible.Content>
@@ -123,7 +123,7 @@ describe("Collapsible on the server", () => {
   });
 
   it("keeps a `lazyMount` content out of the markup entirely", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Collapsible.Root lazyMount>
         <Collapsible.Content>body</Collapsible.Content>
       </Collapsible.Root>
@@ -134,7 +134,7 @@ describe("Collapsible on the server", () => {
   });
 
   it("resolves the slot recipe on the server", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Collapsible.Root>
         <Collapsible.Content>body</Collapsible.Content>
       </Collapsible.Root>
@@ -145,7 +145,7 @@ describe("Collapsible on the server", () => {
   });
 
   it("drops every slot class under a Root-level `unstyled`", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Collapsible.Root unstyled>
         <Collapsible.Content>body</Collapsible.Content>
       </Collapsible.Root>
@@ -158,7 +158,7 @@ describe("Collapsible on the server", () => {
   it("seeds the machine from `id` rather than naming the root element with it", async () => {
     // Ark puts `id` in the machine's half of its prop split, so the attribute becomes
     // `collapsible:{id}` and `ids` is the way to control the attributes themselves.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Collapsible.Root id="faq">
         <Collapsible.Content>body</Collapsible.Content>
       </Collapsible.Root>
@@ -169,7 +169,7 @@ describe("Collapsible on the server", () => {
   });
 
   it("lets `ids` name the elements directly", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Collapsible.Root ids={{ content: "answer" }}>
         <Collapsible.Trigger>Show</Collapsible.Trigger>
         <Collapsible.Content>body</Collapsible.Content>

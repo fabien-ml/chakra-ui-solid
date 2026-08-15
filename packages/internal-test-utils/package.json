@@ -18,6 +18,7 @@
     "postcss": "8.5.26"
   },
   "devDependencies": {
+    "@chakra-ui-solid/core": "workspace:*",
     "@chakra-ui-solid/styled-system": "workspace:*",
     "@solidjs/web": "catalog:",
     "solid-js": "catalog:"

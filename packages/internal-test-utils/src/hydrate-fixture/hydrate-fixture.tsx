@@ -2,9 +2,11 @@
 // `packages/internal-test-utils/src/hydrate-fixture/hydrate-fixture.ts`. Same author, MIT — ours,
 // forked on copy (`CLAUDE.md`, *Reference use*).
 
+import { ChakraProvider } from "@chakra-ui-solid/core";
 import type { JSX } from "@solidjs/web";
 import { hydrate } from "@solidjs/web";
 import { sharedConfig } from "solid-js";
+import { testSystem } from "../system";
 
 export interface HydratedComponent {
   container: HTMLElement;
@@ -118,7 +120,12 @@ export function hydrateFixture(
 
   let logged: string[];
   try {
-    disposeSolid = hydrate(ui, container);
+    // The same `<ChakraProvider>` wrapper `renderServer` put around the server render, so both
+    // sides make the same calls in the same order and hydration compares like with like.
+    disposeSolid = hydrate(
+      () => <ChakraProvider value={testSystem}>{ui()}</ChakraProvider>,
+      container,
+    );
   } catch (error) {
     consoleRecorder.restore();
     cleanup();

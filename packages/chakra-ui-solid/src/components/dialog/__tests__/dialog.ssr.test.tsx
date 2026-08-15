@@ -1,4 +1,5 @@
-import { Portal, renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
+import { Portal } from "@solidjs/web";
 import { describe, expect, it } from "vitest";
 import { Dialog } from "../index";
 
@@ -44,7 +45,7 @@ describe("a closed dialog on the server", () => {
     // `lazyMount` and `unmountOnExit` both default to `true` here, where Collapsible defaults both to
     // `false`. So the served page carries the button and none of the dialog — which is also why the
     // closed state raises no dangling-IDREF finding: there is no content element to point at.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Dialog.Root>
         <Dialog.Trigger>Open</Dialog.Trigger>
         <Dialog.Backdrop />
@@ -65,7 +66,7 @@ describe("a closed dialog on the server", () => {
     // Ark's line, ported: with no content element in the DOM the IDREF would dangle, and axe reports
     // it. It is gated on the render strategy rather than on `open`, so a mounted-but-closed content
     // keeps the reference — the next test.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Dialog.Root>
         <Dialog.Trigger>Open</Dialog.Trigger>
         <Dialog.Content>body</Dialog.Content>
@@ -77,7 +78,7 @@ describe("a closed dialog on the server", () => {
   });
 
   it("renders every part with `lazyMount={false}`, and points `aria-controls` at the content", async () => {
-    const html = await renderToStream(Eager);
+    const html = await renderServer(Eager);
 
     for (const part of [
       "trigger",
@@ -103,7 +104,7 @@ describe("a closed dialog on the server", () => {
     // `hidden` comes from two writers agreeing: the machine emits it for a closed dialog, and each
     // presence merges its own over the top. Stripping either would leave a closed dialog visible on
     // the served page until hydration.
-    const html = await renderToStream(Eager);
+    const html = await renderServer(Eager);
 
     expect(tagOfPart(html, "content")).toContain("hidden");
     expect(tagOfPart(html, "backdrop")).toContain("hidden");
@@ -118,14 +119,14 @@ describe("a closed dialog on the server", () => {
     // Zag emits real booleans, and Solid's `setAttribute` writes `true` as `""` and removes the
     // attribute for `false` — so without the adapter's boolean-ARIA stringification a closed trigger
     // ships with no `aria-expanded` and a modal content with `aria-modal=""`.
-    const html = await renderToStream(Eager);
+    const html = await renderServer(Eager);
 
     expect(html).toContain('aria-expanded="false"');
     expect(tagOfPart(html, "content")).toContain('aria-modal="true"');
   });
 
   it("carries the `role` the consumer asked for", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Dialog.Root lazyMount={false} role="alertdialog">
         <Dialog.Content>body</Dialog.Content>
       </Dialog.Root>
@@ -138,7 +139,7 @@ describe("a closed dialog on the server", () => {
     // Every part id is derived from one `createUniqueId()` per Root. Two roots sharing an id would
     // give both triggers the same `aria-controls`, and the machine's own `getElementById` would find
     // the wrong content.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <div>
         <Dialog.Root lazyMount={false}>
           <Dialog.Content>first</Dialog.Content>
@@ -158,7 +159,7 @@ describe("a closed dialog on the server", () => {
   it("seeds the machine from `id` rather than naming an element with it", async () => {
     // The Root renders no element at all, so unlike Collapsible there is no attribute for `id` to
     // land on even in principle — it is a machine argument and nothing else.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Dialog.Root lazyMount={false} id="confirm">
         <Dialog.Trigger>Open</Dialog.Trigger>
         <Dialog.Content>body</Dialog.Content>
@@ -170,7 +171,7 @@ describe("a closed dialog on the server", () => {
   });
 
   it("lets `ids` name the elements directly", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Dialog.Root lazyMount={false} ids={{ content: "sheet" }}>
         <Dialog.Trigger>Open</Dialog.Trigger>
         <Dialog.Content>body</Dialog.Content>
@@ -185,7 +186,7 @@ describe("a closed dialog on the server", () => {
     // Header, Body and Footer exist in the recipe and not in `dialog.anatomy`, so they carry no
     // `data-part` and no machine props — a plain element apiece, and in Phase A a plain element is
     // all they are.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Dialog.Root lazyMount={false}>
         <Dialog.Content>
           <Dialog.Header data-probe="header">head</Dialog.Header>
@@ -207,7 +208,7 @@ describe("a closed dialog on the server", () => {
     // The precedence chain in full: the literal default resolves against the value the context
     // supplied, not against the raw prop — so a provider's `false` wins over the `true` the Root
     // would otherwise apply, and a Root passing the prop itself would still win over the provider.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Dialog.PropsProvider value={{ lazyMount: false }}>
         <Dialog.Root>
           <Dialog.Content>body</Dialog.Content>
@@ -222,7 +223,7 @@ describe("a closed dialog on the server", () => {
     // `@solidjs/web`'s server Portal returns `undefined` and consumes exactly one child id, which is
     // what keeps the client's own portal aligned. Here that shows up as an absent dialog and a
     // present sibling; that the sibling still *hydrates* is the browser test's half.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Dialog.Root lazyMount={false}>
         <Dialog.Trigger>Open</Dialog.Trigger>
         <Portal>

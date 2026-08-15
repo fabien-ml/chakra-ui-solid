@@ -12,3 +12,7 @@ export { mount, mountElement } from "./mount";
 // import is externalized and throws at module load, taking down every test in the file. It is
 // reached as `@chakra-ui-solid/internal-test-utils/stylesheet` instead, from the `ssr` project,
 // which is the only project that both runs in Node and has no DOM to compute a style with.
+//
+// `./render-server` is out for the mirror-image reason: its callers are all in the `ssr` project,
+// and this barrel imports the axe helper, which loads `axe-core` — a module that wants a DOM. It is
+// reached as `@chakra-ui-solid/internal-test-utils/render-server`.

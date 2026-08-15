@@ -11,18 +11,19 @@
  * This file has been modified from the original.
  */
 
-import { cva } from "@chakra-ui-solid/styled-system/css";
 import type {
   JsxStyleProps,
   RecipeDefinition,
+  RecipeRuntimeFn,
   RecipeSelection,
   RecipeVariantRecord,
 } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { omit } from "solid-js";
+import { omit, untrack } from "solid-js";
 import type { RenderProp } from "../render/render";
 import type { PatchHtmlProps } from "../render-styled/html-props";
 import { type RenderStyledOptions, renderStyled } from "../render-styled/render-styled";
+import { type SystemContext, useChakraContext } from "../system/system";
 import { withDefaults } from "../utils/defaults";
 
 /**
@@ -170,16 +171,36 @@ function chakraFactory<Element extends ValidComponent, Variants extends RecipeVa
   config?: RecipeDefinition<Variants>,
   options: ChakraFactoryOptions<HTMLChakraProps<Element>> = {},
 ): ChakraComponent<Element, RecipeSelection<Variants>> {
-  const recipe = config === undefined ? undefined : cva(config);
-  const variantKeys = (recipe?.variantKeys ?? []) as string[];
-  const forwardProp = createForwardProp(element, options, variantKeys);
   const defaultProps = options.defaultProps as Partial<ElementPropsBag> | undefined;
 
-  const variantPropsOf = (props: ElementPropsBag) =>
+  // `cva` is the **system's**, so the recipe cannot be built here: `const Link = chakra("a", { … })`
+  // runs at module scope, where no provider has rendered and there is no context to read. It is
+  // resolved on first render instead, and cached per system so every later render of the same
+  // component reuses it. A `WeakMap` rather than one slot, because two providers in one tree are a
+  // supported shape and each owns its own `cva`.
+  const recipeBySystem = new WeakMap<SystemContext, RecipeRuntimeFn<Variants>>();
+
+  const recipeFor = (system: SystemContext): RecipeRuntimeFn<Variants> => {
+    let recipe = recipeBySystem.get(system);
+    if (recipe === undefined) {
+      recipe = system.cva(config as RecipeDefinition<Variants>);
+      recipeBySystem.set(system, recipe);
+    }
+    return recipe;
+  };
+
+  const variantPropsOf = (props: ElementPropsBag, variantKeys: readonly string[]) =>
     Object.fromEntries(variantKeys.map((key) => [key, props[key]])) as RecipeSelection<Variants>;
 
   return (componentProps) => {
     const props = componentProps as ElementPropsBag;
+    const system = useChakraContext();
+
+    const recipe = config === undefined ? undefined : () => recipeFor(system());
+
+    // Off the real `cva()` result, never `Object.keys(config.variants)` — `variantKeys` is Panda's
+    // answer to what the recipe accepts, and reproducing it here would be our own guess at it.
+    const variantKeys = (): string[] => (recipe?.().variantKeys ?? []) as string[];
 
     // Merged **first, once, and into a name** — every read below goes to `merged`, never to `props`.
     // Not `merge(defaultProps, …)`: SolidJS 2.0 resolves a key by *presence*, so a
@@ -199,7 +220,14 @@ function chakraFactory<Element extends ValidComponent, Variants extends RecipeVa
     // every key of the bag eagerly, which snapshots each one and collapses the reactivity of every
     // style prop passed alongside a variant. `variantKeys` is fixed for a given recipe, so
     // partitioning by it reads nothing.
-    const elementProps = variantKeys.length === 0 ? merged : omit(merged, ...variantKeys);
+    //
+    // Untracked for the reason `renderStyled` partitions its own keys untracked: `omit` takes a
+    // fixed list, so this decides the element's attribute set once. A system swapped at runtime
+    // restyles the element rather than re-splitting its props.
+    const elementProps = untrack(() => {
+      const keys = variantKeys();
+      return keys.length === 0 ? merged : omit(merged, ...keys);
+    });
 
     return renderStyled<ElementPropsBag>({
       as: (merged.as ?? element) as ValidComponent,
@@ -211,9 +239,16 @@ function chakraFactory<Element extends ValidComponent, Variants extends RecipeVa
       // order; the object merges and one class comes out. `createRecipeClass` stays the seam for
       // the *generated* recipes, which do have a layer of their own.
       //
-      // Read inside the accessor, so the variant values are tracked rather than snapshotted.
-      baseStyles: recipe === undefined ? undefined : () => recipe.raw(variantPropsOf(merged)),
-      forwardProp,
+      // Read inside the accessor, so the variant values — and the system the recipe came out of —
+      // are tracked rather than snapshotted.
+      baseStyles:
+        recipe === undefined
+          ? undefined
+          : () => {
+              const resolved = recipe();
+              return resolved.raw(variantPropsOf(merged, resolved.variantKeys as string[]));
+            },
+      forwardProp: createForwardProp(element, options, variantKeys),
     });
   };
 }
@@ -221,15 +256,19 @@ function chakraFactory<Element extends ValidComponent, Variants extends RecipeVa
 /**
  * Chakra's three-way rule, expressed as the one predicate `renderStyled` takes: `shouldForwardProp`
  * replaces everything, otherwise `forwardProps` and the SVG exceptions are added to the default.
+ *
+ * `variantKeys` arrives as an accessor because the recipe behind it is the system's, and the system
+ * is only readable once a component is rendering. The returned predicate resolves it when it runs,
+ * which is inside `renderStyled`'s own key partition — render time either way.
  */
 function createForwardProp(
   element: ValidComponent,
   options: Pick<ChakraFactoryOptions<object>, "forwardProps" | "shouldForwardProp">,
-  variantKeys: string[],
+  variantKeys: () => string[],
 ): RenderStyledOptions<ElementPropsBag>["forwardProp"] {
   const shouldForwardProp = options.shouldForwardProp;
   if (shouldForwardProp !== undefined) {
-    return (key) => shouldForwardProp(key, variantKeys);
+    return (key) => shouldForwardProp(key, variantKeys());
   }
 
   const exceptions = typeof element === "string" ? exceptionPropMap[element] : undefined;

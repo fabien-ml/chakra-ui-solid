@@ -1,8 +1,10 @@
+import { testSystem } from "@chakra-ui-solid/internal-test-utils/system";
 import { css, cx } from "@chakra-ui-solid/styled-system/css";
 import type { JsxStyleProps } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
-import { createSignal, flush } from "solid-js";
-import { describe, expect, it } from "vitest";
+import { children, createRoot, createSignal, flush } from "solid-js";
+import { afterEach, describe, expect, it } from "vitest";
+import { ChakraProvider } from "../../system/system";
 import { type RenderStyledOptions, renderStyled } from "../render-styled";
 
 /**
@@ -24,24 +26,45 @@ import { type RenderStyledOptions, renderStyled } from "../render-styled";
 /** What the factory takes: DOM props ∪ style props ∪ the `css` escape hatch. */
 type StyledProps = JsxStyleProps & JSX.HTMLAttributes<HTMLElement>;
 
+const disposers: Array<() => void> = [];
+
+afterEach(() => {
+  for (const dispose of disposers.splice(0)) {
+    dispose();
+  }
+});
+
 /**
  * The props the factory hands to the element, captured without rendering one.
  *
  * A `render` prop short-circuits `renderElement` before it reaches `<Dynamic>`, so this exercises
  * the whole factory — key partition, renames, class composition — with no DOM in sight. The
  * returned object is the live reactive bag, so a later read of `.class` recomputes.
+ *
+ * The `<ChakraProvider>` around it is what supplies `css`, `cx` and `isValidProperty`; a provider
+ * hands its children back unevaluated, which is what `children()` here is for — nothing else in
+ * this tree renders, so without it `renderStyled` never runs.
  */
 function computedProps(
   options: Omit<RenderStyledOptions<StyledProps>, "render">,
 ): Record<string, unknown> {
   let captured: Record<string, unknown> | undefined;
-  renderStyled<StyledProps>({
-    ...options,
-    render: (props) => {
-      captured = props as Record<string, unknown>;
-      return undefined;
-    },
+
+  createRoot((dispose) => {
+    disposers.push(dispose);
+    children(() => (
+      <ChakraProvider value={testSystem}>
+        {renderStyled<StyledProps>({
+          ...options,
+          render: (props) => {
+            captured = props as Record<string, unknown>;
+            return undefined;
+          },
+        })}
+      </ChakraProvider>
+    ))();
   });
+
   if (captured === undefined) {
     throw new Error("renderStyled did not invoke the render prop");
   }

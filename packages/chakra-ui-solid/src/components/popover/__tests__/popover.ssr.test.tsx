@@ -1,4 +1,5 @@
-import { Portal, renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
+import { Portal } from "@solidjs/web";
 import { describe, expect, it } from "vitest";
 import { Popover } from "../index";
 
@@ -51,7 +52,7 @@ describe("a closed popover on the server", () => {
     // and `unmountOnExit: true` to `withRootProvider`; `popover.tsx` passes no options object at
     // all, so `createRenderStrategy`'s own `false`/`false` stand and the closed content is real
     // markup — hidden, but present, and pointed at by a live `aria-controls`.
-    const html = await renderToStream(Served);
+    const html = await renderServer(Served);
 
     for (const part of [
       "trigger",
@@ -79,7 +80,7 @@ describe("a closed popover on the server", () => {
     // Root's presence merges its own over the top. Stripping either would leave a closed popover
     // visible on the served page until hydration — and unlike Dialog's, this element is *always*
     // served, so the flash would be the default experience rather than an opt-in one.
-    const html = await renderToStream(Served);
+    const html = await renderServer(Served);
 
     expect(tagOfPart(html, "content")).toContain("hidden");
     expect(tagOfPart(html, "content")).toContain('data-state="closed"');
@@ -93,7 +94,7 @@ describe("a closed popover on the server", () => {
     // fallback `getPlacementStyles()` emits while `currentPlacement` is undefined: `pointer-events:
     // none` and a transform 100vh above the viewport. Without those two the served positioner sits
     // at the document's top-left corner, visible and clickable, until the first client frame.
-    const html = await renderToStream(Served);
+    const html = await renderServer(Served);
     const positioner = tagOfPart(html, "positioner");
 
     expect(positioner).toContain("position:absolute");
@@ -109,7 +110,7 @@ describe("a closed popover on the server", () => {
     // reports it, so the machine's own bag is rewritten to drop the attribute. It is gated on the
     // render strategy rather than on `open` — which is why the default, mounted-but-closed shape
     // above keeps it.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.Root lazyMount>
         <Popover.Trigger>Open</Popover.Trigger>
         <Popover.Positioner>
@@ -137,7 +138,7 @@ describe("a closed popover on the server", () => {
     // Suppressing them here would make our markup differ from React's and would change the
     // attributes hydration has to reconcile, to buy nothing a real reader can perceive: no
     // assistive technology reads a page in the window before hydration.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.Root>
         <Popover.Trigger>Open</Popover.Trigger>
         <Popover.Positioner>
@@ -157,7 +158,7 @@ describe("a closed popover on the server", () => {
     // Zag emits real booleans, and Solid's `setAttribute` writes `true` as `""` and removes the
     // attribute for `false` — so without the adapter's boolean-ARIA stringification a closed trigger
     // ships with no `aria-expanded` and a modal content with `aria-modal=""`.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.Root modal>
         <Popover.Trigger>Open</Popover.Trigger>
         <Popover.Content>body</Popover.Content>
@@ -173,7 +174,7 @@ describe("a closed popover on the server", () => {
     // Every part id is derived from one `createUniqueId()` per Root. Two roots sharing an id would
     // give both triggers the same `aria-controls`, and the machine's own `getElementById` would find
     // the wrong content.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <div>
         <Popover.Root>
           <Popover.Content>first</Popover.Content>
@@ -195,7 +196,7 @@ describe("a closed popover on the server", () => {
     // principle — it is a machine argument and nothing else. The positioner is the one part whose
     // suffix is not its part name: `popover:{id}:popper`, which a test looking for `:positioner`
     // would never find.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.Root id="confirm">
         <Popover.Trigger>Open</Popover.Trigger>
         <Popover.Positioner>
@@ -210,7 +211,7 @@ describe("a closed popover on the server", () => {
   });
 
   it("lets `ids` name the elements directly", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.Root ids={{ content: "sheet" }}>
         <Popover.Trigger>Open</Popover.Trigger>
         <Popover.Content>body</Popover.Content>
@@ -226,7 +227,7 @@ describe("a closed popover on the server", () => {
     // `data-part` and no machine props — the slot class is the only handle anything has on one. The
     // tags are upstream's own (`withContext("header", "header")`, `("div", "body")`,
     // `("footer", "footer")`), and the DOM is what a recipe selector and a screen reader see.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.Root>
         <Popover.Content>
           <Popover.Header data-probe="header">head</Popover.Header>
@@ -245,7 +246,7 @@ describe("a closed popover on the server", () => {
   });
 
   it("renders Title and Description as `div`s, where Dialog's Title is an `h2`", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.Root>
         <Popover.Content>
           <Popover.Title>Delete file</Popover.Title>
@@ -262,7 +263,7 @@ describe("a closed popover on the server", () => {
     // The JSX-valued slot default, resolved inside the `children()` call. On the server it has to
     // *not* be a module-scope constant — JSX there is constructed at import time and 500s the route
     // before anything renders.
-    const withDefault = await renderToStream(() => (
+    const withDefault = await renderServer(() => (
       <Popover.Root>
         <Popover.Content>
           <Popover.Arrow />
@@ -272,7 +273,7 @@ describe("a closed popover on the server", () => {
 
     expect(withDefault).toContain('data-part="arrow-tip"');
 
-    const replaced = await renderToStream(() => (
+    const replaced = await renderServer(() => (
       <Popover.Root>
         <Popover.Content>
           <Popover.Arrow>
@@ -290,7 +291,7 @@ describe("a closed popover on the server", () => {
     // Upstream wires `PopoverAnchor` with `withContext(…, undefined)` even though `anchor` is a slot
     // the recipe carries, so the element is a bare positioning handle. Asserting the *absence* is
     // the only way this stays a decision rather than drifting into an oversight.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.Root>
         <Popover.Anchor>anchored</Popover.Anchor>
         <Popover.Trigger>Open</Popover.Trigger>
@@ -305,7 +306,7 @@ describe("a closed popover on the server", () => {
     // The precedence chain in full, and the one direction that is observable here: the Root applies
     // no literal default of its own, so a provider's `true` is what decides, and a Root passing the
     // prop itself would still win over the provider.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.PropsProvider value={{ lazyMount: true }}>
         <Popover.Root>
           <Popover.Trigger>Open</Popover.Trigger>
@@ -322,7 +323,7 @@ describe("a closed popover on the server", () => {
     // `@solidjs/web`'s server Portal returns `undefined` and consumes exactly one child id, which is
     // what keeps the client's own portal aligned. Here that shows up as an absent popover and a
     // present sibling; that the sibling still *hydrates* is the browser test's half.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Popover.Root>
         <Popover.Trigger>Open</Popover.Trigger>
         <Portal>

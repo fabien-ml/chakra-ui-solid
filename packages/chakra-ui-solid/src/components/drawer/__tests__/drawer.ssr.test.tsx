@@ -1,4 +1,5 @@
-import { Portal, renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
+import { Portal } from "@solidjs/web";
 import { describe, expect, it } from "vitest";
 import { Drawer } from "../index";
 
@@ -40,7 +41,7 @@ const Eager = () => (
  */
 describe("a closed drawer on the server", () => {
   it("ships nothing but the trigger under Chakra's defaults", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Drawer.Root>
         <Drawer.Trigger>Open</Drawer.Trigger>
         <Drawer.Backdrop />
@@ -58,7 +59,7 @@ describe("a closed drawer on the server", () => {
   });
 
   it("drops the trigger's `aria-controls` while the content is unmounted", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Drawer.Root>
         <Drawer.Trigger>Open</Drawer.Trigger>
         <Drawer.Content>body</Drawer.Content>
@@ -74,7 +75,7 @@ describe("a closed drawer on the server", () => {
     // `@ark-ui/react/dialog` and aliases `useDialog as useDrawer`, so the scope a consumer sees in
     // the DOM and in a CSS selector is the machine's, never the component's. It is the first thing
     // someone writing `[data-scope="drawer"]` will get wrong, so it is pinned here.
-    const html = await renderToStream(Eager);
+    const html = await renderServer(Eager);
 
     for (const part of ["trigger", "backdrop", "positioner", "content", "title", "description"]) {
       expect(html, part).toContain(`data-part="${part}"`);
@@ -94,7 +95,7 @@ describe("a closed drawer on the server", () => {
     // `hidden` comes from two writers agreeing: the machine emits it for a closed drawer, and each
     // presence merges its own over the top. Stripping either would leave a closed panel visible on
     // the served page until hydration.
-    const html = await renderToStream(Eager);
+    const html = await renderServer(Eager);
 
     expect(tagOfPart(html, "content")).toContain("hidden");
     expect(tagOfPart(html, "backdrop")).toContain("hidden");
@@ -109,7 +110,7 @@ describe("a closed drawer on the server", () => {
     // Zag emits real booleans, and Solid's `setAttribute` writes `true` as `""` and removes the
     // attribute for `false` — so without the adapter's boolean-ARIA stringification a closed trigger
     // ships with no `aria-expanded` and a modal content with `aria-modal=""`.
-    const html = await renderToStream(Eager);
+    const html = await renderServer(Eager);
 
     expect(html).toContain('aria-expanded="false"');
     expect(tagOfPart(html, "content")).toContain('aria-modal="true"');
@@ -119,7 +120,7 @@ describe("a closed drawer on the server", () => {
     // `size`, `placement` and `contained` are slot-recipe variants — they pick class names and
     // nothing else. A variant leaking through to the host element would be an invalid attribute on
     // every drawer a consumer serves, and the server is where such a leak is visible as text.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Drawer.Root lazyMount={false} size="md" placement="start" contained>
         <Drawer.Positioner>
           <Drawer.Content>body</Drawer.Content>
@@ -136,7 +137,7 @@ describe("a closed drawer on the server", () => {
   it("seeds the machine from `id` rather than naming an element with it", async () => {
     // The Root renders no element at all, so there is no attribute for `id` to land on even in
     // principle — it is a machine argument and nothing else.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Drawer.Root lazyMount={false} id="filters">
         <Drawer.Trigger>Open</Drawer.Trigger>
         <Drawer.Content>body</Drawer.Content>
@@ -148,7 +149,7 @@ describe("a closed drawer on the server", () => {
   });
 
   it("gives two roots in one render two different ids", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <div>
         <Drawer.Root lazyMount={false}>
           <Drawer.Content>first</Drawer.Content>
@@ -169,7 +170,7 @@ describe("a closed drawer on the server", () => {
     // Header, Body and Footer exist in the recipe and not in the machine's anatomy, so they carry no
     // `data-part` and no machine props. The ActionTrigger has neither a part nor a recipe slot, and
     // its `type="button"` is the one thing it adds.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Drawer.Root lazyMount={false}>
         <Drawer.Content>
           <Drawer.Header data-probe="header">head</Drawer.Header>
@@ -191,7 +192,7 @@ describe("a closed drawer on the server", () => {
     // The precedence chain in full: the literal default resolves against the value the context
     // supplied, not against the raw prop — so a provider's `false` wins over the `true` the Root
     // would otherwise apply, and a Root passing the prop itself would still win over the provider.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Drawer.PropsProvider value={{ lazyMount: false }}>
         <Drawer.Root>
           <Drawer.Content>body</Drawer.Content>
@@ -206,7 +207,7 @@ describe("a closed drawer on the server", () => {
     // `@solidjs/web`'s server Portal returns `undefined` and consumes exactly one child id, which is
     // what keeps the client's own portal aligned. Here that shows up as an absent drawer and a
     // present sibling; that the sibling still *hydrates* is the browser test's half.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Drawer.Root lazyMount={false}>
         <Drawer.Trigger>Open</Drawer.Trigger>
         <Portal>

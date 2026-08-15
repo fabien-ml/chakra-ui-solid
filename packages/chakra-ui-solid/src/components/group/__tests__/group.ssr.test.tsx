@@ -1,4 +1,4 @@
-import { renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import { describe, expect, it } from "vitest";
 import { Group } from "../group";
 
@@ -14,7 +14,7 @@ import { Group } from "../group";
  */
 describe("Group on the server", () => {
   it("renders its children rather than throwing", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Group attached>
         <button type="button">one</button>
         <button type="button">two</button>
@@ -27,7 +27,7 @@ describe("Group on the server", () => {
   });
 
   it("carries none of the position attributes, which is the route's known cost", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Group attached>
         <button type="button">one</button>
         <button type="button">two</button>

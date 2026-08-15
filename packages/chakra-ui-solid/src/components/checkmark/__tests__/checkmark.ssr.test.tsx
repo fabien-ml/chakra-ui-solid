@@ -1,4 +1,4 @@
-import { renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import { describe, expect, it } from "vitest";
 import { Checkmark } from "../checkmark";
 
@@ -10,7 +10,7 @@ import { Checkmark } from "../checkmark";
  */
 describe("Checkmark on the server", () => {
   it("draws the tick when checked", async () => {
-    const html = await renderToStream(() => <Checkmark checked />);
+    const html = await renderServer(() => <Checkmark checked />);
 
     expect(html).toContain('data-state="checked"');
     expect(html).toContain('points="20 6 9 17 4 12"');
@@ -18,7 +18,7 @@ describe("Checkmark on the server", () => {
   });
 
   it("draws the dash when indeterminate, and lets it beat `checked`", async () => {
-    const html = await renderToStream(() => <Checkmark checked indeterminate />);
+    const html = await renderServer(() => <Checkmark checked indeterminate />);
 
     expect(html).toContain('data-state="indeterminate"');
     expect(html).toContain('d="M5 12h14"');
@@ -26,7 +26,7 @@ describe("Checkmark on the server", () => {
   });
 
   it("draws an empty box when neither, and still says so", async () => {
-    const html = await renderToStream(() => <Checkmark />);
+    const html = await renderServer(() => <Checkmark />);
 
     // The attribute is present in all three states rather than dropped in the resting one: every
     // variant's paint rule reads `[data-state=checked], [data-state=indeterminate]`, so `unchecked`
@@ -37,7 +37,7 @@ describe("Checkmark on the server", () => {
   });
 
   it("resolves the recipe and the presentation styles on the server", async () => {
-    const html = await renderToStream(() => <Checkmark checked size="lg" />);
+    const html = await renderServer(() => <Checkmark checked size="lg" />);
 
     expect(html).toContain('viewBox="0 0 24 24"');
     expect(html).toContain("checkmark--size_lg");
@@ -49,7 +49,7 @@ describe("Checkmark on the server", () => {
   });
 
   it("drops the recipe under `unstyled` and keeps the stroke that draws the tick", async () => {
-    const html = await renderToStream(() => <Checkmark checked unstyled />);
+    const html = await renderServer(() => <Checkmark checked unstyled />);
 
     expect(html).not.toContain("checkmark--");
     expect(html).toContain("stk_currentColor");

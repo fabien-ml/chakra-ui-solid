@@ -14,7 +14,7 @@
 //     subject costs a `*.ssr-entry.tsx` and a row in `HYDRATION_ENTRIES`
 //     (`vitest-hydration-bridge.ts`). Every way that wiring can rot is silent: an entry module
 //     nobody registered is never rendered, a registered id nobody hydrates proves nothing, and a
-//     `*.ssr.test.tsx` whose only `renderToStream` sits in a comment is a green file that tests
+//     `*.ssr.test.tsx` whose only `renderServer` sits in a comment is a green file that tests
 //     nothing.
 //
 // "Really calls" means outside a comment and outside a string. Both loopholes are one keystroke
@@ -105,6 +105,15 @@ const withoutComments = (source) => project(source, { keepStrings: true });
 
 function callsLive(source, callee) {
   return new RegExp(`\\b${callee}\\s*\\(`).test(codeOnly(source));
+}
+
+/**
+ * Either spelling of "this file really produced server HTML": `renderServer` is the harness helper
+ * that wraps the tree in the `<ChakraProvider>` every styled element needs, and `renderToStream` is
+ * what a test with nothing styled in it still calls directly.
+ */
+function rendersOnServer(source) {
+  return callsLive(source, "renderServer") || callsLive(source, "renderToStream");
 }
 
 function walk(directory, onFile) {
@@ -227,10 +236,10 @@ for (const id of registered.keys()) {
 // C — an SSR test that renders nothing, and the smoke test that covers every component.
 
 for (const path of ssrTests) {
-  if (!callsLive(readFileSync(path, "utf8"), "renderToStream")) {
+  if (!rendersOnServer(readFileSync(path, "utf8"))) {
     report(
-      `${asRepoPath(path)} never calls \`renderToStream()\`, so whatever it asserts, it does not ` +
-        "assert it against a server render.",
+      `${asRepoPath(path)} never calls \`renderServer()\` or \`renderToStream()\`, so whatever it ` +
+        "asserts, it does not assert it against a server render.",
     );
   }
 }
@@ -244,8 +253,8 @@ try {
       "server-rendered, and it asserts its own completeness against the barrel.",
   );
 }
-if (smokeSource !== undefined && !callsLive(smokeSource, "renderToStream")) {
-  report(`${asRepoPath(smokeTestPath)} never calls \`renderToStream()\`.`);
+if (smokeSource !== undefined && !rendersOnServer(smokeSource)) {
+  report(`${asRepoPath(smokeTestPath)} never calls \`renderServer()\` or \`renderToStream()\`.`);
 }
 
 if (problems.length > 0) {

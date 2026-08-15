@@ -110,6 +110,23 @@ export const chakraSolidAlias: { find: RegExp; replacement: string }[] = [
     find: /^@chakra-ui-solid\/internal-test-utils\/stylesheet$/,
     replacement: join(import.meta.dirname, "packages/internal-test-utils/src/stylesheet/index.ts"),
   },
+  // Its own specifier for the same reason `stylesheet` has one: the barrel above exports the axe
+  // helper, and `axe-core` at module load is not something the `ssr` project — which is where every
+  // caller of this one lives — can survive.
+  {
+    find: /^@chakra-ui-solid\/internal-test-utils\/render-server$/,
+    replacement: join(
+      import.meta.dirname,
+      "packages/internal-test-utils/src/render-server/index.ts",
+    ),
+  },
+  // The styled-system the render helpers provide, reachable on its own so a caller can nest a second
+  // `<ChakraProvider>` — and so `.storybook/preview.tsx` renders against the same instance the dev
+  // stylesheet beside it was generated from.
+  {
+    find: /^@chakra-ui-solid\/internal-test-utils\/system$/,
+    replacement: join(import.meta.dirname, "packages/internal-test-utils/src/system/index.ts"),
+  },
 ];
 
 /**

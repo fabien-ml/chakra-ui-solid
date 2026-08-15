@@ -1,7 +1,10 @@
+import { testSystem } from "@chakra-ui-solid/internal-test-utils/system";
 import { css, cva } from "@chakra-ui-solid/styled-system/css";
 import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
-import { createRoot } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { children, createRoot } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
+import { ChakraProvider } from "../../system/system";
 import { chakra } from "../factory";
 
 /**
@@ -31,6 +34,9 @@ type LooseComponent = (props: Record<string, unknown>) => unknown;
  * A `render` prop short-circuits before `<Dynamic>`, so this exercises the whole factory — variant
  * split, forwarding rule, class composition — with no DOM in sight. The returned bag is live, so a
  * later read of `.class` recomputes.
+ *
+ * The `<ChakraProvider>` is where `cva`, `css` and `isValidProperty` come from, and a provider hands
+ * its children back unevaluated — `children()` is what makes the component below it actually run.
  */
 function computedProps(
   component: unknown,
@@ -38,15 +44,22 @@ function computedProps(
 ): Record<string, unknown> {
   let captured: Record<string, unknown> | undefined;
 
-  createRoot((dispose) => {
-    disposers.push(dispose);
+  const Probe = () =>
     (component as LooseComponent)({
       ...props,
       render: (elementProps: Record<string, unknown>) => {
         captured = elementProps;
         return undefined;
       },
-    });
+    }) as JSX.Element;
+
+  createRoot((dispose) => {
+    disposers.push(dispose);
+    children(() => (
+      <ChakraProvider value={testSystem}>
+        <Probe />
+      </ChakraProvider>
+    ))();
   });
 
   if (captured === undefined) {

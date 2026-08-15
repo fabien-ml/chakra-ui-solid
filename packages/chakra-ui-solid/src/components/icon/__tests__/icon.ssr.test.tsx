@@ -1,5 +1,5 @@
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import type { JSX } from "@solidjs/web";
-import { renderToStream } from "@solidjs/web";
 import { describe, expect, it } from "vitest";
 import { CheckIcon } from "../../icons";
 import { createIcon } from "../create-icon";
@@ -26,7 +26,7 @@ function StarIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
  */
 describe("Icon's collapse on the server", () => {
   it("`as` sends one svg, carrying the recipe", async () => {
-    const html = await renderToStream(() => <Icon as={StarIcon} size="lg" color="orange.400" />);
+    const html = await renderServer(() => <Icon as={StarIcon} size="lg" color="orange.400" />);
 
     expect(html).toContain("icon--size_lg");
     expect(html).toContain('viewBox="0 0 24 24"');
@@ -36,7 +36,7 @@ describe("Icon's collapse on the server", () => {
   });
 
   it("`render` sends one svg too", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Icon
         size="lg"
         render={(props) => <StarIcon {...(props as JSX.SvgSVGAttributes<SVGSVGElement>)} />}
@@ -48,7 +48,7 @@ describe("Icon's collapse on the server", () => {
   });
 
   it("frames raw glyph contents in the one svg it renders itself", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Icon size="lg" viewBox="0 0 24 24">
         <path d="M0 0h24v24H0z" />
       </Icon>
@@ -78,7 +78,7 @@ describe("createIcon on the server", () => {
       path: () => <path fill="currentColor" d="M19.5 13.572 12 21l-7.5-7.428" />,
     });
 
-    const html = await renderToStream(() => <HeartIcon size="lg" />);
+    const html = await renderServer(() => <HeartIcon size="lg" />);
 
     expect(html).toContain("<svg");
     expect(html).toContain("M19.5 13.572 12 21l-7.5-7.428");
@@ -88,7 +88,7 @@ describe("createIcon on the server", () => {
   it("renders the `d` shorthand as a single path", async () => {
     const DotIcon = createIcon({ d: "M12 12h.01" });
 
-    const html = await renderToStream(() => <DotIcon />);
+    const html = await renderServer(() => <DotIcon />);
 
     expect(html).toContain('d="M12 12h.01"');
     expect(html).toContain('fill="currentColor"');
@@ -97,14 +97,14 @@ describe("createIcon on the server", () => {
   it("takes a caller's viewBox over the default", async () => {
     const WideIcon = createIcon({ viewBox: "0 0 32 32", d: "M16 16h.01" });
 
-    const html = await renderToStream(() => <WideIcon />);
+    const html = await renderServer(() => <WideIcon />);
 
     expect(html).toContain('viewBox="0 0 32 32"');
     expect(html).not.toContain('viewBox="0 0 24 24"');
   });
 
   it("server-renders an internal glyph, style pipeline and all", async () => {
-    const html = await renderToStream(() => <CheckIcon />);
+    const html = await renderServer(() => <CheckIcon />);
 
     expect(html).toContain("<svg");
     expect(html).toContain('d="M20 6 9 17l-5-5"');

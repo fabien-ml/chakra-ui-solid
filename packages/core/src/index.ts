@@ -96,6 +96,14 @@ export type { DisplacedHtmlProp, HtmlProps, PatchHtmlProps } from "./render-styl
 export { HTML_PROP_RENAMES } from "./render-styled/html-props";
 export type { CssProp, PlainCssValue, RenderStyledOptions } from "./render-styled/render-styled";
 export { composeCss, composeStyle, renderStyled } from "./render-styled/render-styled";
+export type {
+  ChakraProviderProps,
+  CreateSystemOptions,
+  CssFn,
+  CxFn,
+  SystemContext,
+} from "./system/system";
+export { ChakraProvider, createSystem, useChakraContext } from "./system/system";
 export type { WithDefaults } from "./utils/defaults";
 export { withContextDefaults, withDefaults } from "./utils/defaults";
 export type { EventHandlerEvent } from "./utils/events";

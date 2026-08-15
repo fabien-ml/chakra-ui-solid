@@ -1,4 +1,4 @@
-import { renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import { describe, expect, it } from "vitest";
 import { LocaleProvider } from "../../locale";
 import { Tabs } from "../index";
@@ -51,7 +51,7 @@ describe("Tabs on the server", () => {
     // Five, not six: the slot recipe carries a `contentGroup` name and `tabs.anatomy` does not, so
     // that element ships a slot class and nothing else. Asserting the absence is what keeps it a
     // decision rather than an oversight.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Tabs.Root defaultValue="react">
         <Tabs.List>
           <Tabs.Trigger value="react">React</Tabs.Trigger>
@@ -75,7 +75,7 @@ describe("Tabs on the server", () => {
   });
 
   it("lets `defaultValue` decide which panel is served un-`hidden`", async () => {
-    const html = await renderToStream(Served);
+    const html = await renderServer(Served);
     const [first, second] = tagsOfPart(html, "content");
 
     expect(first).not.toContain("hidden");
@@ -95,7 +95,7 @@ describe("Tabs on the server", () => {
     // suppresses the attribute so a `defaultOpen` panel does not animate in on load. Nothing does
     // that here, so the selected panel carries its state from the very first byte — and a recipe
     // keyed on `[data-state]` would animate it in.
-    const html = await renderToStream(Served);
+    const html = await renderServer(Served);
     const [first, second] = tagsOfPart(html, "content");
 
     expect(first).toContain('data-state="open"');
@@ -107,7 +107,7 @@ describe("Tabs on the server", () => {
     // `entry` runs when the machine starts, which never happens on a server. The preset reads it:
     // `.tabs__trigger--variant_plain[data-selected][data-ssr]` paints the selected tab's background
     // before the indicator has measured anything, so a served page is not missing its highlight.
-    const html = await renderToStream(Served);
+    const html = await renderServer(Served);
 
     for (const trigger of tagsOfPart(html, "trigger")) {
       expect(trigger).toContain("data-ssr");
@@ -119,7 +119,7 @@ describe("Tabs on the server", () => {
     // hidden element with no `--left`/`--width` in its style attribute — `toPx(undefined)` is
     // `undefined`, which Solid omits. Without that the bar would be painted at the document's
     // top-left corner until the machine's first measurement.
-    const html = await renderToStream(Served);
+    const html = await renderServer(Served);
     const indicator = tagOfPart(html, "indicator");
 
     expect(indicator).toContain("hidden");
@@ -136,7 +136,7 @@ describe("Tabs on the server", () => {
     // Zag emits a real `false`, and Solid's `setAttribute` removes an attribute whose value is
     // `false` — so without the adapter's boolean-ARIA stringification an unselected tab ships with
     // no `aria-selected` at all, and a screen reader is told nothing about the set.
-    const html = await renderToStream(Served);
+    const html = await renderServer(Served);
     const [first, second] = tagsOfPart(html, "trigger");
 
     expect(first).toContain('aria-selected="true"');
@@ -147,7 +147,7 @@ describe("Tabs on the server", () => {
     // Zag emits the IDREF on the selected trigger alone, which is why `TabsTrigger` needs none of
     // Dialog's presence gate: the panel an IDREF names is present by definition, so an unmounted one
     // can never leave a dangling reference for axe to find.
-    const html = await renderToStream(Served);
+    const html = await renderServer(Served);
     const [first, second] = tagsOfPart(html, "trigger");
     const selectedPanel = tagsOfPart(html, "content")[0];
 
@@ -161,7 +161,7 @@ describe("Tabs on the server", () => {
     // Every part id is derived from one `createUniqueId()` per Root. Two roots sharing an id would
     // give both triggers the same `aria-controls`, and the machine's own `getElementById` would find
     // the wrong panel.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <div>
         <Tabs.Root defaultValue="one">
           <Tabs.Content value="one">first</Tabs.Content>
@@ -181,7 +181,7 @@ describe("Tabs on the server", () => {
   it("seeds the machine from `id` rather than naming the root element with it", async () => {
     // The per-value ids are joined with a **hyphen**, not the colon every other suffix uses:
     // `tabs:{id}:trigger-{value}`. A test looking for `:trigger:react` would never find one.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Tabs.Root id="frameworks" defaultValue="react">
         <Tabs.List>
           <Tabs.Trigger value="react">React</Tabs.Trigger>
@@ -202,7 +202,7 @@ describe("Tabs on the server", () => {
     // `ids.content` is a **function of the value**, unlike Collapsible's plain string — one Root
     // names N panels. The IDREF is produced by a different `connect()` getter than the `id` is, so
     // this is the pair agreeing rather than one attribute being renamed.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Tabs.Root defaultValue="react" ids={{ content: (value) => `panel-${value}` }}>
         <Tabs.List>
           <Tabs.Trigger value="react">React</Tabs.Trigger>
@@ -216,7 +216,7 @@ describe("Tabs on the server", () => {
   });
 
   it("ships only the selected panel under `lazyMount`", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Tabs.Root defaultValue="react" lazyMount>
         <Tabs.List>
           <Tabs.Trigger value="react">React</Tabs.Trigger>
@@ -236,8 +236,8 @@ describe("Tabs on the server", () => {
   });
 
   it("resolves the slot recipe on the server, and drops every class under `unstyled`", async () => {
-    const styled = await renderToStream(Served);
-    const unstyled = await renderToStream(() => (
+    const styled = await renderServer(Served);
+    const unstyled = await renderServer(() => (
       <Tabs.Root defaultValue="react" unstyled>
         <Tabs.List>
           <Tabs.Trigger value="react">React</Tabs.Trigger>
@@ -260,7 +260,7 @@ describe("Tabs on the server", () => {
     // The machine takes `dir` as a prop and `connect()` writes it onto all five parts, so the whole
     // set is directional from the first byte. `createTabs` reads it from the locale context rather
     // than from the consumer, which is why nothing on `Tabs.Root` mentions it.
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <LocaleProvider locale="ar-AE">
         <Served />
       </LocaleProvider>
@@ -272,7 +272,7 @@ describe("Tabs on the server", () => {
   });
 
   it("orients every part, and gives the tablist an `aria-orientation` besides", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Tabs.Root defaultValue="react" orientation="vertical">
         <Tabs.List>
           <Tabs.Trigger value="react">React</Tabs.Trigger>

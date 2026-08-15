@@ -1,4 +1,4 @@
-import { renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import { describe, expect, it } from "vitest";
 import { Span } from "../../span";
 import { Loader } from "../loader";
@@ -11,7 +11,7 @@ import { Tree } from "./loader.ssr-entry";
  */
 describe("Loader on the server", () => {
   it("sends the children with no wrapper when it is not visible", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <Loader visible={false}>
         <Span data-probe="label">Save</Span>
       </Loader>
@@ -25,10 +25,10 @@ describe("Loader on the server", () => {
   });
 
   it("places the spinner before the text, and after it on request", async () => {
-    const start = await renderToStream(() => (
+    const start = await renderServer(() => (
       <Loader text="Saving…" spinner={<Span data-probe="spinner" />} />
     ));
-    const end = await renderToStream(() => (
+    const end = await renderServer(() => (
       <Loader text="Saving…" spinnerPlacement="end" spinner={<Span data-probe="spinner" />} />
     ));
 
@@ -40,14 +40,14 @@ describe("Loader on the server", () => {
     // Two renders that differ would mean a branch gate or a slot resolution stopped being pure
     // render-time computation — and hydration would then claim the server's node under a tree the
     // client built a different way.
-    const first = await renderToStream(() => <Tree />);
-    const second = await renderToStream(() => <Tree />);
+    const first = await renderServer(() => <Tree />);
+    const second = await renderServer(() => <Tree />);
 
     expect(first).toBe(second);
   });
 
   it("keeps its own props off the element", async () => {
-    const html = await renderToStream(() => <Loader spinnerPlacement="end">Save</Loader>);
+    const html = await renderServer(() => <Loader spinnerPlacement="end">Save</Loader>);
 
     expect(html).not.toContain("spinnerPlacement");
     expect(html).not.toContain("visible=");

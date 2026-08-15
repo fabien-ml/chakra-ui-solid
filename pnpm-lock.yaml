@@ -499,9 +499,6 @@ importers:
         specifier: 'catalog:'
         version: 1.43.0
     devDependencies:
-      '@chakra-ui-solid/internal-test-utils':
-        specifier: workspace:*
-        version: link:../internal-test-utils
       '@solidjs/web':
         specifier: 'catalog:'
         version: 2.0.0-rc.0(solid-js@2.0.0-rc.0)
@@ -521,6 +518,9 @@ importers:
         specifier: 8.5.26
         version: 8.5.26
     devDependencies:
+      '@chakra-ui-solid/core':
+        specifier: workspace:*
+        version: link:../core
       '@chakra-ui-solid/styled-system':
         specifier: workspace:*
         version: link:../styled-system

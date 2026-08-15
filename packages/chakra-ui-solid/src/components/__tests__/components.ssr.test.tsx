@@ -1,5 +1,6 @@
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
+import { testSystem } from "@chakra-ui-solid/internal-test-utils/system";
 import type { JSX } from "@solidjs/web";
-import { renderToStream } from "@solidjs/web";
 import { describe, expect, it } from "vitest";
 import * as barrel from "../index";
 import {
@@ -39,6 +40,7 @@ import {
   CardRoot,
   CardTitle,
   Center,
+  ChakraProvider,
   Checkmark,
   Circle,
   CloseButton,
@@ -477,6 +479,13 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </CardRoot>
   ),
   Center: () => <Center>middle</Center>,
+  // A nested provider, since `renderServer` already put one at the root — which is the shape a
+  // consumer restyling one subtree writes, and the one that has to server-render.
+  ChakraProvider: () => (
+    <ChakraProvider value={testSystem}>
+      <Box>provided</Box>
+    </ChakraProvider>
+  ),
   // Checked, because that is the arm that draws a glyph — the unchecked one renders an empty `svg`
   // and would pass the "did any element come back" check with the whole `Switch` dead.
   Checkmark: () => <Checkmark checked />,
@@ -1625,7 +1634,7 @@ describe("every exported component renders on the server", () => {
       throw new Error(`no subject registered for ${name}`);
     }
 
-    const html = await renderToStream(render);
+    const html = await renderServer(render);
 
     // An element, not merely a non-empty string: a component that server-rendered to its children
     // and nothing else would pass a length check while having dropped its own markup.

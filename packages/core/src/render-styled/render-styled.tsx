@@ -3,12 +3,11 @@
 // it, each named below and each `plan.md` §2.3's. Renamed after what it exports: style props are
 // one of `renderStyled`'s inputs, not the thing this file is.
 
-import { css, cx } from "@chakra-ui-solid/styled-system/css";
-import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import type { JSX, ValidComponent } from "@solidjs/web";
-import { type Accessor, merge, omit } from "solid-js";
+import { type Accessor, merge, omit, untrack } from "solid-js";
 import { type RenderProp, renderElement } from "../render/render";
+import { useChakraContext } from "../system/system";
 import { HTML_PROP_RENAMES } from "./html-props";
 
 /**
@@ -164,6 +163,10 @@ const ALWAYS_FORWARDED = new Set(["children", "ref"]);
  * SSR-safe by construction: the `class` getter is pure render-time computation — no DOM access, no
  * effects, no generated ids — and `css()` emits stable unhashed names, so server and client agree.
  *
+ * The `css`, `cx` and `isValidProperty` it computes with come off the `<ChakraProvider>` above it
+ * rather than from an import, so this must be called from a component body — there is no context to
+ * read anywhere else. Without a provider it throws, naming the one to add.
+ *
  * `as` is a loose `ValidComponent`, never a generic that re-types `Props` from the element, so this
  * carries none of the deep-conditional polymorphic-type cost that wrecks IntelliSense in that other
  * SolidJS overlay library — `renderStyled<Props>` is as cheap to type-check as
@@ -176,6 +179,8 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
     css?: CssProp;
     unstyled?: boolean;
   };
+
+  const system = useChakraContext();
 
   // Addition 3 — the five `html*` renames. `htmlSize` reaches the element as `size`, and so on for
   // `width`, `height`, `translate` and `content`, all of which are style props here and would
@@ -195,18 +200,28 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
   const styleKeys: string[] = [];
   const withheldKeys: string[] = [];
 
-  for (const key of Object.keys(props)) {
-    if (key === "css" || key in HTML_PROP_RENAMES || ALWAYS_FORWARDED.has(key)) {
-      continue;
+  // The system is read **untracked** here and tracked in the `class` getter below, and the split is
+  // what `omit` can express: the getter recomputes on every read, while the key list handed to
+  // `omit` is chosen once and fixes the element's attribute set for the life of the node. So a
+  // system swapped at runtime restyles the element; it does not re-decide which props reach the
+  // DOM. Tracking the read here would only turn that into a `[STRICT_READ_UNTRACKED]` warning with
+  // the same outcome.
+  untrack(() => {
+    const isValidProperty = system().isValidProperty;
+
+    for (const key of Object.keys(props)) {
+      if (key === "css" || key in HTML_PROP_RENAMES || ALWAYS_FORWARDED.has(key)) {
+        continue;
+      }
+      const isStyleProp = isValidProperty(key);
+      // `??` rather than `||`: a predicate answering `false` is a decision, and only an absent
+      // predicate falls back to the default.
+      if (options.forwardProp?.(key, isStyleProp) ?? !isStyleProp) {
+        continue;
+      }
+      (isStyleProp ? styleKeys : withheldKeys).push(key);
     }
-    const isStyleProp = isCssProperty(key);
-    // `??` rather than `||`: a predicate answering `false` is a decision, and only an absent
-    // predicate falls back to the default.
-    if (options.forwardProp?.(key, isStyleProp) ?? !isStyleProp) {
-      continue;
-    }
-    (isStyleProp ? styleKeys : withheldKeys).push(key);
-  }
+  });
 
   // `as`/`render`/`class`/`css`/`unstyled` and the style props never reach the element as
   // attributes: `as`/`render` are handled by `renderElement`, `class`/`css` and the style props
@@ -242,6 +257,10 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
 
   const elementProps = merge(rest, renamedHtmlProps, {
     get class() {
+      // Read here, and only here, so a `<ChakraProvider>` handed a signal recomputes this class
+      // rather than leaving the element on the system it first rendered under.
+      const { css, cx } = system();
+
       const styles: Record<string, unknown> = {};
       for (const key of styleKeys) {
         styles[key] = (props as Record<string, unknown>)[key];

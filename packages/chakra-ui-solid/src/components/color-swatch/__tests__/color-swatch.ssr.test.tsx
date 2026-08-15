@@ -1,4 +1,4 @@
-import { renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import { describe, expect, it } from "vitest";
 import { ColorSwatch, ColorSwatchMix, ColorSwatchPropsProvider } from "../color-swatch";
 
@@ -10,37 +10,35 @@ import { ColorSwatch, ColorSwatchMix, ColorSwatchPropsProvider } from "../color-
  */
 describe("ColorSwatch on the server", () => {
   it("writes the colour into an inline style, because it cannot be a class", async () => {
-    const html = await renderToStream(() => <ColorSwatch value="#bada55" />);
+    const html = await renderServer(() => <ColorSwatch value="#bada55" />);
 
     expect(html).toContain("--color:#bada55");
     expect(html).toContain('data-value="#bada55"');
   });
 
   it("keeps `value` off the element, where it would be an invalid attribute", async () => {
-    const html = await renderToStream(() => <ColorSwatch value="#bada55" />);
+    const html = await renderServer(() => <ColorSwatch value="#bada55" />);
 
     expect(html).not.toContain('value="#bada55"><');
     expect(html).not.toContain(' value="#bada55"');
   });
 
   it("resolves the recipe on the server", async () => {
-    const html = await renderToStream(() => (
-      <ColorSwatch value="tomato" size="lg" shape="circle" />
-    ));
+    const html = await renderServer(() => <ColorSwatch value="tomato" size="lg" shape="circle" />);
 
     expect(html).toContain("color-swatch--size_lg");
     expect(html).toContain("color-swatch--shape_circle");
   });
 
   it("drops the recipe under `unstyled` and keeps the colour the consumer's styles will paint", async () => {
-    const html = await renderToStream(() => <ColorSwatch value="tomato" unstyled />);
+    const html = await renderServer(() => <ColorSwatch value="tomato" unstyled />);
 
     expect(html).not.toContain("color-swatch--");
     expect(html).toContain("--color:tomato");
   });
 
   it("reads a props provider on the server, where there is no effect to fix it up later", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <ColorSwatchPropsProvider value={{ shape: "circle" }}>
         <ColorSwatch value="tomato" />
       </ColorSwatchPropsProvider>
@@ -50,8 +48,8 @@ describe("ColorSwatch on the server", () => {
   });
 
   it("renders one cell per colour, which is what decides every hydration key after it", async () => {
-    const two = await renderToStream(() => <ColorSwatchMix items={["red", "pink"]} />);
-    const three = await renderToStream(() => <ColorSwatchMix items={["red", "pink", "green"]} />);
+    const two = await renderServer(() => <ColorSwatchMix items={["red", "pink"]} />);
+    const three = await renderServer(() => <ColorSwatchMix items={["red", "pink", "green"]} />);
 
     expect(two.match(/--color:/g)).toHaveLength(3);
     expect(three.match(/--color:/g)).toHaveLength(4);
@@ -61,12 +59,14 @@ describe("ColorSwatch on the server", () => {
     expect(three).toContain("grid-c_span_2");
   });
 
-  it("throws on a fifth colour before it can render a broken grid", () => {
-    // Synchronously, not as a rejected promise: `renderToStream` builds the tree eagerly, so the
-    // guard fires while the render function is still on the stack and a route sees a 500 rather
-    // than a page with five cells crammed into two columns.
-    expect(() =>
-      renderToStream(() => <ColorSwatchMix items={["a", "b", "c", "d", "e"]} />),
-    ).toThrow("doesn't support more than 4 colors");
+  it("throws on a fifth colour before it can render a broken grid", async () => {
+    // The render fails rather than producing a page with five cells crammed into two columns, so a
+    // route sees a 500. It surfaces as a rejection rather than a synchronous throw because the
+    // component body runs inside the `<ChakraProvider>`'s own children memo — one boundary the
+    // guard now crosses, and the same one every part component under a machine root already sits
+    // behind.
+    await expect(
+      renderServer(() => <ColorSwatchMix items={["a", "b", "c", "d", "e"]} />),
+    ).rejects.toThrow("doesn't support more than 4 colors");
   });
 });

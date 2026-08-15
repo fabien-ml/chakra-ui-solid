@@ -34,9 +34,14 @@ type NoProvider = typeof NO_PROVIDER;
  *
  * The provider is the context object itself — 2.0 renders a context as a component, so there is no
  * separate `.Provider` to return.
+ *
+ * `missingProviderMessage` replaces the default sentence for a context whose provider is not a
+ * component family's root — `<ChakraProvider>` is one, and "Chakra sub-components must be rendered
+ * inside a Chakra root component" names nothing a reader can go and add.
  */
 export function createComponentContext<Value>(
   name: string,
+  missingProviderMessage?: string,
 ): [Context<Value>, () => Value, () => Value | undefined] {
   const ComponentContext = createContext<Value | NoProvider>(NO_PROVIDER, {
     name: `${name}Context`,
@@ -45,7 +50,10 @@ export function createComponentContext<Value>(
   const useComponentContext = (): Value => {
     const value = useContext(ComponentContext);
     if (value === NO_PROVIDER) {
-      throw new Error(`${name} sub-components must be rendered inside a ${name} root component.`);
+      throw new Error(
+        missingProviderMessage ??
+          `${name} sub-components must be rendered inside a ${name} root component.`,
+      );
     }
     return value;
   };

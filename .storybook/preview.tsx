@@ -1,7 +1,12 @@
+import { ChakraProvider } from "@chakra-ui-solid/core";
+// The same styled-system instance the dev stylesheet below was generated from — one declaration,
+// shared with the `browser` Vitest project, so a story cannot render against class names the sheet
+// beside it has no rules for.
+import { testSystem } from "@chakra-ui-solid/internal-test-utils/system";
 import { trackFocusVisible } from "@zag-js/focus-visible";
 // `/next` is the SolidJS 2.0 renderer entry; the bare export resolves to the 1.x-compatible one.
 // This project targets 2.0 only.
-import { definePreview } from "storybook-solidjs-vite/next";
+import { createJSXDecorator, definePreview } from "storybook-solidjs-vite/next";
 // The generated stylesheet plus the colour-mode class the preset requires, shared with the
 // `browser` Vitest project. Panda's `css()` computes class names and never injects a rule, so
 // without this every story renders unstyled — and unstyled reads as a story that simply has no
@@ -26,4 +31,13 @@ trackFocusVisible({ onChange() {} });
 
 export default definePreview({
   parameters: { layout: "centered" },
+  // Every component reads `css`, `cx` and `isValidProperty` off this provider, so without the
+  // decorator a story throws before it renders anything. `createJSXDecorator` is how this renderer
+  // is told the decorator returns JSX rather than a component to call again — without it the
+  // wrapper is rebuilt on every re-render of an already-mounted story.
+  decorators: [
+    createJSXDecorator((Story) => (
+      <ChakraProvider value={testSystem}>{Story()}</ChakraProvider>
+    )),
+  ],
 });

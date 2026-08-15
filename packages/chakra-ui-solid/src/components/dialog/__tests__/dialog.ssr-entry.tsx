@@ -1,5 +1,6 @@
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import type { JSX } from "@solidjs/web";
-import { Portal, renderToStream } from "@solidjs/web";
+import { Portal } from "@solidjs/web";
 import { Show } from "solid-js";
 import { Dialog } from "../index";
 
@@ -85,5 +86,5 @@ export function Tree(): JSX.Element {
 
 /** The server render the hydration-fixture bridge invokes for `?id=dialog`. */
 export async function renderFixture(): Promise<string> {
-  return await renderToStream(() => <Tree />);
+  return await renderServer(() => <Tree />);
 }

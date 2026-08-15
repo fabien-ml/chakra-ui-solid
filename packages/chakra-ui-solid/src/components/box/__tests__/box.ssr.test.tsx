@@ -1,5 +1,5 @@
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import { declarationsForClassList } from "@chakra-ui-solid/internal-test-utils/stylesheet";
-import { renderToStream } from "@solidjs/web";
 import { describe, expect, it } from "vitest";
 import { Box } from "../box";
 import { Tree } from "./box.ssr-entry";
@@ -15,7 +15,7 @@ import { Tree } from "./box.ssr-entry";
  */
 
 async function renderClassList(ui: () => ReturnType<typeof Box>): Promise<string> {
-  const html = await renderToStream(ui);
+  const html = await renderServer(ui);
   const match = /class="([^"]*)"/.exec(html);
   if (match?.[1] === undefined) {
     throw new Error(`server render carried no class attribute:\n${html}`);
@@ -68,13 +68,13 @@ describe("Box — SSR output is a pure computation", () => {
     // `renderStyled`'s class getter touches no DOM, runs no effect and generates no id, and
     // `hash: false` makes `css()`'s names stable. Two renders that differ would mean one of those
     // stopped being true, and hydration would then reuse a server node under a client class.
-    const first = await renderToStream(() => <Tree />);
-    const second = await renderToStream(() => <Tree />);
+    const first = await renderServer(() => <Tree />);
+    const second = await renderServer(() => <Tree />);
     expect(first).toBe(second);
   });
 
   it("keeps style props off the element and renames the html* escape hatches", async () => {
-    const html = await renderToStream(() => <Box as="img" htmlWidth={40} p="4" />);
+    const html = await renderServer(() => <Box as="img" htmlWidth={40} p="4" />);
     expect(html).toContain('width="40"');
     expect(html).not.toMatch(/\sp="4"/);
     expect(html).not.toContain("htmlWidth");

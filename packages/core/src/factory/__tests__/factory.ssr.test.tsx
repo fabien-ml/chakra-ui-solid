@@ -1,6 +1,6 @@
 import { chakra } from "@chakra-ui-solid/core";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import { declarationsForClassList } from "@chakra-ui-solid/internal-test-utils/stylesheet";
-import { renderToStream } from "@solidjs/web";
 import { describe, expect, it } from "vitest";
 
 /**
@@ -31,7 +31,7 @@ const StyledButton = chakra("button", {
 });
 
 async function renderClassList(ui: () => ReturnType<typeof StyledButton>): Promise<string> {
-  const html = await renderToStream(ui);
+  const html = await renderServer(ui);
   const match = /class="([^"]*)"/.exec(html);
   if (match?.[1] === undefined) {
     throw new Error(`server render carried no class attribute:\n${html}`);
@@ -78,14 +78,12 @@ describe("chakra — the server sends markup whose classes have real rules", () 
     // The class getter touches no DOM, runs no effect and generates no id. Two renders that
     // differed would mean one of those stopped being true, and hydration would then reuse a server
     // node under a client class.
-    const first = await renderToStream(() => <StyledButton type="button" paddingInline="1" />);
-    expect(first).toBe(
-      await renderToStream(() => <StyledButton type="button" paddingInline="1" />),
-    );
+    const first = await renderServer(() => <StyledButton type="button" paddingInline="1" />);
+    expect(first).toBe(await renderServer(() => <StyledButton type="button" paddingInline="1" />));
   });
 
   it("keeps variant keys and style props off the element", async () => {
-    const html = await renderToStream(() => (
+    const html = await renderServer(() => (
       <StyledButton type="button" tone="subtle" paddingInline="1" />
     ));
 

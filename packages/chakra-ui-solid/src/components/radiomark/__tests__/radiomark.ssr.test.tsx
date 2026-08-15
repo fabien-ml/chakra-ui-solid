@@ -1,4 +1,4 @@
-import { renderToStream } from "@solidjs/web";
+import { renderServer } from "@chakra-ui-solid/internal-test-utils/render-server";
 import { describe, expect, it } from "vitest";
 import { Radiomark } from "../radiomark";
 
@@ -10,7 +10,7 @@ import { Radiomark } from "../radiomark";
  */
 describe("Radiomark on the server", () => {
   it("draws the dot when checked, and says so on `data-checked`", async () => {
-    const html = await renderToStream(() => <Radiomark checked />);
+    const html = await renderServer(() => <Radiomark checked />);
 
     // Bare, not `data-checked=""`: Solid serialises an empty-string attribute without its value,
     // which is the same attribute to a selector. The unchecked case below is what pins the meaning.
@@ -19,21 +19,21 @@ describe("Radiomark on the server", () => {
   });
 
   it("draws no dot when unchecked, and leaves the attribute off", async () => {
-    const html = await renderToStream(() => <Radiomark />);
+    const html = await renderServer(() => <Radiomark />);
 
     expect(html).not.toContain('class="dot"');
     expect(html).not.toContain("data-checked");
   });
 
   it("resolves the recipe on the server", async () => {
-    const html = await renderToStream(() => <Radiomark checked size="lg" />);
+    const html = await renderServer(() => <Radiomark checked size="lg" />);
 
     expect(html).toContain("radiomark--size_lg");
     expect(html).toContain("radiomark--variant_solid");
   });
 
   it("drops the recipe under `unstyled` and keeps the dot the consumer's styles will find", async () => {
-    const html = await renderToStream(() => <Radiomark checked unstyled />);
+    const html = await renderServer(() => <Radiomark checked unstyled />);
 
     expect(html).not.toContain("radiomark--");
     expect(html).toContain('class="dot"');

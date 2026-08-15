@@ -62,6 +62,16 @@
       // where a `node:fs` import throws at module load and takes the whole test file with it.
       "@chakra-ui-solid/internal-test-utils/stylesheet": [
         "./packages/internal-test-utils/src/stylesheet/index.ts"
+      ],
+      // Its own specifier for the same reason as the one above: the barrel pulls in `axe-core` at
+      // module load, and the `ssr` project — every caller of this helper — has no DOM for it.
+      "@chakra-ui-solid/internal-test-utils/render-server": [
+        "./packages/internal-test-utils/src/render-server/index.ts"
+      ],
+      // The styled-system those helpers provide, on its own so a caller can nest a second
+      // `<ChakraProvider>` around a subtree.
+      "@chakra-ui-solid/internal-test-utils/system": [
+        "./packages/internal-test-utils/src/system/index.ts"
       ]
     }
   }

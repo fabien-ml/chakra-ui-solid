@@ -1,8 +1,11 @@
 // Carried from hope-ui `main` (1dc059f), `packages/internal-test-utils/src/mount/mount.ts`. Same
 // author, MIT — ours, forked on copy (`CLAUDE.md`, *Reference use*).
 
+import { ChakraProvider } from "@chakra-ui-solid/core";
 import type { JSX } from "@solidjs/web";
 import { render as solidRender } from "@solidjs/web";
+import { Errored } from "solid-js";
+import { testSystem } from "../system";
 
 export interface MountedComponent {
   container: HTMLElement;
@@ -130,6 +133,13 @@ function assertNoDiagnostics(): void {
  * Mounts a Solid component tree into its own container appended to `document.body`, and returns a
  * `dispose()` that unmounts and removes it.
  *
+ * The tree is wrapped in a `<ChakraProvider>` carrying the repo's own generated styled-system,
+ * because nothing styled renders without one. A test that wants a different system nests its own
+ * provider inside — the inner one wins.
+ *
+ * A throw from the tree still comes back out of this call, so `expect(() => mount(…)).toThrow()`
+ * reads the same as ever — the error boundary below is why it takes a detour to get here.
+ *
  * `dispose()` **throws** if SolidJS emitted a `STRICT_READ_UNTRACKED` or
  * `REACTIVE_WRITE_IN_OWNED_SCOPE` diagnostic while the tree was mounted. Full rationale in
  * `__internal__/internal-test-utils/mount.md`; it is a gate line in its own right
@@ -143,15 +153,42 @@ export function mount(ui: () => JSX.Element): MountedComponent {
   installConsoleGuard();
 
   let disposeSolid: () => void;
+  let caught: { error: unknown } | undefined;
   const container = document.createElement("div");
   document.body.appendChild(container);
 
   try {
-    disposeSolid = solidRender(ui, container);
+    // The boundary is what keeps ONE deliberate throw from taking the rest of the file with it.
+    // Under a provider the tree is built inside a memo, so a component that throws while rendering
+    // — `<Table.Row />` with no Root above it, and every other "names the family" test — raises
+    // inside the reactive graph. An error that reaches the root queue unhandled makes SolidJS 2.0
+    // halt reactivity **process-wide** (`[REACTIVITY_HALTED]`), and every later tree in the same
+    // page then renders nothing, with a failure that names the innocent test. A boundary handles
+    // it, so nothing halts, and the error is rethrown below where the caller expects it.
+    disposeSolid = solidRender(
+      () => (
+        <Errored
+          fallback={(error) => {
+            caught = { error: error() };
+            return undefined;
+          }}
+        >
+          <ChakraProvider value={testSystem}>{ui()}</ChakraProvider>
+        </Errored>
+      ),
+      container,
+    );
   } catch (error) {
     uninstallConsoleGuard();
     container.remove();
     throw error;
+  }
+
+  if (caught !== undefined) {
+    disposeSolid();
+    uninstallConsoleGuard();
+    container.remove();
+    throw caught.error;
   }
 
   return {
@@ -164,6 +201,11 @@ export function mount(ui: () => JSX.Element): MountedComponent {
         uninstallConsoleGuard();
       }
       assertNoDiagnostics();
+      // A throw after the tree mounted — from an effect, or a signal write that re-ran a body —
+      // renders the fallback and would otherwise leave a test green against an empty container.
+      if (caught !== undefined) {
+        throw caught.error;
+      }
     },
   };
 }

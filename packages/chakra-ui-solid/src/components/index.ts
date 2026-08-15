@@ -9,14 +9,26 @@ export type {
   Chakra,
   ChakraComponent,
   ChakraFactoryOptions,
+  ChakraProviderProps,
   ChakraStylingProps,
+  CreateSystemOptions,
+  CssFn,
+  CxFn,
   HTMLChakraProps,
+  SystemContext,
 } from "@chakra-ui-solid/core";
 // A consumer cannot reach `@chakra-ui-solid/core` themselves — pnpm's strict layout does not resolve
 // a dependency of ours from their node_modules — so a core export they are meant to call has to
 // surface here or it ships unreachable. `registerRecipeDefaults` is one: it is how a consumer's own
-// `defaultVariants` take effect, which our published recipes otherwise bake past.
-export { chakra, registerRecipeDefaults } from "@chakra-ui-solid/core";
+// `defaultVariants` take effect, which our published recipes otherwise bake past. `ChakraProvider`
+// and `createSystem` are the pair every app root calls — nothing renders without them.
+export {
+  ChakraProvider,
+  chakra,
+  createSystem,
+  registerRecipeDefaults,
+  useChakraContext,
+} from "@chakra-ui-solid/core";
 export * from "./absolute-center";
 export * from "./alert";
 export * from "./aspect-ratio";

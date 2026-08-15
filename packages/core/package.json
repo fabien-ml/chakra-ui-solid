@@ -36,7 +36,6 @@
     "@zag-js/utils": "catalog:"
   },
   "devDependencies": {
-    "@chakra-ui-solid/internal-test-utils": "workspace:*",
     "@solidjs/web": "catalog:",
     "solid-js": "catalog:",
     "tsdown": "^0.22.14"
