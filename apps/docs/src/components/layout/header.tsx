@@ -2,6 +2,7 @@ import { Link, useLocation } from "@tanstack/solid-router";
 import { Box, IconButton } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { ColorModeToggle } from "~/components/layout/color-mode-toggle";
+import { MobileNav } from "~/components/layout/mobile-nav";
 import { Container } from "~/components/ui/container";
 import { DocLink } from "~/components/ui/doc-link";
 import { LogoIcon } from "~/components/ui/logo";
@@ -27,6 +28,10 @@ import { firstPageOf, liveSections } from "~/lib/site-map";
  * The mark is Chakra's bolt glyph beside **our** wordmark: the logotype next to it reads
  * `chakra-ui-solid`, never `chakra`. The glyph is MIT like the rest of their source and is
  * attributed in `~/components/ui/logo` and the root `NOTICE.md`.
+ *
+ * Below `md` the row is wordmark · burger · theme toggle: the sections and the GitHub link move
+ * into the drawer (`~/components/layout/mobile-nav`), which is where the sidebar's pages have to go
+ * anyway once the sidebar itself is out of the layout.
  */
 export function SiteHeader() {
   const location = useLocation();
@@ -72,6 +77,7 @@ export function SiteHeader() {
 
         <Box
           as="ul"
+          hideBelow="md"
           display="flex"
           alignItems="center"
           gap="6"
@@ -107,12 +113,14 @@ export function SiteHeader() {
         </Box>
 
         <Box ms="auto" display="flex" alignItems="center" gap="1">
+          <MobileNav />
           {/* The label sits on the anchor rather than on IconButton, because the render callback
             picks `class` and `children` rather than spreading: Button's computed props carry a
             `type="button"` and a `disabled`, and neither belongs on a link. */}
           <IconButton
             variant="ghost"
             size="sm"
+            hideBelow="md"
             render={(renderProps) => (
               <a
                 href={repoUrl}
