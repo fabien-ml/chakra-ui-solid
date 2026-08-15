@@ -1,7 +1,7 @@
 import type { Config } from "@pandacss/dev";
 import { recipes } from "./chakra/recipes";
 import { slotRecipes } from "./chakra/slot-recipes";
-import { defaultVariantsFor } from "./recipe-registry";
+import { defaultVariantsFor } from "./contract";
 import { chakraSkin, type Skin } from "./skin";
 
 type Plugin = NonNullable<Config["plugins"]>[number];

@@ -3,8 +3,8 @@ import { aliasUtilities } from "./alias-utilities";
 import { recipes } from "./chakra/recipes";
 import { slotRecipes } from "./chakra/slot-recipes";
 import { utilities } from "./chakra/utilities";
+import { componentNameFor, recipeKeys, slotRecipeKeys } from "./contract";
 import { currentBgUtilities } from "./current-bg-utilities";
-import { componentNameFor, recipeKeys, slotRecipeKeys } from "./recipe-registry";
 import { chakraSkin, type Skin } from "./skin";
 
 /**

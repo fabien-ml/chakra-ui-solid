@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { componentNameFor, recipeKeys, slotRecipeKeys } from "../contract";
 import { chakraSolidPreset, createChakraSolidPreset } from "../preset";
-import { componentNameFor, recipeKeys, slotRecipeKeys } from "../recipe-registry";
 import { chakraSkin, defineSkin } from "../skin";
 
 /**

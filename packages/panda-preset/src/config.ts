@@ -1,7 +1,7 @@
 import type { Config } from "@pandacss/dev";
+import { recipeKeys, slotRecipeKeys, variantKeysFor } from "./contract";
 import { createChakraSolidPreset } from "./preset";
 import { recipeGatePlugin } from "./recipe-gate-plugin";
-import { recipeKeys, slotRecipeKeys, variantKeysFor } from "./recipe-registry";
 import { chakraSkin, type Skin } from "./skin";
 import { skinContractPlugin } from "./skin-contract";
 

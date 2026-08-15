@@ -2,8 +2,8 @@ import { readFileSync } from "node:fs";
 import type { Config } from "@pandacss/dev";
 import { describe, expect, it, vi } from "vitest";
 import { type ChakraConfigOverrides, defineChakraConfig } from "../config";
+import { variantKeysFor } from "../contract";
 import { chakraSolidPreset } from "../preset";
-import { variantKeysFor } from "../recipe-registry";
 
 /**
  * `defineChakraConfig()` exists for one failure mode with no other guard. In Panda's external-package
