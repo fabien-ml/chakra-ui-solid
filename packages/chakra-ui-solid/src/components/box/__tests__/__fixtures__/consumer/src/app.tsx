@@ -126,6 +126,21 @@ const RecipeTier = () => (
   </Box>
 );
 
+/**
+ * The three things only this config can decide, each written the way a consumer writes it.
+ *
+ * They are here for the usual reason every other line in this file is — extraction is a source scan,
+ * so a rule for `elevation="high"`, for `_supportsGrid` and for `tone="brand"` exists in their sheet
+ * only because these lines do. What is *new* about them is that they are also the phase-5 gate: none
+ * of the three type-checks unless `panda codegen` wrote `chakra-system-types.d.ts` beside the system
+ * module, and this file sits in a typechecked tree.
+ */
+const ConsumerAdditions = () => (
+  <Box elevation="high" _supportsGrid={{ display: "grid", gap: "4" }}>
+    <Button tone="brand">Brand</Button>
+  </Box>
+);
+
 export const App = () => (
   <Box p="4" bg="red.500" gapX="4">
     {/* Form 1 — the JSX namespace, and the form `isUpperCase` cannot rescue. */}
@@ -138,5 +153,6 @@ export const App = () => (
     </svg>
     <LayoutTier />
     <RecipeTier />
+    <ConsumerAdditions />
   </Box>
 );

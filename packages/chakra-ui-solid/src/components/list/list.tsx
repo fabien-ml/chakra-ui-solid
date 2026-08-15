@@ -2,6 +2,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -19,7 +20,7 @@ export type ListSlot = "root" | "item" | "indicator";
  * **No `@default` tag on either.** The recipe's `defaultVariants` resolves `marker` from
  * `undefined` itself, and `align` has no default at all.
  */
-export interface ListVariantProps {
+export interface ListVariantProps extends PresetVariantProps<"list"> {
   /**
    * Whether the browser draws its own bullets or numbers — `marker` restores them and tints them
    * `fg.subtle`, `plain` leaves the item an `inline-flex` row for a {@link ListIndicator} to sit in.

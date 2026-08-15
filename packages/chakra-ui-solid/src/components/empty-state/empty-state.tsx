@@ -2,6 +2,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
 import type { EmptyStateVariantProps as EmptyStateRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
@@ -17,7 +18,7 @@ export type EmptyStateSlot = "root" | "content" | "indicator" | "title" | "descr
  *
  * **No `@default` tag.** The recipe's `defaultVariants` resolves `md` from `undefined` itself.
  */
-export interface EmptyStateVariantProps {
+export interface EmptyStateVariantProps extends PresetVariantProps<"emptyState"> {
   /**
    * The padding around the block, the gap between its parts, the title's type scale, and the
    * glyph's — all four move together, and the glyph moves furthest: `2xl` to `6xl`.

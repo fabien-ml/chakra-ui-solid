@@ -2,6 +2,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
 } from "@chakra-ui-solid/core";
 import type { KbdVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -12,7 +13,7 @@ import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
  * the interface the docs page's props table is built from. It names Chakra's own variants; what the
  * seam partitions by is whatever the system's `kbd` recipe accepts.
  */
-export interface KbdProps extends HTMLChakraProps<"kbd"> {
+export interface KbdProps extends HTMLChakraProps<"kbd">, PresetVariantProps<"kbd"> {
   /**
    * How the key is drawn — `raised` gives it the thicker bottom border that reads as a keycap,
    * `outline` is a ring, `subtle` a fill, and `plain` the glyph alone.

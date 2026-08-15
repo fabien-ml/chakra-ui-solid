@@ -2,6 +2,7 @@ import {
   createRecipeClass,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   pickVariantProps,
   renderStyled,
   useRecipeVariantKeys,
@@ -17,7 +18,7 @@ import { type Component, merge, omit, Show } from "solid-js";
  * neither, and this is the interface the docs page's props table is built from. It names Chakra's
  * own variants; what the body partitions by is whatever the system's `radiomark` recipe accepts.
  */
-export interface RadiomarkProps extends HTMLChakraProps<"span"> {
+export interface RadiomarkProps extends HTMLChakraProps<"span">, PresetVariantProps<"radiomark"> {
   /**
    * The circle's size, as a scale step.
    *

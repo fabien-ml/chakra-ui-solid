@@ -3,6 +3,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
   renderStyled,
 } from "@chakra-ui-solid/core";
@@ -26,7 +27,7 @@ export type AlertStatus = "info" | "warning" | "success" | "error" | "neutral";
  * **No `@default` tag on any of them.** The recipe's `defaultVariants` resolves `info`, `false`,
  * `subtle` and `md` from `undefined` itself.
  */
-export interface AlertVariantProps {
+export interface AlertVariantProps extends PresetVariantProps<"alert"> {
   /**
    * What the alert is telling the reader. It is a recipe variant *and* the value
    * {@link AlertIndicator} reads to pick its glyph — the one thing the styling seam cannot supply,

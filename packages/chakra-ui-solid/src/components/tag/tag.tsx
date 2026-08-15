@@ -2,6 +2,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
   renderStyled,
   withDefaults,
@@ -22,7 +23,7 @@ export type TagSlot = "root" | "label" | "closeTrigger" | "startElement" | "endE
  * **No `@default` tag on either.** The recipe's `defaultVariants` resolves `md` and `surface` from
  * `undefined` itself.
  */
-export interface TagVariantProps {
+export interface TagVariantProps extends PresetVariantProps<"tag"> {
   /** The label's type scale, the tag's minimum height, and the size of a start or end element. */
   size?: ConditionalValue<"sm" | "md" | "lg" | "xl" | PresetVariant<"tag", "size">>;
   /**

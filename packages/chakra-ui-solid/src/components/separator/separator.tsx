@@ -3,6 +3,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   pickVariantProps,
   renderStyled,
   useRecipeVariantKeys,
@@ -19,7 +20,9 @@ import { type Component, merge, omit } from "solid-js";
  * this is the interface the docs page's props table is built from. It names Chakra's own variants;
  * what the body partitions by is whatever the system's `separator` recipe accepts.
  */
-export interface SeparatorProps extends Omit<HTMLChakraProps<"span">, "orientation"> {
+export interface SeparatorProps
+  extends Omit<HTMLChakraProps<"span">, "orientation">,
+    PresetVariantProps<"separator"> {
   /**
    * The border style of the line.
    *

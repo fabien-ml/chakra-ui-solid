@@ -1,4 +1,9 @@
-import type { HTMLChakraProps, PresetVariant, PropsProviderProps } from "@chakra-ui-solid/core";
+import type {
+  HTMLChakraProps,
+  PresetVariant,
+  PresetVariantProps,
+  PropsProviderProps,
+} from "@chakra-ui-solid/core";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
 /** The two states the Root resolves once and the two parts below it read. */
@@ -14,7 +19,7 @@ export interface NativeSelectStates {
  * **No `@default` tags.** The recipe's `defaultVariants` resolves `outline`/`md` from `undefined`
  * itself, so restating them here would be a second source of truth that drifts on a preset bump.
  */
-export interface NativeSelectVariantProps {
+export interface NativeSelectVariantProps extends PresetVariantProps<"nativeSelect"> {
   /** How the control is drawn — `outline` is a full border, `subtle` fills it, `plain` and `ghost`
    * drop the box. */
   variant?: ConditionalValue<

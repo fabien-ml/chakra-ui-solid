@@ -4,6 +4,7 @@ import {
   type HTMLChakraProps,
   mergeProps,
   type PresetVariant,
+  type PresetVariantProps,
   pickVariantProps,
   renderStyled,
   useRecipeVariantKeys,
@@ -22,7 +23,7 @@ import { useOptionalFieldContext } from "../field/field-context";
  * Input's. It names Chakra's own variants; what the body partitions by is whatever the system's
  * `textarea` recipe accepts.
  */
-export interface TextareaProps extends HTMLChakraProps<"textarea"> {
+export interface TextareaProps extends HTMLChakraProps<"textarea">, PresetVariantProps<"textarea"> {
   /**
    * The minimum height, padding and text style together.
    *

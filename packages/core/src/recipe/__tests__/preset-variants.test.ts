@@ -1,19 +1,43 @@
-import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
+import type { ConditionalValue, SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import { describe, expectTypeOf, it } from "vitest";
-import type { PresetVariant, RecipeVariantOverrides } from "../preset-variants";
+import type { HTMLChakraProps } from "../../factory/factory";
+import type { PresetVariant, PresetVariantProps, RecipeVariantOverrides } from "../preset-variants";
 
 // Everything here is checked by `tsc --noEmit` (`pnpm typecheck`), not by running the file —
 // `expectTypeOf` and `@ts-expect-error` both erase at runtime. The suite exists so the assertions
 // live where a reader looks for them; the assertion that fails is a red typecheck, not a red run.
 
+/**
+ * The shape `panda codegen` actually writes into a `RecipeVariantOverrides` row, reproduced here
+ * because it is the shape the assertions below turn on and none of it is obvious: a generated
+ * `*VariantProps` maps each key to `ConditionalValue<…> | undefined`, whose object arm has nothing
+ * but optional members — and a bare string satisfies a type like that.
+ */
+interface GeneratedVariant {
+  size: "jumbo";
+  tone: "brand";
+}
+type GeneratedVariantProps = {
+  [Key in keyof GeneratedVariant]?: ConditionalValue<GeneratedVariant[Key]> | undefined;
+};
+
 // The specifier under test. It has to be the package barrel rather than `"../preset-variants"`,
-// because the barrel only *re-exports* the interface — augmenting through a re-export is the thing
-// that could quietly declare a second, unrelated interface instead of merging. `PresetVariant` below
-// is imported from the declaring module, so it reads the interface this block did not name: if the
-// two failed to merge, every augmented assertion would resolve to `never`.
+// because the barrel only *re-exports* the interfaces — augmenting through a re-export is the thing
+// that could quietly declare a second, unrelated interface instead of merging. The names below are
+// imported from their declaring modules, so they read the interfaces this block did not name: if the
+// two failed to merge, every augmented assertion would resolve to `never` or to `{}`.
 declare module "@chakra-ui-solid/core" {
   interface RecipeVariantOverrides {
+    /** Hand-written, the form the JSDoc documents for anyone not generating their types. */
     button: { variant: "dashed" };
+    /** Generated, the form the hook writes. */
+    input: GeneratedVariantProps;
+  }
+  interface CustomStyleProps {
+    elevation?: ConditionalValue<"low" | "high">;
+  }
+  interface CustomConditions {
+    _supportsGrid?: SystemStyleObject;
   }
 }
 
@@ -23,14 +47,17 @@ declare module "@chakra-ui-solid/core" {
 // every recipe takes while the registry is empty.
 type BoxVariant = ConditionalValue<"solid" | PresetVariant<"box", "variant">>;
 type ButtonVariant = ConditionalValue<"solid" | PresetVariant<"button", "variant">>;
+type InputSize = ConditionalValue<"sm" | PresetVariant<"input", "size">>;
 
 const acceptsBoxVariant = (value: BoxVariant) => value;
 const acceptsButtonVariant = (value: ButtonVariant) => value;
+const acceptsInputSize = (value: InputSize) => value;
+const acceptsDivProps = (props: HTMLChakraProps<"div">) => props;
 
 describe("PresetVariant", () => {
   it("degrades to never for a recipe the augmentation does not declare", () => {
-    // The library ships an empty registry: the only key in it is the one this file added.
-    expectTypeOf<keyof RecipeVariantOverrides>().toEqualTypeOf<"button">();
+    // The library ships an empty registry: the only keys in it are the two this file added.
+    expectTypeOf<keyof RecipeVariantOverrides>().toEqualTypeOf<"button" | "input">();
     expectTypeOf<PresetVariant<"box", "variant">>().toEqualTypeOf<never>();
 
     acceptsBoxVariant("solid");
@@ -49,5 +76,49 @@ describe("PresetVariant", () => {
     acceptsButtonVariant("dashed");
     // @ts-expect-error an undeclared value is still a type error
     acceptsButtonVariant("nope");
+  });
+
+  it("keeps the union closed against a generated row, whose value type is conditional", () => {
+    // The whole reason this resolves with `Extract` and not `&`. `ConditionalValue<"jumbo">` has an
+    // all-optional object arm, and `"nope" & { _hover?: … }` is a type `"nope"` satisfies — so
+    // intersecting would have opened `size` to every string the moment a generated row landed, and
+    // the assertion below is what says it did not.
+    expectTypeOf<PresetVariant<"input", "size">>().toEqualTypeOf<"jumbo">();
+
+    acceptsInputSize("sm");
+    acceptsInputSize("jumbo");
+    // @ts-expect-error the generated row widened by one value, not by `string`
+    acceptsInputSize("nope");
+  });
+});
+
+describe("PresetVariantProps", () => {
+  it("is empty for a recipe the augmentation does not declare", () => {
+    expectTypeOf<PresetVariantProps<"box">>().toEqualTypeOf<Record<never, never>>();
+  });
+
+  it("carries every key the augmented row has, including one no component declares", () => {
+    const accepts = (props: PresetVariantProps<"input">) => props;
+
+    accepts({ tone: "brand" });
+    accepts({ tone: { _hover: "brand" } });
+    // @ts-expect-error the key exists, and its values are still the recipe's
+    accepts({ tone: "nope" });
+    // @ts-expect-error a key the recipe does not have is not a prop
+    accepts({ nope: "brand" });
+  });
+});
+
+describe("the styling surface", () => {
+  it("takes a custom utility as a style prop", () => {
+    acceptsDivProps({ elevation: "high" });
+    // @ts-expect-error the values are the ones their utility declares
+    acceptsDivProps({ elevation: 4 });
+  });
+
+  it("takes a custom condition as a style-object prop", () => {
+    acceptsDivProps({ _supportsGrid: { display: "grid" } });
+    // @ts-expect-error a condition carries styles, not a value
+    acceptsDivProps({ _supportsGrid: "grid" });
   });
 });

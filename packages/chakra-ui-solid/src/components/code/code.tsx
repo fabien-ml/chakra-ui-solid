@@ -2,6 +2,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
 } from "@chakra-ui-solid/core";
 import type { CodeVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -12,7 +13,7 @@ import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
  * the interface the docs page's props table is built from. It names Chakra's own variants; what the
  * seam partitions by is whatever the system's `code` recipe accepts.
  */
-export interface CodeProps extends HTMLChakraProps<"code"> {
+export interface CodeProps extends HTMLChakraProps<"code">, PresetVariantProps<"code"> {
   /**
    * How much of the palette the snippet spends — `solid` fills it, `subtle` and `surface` tint it,
    * `outline` is a ring alone, and `plain` is the text with no box at all.

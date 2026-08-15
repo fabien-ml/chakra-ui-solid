@@ -4,6 +4,7 @@ import {
   type HTMLChakraProps,
   mergeProps,
   type PresetVariant,
+  type PresetVariantProps,
   pickVariantProps,
   renderStyled,
   useRecipeVariantKeys,
@@ -22,7 +23,7 @@ import { useOptionalFieldContext } from "../field/field-context";
  * Chakra's own variants; what the body partitions by is whatever the system's `input` recipe
  * accepts.
  */
-export interface InputProps extends HTMLChakraProps<"input"> {
+export interface InputProps extends HTMLChakraProps<"input">, PresetVariantProps<"input"> {
   /**
    * The height, horizontal padding and text style together. The height is published as
    * `--input-height`, so anything positioned against the field can read it back.

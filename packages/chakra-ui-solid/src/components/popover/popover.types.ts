@@ -1,6 +1,7 @@
 import type {
   HTMLChakraProps,
   PresetVariant,
+  PresetVariantProps,
   PropsProviderProps,
   PropTypes,
   UnstyledProp,
@@ -214,7 +215,7 @@ export interface PopoverPresenceProps {
  * **No `@default` tag.** The recipe's `defaultVariants` is `{ size: "md" }` and it resolves that
  * itself, so restating it here would be a second source of truth that drifts on a preset bump.
  */
-export interface PopoverVariantProps {
+export interface PopoverVariantProps extends PresetVariantProps<"popover"> {
   /** How wide the content is and how much padding it carries. */
   size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | PresetVariant<"popover", "size">>;
 }

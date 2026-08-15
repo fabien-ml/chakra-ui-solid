@@ -1,4 +1,4 @@
-import type { HTMLChakraProps, PresetVariant } from "@chakra-ui-solid/core";
+import type { HTMLChakraProps, PresetVariant, PresetVariantProps } from "@chakra-ui-solid/core";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
 
@@ -113,7 +113,7 @@ export interface CreateFieldsetReturn {
  * **No `@default` tag.** The recipe's `defaultVariants` resolves `"md"` from `undefined` itself, so
  * restating it here would be a second source of truth that drifts on a preset bump.
  */
-export interface FieldsetVariantProps {
+export interface FieldsetVariantProps extends PresetVariantProps<"fieldset"> {
   /** The gap between the legend, the texts and the content, and the two texts' type scale. */
   size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"fieldset", "size">>;
 }

@@ -3,6 +3,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   pickVariantProps,
   renderStyled,
   useRecipeVariantKeys,
@@ -21,7 +22,7 @@ import { omit } from "solid-js";
  * docs page's props table is built from. It names Chakra's own variant; what the body partitions
  * by is whatever the system's `icon` recipe accepts.
  */
-export interface IconProps extends HTMLChakraProps<"svg"> {
+export interface IconProps extends HTMLChakraProps<"svg">, PresetVariantProps<"icon"> {
   /**
    * The glyph's box, as a scale step. `inherit` sets no box at all — the glyph keeps the one it
    * draws itself, which for the `1em` an icon library ships is the surrounding font size. That is

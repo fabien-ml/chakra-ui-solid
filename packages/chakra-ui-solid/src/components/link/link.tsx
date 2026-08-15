@@ -2,6 +2,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
 } from "@chakra-ui-solid/core";
 import type { LinkVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -11,7 +12,7 @@ import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
  * carries a description a reader can use and a type they can read. It names Chakra's own variant;
  * what the seam partitions by is whatever the system's `link` recipe accepts.
  */
-export interface LinkProps extends HTMLChakraProps<"a"> {
+export interface LinkProps extends HTMLChakraProps<"a">, PresetVariantProps<"link"> {
   /**
    * Whether the underline is always there or only on hover.
    *

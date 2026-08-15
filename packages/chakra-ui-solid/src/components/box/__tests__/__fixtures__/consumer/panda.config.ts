@@ -32,14 +32,50 @@ export default defineChakraConfig({
   ],
   outdir: "styled-system-app",
 
+  // A **style prop this library has never heard of**, and the first of the three things only the
+  // consumer's config can decide. `elevation` is nobody's CSS property and no preset in the chain
+  // declares it, so both halves are theirs: their `isCssProperty` is what folds it into a class
+  // instead of setting a DOM attribute, and the `CustomStyleProps` row `panda codegen` writes into
+  // `styled-system-app/chakra-system-types.d.ts` is what makes `<Box elevation="high">` type-check.
+  //
+  // A colour no Chakra shadow uses, for the same reason the token overrides below are absurd: the
+  // assertion cannot pass against a rule from any other run.
+  utilities: {
+    extend: {
+      elevation: {
+        className: "elevation",
+        values: ["low", "high"],
+        transform: (value: string) => ({
+          boxShadow: value === "high" ? "0 0 0 8px #00ff00" : "0 0 0 2px #00ff00",
+        }),
+      },
+    },
+  },
+
+  // The second — a condition of their own. `@supports (display: grid)` rather than the
+  // `@media (hover: hover)` a real app would write, because it is *deterministically true* in the
+  // headless Chromium the browser project runs: a hover query answers whatever the launcher decided
+  // about pointing devices, and a test that is only sometimes styled is worse than no test.
+  conditions: {
+    extend: { supportsGrid: "@supports (display: grid)" },
+  },
+
   // Override path 3 — `theme.extend` deep-merges into the preset's own theme, which is the
-  // build-time equivalent of Chakra's `createSystem(defaultConfig, { theme: … })`. Both overrides
-  // are deliberately absurd values, so a test asserting them cannot pass by coincidence.
+  // build-time equivalent of Chakra's `createSystem(defaultConfig, { theme: … })`. Both token
+  // overrides are deliberately absurd values, so a test asserting them cannot pass by coincidence.
+  //
+  // `button.variants.tone` is the third of the three: a variant **key** Chakra's own recipe does not
+  // have. The runtime reads its key list off the recipe this config produced, so `tone` is passed to
+  // that recipe rather than leaked onto the `<button>`; `PresetVariantProps<"button">` reads the
+  // generated `RecipeVariantOverrides` row and is what makes `<Button tone="brand">` type-check.
   theme: {
     extend: {
       tokens: {
         spacing: { 4: { value: "99px" } },
         colors: { red: { 500: { value: "#00ff00" } } },
+      },
+      recipes: {
+        button: { variants: { tone: { brand: { background: "red.500" } } } },
       },
     },
   },

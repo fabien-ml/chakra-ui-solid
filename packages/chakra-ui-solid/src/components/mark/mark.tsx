@@ -2,6 +2,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
 } from "@chakra-ui-solid/core";
 import type { MarkVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -15,7 +16,7 @@ import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
  * declares no `defaultVariants`, so an unmarked `<Mark>` gets the base alone — a transparent
  * background and the inherited colour.
  */
-export interface MarkProps extends HTMLChakraProps<"mark"> {
+export interface MarkProps extends HTMLChakraProps<"mark">, PresetVariantProps<"mark"> {
   /**
    * How the run is highlighted — `subtle` and `solid` fill it from `colorPalette`, `text` only
    * thickens the weight, and `plain` adds nothing to the base.

@@ -2,6 +2,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
 import type { CardVariantProps as CardRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
@@ -20,7 +21,7 @@ export type CardSlot = "root" | "header" | "body" | "footer" | "title" | "descri
  * from `undefined`, so restating them here would be a second source of truth that drifts on a
  * preset bump.
  */
-export interface CardVariantProps {
+export interface CardVariantProps extends PresetVariantProps<"card"> {
   /** The padding inside every slot and the title's type scale, as one step. */
   size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"card", "size">>;
   /** How the card separates itself from the page — a shadow, a border, or a tinted surface. */

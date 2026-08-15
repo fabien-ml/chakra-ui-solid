@@ -118,9 +118,17 @@ export function PropsTable(props: { component: string; interface?: string }) {
  * `UnstyledProp`, and the three every component takes: as, render and unstyled"*. It cannot go
  * through `isElementSurface` either: that predicate routes a clause into the *other* branch, which
  * would tell a reader that a component rendering no element inherits a `div`'s DOM attributes.
+ *
+ * **`PresetVariantProps<…>` is dropped for a different reason: it has no members to look up.** It is
+ * the variant keys the *reader's own* `panda.config.ts` adds to that recipe, so it is empty on every
+ * page here and there is nothing behind the name to send them to — where every other clause in this
+ * sentence is an interface with props they can count.
  */
 function Inherited(props: { entry: PropsInterface }) {
-  const bases = () => props.entry.extends.filter((base) => base !== "UnstyledProp");
+  const bases = () =>
+    props.entry.extends.filter(
+      (base) => base !== "UnstyledProp" && !base.startsWith("PresetVariantProps<"),
+    );
   const named = () => bases().filter((base) => !isElementSurface(base));
   const elementSurface = () => bases().filter(isElementSurface);
 

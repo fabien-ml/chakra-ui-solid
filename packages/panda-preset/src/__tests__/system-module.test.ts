@@ -5,14 +5,15 @@ import { afterAll, describe, expect, it } from "vitest";
 import { defineChakraConfig } from "../config";
 
 /**
- * The file a consumer's Panda run writes into their own outdir, and the reason nothing in this
+ * The two files a consumer's Panda run writes into their own outdir, and the reason nothing in this
  * design resolves a path it cannot know: `chakra-system.ts` lands **beside** the artifacts it
  * imports, so `./css` and its siblings are ordinary relative imports in the consumer's project.
  *
  * The hooks are driven directly rather than by shelling out to `panda codegen`, which would make
  * this a test of Panda. What Panda actually does with the two hooks is asserted where a real run
  * happens: the consumer fixture under `packages/chakra-ui-solid`, whose generated module is the one
- * its browser tests render against.
+ * its browser tests render against and whose generated declarations are the reason the three things
+ * its config adds type-check at all.
  */
 
 const cwd = mkdtempSync(join(tmpdir(), "chakra-system-"));
@@ -21,7 +22,23 @@ afterAll(() => {
   rmSync(cwd, { recursive: true, force: true });
 });
 
-function generateInto(outdir: string): string {
+/**
+ * What Panda hands the hook, minus everything neither file reads.
+ *
+ * The theme is spelled here rather than taken from the preset because Panda is what merges a
+ * preset's theme into the resolved config, and driving the hooks directly is what skips that step —
+ * so a test built on `chakraSolidPreset.theme` would be asserting the merge it is not doing.
+ */
+const RESOLVED = {
+  theme: { recipes: { button: {}, skipNavLink: {} }, slotRecipes: { dialog: {} } },
+  utilities: { color: {}, elevation: {} },
+  conditions: { hover: "", supportsGrid: "@supports (display: grid)" },
+};
+
+function generateInto(
+  outdir: string,
+  config: object = RESOLVED,
+): { module: string; types: string } {
   const plugin = (defineChakraConfig({ include: [], outdir }).plugins ?? []).find(
     (candidate) => candidate.name === "chakra-ui-solid:system-module",
   );
@@ -29,20 +46,22 @@ function generateInto(outdir: string): string {
     throw new Error("defineChakraConfig no longer appends the system-module plugin");
   }
 
-  // `cwd` and `outdir` are the whole of what the plugin reads off the context, and `cwd` is the
-  // reason it reads them *here*: `config:resolved` is handed the same `UserConfig` type with `cwd`
-  // still undefined on it.
+  // `cwd` is the reason the config is read *here*: `config:resolved` is handed the same `UserConfig`
+  // type with `cwd` still undefined on it.
   plugin.hooks?.["context:created"]?.({
-    ctx: { config: { cwd, outdir } } as never,
+    ctx: { config: { cwd, outdir, ...config } } as never,
     logger: {} as never,
   });
   plugin.hooks?.["codegen:done"]?.({ changed: undefined });
 
-  return join(cwd, outdir, "chakra-system.ts");
+  return {
+    module: join(cwd, outdir, "chakra-system.ts"),
+    types: join(cwd, outdir, "chakra-system-types.d.ts"),
+  };
 }
 
 describe("the system module a consumer's Panda run generates", () => {
-  const source = readFileSync(generateInto("styled-system"), "utf8");
+  const source = readFileSync(generateInto("styled-system").module, "utf8");
 
   it("assembles the system from the artifacts sitting beside it", () => {
     // Relative, and that is the whole distribution story: no alias, no `tsconfig#paths`, no bundler
@@ -71,26 +90,88 @@ describe("the system module a consumer's Panda run generates", () => {
   });
 
   it("writes into whatever outdir the config named", () => {
-    expect(readFileSync(generateInto("styled-system-app"), "utf8")).toBe(source);
+    expect(readFileSync(generateInto("styled-system-app").module, "utf8")).toBe(source);
   });
 
   it("restores a file someone edited", () => {
-    const path = generateInto("styled-system-edited");
+    const path = generateInto("styled-system-edited").module;
     writeFileSync(path, "export const system = undefined;\n");
 
-    expect(readFileSync(generateInto("styled-system-edited"), "utf8")).toBe(source);
+    expect(readFileSync(generateInto("styled-system-edited").module, "utf8")).toBe(source);
   });
 
   it("does not touch a file it would have written identically", () => {
     // A consumer's dev server watches this directory, so a rewritten mtime on every `--watch`
     // rebuild is a reload that changes nothing. The timestamp is backdated rather than compared
     // across two runs, which could land in the same millisecond and pass on a real rewrite.
-    const path = generateInto("styled-system-watched");
+    const path = generateInto("styled-system-watched").module;
     const backdated = new Date(Date.now() - 60_000);
     utimesSync(path, backdated, backdated);
 
     generateInto("styled-system-watched");
 
     expect(statSync(path).mtimeMs).toBe(backdated.getTime());
+  });
+});
+
+/**
+ * The declarations beside it — the half TypeScript cannot infer, because no type follows a runtime
+ * value across a provider.
+ *
+ * What is asserted here is the **mapping**: which rows come out of a resolved config, and which
+ * names are subtracted because our own declarations already carry them. That the augmentation then
+ * takes effect is a claim about TypeScript rather than about this function, and it is asserted by
+ * `pnpm typecheck` over the consumer fixture, whose `src/app.tsx` writes all three additions.
+ */
+describe("the declarations a consumer's Panda run generates", () => {
+  const source = readFileSync(generateInto("styled-system-types").types, "utf8");
+
+  it("augments the package a consumer installed", () => {
+    // The same reasoning as the system module's own import, plus one more: TypeScript merges an
+    // augmentation into the interface the *named* module exports and does not search, so naming a
+    // module that exports none declares a second, unrelated interface and reports nothing.
+    expect(source).toContain('declare module "chakra-ui-solid" {');
+    expect(source).not.toContain("@chakra-ui-solid/core");
+  });
+
+  it("carries one row per recipe, off Panda's own generated type", () => {
+    expect(source).toContain("interface RecipeVariantOverrides {");
+    expect(source).toContain("button: ButtonVariantProps;");
+    expect(source).toContain("dialog: DialogVariantProps;");
+    // Not `SkipNavLinkVariantProps`'s registry key spelled some other way: the type name is Panda's
+    // own capitalisation of the key, and a guess at it is an import of a name that does not exist.
+    expect(source).toContain("skipNavLink: SkipNavLinkVariantProps;");
+    expect(source).toContain('} from "./recipes";');
+  });
+
+  it("leaves out a recipe the consumer's config does not carry", () => {
+    // A row for a recipe they removed imports a type from a file their outdir has none of, which
+    // fails as a module error naming a generated file rather than as anything they can act on.
+    expect(source).not.toContain("badge: BadgeVariantProps;");
+  });
+
+  it("declares the utilities and conditions that are theirs, and only those", () => {
+    expect(source).toContain('elevation?: SystemProperties["elevation"];');
+    expect(source).toContain("_supportsGrid?: SystemStyleObject;");
+
+    // `color` and `hover` are in the resolved config because every preset in the chain is merged
+    // into it. Declaring either a second time is a clash between the two interfaces the styling
+    // surface extends, not a new prop.
+    expect(source).not.toContain("color?:");
+    expect(source).not.toContain("_hover?:");
+  });
+
+  it("says it is generated, and where to make the change instead", () => {
+    expect(source).toContain("Generated by `panda codegen`");
+    expect(source).toContain("a change belongs in `panda.config.ts`");
+  });
+
+  it("writes no augmentation when there is nothing to declare", () => {
+    // A `declare module` in a file with no import is a *declaration of* that module rather than an
+    // addition to it — `chakra-ui-solid` would resolve to an empty object project-wide.
+    const empty = readFileSync(generateInto("styled-system-empty", {}).types, "utf8");
+
+    expect(empty).not.toContain("declare module");
+    expect(empty).toContain("Generated by `panda codegen`");
   });
 });

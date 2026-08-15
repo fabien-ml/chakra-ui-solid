@@ -2,6 +2,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
 import type { BlockquoteVariantProps as BlockquoteRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
@@ -19,7 +20,7 @@ export type BlockquoteSlot = "root" | "icon" | "content" | "caption";
  * **No `@default` tag on either.** The recipe's `defaultVariants` resolves `start` and `subtle`
  * from `undefined` itself.
  */
-export interface BlockquoteVariantProps {
+export interface BlockquoteVariantProps extends PresetVariantProps<"blockquote"> {
   /** Which edge the quote and its caption line up against, and how the text is aligned. */
   justify?: ConditionalValue<"start" | "center" | "end" | PresetVariant<"blockquote", "justify">>;
   /**

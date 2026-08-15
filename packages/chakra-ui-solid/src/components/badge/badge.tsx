@@ -2,6 +2,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
 } from "@chakra-ui-solid/core";
 import type { BadgeVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -13,7 +14,7 @@ import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
  * the same division of labour: this names Chakra's own variants, while what the seam partitions by
  * is whatever the system's `badge` recipe accepts.
  */
-export interface BadgeProps extends HTMLChakraProps<"span"> {
+export interface BadgeProps extends HTMLChakraProps<"span">, PresetVariantProps<"badge"> {
   /**
    * How much of the palette the badge spends — `solid` fills it, `subtle` and `surface` tint it,
    * `outline` is a ring alone, and `plain` is the text with no box at all.

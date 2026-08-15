@@ -2,6 +2,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
   renderStyled,
   withDefaults,
@@ -29,7 +30,7 @@ export type BreadcrumbSlot =
  * **No `@default` tag on either.** The recipe's `defaultVariants` resolves `plain` and `md` from
  * `undefined` itself.
  */
-export interface BreadcrumbVariantProps {
+export interface BreadcrumbVariantProps extends PresetVariantProps<"breadcrumb"> {
   /** Whether a link underlines on hover (`underline`) or only changes colour (`plain`). */
   variant?: ConditionalValue<"underline" | "plain" | PresetVariant<"breadcrumb", "variant">>;
   /** The type scale of every part, and the gap between an item and its separator. */

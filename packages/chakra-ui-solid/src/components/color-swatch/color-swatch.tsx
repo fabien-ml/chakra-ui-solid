@@ -4,6 +4,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   pickVariantProps,
   renderStyled,
   useRecipeVariantKeys,
@@ -22,7 +23,9 @@ import { Grid } from "../grid";
  * neither, and this is the interface the docs page's props table is built from. It names Chakra's
  * own variants; what the body partitions by is whatever the system's `colorSwatch` recipe accepts.
  */
-export interface ColorSwatchProps extends HTMLChakraProps<"span"> {
+export interface ColorSwatchProps
+  extends HTMLChakraProps<"span">,
+    PresetVariantProps<"colorSwatch"> {
   /**
    * The colour to show, as any CSS colour — `#bada55`, `rgba(255, 0, 0, 0.5)`, `tomato`.
    *

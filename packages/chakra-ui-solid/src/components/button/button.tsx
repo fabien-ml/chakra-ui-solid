@@ -3,6 +3,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   pickVariantProps,
   renderStyled,
   useRecipeVariantKeys,
@@ -40,7 +41,7 @@ export type ButtonVariant = ConditionalValue<
  * partitions by is whatever the system's `button` recipe accepts, so a consumer who adds one gets
  * it passed to the recipe rather than onto the element.
  */
-export interface ButtonProps extends HTMLChakraProps<"button"> {
+export interface ButtonProps extends HTMLChakraProps<"button">, PresetVariantProps<"button"> {
   /**
    * The control's height, padding, gap and type scale together.
    *

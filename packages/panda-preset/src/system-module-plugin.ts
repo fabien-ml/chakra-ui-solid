@@ -1,6 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { Config } from "@pandacss/dev";
+import { declaredConditions, declaredStyleProps } from "./preset-vocabulary";
+import { recipeKeys, slotRecipeKeys } from "./recipe-registry";
 
 /**
  * `PandaPlugin` is imported by `@pandacss/dev` but not re-exported from it, and a consumer holding
@@ -9,7 +11,20 @@ import type { Config } from "@pandacss/dev";
  */
 type Plugin = NonNullable<Config["plugins"]>[number];
 
-const FILE_NAME = "chakra-system.ts";
+const MODULE_FILE = "chakra-system.ts";
+
+/**
+ * `chakra-system-types.d.ts`, and **not** the `chakra-system.d.ts` beside `chakra-system.ts` that
+ * the obvious name would give it.
+ *
+ * A `.d.ts` whose basename matches a `.ts` in the same directory is the declaration file *for* that
+ * source, so TypeScript drops it from the program in favour of the real one. Measured: identical
+ * bytes under the two names, one `tsc --noEmit` each — `chakra-system.d.ts` type-checks a
+ * `<Box elevation="high">` as an unknown prop and reports nothing about the augmentation it
+ * contains, and the renamed file makes the same line pass. Both failures are silent, which is the
+ * one thing this file exists to stop.
+ */
+const TYPES_FILE = "chakra-system-types.d.ts";
 
 /**
  * The module a consumer feeds to `<ChakraProvider>`, and the reason nothing here has to resolve a
@@ -51,20 +66,24 @@ export const system = createSystem({ ...css, isCssProperty, token, patterns, rec
 `;
 
 /**
- * Writes `chakra-system.ts` into the directory Panda already owns and regenerates.
+ * Writes `chakra-system.ts` and `chakra-system-types.d.ts` into the directory Panda already owns and
+ * regenerates.
  *
- * Without it a consumer assembles the same imports by hand and re-checks them against every Panda
- * upgrade — and, once the types follow the config too, maintains a second file beside it that only
- * a generator can keep in step with what they wrote.
+ * Without the first a consumer assembles the same imports by hand and re-checks them against every
+ * Panda upgrade. Without the second their runtime is theirs and their **types** are frozen at our
+ * build: a utility, a condition or a variant key their config adds works on the element and is a
+ * TypeScript error above it. The React version does not leave that gap open either — it is what
+ * `@chakra-ui/cli typegen` exists for, one step later, since it has to be remembered.
  *
  * `codegen:done` rather than `codegen:prepare`, which is where Panda lets a plugin hand it an
  * artifact to write: an artifact carries an `ArtifactId`, and that is a closed union of Panda's own
- * ids. This writes one file beside the ones Panda has just finished writing, using nothing about
+ * ids. This writes two files beside the ones Panda has just finished writing, using nothing about
  * Panda but its two documented hooks.
  */
 export function systemModulePlugin(): Plugin {
   /** Where to write, because `codegen:done` carries only which artifacts changed. */
   let outdir: string | undefined;
+  let declarations = "";
 
   return {
     name: "chakra-ui-solid:system-module",
@@ -77,6 +96,7 @@ export function systemModulePlugin(): Plugin {
        */
       "context:created": ({ ctx }) => {
         outdir = resolve(ctx.config.cwd, ctx.config.outdir);
+        declarations = declarationModule(ctx.config);
       },
 
       "codegen:done": () => {
@@ -85,14 +105,174 @@ export function systemModulePlugin(): Plugin {
         }
 
         mkdirSync(outdir, { recursive: true });
-        const path = join(outdir, FILE_NAME);
-        // Identical bytes are not rewritten: a consumer's dev server watches this directory, and a
-        // touched mtime on every `panda --watch` rebuild is a reload that changes nothing.
-        if (existsSync(path) && readFileSync(path, "utf8") === SYSTEM_MODULE) {
-          return;
-        }
-        writeFileSync(path, SYSTEM_MODULE);
+        writeIfChanged(join(outdir, MODULE_FILE), SYSTEM_MODULE);
+        writeIfChanged(join(outdir, TYPES_FILE), declarations);
       },
     },
   };
+}
+
+/**
+ * Identical bytes are not rewritten: a consumer's dev server watches this directory, and a touched
+ * mtime on every `panda --watch` rebuild is a reload that changes nothing.
+ */
+function writeIfChanged(path: string, contents: string): void {
+  if (existsSync(path) && readFileSync(path, "utf8") === contents) {
+    return;
+  }
+  writeFileSync(path, contents);
+}
+
+/**
+ * Panda types a resolved config's `theme` as fully optional and its `utilities` as a bag whose
+ * values vary by shape, so the three reads this file makes are narrowed once here.
+ */
+type ResolvedConfig = {
+  utilities?: Record<string, unknown>;
+  conditions?: Record<string, unknown>;
+  theme?: { recipes?: Record<string, unknown>; slotRecipes?: Record<string, unknown> };
+};
+
+/**
+ * `styled-system/chakra-system-types.d.ts` — the half of the seam TypeScript cannot infer.
+ *
+ * A `<ChakraProvider>` carries a *value*, and no type follows a value across a provider into a prop
+ * type. So every one of the three things a consumer's config decides — which style props exist,
+ * which conditions exist, which variants a recipe accepts — has to arrive as a `declare module`, and
+ * this writes it from the same resolved config that produced the runtime beside it.
+ *
+ * Every type it names is one Panda generated into this same directory. Nothing is synthesised from
+ * the config's own values, so a union here cannot disagree with the one their `css()` enforces.
+ */
+function declarationModule(config: ResolvedConfig): string {
+  const recipes = presentRecipes(config);
+  const styleProps = customStyleProps(config);
+  const conditions = customConditions(config);
+
+  const imports: string[] = [];
+  if (recipes.length > 0) {
+    imports.push(typeImport(recipes.map(variantPropsName), "./recipes"));
+  }
+  const systemTypes = [
+    ...(styleProps.length > 0 ? ["SystemProperties"] : []),
+    ...(conditions.length > 0 ? ["SystemStyleObject"] : []),
+  ];
+  if (systemTypes.length > 0) {
+    imports.push(typeImport(systemTypes, "./types"));
+  }
+
+  const blocks = [
+    ["RecipeVariantOverrides", recipes.map((key) => `${key}: ${variantPropsName(key)};`)],
+    [
+      "CustomStyleProps",
+      styleProps.map((name) => `${propertyName(name)}?: SystemProperties["${name}"];`),
+    ],
+    [
+      "CustomConditions",
+      conditions.map((name) => `${propertyName(`_${name}`)}?: SystemStyleObject;`),
+    ],
+  ] as const;
+
+  const body = blocks
+    .filter(([, rows]) => rows.length > 0)
+    .map(
+      ([name, rows]) => `  interface ${name} {\n${rows.map((row) => `    ${row}`).join("\n")}\n  }`,
+    )
+    .join("\n\n");
+
+  return `/* eslint-disable */
+/**
+ * What your \`panda.config.ts\` decides, told to TypeScript.
+ *
+ * Generated by \`panda codegen\` beside \`chakra-system.ts\`. Every run rewrites it, so
+ * a change belongs in \`panda.config.ts\`.
+ *
+ * Nothing imports it — it is picked up because it is in your \`tsconfig.json\`'s program, which is
+ * also why it cannot be called \`chakra-system.d.ts\`: a declaration file named after a source file
+ * beside it is read as that file's types and dropped.
+ *
+ * A \`<ChakraProvider>\` hands the components a runtime, and no type follows a value across a
+ * provider — so a utility, a condition or a recipe variant you added works on the element and would
+ * be a TypeScript error above it. These three augmentations close that, off the types Panda
+ * generated from the same config:
+ *
+ * - \`RecipeVariantOverrides\` — the variant keys and values each recipe accepts, so
+ *   \`<Button size="huge">\` and a variant key of your own both type-check.
+ * - \`CustomStyleProps\` — every \`utilities\` entry that is yours rather than Chakra's, as a style prop.
+ * - \`CustomConditions\` — every \`conditions\` entry that is yours, as a style-object prop.
+ */
+${augmentation(imports, body)}`;
+}
+
+/**
+ * The `declare module` block, or nothing at all when there is nothing to declare.
+ *
+ * **An augmentation needs the file to be a module**, and the type imports are what make it one. With
+ * no rows there are no imports, and a bare `declare module` in a script file is a *declaration of* a
+ * module by that name rather than an addition to one — it would shadow `chakra-ui-solid` with an
+ * empty object and take every component import in the project down with it. A config carrying no
+ * recipe at all cannot come out of `defineChakraConfig`, so this is the guard on a shape that
+ * arrives some other way rather than a branch anyone reaches.
+ */
+function augmentation(imports: string[], body: string): string {
+  if (imports.length === 0) {
+    return "";
+  }
+  return `${imports.join("\n")}\n\ndeclare module "chakra-ui-solid" {\n${body}\n}\n`;
+}
+
+/**
+ * The recipes this library resolves by key, kept to the ones the consumer's config actually carries.
+ *
+ * Intersected rather than taken from the registry alone, because a row naming a recipe they removed
+ * is an import of a type their outdir has no file for — a module error naming a generated file,
+ * where the runtime's own answer to a missing recipe is a throw that names the key.
+ */
+function presentRecipes(config: ResolvedConfig): string[] {
+  const present = new Set([
+    ...Object.keys(config.theme?.recipes ?? {}),
+    ...Object.keys(config.theme?.slotRecipes ?? {}),
+  ]);
+  return [...recipeKeys, ...slotRecipeKeys].filter((key) => present.has(key)).sort();
+}
+
+/** `button` → `ButtonVariantProps`, the type Panda writes for every recipe in the config. */
+function variantPropsName(recipeKey: string): string {
+  return `${recipeKey.charAt(0).toUpperCase()}${recipeKey.slice(1)}VariantProps`;
+}
+
+/** One name per line: 75 of them on one line is a file nobody can read a diff of. */
+function typeImport(names: string[], specifier: string): string {
+  return `import type {\n${names.map((name) => `  ${name},`).join("\n")}\n} from "${specifier}";`;
+}
+
+/**
+ * Quoted only when it has to be. Every utility name Panda accepts is already an identifier, so this
+ * is the `2xl`-shaped exception rather than the rule.
+ */
+function propertyName(name: string): string {
+  return /^[A-Za-z_$][\w$]*$/.test(name) ? name : `"${name}"`;
+}
+
+/**
+ * `utilities` the consumer added, which is every name in the resolved config the preset chain does
+ * not already declare.
+ *
+ * The subtraction is the whole of it: a name we ship is already a style prop through Panda's
+ * generated `SystemProperties`, and declaring it a second time is a clash between the two interfaces
+ * the styling surface extends rather than a new prop. What is left is genuinely theirs.
+ */
+function customStyleProps(config: ResolvedConfig): string[] {
+  const declared = declaredStyleProps();
+  return Object.keys(config.utilities ?? {})
+    .filter((name) => name !== "extend" && !declared.has(name))
+    .sort();
+}
+
+/** `conditions` the consumer added, by the same subtraction. */
+function customConditions(config: ResolvedConfig): string[] {
+  const declared = declaredConditions();
+  return Object.keys(config.conditions ?? {})
+    .filter((name) => name !== "extend" && !declared.has(name))
+    .sort();
 }

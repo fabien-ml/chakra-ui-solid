@@ -19,9 +19,21 @@
     // `^build` reaches exactly one package in practice, `@chakra-ui-solid/panda-preset`: Panda's
     // config loader resolves it through its `exports` map rather than through
     // `tsconfig.base.json#paths`, so the *published* shape is the shape codegen reads.
+    //
+    // `chakra-ui-solid` owns a `codegen` too, and it is the **consumer fixture's** two Panda runs.
+    // They were part of that package's `cssgen` until typegen landed, which is a task `typecheck`
+    // does not depend on — so a tree that had only ever run `pnpm install` (whose `postinstall` runs
+    // `turbo run codegen`) type-checked against a `styled-system-app/` that did not exist, and the
+    // failure named a generated module rather than anything anyone had edited. Codegen is what
+    // writes `chakra-system.ts` and `chakra-system.d.ts`, and the second of those is read by `tsc`,
+    // so it belongs on the task `tsc` waits for.
     "codegen": {
       "dependsOn": ["^build"],
-      "outputs": ["styled-system/**"]
+      "outputs": [
+        "styled-system/**",
+        "src/**/__fixtures__/**/styled-system-app/**",
+        "src/**/__fixtures__/**/styled-system-hashed/**"
+      ]
     },
     // Three stylesheets, from three Panda runs. `styled-system`'s is **ours** — the dev sheet the
     // browser tests and `check:css-coverage` assert against. `chakra-ui-solid`'s two are a
@@ -31,7 +43,9 @@
     //
     // Each consumer run is a `panda codegen` **and** a `panda cssgen`, because the runtime is now
     // theirs too: codegen writes their outdir, `chakra-system.ts` included, and the tests render
-    // against the system that file exports rather than against our own.
+    // against the system that file exports rather than against our own. The codegen half is the
+    // `codegen` task above — `tsc` reads the `chakra-system.d.ts` it writes, and `typecheck` waits
+    // on `codegen` rather than on this.
     //
     // The dev sheet is NOT published, and that now holds by `files` rather than by task ordering.
     // Measured at S4, back when `@chakra-ui-solid/styled-system` declared `files:
@@ -58,12 +72,7 @@
         "$TURBO_ROOT$/packages/core/src/**",
         "$TURBO_ROOT$/packages/chakra-ui-solid/src/**"
       ],
-      "outputs": [
-        "styled-system/styles.css",
-        "src/**/__fixtures__/**/consumer*.css",
-        "src/**/__fixtures__/**/styled-system-app/**",
-        "src/**/__fixtures__/**/styled-system-hashed/**"
-      ]
+      "outputs": ["styled-system/styles.css", "src/**/__fixtures__/**/consumer*.css"]
     },
     // `^codegen` is what makes `core` and `chakra-ui-solid` wait for `styled-system`. Their own
     // `codegen` does not exist, and `^build` does not reach it either, because `styled-system` has

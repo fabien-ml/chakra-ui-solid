@@ -3,6 +3,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -28,7 +29,7 @@ export type TableSlot =
  * **No `@default` tag on any of them.** The recipe's `defaultVariants` resolves `line` and `md`
  * from `undefined` itself, and the four booleans have no default at all.
  */
-export interface TableVariantProps {
+export interface TableVariantProps extends PresetVariantProps<"table"> {
   /** Highlight a body row on hover, for a table whose rows are clickable. */
   interactive?: ConditionalValue<boolean>;
   /**

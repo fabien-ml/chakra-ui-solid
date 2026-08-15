@@ -16,7 +16,15 @@ import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
  * us through `<ChakraProvider>`.
  *
  * Everything else is deliberately identical to `panda.config.ts` beside it — same source scanned,
- * same absurd token overrides — so `hash` is the only variable between the two.
+ * same absurd token overrides, same three additions of the consumer's own — so `hash` is the only
+ * variable between the two.
+ *
+ * **Identical is now a requirement rather than a tidiness.** Each run writes a `chakra-system-types.d.ts`
+ * that augments `chakra-ui-solid`, and TypeScript merges every augmentation in a program into one
+ * interface: two outdirs in one program may declare the same member, but not two *different* types
+ * for it. So a utility, a condition or a variant added to one of these files and not the other is a
+ * duplicate-declaration error naming a generated file — which is the shape of the real constraint on
+ * the plan's "two systems in one app", and the reason this file repeats rather than trims.
  */
 export default defineChakraConfig({
   include: ["./src/**/*.tsx", "../../../../*/*.tsx"],
@@ -24,11 +32,30 @@ export default defineChakraConfig({
 
   hash: true,
 
+  utilities: {
+    extend: {
+      elevation: {
+        className: "elevation",
+        values: ["low", "high"],
+        transform: (value: string) => ({
+          boxShadow: value === "high" ? "0 0 0 8px #00ff00" : "0 0 0 2px #00ff00",
+        }),
+      },
+    },
+  },
+
+  conditions: {
+    extend: { supportsGrid: "@supports (display: grid)" },
+  },
+
   theme: {
     extend: {
       tokens: {
         spacing: { 4: { value: "99px" } },
         colors: { red: { 500: { value: "#00ff00" } } },
+      },
+      recipes: {
+        button: { variants: { tone: { brand: { background: "red.500" } } } },
       },
     },
   },

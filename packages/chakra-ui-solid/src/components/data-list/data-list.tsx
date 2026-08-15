@@ -2,6 +2,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
 import type { DataListVariantProps as DataListRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
@@ -18,7 +19,7 @@ export type DataListSlot = "root" | "item" | "itemLabel" | "itemValue";
  * **No `@default` tag on any of them.** The recipe's `defaultVariants` resolves `vertical`, `md`
  * and `subtle` from `undefined` itself.
  */
-export interface DataListVariantProps {
+export interface DataListVariantProps extends PresetVariantProps<"dataList"> {
   /** Whether a label sits above its value or beside it, in a 120px-wide column. */
   orientation?: ConditionalValue<
     "horizontal" | "vertical" | PresetVariant<"dataList", "orientation">

@@ -2,6 +2,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -27,7 +28,7 @@ export type TimelineSlot =
  * **No `@default` tag on any of them.** The recipe's `defaultVariants` resolves `solid`, `false`
  * and `md` from `undefined` itself.
  */
-export interface TimelineVariantProps {
+export interface TimelineVariantProps extends PresetVariantProps<"timeline"> {
   /** How the indicator is filled — `solid` and `subtle` tint it, `outline` rings it, `plain` leaves it bare. */
   variant?: ConditionalValue<
     "subtle" | "solid" | "outline" | "plain" | PresetVariant<"timeline", "variant">

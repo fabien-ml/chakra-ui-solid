@@ -1,6 +1,7 @@
 import type {
   HTMLChakraProps,
   PresetVariant,
+  PresetVariantProps,
   PropsProviderProps,
   UnstyledProp,
 } from "@chakra-ui-solid/core";
@@ -117,7 +118,7 @@ export interface DrawerPresenceProps {
  * second source of truth that drifts on a preset bump — the mirror of why `lazyMount` *does* carry
  * one ({@link DrawerPresenceProps}), which this component sets in its own `withDefaults` call.
  */
-export interface DrawerVariantProps {
+export interface DrawerVariantProps extends PresetVariantProps<"drawer"> {
   /** How far the panel extends from its edge. `full` covers the viewport. */
   size?: ConditionalValue<
     "xs" | "sm" | "md" | "lg" | "xl" | "full" | PresetVariant<"drawer", "size">

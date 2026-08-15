@@ -2,6 +2,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
 } from "@chakra-ui-solid/core";
 import type { HeadingVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -13,7 +14,7 @@ import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
  * the same division of labour: this names Chakra's own variant, while what the seam partitions by is
  * whatever the system's `heading` recipe accepts.
  */
-export interface HeadingProps extends HTMLChakraProps<"h2"> {
+export interface HeadingProps extends HTMLChakraProps<"h2">, PresetVariantProps<"heading"> {
   /**
    * The type scale step — font size and line height together.
    *

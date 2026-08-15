@@ -22,6 +22,7 @@ import {
   createRecipeClass,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   pickVariantProps,
   useChakraContext,
   useRecipeVariantKeys,
@@ -36,7 +37,7 @@ import { type Component, Match, omit, Switch } from "solid-js";
  * neither, and this is the interface the docs page's props table is built from. It names Chakra's
  * own variants; what the body partitions by is whatever the system's `checkmark` recipe accepts.
  */
-export interface CheckmarkProps extends HTMLChakraProps<"svg"> {
+export interface CheckmarkProps extends HTMLChakraProps<"svg">, PresetVariantProps<"checkmark"> {
   /**
    * The box's size, as a scale step. `md` and `lg` inset the glyph with a little padding; `xs` and
    * `sm` are too small to spare it.

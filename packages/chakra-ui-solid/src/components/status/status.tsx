@@ -2,6 +2,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
 import type { StatusVariantProps as StatusRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
@@ -17,7 +18,7 @@ export type StatusSlot = "root" | "indicator";
  *
  * **No `@default` tag.** The recipe's `defaultVariants` resolves `md` from `undefined` itself.
  */
-export interface StatusVariantProps {
+export interface StatusVariantProps extends PresetVariantProps<"status"> {
   /**
    * The label's type scale. The dot follows it rather than taking a size of its own — it is
    * `0.64em`, so it scales with whatever the root's font size resolves to.

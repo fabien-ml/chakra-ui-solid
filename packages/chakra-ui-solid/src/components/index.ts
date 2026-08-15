@@ -5,6 +5,11 @@
  * the imported name equals `jsxFactory`. Bundled into a relative chunk it registers nothing, and
  * every `<chakra.button>` in the consumer's app then produces zero rules with no error.
  */
+// The five names under `CreateSystemOptions` are the augmentation seam `styled-system/chakra-system-types.d.ts`
+// writes into, and they are re-exported here because a `declare module` merges into the interface
+// the module it names *exports* — name one that exports none and TypeScript declares a second,
+// unrelated interface and reports nothing. `chakra-ui-solid` is the only specifier a consumer can
+// name, since pnpm's isolated `node_modules` does not resolve `@chakra-ui-solid/core` from theirs.
 export type {
   Chakra,
   ChakraComponent,
@@ -13,8 +18,13 @@ export type {
   ChakraStylingProps,
   CreateSystemOptions,
   CssFn,
+  CustomConditions,
+  CustomStyleProps,
   CxFn,
   HTMLChakraProps,
+  PresetVariant,
+  PresetVariantProps,
+  RecipeVariantOverrides,
   SystemContext,
 } from "@chakra-ui-solid/core";
 // A consumer cannot reach `@chakra-ui-solid/core` themselves — pnpm's strict layout does not resolve

@@ -1,6 +1,7 @@
 import type {
   HTMLChakraProps,
   PresetVariant,
+  PresetVariantProps,
   PropsProviderProps,
   PropTypes,
   RenderStrategyProps,
@@ -111,7 +112,7 @@ export interface CreateTabsReturn extends Readonly<tabs.Api<PropTypes>> {}
  * `{ size: "md", variant: "line" }` and it resolves them itself, so restating one here would be a
  * second source of truth that drifts on a preset bump.
  */
-export interface TabsVariantProps {
+export interface TabsVariantProps extends PresetVariantProps<"tabs"> {
   /** Whether the triggers stretch to fill the list. */
   fitted?: ConditionalValue<boolean>;
   /** Where the triggers sit along the list when they do not fill it. */

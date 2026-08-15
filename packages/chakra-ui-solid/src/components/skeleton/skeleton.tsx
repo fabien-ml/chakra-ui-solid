@@ -3,6 +3,7 @@ import {
   type HTMLChakraProps,
   mergeProps,
   type PresetVariant,
+  type PresetVariantProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import type { SkeletonVariantProps } from "@chakra-ui-solid/styled-system/recipes";
@@ -17,7 +18,7 @@ import { Stack, type StackProps } from "../stack";
  * this is the interface the docs page's props table is built from. It names Chakra's own variants;
  * what the seam partitions by is whatever the system's `skeleton` recipe accepts.
  */
-export interface SkeletonProps extends HTMLChakraProps<"div"> {
+export interface SkeletonProps extends HTMLChakraProps<"div">, PresetVariantProps<"skeleton"> {
   /**
    * Whether the placeholder is showing. `false` hides the children's stand-in and fades the real
    * content in — the element stays, so the layout does not jump.

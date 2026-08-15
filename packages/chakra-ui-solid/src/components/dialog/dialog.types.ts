@@ -1,6 +1,7 @@
 import type {
   HTMLChakraProps,
   PresetVariant,
+  PresetVariantProps,
   PropsProviderProps,
   PropTypes,
   UnstyledProp,
@@ -204,7 +205,7 @@ export interface DialogPresenceProps {
  * preset bump — the mirror of why `lazyMount` *does* carry one ({@link DialogPresenceProps}), which
  * this component sets in its own `withDefaults` call.
  */
-export interface DialogVariantProps {
+export interface DialogVariantProps extends PresetVariantProps<"dialog"> {
   /** How wide the surface is allowed to grow. `cover` and `full` also change its height. */
   size?: ConditionalValue<
     "xs" | "sm" | "md" | "lg" | "xl" | "cover" | "full" | PresetVariant<"dialog", "size">

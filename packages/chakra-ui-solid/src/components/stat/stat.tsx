@@ -3,6 +3,7 @@ import {
   createSlotRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
   type PropsProviderProps,
   renderStyled,
   useRecipeVariantKeys,
@@ -23,7 +24,7 @@ export type StatSlot = "root" | "label" | "helpText" | "valueText" | "valueUnit"
  *
  * **No `@default` tag.** The recipe's `defaultVariants` resolves `md` from `undefined` itself.
  */
-export interface StatVariantProps {
+export interface StatVariantProps extends PresetVariantProps<"stat"> {
   /**
    * The type scale of the **value alone** — `xl`, `2xl`, `3xl`. The label, the help text and the
    * unit hold their own sizes at every step, so this is the one number that grows.

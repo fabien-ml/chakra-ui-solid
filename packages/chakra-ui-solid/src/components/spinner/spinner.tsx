@@ -2,6 +2,7 @@ import {
   createRecipeContext,
   type HTMLChakraProps,
   type PresetVariant,
+  type PresetVariantProps,
 } from "@chakra-ui-solid/core";
 import type { SpinnerVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -13,7 +14,7 @@ import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
  * the same division of labour: this names Chakra's own variant, while what the seam partitions by is
  * whatever the system's `spinner` recipe accepts.
  */
-export interface SpinnerProps extends HTMLChakraProps<"span"> {
+export interface SpinnerProps extends HTMLChakraProps<"span">, PresetVariantProps<"spinner"> {
   /**
    * The diameter, as a scale step. `inherit` takes `1em` from the surrounding font size, which is
    * how a spinner inside a button matches its label.
