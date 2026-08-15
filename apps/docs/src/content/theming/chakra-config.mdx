@@ -131,6 +131,92 @@ export default defineChakraConfig({
 });
 ```
 
+## skin
+
+Which look your stylesheet is built from. Omit it and you get Chakra v3's:
+
+```ts title="panda.config.ts"
+import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
+import { mySkin } from "./skin";
+
+export default defineChakraConfig({
+  skin: mySkin,
+  include: [...],
+});
+```
+
+The preset is two halves and only one of them moves. The **anatomy** — the 75 recipe bodies, the
+style-prop utilities and the conditions — is fixed, because a recipe body is assembly rather than
+looks: of its 4,231 declarations, 56% are structural and 37% are token references. The **skin** is
+the table those references resolve against, and it is all eight of `tokens`, `semanticTokens`,
+`textStyles`, `layerStyles`, `animationStyles`, `keyframes`, `breakpoints` and `globalCss`.
+
+### A skin replaces, it does not extend
+
+This is the one thing that goes wrong, and it is silent. A skin is the *whole* token table, so one
+that declares only what it means to change leaves every other name undefined — and Panda does not
+fail on a token it cannot resolve. It emits the name as a literal:
+
+```css
+/* the default skin */         min-height: var(--chakra-sizes-5);
+/* a skin missing `sizes.5` */ min-height: 5px;
+```
+
+Wrong rather than missing, and green everywhere. So a skin starts from `chakraSkin` and overrides
+what it means to change:
+
+```ts title="skin.ts"
+import { chakraSkin, defineSkin } from "@chakra-ui-solid/panda-preset";
+
+export const mySkin = defineSkin({
+  ...chakraSkin,
+  semanticTokens: {
+    ...chakraSkin.semanticTokens,
+    radii: { l1: { value: "3px" }, l2: { value: "13px" }, l3: { value: "23px" } },
+  },
+});
+```
+
+Every Panda run checks the skin against the names the anatomy actually reads, and names the literal
+it would have emitted:
+
+```txt
+[chakra-ui-solid] this skin leaves 1 token(s) a recipe body reads undefined: `sizes.5` → minH: 5px.
+Panda does not fail on a token it cannot resolve — it emits the name as a literal CSS value, so
+those declarations are wrong rather than missing and nothing else reports them.
+```
+
+It warns and never fails the build — Panda catches and logs anything a config hook throws, so a
+failed build is not something this could give you.
+
+### Recipe deltas
+
+A skin may also carry `recipes` / `slotRecipes` deltas, for the part of a look no token expresses:
+
+```ts title="skin.ts"
+export const mySkin = defineSkin({
+  ...chakraSkin,
+  recipes: { button: { base: { borderRadius: "l3" } } },
+});
+```
+
+They reach the anatomy through `theme.extend`, which deep-merges at every level: the delta above
+replaces the one property it names and inherits the body's other 21 base declarations and all four
+variant keys. It also means a skin **cannot delete** — no recipe, no slot and no variant key can be
+removed by one.
+
+Two keys inside a delta do nothing, and both warn. `defaultVariants` is inert, because our runtime
+is compiled with the anatomy's own defaults: `<Button>` goes on emitting `button--size_md` whatever
+your stylesheet declares. `compoundVariants` never fires at all, since the compiled runtime carries
+the anatomy's compound list and that list is empty — nest the other variant's own selector in the
+variant body instead, as `size: { sm: { "&.button--variant_outline": { … } } }`.
+
+### `skin` or `theme.extend`?
+
+`theme.extend` for additions to Chakra's look — a brand colour, one more `button` size. `skin` for a
+different look, where the token table is the deliverable. They compose, and yours is the later
+layer: a `theme.extend` that contests a property the skin also sets wins.
+
 ## responsive
 
 Recipe variants are pre-generated at one condition by default. Pass `responsive` to also generate

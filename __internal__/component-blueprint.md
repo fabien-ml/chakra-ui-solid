@@ -686,6 +686,36 @@ We depend on **no** `classNameMap`. Chakra needs one because Emotion serializes 
 stable per-slot class has to come from somewhere; Panda's `sva()` returns the stable class as part of
 the string it already gives us.
 
+We depend on **no** generated variant *type* either, and that one costs a line per prop. A variant
+prop is a hand-written `ConditionalValue<…>` union — that is what carries the JSDoc a consumer hovers
+and what the docs props tables read — and every string union that maps to a recipe variant key owes a
+`SkinVariant` member beside its values, so that a skin can widen it:
+
+```ts
+export type ButtonVariant = ConditionalValue<
+  "solid" | "subtle" | "surface" | "outline" | "ghost" | "plain" | SkinVariant<"button", "variant">
+>;
+```
+
+Four things to get right, three of which fail silently:
+
+- **The first argument is the recipe's registry key, not the component name.** `native-select` is
+  `nativeSelect`, `empty-state` is `emptyState`, and Switch's is the misspelled `swittch` we consume
+  verbatim. A wrong key resolves to `never` and looks exactly like correct code.
+- **The import must be `import type`.** A value edge to `@chakra-ui-solid/core` moves
+  `component-recipes.ts` and fails `check:component-recipes`; a type-only one is invisible to the
+  import-graph walk, which is what makes this free.
+- **Omitting the member is invisible today** — unioning `never` widens nothing, so nothing goes red
+  while no skin is installed. Once one is, the value that skin declares is a type error at the
+  *consumer's* call site for this component alone while every other component accepts it. The
+  consumer pays, not us, which is why it belongs at port time.
+- **`ConditionalValue<boolean>` props take nothing**, and neither do unions that are not recipe
+  variants — a skin cannot add a value to a boolean, and `StackDirection` is not a variant.
+
+Variant **keys** are sealed and stay that way: `splitVariantProps` and the `VARIANT_KEYS` tuples are
+compiled at our build, so a key that existed only in a consumer's types would style correctly and
+then leak onto the element as an HTML attribute.
+
 ### 4.4 `unstyled`, at two levels
 
 Chakra supports it on the Root (kills every slot) and on each part (kills that slot). Only the Root
