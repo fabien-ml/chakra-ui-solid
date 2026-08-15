@@ -28,6 +28,9 @@ jobs:
       # Static wiring only — that the hydration fixtures are registered, served and really
       # hydrated. Whether every component server-renders is asserted by the suite in `test`.
       - run: pnpm check:ssr-coverage
+      # The committed component→recipe manifest still describes the import graph. Stale, it drops
+      # a recipe from the consumer's stylesheet and every test still passes.
+      - run: pnpm check:component-recipes
 
   test:
     runs-on: ubuntu-latest

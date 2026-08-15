@@ -160,6 +160,26 @@ grep -c compoundVariants __reference-impl__/chakra-ui/packages/panda-preset/src/
 
 ### 1.2 Decision
 
+> **Superseded 2026-08-15, and this section is kept for its measurements, not its decision.** The
+> preset declared `staticCss: ["*"]` on every recipe it inherits, and shipped that way. It is
+> correct and it is **354,809 raw / 37,753 gzip bytes of CSS for an app that imports Button** — 43
+> `.dialog__*` rules in an app that never imports Dialog, and 38 of the 75 recipes belonging to
+> components that are not ported yet. What ships now is
+> `packages/panda-preset/src/recipe-gate-plugin.ts`: the same rules, emitted per recipe, for the
+> recipes the consumer's **import specifiers** reach. Same app, measured the same way: **53,913 raw
+> / 8,678 gzip**. Everything below about *which* rules have to exist still holds — all that changed
+> is that the set is decided per consumer instead of per library.
+>
+> The reasoning that dated: this section weighed silent unstyling and never weighed distribution
+> size, which for a library is the other half of the same question. And its "why per-recipe rather
+> than config-level" argument turned out to be the mechanism's real cost — a body's `staticCss`
+> **replaces** whatever the config asked for that recipe, so with all 75 bodies carrying one, a
+> config-level `staticCss.recipes` was dead on arrival, and so was every usage-driven answer. It is
+> the config-level key that the gate's own fallback now uses.
+>
+> §1.6 rejected the *usage-driven* alternative on the strength of `jsx` hints breaking. That half of
+> it is still true and still written there; what it over-generalised is corrected in the same place.
+
 **`@chakra-ui-solid/panda-preset` declares `staticCss` per recipe, through `theme.extend`, adding
 one key to each of the 74 recipes it inherits and re-emitting none of them.** `jsx` tracking hints
 are added in the same pass as an optimization, but **nothing depends on them**.
@@ -296,6 +316,15 @@ where one declaration lives.**
   under aliasing (`import { Button as Btn }`), under namespaced part components (`<Dialog.Root>`),
   and under consumer wrappers — and it breaks *silently*, which is precisely the failure mode §0.2
   forbids us to build on. Hints are added, nothing depends on them.
+
+  **Still true, and it does not generalise — corrected 2026-08-15.** Rejecting the hint was read
+  here as rejecting every *usage-driven* signal, and one of them survives all three cases: the
+  **import specifier**. You cannot render a component without importing it, `import { Button as Btn }`
+  still writes `Button` in the specifier, `<Dialog.Trigger>` needs `Dialog` imported, and a
+  consumer's wrapper imports at the top of their own file — which their `include` already scans.
+  `recipe-gate-plugin.ts` reads specifiers in Panda's `parser:before` and emits each imported
+  component's recipe rules through `result.setRecipe()` in `parser:after`, reproducing what
+  `staticCss: ["*"]` produced for exactly those recipes. All four cases are fixtures on it.
 
 ---
 
@@ -714,6 +743,28 @@ published.
 **Correction carried from the plan.** The brief's `dependencies` option is *"globs or files that
 trigger a config reload when changed"* — a config watcher, **not** an extraction source. Both
 consumption options use **`include`**; `importMap` is the correct half of the pairing.
+
+> **This shipped 2026-08-15, and two details differ from the section above.** `scripts/ship-buildinfo.mjs`
+> writes `dist/panda.buildinfo.json` from `packages/chakra-ui-solid`'s `build`, and the install page
+> names that path instead of the `dist/**/*.jsx` glob it used until now. Measured against that glob
+> on the same Button-only app: the utilities layer is the **same 757 rules, byte for byte** — the
+> buildinfo replays exactly what scanning 129 files extracted, so B is *wholesale, and simpler*
+> rather than narrowing.
+>
+> - **The artifact carries `styles.atomic` only.** `panda ship` also records a recipe variant for
+>   every `<Spinner size="inherit">` our own components write in their own JSX, and replayed into a
+>   consumer's build those are ungated — a Button-only app was getting `colorSwatch`, `skeleton` and
+>   `swittch` rules for components it never imported. Which recipes a consumer needs is decided by
+>   the import gate from `component-recipes.ts`; dropping them costs nothing and saved 5,849 bytes.
+> - **Option A is no longer a neutral escape hatch.** Every `dist/*.jsx` file imports
+>   `@chakra-ui-solid/core`, so a consumer who globs our sources trips the import gate's own scan
+>   with our files: their run looks successful even when *their* globs match nothing, and the loud
+>   "0 components detected — generating all recipes" fallback cannot fire. A `.json` include cannot
+>   do that — Panda routes it to `encoder.fromJSON` and never runs `parser:before` on it.
+>
+> Skew is not a failure mode here, which §4.1's warning assumed it was: every entry in the file is a
+> `prop / value / cond` hash and no class name is in it. Shipping from a config with `hash: true`,
+> `separator: "="` and a different `cssVar` prefix produces a byte-identical file.
 
 ### 4.2 The exports map
 

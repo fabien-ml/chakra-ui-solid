@@ -46,12 +46,17 @@ import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
 
 export default defineChakraConfig({
   include: [
-    "./node_modules/chakra-ui-solid/dist/**/*.jsx",
+    "./node_modules/chakra-ui-solid/dist/panda.buildinfo.json",
     "./src/**/*.{ts,tsx}",
   ],
   outdir: "styled-system-app",
 });
 ```
+
+That first path is ours and it is one file, not a glob: a few components style themselves with
+values your source never spells, and `panda.buildinfo.json` is how those reach your extractor. Your
+own glob is what decides everything else — which components' CSS you get is read off the specifiers
+your files name us in.
 
 Three things about that, and no more. There is no `defineConfig` import — this call *is* your
 config. The preset is not imported either; `defineChakraConfig()` already puts it in `presets`. And
@@ -63,8 +68,8 @@ export default defineChakraConfig({
   presets: [myPreset],
   // Customizations go under `extend`. A bare `theme` is a type error here.
   theme: { extend: { tokens: { colors: { brand: { value: "#5b8" } } } } },
-  // `include` and `outdir` as above — keep the `dist` glob.
-  include: ["./node_modules/chakra-ui-solid/dist/**/*.jsx", "./src/**/*.{ts,tsx}"],
+  // `include` and `outdir` as above — keep the buildinfo path.
+  include: ["./node_modules/chakra-ui-solid/dist/panda.buildinfo.json", "./src/**/*.{ts,tsx}"],
   outdir: "styled-system-app",
 });
 ```

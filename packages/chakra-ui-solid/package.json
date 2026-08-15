@@ -90,7 +90,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown && node ../../scripts/ship-buildinfo.mjs",
     "typecheck": "tsc --noEmit",
     "cssgen": "panda cssgen --cwd src/components/box/__tests__/__fixtures__/consumer --outfile src/components/box/__tests__/__fixtures__/consumer/consumer.css"
   },

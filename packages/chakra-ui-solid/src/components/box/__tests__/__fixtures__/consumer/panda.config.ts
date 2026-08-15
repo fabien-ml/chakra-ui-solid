@@ -25,9 +25,9 @@ export default defineChakraConfig({
     "./src/**/*.tsx",
     // **The library channel**, and it is a second channel rather than a convenience: a style
     // config handed to `chakra()` inside a component is not in a consumer's source at all. The
-    // install docs spell this glob `./node_modules/chakra-ui-solid/dist/**/*.jsx`, and
-    // it is the same text either way — `tsdown` builds with `transform.jsx: "preserve"`, so what
-    // we publish IS this source. Pointing at `src` keeps the fixture free of a build step.
+    // install docs spell it `./node_modules/chakra-ui-solid/dist/panda.buildinfo.json`, which is
+    // `panda ship` run over these same files at build time — same style entries, resolved once
+    // instead of re-scanned. Pointing at `src` keeps the fixture free of a build step.
     "../../../../*/*.tsx",
   ],
   outdir: "styled-system-app",

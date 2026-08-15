@@ -85,36 +85,36 @@ const linkBoxPositions = ["relative"];
 const skeletonTextWidths = ["full"];
 
 /**
- * One `staticCss: ["*"]` key per recipe, merged into the inherited recipe body by `theme.extend`.
+ * One `jsx` tracking hint per recipe, merged into the inherited recipe body by `theme.extend`.
  *
- * This is the answer to the question the whole styling layer turns on: Panda generates CSS by
- * scanning source files, and **no recipe variant this library emits is ever written in a consumer's
- * source.** They write `<Button size="lg">` and never import the generated recipe module, so
- * nothing associates that prop with a recipe; and where a variant comes from a prop
- * (`slots({ size: props.size })`) it is not a literal to find in the first place. A class whose CSS
- * was never generated renders nothing and raises no error, so the failure is an unstyled component
- * and a green test suite. `staticCss: ["*"]` pre-generates every value of every variant key
- * instead — 488 values across the 75 recipes, and linear rather than combinatorial because the
- * preset declares zero `compoundVariants` (`plan.md` §1.2).
+ * A hint tells Panda that a JSX prop on this component belongs to this recipe. It is an
+ * optimization and **nothing depends on it**: a hint is a component *name*, so it breaks under
+ * `import { Button as Btn }`, under namespaced part components, and under a consumer's own wrapper
+ * — silently, every time (`plan.md` §1.6).
+ *
+ * **What used to be here is the question the whole styling layer turns on**, and it is now answered
+ * one file over. Panda generates CSS by scanning source files, and no recipe variant this library
+ * emits is ever written in a consumer's source: they write `<Button size="lg">` and never import
+ * the generated recipe module, and where a variant comes from a prop (`slots({ size: props.size })`)
+ * it is not a literal to find at all. A class whose CSS was never generated renders nothing and
+ * raises no error, so the failure is an unstyled component and a green test suite. This declared
+ * `staticCss: ["*"]` on all 75 bodies to pre-empt that — correct, and 354 kB of CSS for an app that
+ * imports Button, including 43 `.dialog__*` rules it can never use. `recipe-gate-plugin.ts` emits
+ * the same rules for the recipes the consumer's **imports** reach, which is the one signal that
+ * survives aliasing, namespaced parts and wrappers.
  *
  * It rides `theme.extend`'s deep merge, the same path a consumer uses to override a recipe, so it
  * adds one key to each inherited body and re-emits none of them (`CLAUDE.md`, *Reference use*).
  */
-function staticCssForEvery(keys: string[]): Record<string, { staticCss: ["*"]; jsx: string[] }> {
+function jsxHintsForEvery(keys: string[]): Record<string, { jsx: string[] }> {
   return Object.fromEntries(
     keys.map((key) => [
       key,
       {
         // Empty for all but `container`, which no inherited body exists to merge into — a recipe
-        // this package declares itself has to arrive through the same `theme.extend` key as the
-        // `staticCss` that covers it, or Panda registers the declaration and no recipe.
+        // this package declares itself has to arrive through this same `theme.extend` key, or
+        // Panda registers a hint for a recipe that does not exist.
         ...recipeBodyFor(key),
-        staticCss: ["*"] as ["*"],
-        // A tracking hint tells Panda that a JSX prop on this component belongs to this recipe.
-        // It is an optimization and **nothing depends on it**: a hint is a component *name*, so it
-        // breaks under `import { Button as Btn }`, under namespaced part components, and under a
-        // consumer's own wrapper — silently, every time. `staticCss` above is what actually
-        // guarantees the rules exist (`plan.md` §1.6).
         jsx: [componentNameFor(key)],
       },
     ]),
@@ -141,8 +141,8 @@ export const chakraSolidPreset = definePreset({
 
   theme: {
     extend: {
-      recipes: staticCssForEvery(recipeKeys),
-      slotRecipes: staticCssForEvery(slotRecipeKeys),
+      recipes: jsxHintsForEvery(recipeKeys),
+      slotRecipes: jsxHintsForEvery(slotRecipeKeys),
 
       tokens: {
         cursor: {

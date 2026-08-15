@@ -27,10 +27,11 @@
     },
     // The same coupling, for the same reason, on the Panda run. `panda.config.ts#include` names
     // two things: this app's own source (covered by `$TURBO_DEFAULT$`) and
-    // `chakra-ui-solid`'s published **`dist/`**, which is another package's build
-    // output. That glob is how values our components name — a style config handed to `chakra()`,
-    // recipe variants — reach a consumer's extractor at all, so a stale cache here is a page
-    // rendering unstyled with a green build.
+    // `chakra-ui-solid/dist/panda.buildinfo.json`, which is another package's build output —
+    // `scripts/ship-buildinfo.mjs` writes it from that package's `build`. It is how values our
+    // components name and no consumer's source spells — a style config handed to `chakra()` —
+    // reach a consumer's extractor at all, so a stale cache here is a page rendering unstyled with
+    // a green build.
     "cssgen": {
       "dependsOn": ["codegen", "^build"],
       "inputs": [

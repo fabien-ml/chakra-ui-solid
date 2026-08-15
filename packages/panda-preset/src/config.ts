@@ -1,5 +1,6 @@
 import type { Config } from "@pandacss/dev";
 import { chakraSolidPreset } from "./preset";
+import { recipeGatePlugin } from "./recipe-gate-plugin";
 import { recipeKeys, slotRecipeKeys, variantKeysFor } from "./recipe-registry";
 
 /**
@@ -92,14 +93,31 @@ type Plugin = NonNullable<Config["plugins"]>[number];
 export type ChakraConfigOverrides = Omit<Config, LockedKey | "theme" | "staticCss" | "include"> &
   LockedKeys & {
     /**
-     * Required, because Panda's default (`src/**\/*.{js,jsx,ts,tsx}`) misses our `dist/` glob — the
-     * only channel carrying values our components name and a consumer's source never writes.
+     * Required, because Panda's default (`src/**\/*.{js,jsx,ts,tsx}`) misses
+     * `chakra-ui-solid/dist/panda.buildinfo.json` — the only channel carrying values our components
+     * name and a consumer's source never writes.
      */
     include: NonNullable<Config["include"]>;
     theme?: ExtendOnly<ThemeOption, "theme">;
     staticCss?: StaticCssOption;
     responsive?: ResponsiveGrain;
     conditional?: ConditionalGrain;
+    /**
+     * Components to generate CSS for that no file in `include` imports.
+     *
+     * The stylesheet is otherwise decided by the import specifiers in the files Panda parses, so
+     * only a component reaching the app from somewhere Panda does not scan needs naming here — a
+     * dependency built on chakra-ui-solid, inside `node_modules`. For a package in your own
+     * workspace, add it to `include` instead and this stays empty.
+     *
+     * It takes component names as they are imported, and it can only **widen**: nothing here can
+     * remove a recipe the scan found.
+     *
+     * ```ts
+     * components: ["Menu", "Toast"]
+     * ```
+     */
+    components?: string[];
   };
 
 /** Every knob a consumer's stylesheet has to agree with our published runtime on. */
@@ -153,7 +171,7 @@ const LOCKED = {
  *
  * export default defineChakraConfig({
  *   include: [
- *     "./node_modules/chakra-ui-solid/dist/**\/*.jsx",
+ *     "./node_modules/chakra-ui-solid/dist/panda.buildinfo.json",
  *     "./src/**\/*.{ts,tsx}",
  *   ],
  *   outdir: "styled-system-app",
@@ -181,7 +199,8 @@ const LOCKED = {
  * this function exists to supply.
  */
 export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
-  const { responsive, conditional, presets, theme, staticCss, plugins, ...rest } = overrides;
+  const { responsive, conditional, components, presets, theme, staticCss, plugins, ...rest } =
+    overrides;
   const { extend, ...bareStaticCss } = staticCss ?? {};
   // Both opt-ins and the consumer's own `staticCss.recipes`, in one list per recipe. Ours first, so
   // two writers on one recipe read as two rules and neither replaces the other.
@@ -201,8 +220,9 @@ export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
     presets: [chakraSolidPreset, ...(presets ?? [])],
     theme: themeWithRecipeRules(theme, placed.bodies),
     staticCss: chakraStaticCss(placed.unplaceable, { extend, ...bareStaticCss }),
-    // Last, so it corrects after a consumer's own plugins have had their say.
-    plugins: [...(plugins ?? []), lockedKeysPlugin],
+    // The gate reads the consumer's imports and adds the recipes they reach; `lockedKeysPlugin`
+    // stays last, so it corrects after a consumer's own plugins have had their say.
+    plugins: [...(plugins ?? []), recipeGatePlugin(components), lockedKeysPlugin],
   };
 }
 
@@ -216,21 +236,19 @@ type PlacedRules = {
  * Which recipe each rule list belongs to — and the reason this function exists rather than the rules
  * going where Panda's own docs put them.
  *
- * **A config's `staticCss.recipes` is dead on arrival for every recipe this package ships.** Panda's
- * `StaticCss.process()` walks `theme.recipes` and `theme.slotRecipes` and, for any recipe whose
- * *body* carries a `staticCss` key, assigns that value over whatever the config asked for:
- * `staticCss.recipes[name] = recipe.staticCss`. Our preset gives all 75 bodies `staticCss: ["*"]`
- * (`preset.ts`, `staticCssForEvery`), so all 75 overwrite it.
+ * **A recipe body's own `staticCss` outranks the config's.** Panda's `StaticCss.process()` walks
+ * `theme.recipes` and `theme.slotRecipes` and, for any recipe whose *body* carries a `staticCss`
+ * key, assigns that value over whatever the config asked for:
+ * `staticCss.recipes[name] = recipe.staticCss`. So the body is where a rule for one of our recipes
+ * has to land, and it is also why {@link withStaticCssBodies} keeps `"*"` at the head of the list —
+ * the assignment is a replacement, and the import gate's own entry for that recipe is what would be
+ * replaced.
  *
- * Measured, and the measurement is why `responsive` moved here: `responsive: { button: ["variant"] }`
- * generated no `md:button--variant_*` rule at all, and the `dialog` opt-in that appeared to work
- * generated nothing either — the docs app writes `size={{ mdDown: "full", md: "lg" }}` in
- * `dialog-with-responsive-size.tsx` and Panda extracted the literal out of its own source. Deleting
- * the opt-in left both classes in the sheet.
- *
- * A rule appended to the body's own list lands, because `["*", rule]` is a list Panda already
- * iterates. `"*"` stays first: it is the 488 values the whole library resolves through, and the
- * body's array is replaced rather than merged.
+ * Measured, back when all 75 bodies carried `staticCss: ["*"]` and the config's key was therefore
+ * dead on arrival: `responsive: { button: ["variant"] }` generated no `md:button--variant_*` rule at
+ * all, and the `dialog` opt-in that appeared to work generated nothing either — the docs app writes
+ * `size={{ mdDown: "full", md: "lg" }}` in `dialog-with-responsive-size.tsx` and Panda extracted the
+ * literal out of its own source. Deleting the opt-in left both classes in the sheet.
  */
 function placeRecipeRules(requested: RecipeRules | undefined): PlacedRules {
   const bodies: PlacedRules["bodies"] = { recipes: {}, slotRecipes: {} };
@@ -305,8 +323,11 @@ function withStaticCssBodies<Key extends "recipes" | "slotRecipes">(
 
   const merged = { ...theirs } as Record<string, { staticCss?: unknown }>;
   for (const [name, rules] of Object.entries(rulesByRecipe)) {
-    // `"*"` leads and appears once: it is already what the body says, and a consumer who spelled it
-    // themselves should not turn the list into `["*", "*"]`.
+    // `"*"` leads and appears once, and it is what makes naming a recipe here safe rather than
+    // narrowing: a body's `staticCss` **replaces** whatever the config asked for that recipe, so a
+    // list of `[{ size: ["*"], responsive: true }]` alone would drop every rule the import gate and
+    // the `components` option put there. Once, because a consumer who spelled `"*"` themselves
+    // should not turn the list into `["*", "*"]`.
     const rest = rules.filter((rule) => rule !== "*");
     merged[name] = { ...merged[name], staticCss: ["*", ...rest] };
   }

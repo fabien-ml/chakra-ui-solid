@@ -3,14 +3,17 @@ import { chakraSolidPreset } from "../preset";
 import { componentNameFor, recipeKeys, slotRecipeKeys } from "../recipe-registry";
 
 /**
- * `staticCss: ["*"]` on every recipe is the single line the whole styling layer rests on. Panda
- * generates CSS by scanning source files, and **no recipe variant this library emits is ever written
- * in a consumer's source** — they write `<Button size="lg">` and never import the generated recipe
- * module. A recipe that lost its `staticCss` key would render every one of its variants as a class
- * with no rule: an unstyled component, no error, and a green suite.
+ * What the preset declares per recipe, now that it declares no `staticCss`.
  *
- * So these tests count. One missing entry out of 75 is exactly the failure that has nothing else
- * watching for it.
+ * Panda generates CSS by scanning source files, and **no recipe variant this library emits is ever
+ * written in a consumer's source** — they write `<Button size="lg">` and never import the generated
+ * recipe module. A recipe whose values were never generated renders every one of them as a class
+ * with no rule: an unstyled component, no error, and a green suite. `staticCss: ["*"]` on all 75
+ * bodies used to be the answer, at 354 kB of CSS for an app that imports Button;
+ * `recipe-gate-plugin.ts` is, and `recipe-gate.test.ts` is where that half is asserted.
+ *
+ * What is left here is one `jsx` hint per recipe, which nothing depends on, and the `container`
+ * body, which nothing upstream declares.
  */
 
 type RecipeExtension = Record<string, { staticCss?: unknown; jsx?: string[] }>;
@@ -19,14 +22,16 @@ const extension = chakraSolidPreset.theme?.extend as
   | { recipes?: RecipeExtension; slotRecipes?: RecipeExtension; tokens?: unknown }
   | undefined;
 
-describe("theme.extend — the staticCss declarations", () => {
-  it("gives every one of the 75 recipes a `staticCss: ['*']`", () => {
+describe("theme.extend — the recipe declarations", () => {
+  it("declares no `staticCss` on any of the 75 recipes", () => {
+    // The gate's whole saving is this absence: a body's `staticCss` is assigned *over* whatever the
+    // config asked for that recipe, so one left behind would ungate it for every consumer.
     const declared = { ...extension?.recipes, ...extension?.slotRecipes };
-    const missing = [...recipeKeys, ...slotRecipeKeys].filter(
-      (key) => JSON.stringify(declared[key]?.staticCss) !== JSON.stringify(["*"]),
+    const stillDeclaring = [...recipeKeys, ...slotRecipeKeys].filter(
+      (key) => declared[key]?.staticCss !== undefined,
     );
 
-    expect(missing).toEqual([]);
+    expect(stillDeclaring).toEqual([]);
     expect(Object.keys(declared)).toHaveLength(75);
   });
 
@@ -39,8 +44,8 @@ describe("theme.extend — the staticCss declarations", () => {
 
   it("carries the ported `container` body alongside its declaration", () => {
     // The one recipe with nothing upstream to merge into: `theme.extend` deep-merges, so a key the
-    // inherited theme does not have is *created* by this entry — body and `staticCss` together, or
-    // Panda registers a declaration for a recipe that does not exist and `container(…)` is not
+    // inherited theme does not have is *created* by this entry — the body has to arrive through it,
+    // or Panda registers a hint for a recipe that does not exist and `container(…)` is not
     // generated at all.
     const container = extension?.recipes?.container as
       | { className?: string; jsx?: string[] }
@@ -50,7 +55,7 @@ describe("theme.extend — the staticCss declarations", () => {
   });
 
   it("keeps `swittch` under its misspelled key while hinting the real component name", () => {
-    expect(extension?.slotRecipes?.swittch).toEqual({ staticCss: ["*"], jsx: ["Switch"] });
+    expect(extension?.slotRecipes?.swittch).toEqual({ jsx: ["Switch"] });
   });
 
   it("hints each recipe's jsx name from its `className`", () => {

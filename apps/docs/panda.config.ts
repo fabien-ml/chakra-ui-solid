@@ -17,14 +17,21 @@ import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
 export default defineChakraConfig({
   include: [
     // The library channel: values *our* components name that a consumer's source never literally
-    // writes — a style config handed to `chakra()` inside a component, recipe variants — reach
-    // their extractor through our published files rather than through their own globs.
+    // writes — a style config handed to `chakra()` inside a component — reach their extractor
+    // through our published files rather than through their own globs.
     //
-    // A glob over `dist/` rather than a buildinfo artifact, because `tsdown` builds with
-    // `transform.jsx: "preserve"`: what we publish IS JSX-preserved source, so a consumer's
-    // extractor can read it the same way it reads their own `src`. It matches nothing until the
-    // package is built, and nothing in it needs a rule until a component calls `chakra()`.
-    "./node_modules/chakra-ui-solid/dist/**/*.jsx",
+    // **Recipe variants do not come through here.** The plugin `defineChakraConfig()` appends emits
+    // each recipe's variants for the components this app's own source imports, and this file
+    // carries the `chakra()` half only: `scripts/ship-buildinfo.mjs` runs `panda ship` over the 129
+    // built files at build time and drops the recipe entries, so what a consumer replays is 182
+    // atomic style entries and nothing that could widen their recipe layer.
+    //
+    // One path rather than the recursive glob it replaces, and the difference is not only that it
+    // is shorter to type. Panda routes a `.json` include straight to the encoder without firing
+    // `parser:before`, so our own files can no longer look like a successful scan to the import
+    // gate — a wrong `src` glob now prints the loud "0 components detected" line instead of
+    // quietly producing a sheet with no recipes in it.
+    "./node_modules/chakra-ui-solid/dist/panda.buildinfo.json",
     // Our own source, which is what a consumer's glob is. `.mdx` is in the list because a fenced
     // code block is not the only thing a content file carries — an MDX page may write JSX
     // directly, and a style prop Panda never scanned renders nothing and raises no error.
@@ -47,8 +54,9 @@ export default defineChakraConfig({
   // `separator-with-responsive-orientation` is the second, and it needs the same line for the same
   // reason: `orientation={{ base: "vertical", sm: "horizontal" }}` resolves to
   // `separator--orientation_vertical sm:separator--orientation_horizontal`, and the rule goes into
-  // the recipe *body* as `["*", …]` — a config-level `staticCss.recipes` entry is overwritten by
-  // the body's own before Panda reads it, for every recipe this preset ships.
+  // the recipe *body* as `["*", …]` — a body's `staticCss` is assigned over whatever the config
+  // asked for that recipe, so the body is the only place a rule for one of ours lands, and the
+  // `"*"` in front of it is what keeps the import gate's own entry for that recipe.
   responsive: { dialog: ["size"], separator: ["orientation"] },
   outdir: "styled-system",
 });

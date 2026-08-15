@@ -26,6 +26,7 @@
     "check:attribution": "node scripts/check-attribution.mjs",
     "check:declaration-support": "node scripts/check-declaration-support.mjs",
     "check:ssr-coverage": "node scripts/check-ssr-coverage.mjs",
+    "check:component-recipes": "node scripts/check-component-recipes.mjs",
     "changeset": "changeset",
     "version-packages": "changeset version",
     "release": "turbo run build --filter='./packages/*' && changeset publish"

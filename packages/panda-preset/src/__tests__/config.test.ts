@@ -246,13 +246,16 @@ describe("defineChakraConfig — the keys it merges rather than replaces", () =>
     expect(defineChakraConfig({ ...MINIMAL, theme: { extend } }).theme).toEqual({ extend });
   });
 
-  it("appends its plugin after a consumer's, so it corrects last", () => {
+  it("appends its plugins after a consumer's, so the locked keys are corrected last", () => {
     const theirs = { name: "mine" };
     const plugins = defineChakraConfig({ ...MINIMAL, plugins: [theirs] }).plugins ?? [];
 
-    expect(plugins).toHaveLength(2);
+    expect(plugins.map((plugin) => plugin.name)).toEqual([
+      "mine",
+      "chakra-ui-solid:recipe-gate",
+      "chakra-ui-solid:locked-keys",
+    ]);
     expect(plugins[0]).toBe(theirs);
-    expect(plugins[1]?.name).toBe("chakra-ui-solid:locked-keys");
   });
 });
 

@@ -16,8 +16,9 @@ import { describe, expect, it } from "vitest";
  * Two channels feed their sheet, and every case below names which one it is testing:
  *
  * - **The library channel** — a style config handed to `chakra()` inside a component. Their build
- *   reads it out of our published files, which is why `panda.config.ts` beside this fixture globs
- *   our sources the way the install docs glob `dist/**​/*.jsx`.
+ *   reads it out of `dist/panda.buildinfo.json`, which is `panda ship` run over our published
+ *   files; `panda.config.ts` beside this fixture globs those same sources directly, so the style
+ *   entries under test are the ones the shipped artifact replays.
  * - **The pattern channel** — a value only *their* source spells, `<Square size="12">`. Panda's own
  *   patterns claim the JSX names `Square`, `Circle`, `Center`, `Spacer` and friends, so their
  *   extractor runs the pattern's mapping over that line. Reusing `pattern.raw()` in the component

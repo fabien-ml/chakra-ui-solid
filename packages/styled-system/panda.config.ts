@@ -49,6 +49,13 @@ export default defineConfig({
   // `p_4`, and every component would render naked with no error anywhere.
   separator: "_",
   preflight: true,
+  // **Every recipe variant, unconditionally — the one knob a consumer's config does not have.**
+  // Their sheet is gated on what their source imports, by the plugin `defineChakraConfig()` appends;
+  // this run has no consumer and no imports to read, and what it feeds is Storybook and the browser
+  // tests, which assert computed styles for whichever component the test names. A gate here would
+  // make the suite's coverage depend on which files happened to be scanned, and a recipe missing
+  // from this sheet is a browser test failing on an element with no rule behind its class.
+  staticCss: { recipes: "*" },
   // **Our own source only, for the dev stylesheet** Storybook and the browser tests render
   // against. It is not the consumer's extraction channel — that is our published `dist/`, which
   // they add to their own `include`. Keeping the two apart is what stops a green local suite from

@@ -12,7 +12,7 @@ links:
 import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
 
 export default defineChakraConfig({
-  include: ["./node_modules/chakra-ui-solid/dist/**/*.jsx", "./src/**/*.{ts,tsx}"],
+  include: ["./node_modules/chakra-ui-solid/dist/panda.buildinfo.json", "./src/**/*.{ts,tsx}"],
   outdir: "styled-system-app",
 });
 ```
@@ -68,9 +68,11 @@ Three classes, and the type tells them apart for you.
 | **Merged** | `presets`, `plugins`, `theme`, `staticCss` | Added to ours rather than replacing it. Your presets and plugins come after ours; `theme` accepts only `extend`; `staticCss` is merged for you |
 | **Yours** | `include`, `outdir`, `globalCss`, `preflight`, `conditions`, `cssVarRoot`, `hooks`, the rest | Passed straight through |
 
-`include` is the one **required** key. Panda's default (`src/**/*.{js,jsx,ts,tsx}`) misses the
-`dist` glob, and that glob is not optional: it is the channel through which values *our* components
-name, and your source never writes, reach your extractor.
+`include` is the one **required** key. Panda's default (`src/**/*.{js,jsx,ts,tsx}`) misses
+`chakra-ui-solid/dist/panda.buildinfo.json`, and that path is not optional: it is the channel
+through which values *our* components name, and your source never writes, reach your extractor.
+It is one file rather than a glob over our published sources, which also means our files can never
+stand in for yours — if your own globs match nothing, the run says so instead of looking fine.
 
 ### theme takes `extend` only
 
@@ -159,9 +161,9 @@ defineChakraConfig({ responsive: { button: ["size"] }, include: [] }).theme.exte
 
 The recipe's own list is the only address that works, and it is worth knowing why if you ever write
 `staticCss` by hand. Panda resolves `staticCss.recipes[name]` from the recipe **body** whenever the
-body declares one, discarding what the config asked for — and this preset gives all 75 recipes
-`staticCss: ["*"]`, so a config-level rule for any Chakra recipe is dropped before it is read. Rules
-you write under `staticCss.recipes` are moved here for you, so both spellings work:
+body declares one, discarding what the config asked for — so a config-level rule for a recipe that
+also has a body rule is dropped before it is read. Rules you write under `staticCss.recipes` are
+moved to the body for you, so both spellings work:
 
 ```ts title="panda.config.ts"
 export default defineChakraConfig({
@@ -210,6 +212,40 @@ defineChakraConfig({
   include: [],
 }).theme.extend.recipes.button.staticCss;
 // => ["*", { size: ["*"], responsive: true }, { variant: ["*"], conditions: ["selected"] }]
+```
+
+## components
+
+Your stylesheet carries the recipes your source **imports**, and nothing else. Panda reads that off
+the import specifiers in the files your `include` globs cover, so it survives an alias, a namespaced
+part and a wrapper of your own alike — all three still name the component in the specifier. Every
+Panda run prints what it found:
+
+```txt
+🐼 chakra-ui-solid  4 components → 4 recipes: Button, Dialog, Field, Table
+```
+
+`components` names the ones no file it scanned could show it:
+
+```ts title="panda.config.ts"
+export default defineChakraConfig({
+  // Only for components reaching your app from somewhere Panda does not scan —
+  // a dependency built on chakra-ui-solid. For your own workspace package,
+  // add it to `include` instead.
+  components: ["Menu", "Toast"],
+  include: [...],
+});
+```
+
+It takes component names spelled the way your source spells them, and it can only **widen**: nothing
+here removes a recipe the scan found.
+
+If a run finds no import from this library at all, it says so and generates everything, because a scan
+that found nothing is a broken `include` rather than an app with no components:
+
+```txt
+🐼 chakra-ui-solid  0 components detected — generating all recipes.
+   Nothing in `include` imports from "chakra-ui-solid". Check your `include` globs.
 ```
 
 ## The recipe registry
