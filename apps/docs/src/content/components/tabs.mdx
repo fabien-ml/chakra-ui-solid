@@ -1,0 +1,154 @@
+---
+title: Tabs
+description: Used to display content in a tabbed interface
+links:
+  source: packages/chakra-ui-solid/src/components/tabs
+  chakra: https://chakra-ui.com/docs/components/tabs
+---
+
+<Example name="tabs-basic" />
+
+## Usage
+
+```tsx
+import { Tabs } from "chakra-ui-solid";
+```
+
+```tsx
+<Tabs.Root>
+  <Tabs.List>
+    <Tabs.Trigger />
+    <Tabs.Indicator />
+  </Tabs.List>
+  <Tabs.Content />
+</Tabs.Root>
+```
+
+## Examples
+
+### Variants
+
+Use the `variant` prop to change the visual style of the tabs.
+
+<Example name="tabs-with-variants" />
+
+### Lazy Mounted
+
+Use the `lazyMount` and/or `unmountOnExit` prop to only render the tab content when it is active.
+This can be useful for performance optimization.
+
+<Example name="tabs-lazy-mounted" />
+
+### Indicator
+
+Render the `Tabs.Indicator` component to display a visual indicator of the active tab.
+
+<Example name="tabs-with-indicator" />
+
+### Custom Indicator
+
+Customize the indicator appearance using CSS variables like `--tabs-indicator-bg` and
+`--tabs-indicator-shadow`.
+
+<Example name="tabs-with-custom-indicator" />
+
+### Links
+
+Pass the `render` prop to the `Tabs.Trigger` component to render a link as a tab. When a tab is
+clicked, the link will be navigated to.
+
+<Example name="tabs-with-links" />
+
+When using custom router links, you need to set the `navigate` prop on the `Tabs.Root` component.
+
+```tsx
+import { useNavigate } from "@solidjs/router";
+import { Tabs } from "chakra-ui-solid";
+
+function Demo() {
+  const navigate = useNavigate();
+
+  return (
+    <Tabs.Root navigate={(details) => navigate(`/${details.value}`)}>{/* ... */}</Tabs.Root>
+  );
+}
+```
+
+### Fitted
+
+Use the `fitted` prop to make the tabs fit the width of the container.
+
+<Example name="tabs-with-fitted" />
+
+### Controlled
+
+Use the `value` and `onValueChange` prop to control the active tab.
+
+<Example name="tabs-controlled" />
+
+### Store
+
+An alternative way to control the tabs is to use the `RootProvider` component and the `createTabs`
+store hook.
+
+This way you can access the tabs state and methods from outside the tabs.
+
+<Example name="tabs-with-store" />
+
+### Disabled Tab
+
+Set the `disabled` prop on the `Tabs.Trigger` component to disable a tab.
+
+<Example name="tabs-with-disabled-tab" />
+
+### Manual activation
+
+By default, the tabs are selected when the arrow keys are pressed. Disable this behavior by setting
+the `activationMode` prop to `manual`.
+
+In this mode, the tabs will only be selected when clicked or the enter key is pressed.
+
+<Example name="tabs-with-manual-activation" />
+
+### Dynamic
+
+Here's an example of how to dynamically add and remove tabs.
+
+<Example name="tabs-with-dynamic-add" />
+
+### Animation
+
+Use the `_open` and `_closed` conditional props to animate the tabs.
+
+<Example name="tabs-with-animation" />
+
+## Guide
+
+### Styling active tab
+
+Use the `_selected` condition to style the active tab's text and background.
+
+```tsx
+<Tabs.Trigger
+  _selected={{
+    bg: "blue.500",
+    color: "white",
+  }}
+>
+  Tab
+</Tabs.Trigger>
+```
+
+## Props
+
+### Root
+
+<PropsTable component="tabs" interface="TabsRootProps" />
+
+### Trigger
+
+<PropsTable component="tabs" interface="TabsTriggerProps" />
+
+### Content
+
+<PropsTable component="tabs" interface="TabsContentProps" />
