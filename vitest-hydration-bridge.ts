@@ -105,6 +105,15 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/dialog/__tests__/dialog.ssr-entry.tsx",
   ),
+  // The same three shapes as `dialog` above, on the same `@zag-js/dialog` machine — which is the
+  // point: a Drawer is Dialog wearing a second slot recipe, so the only thing that can differ across
+  // the round trip is the class strings the recipe resolved. Its eager root sets
+  // `placement="start"`, away from the recipe's own `end` default, so those strings are a variant
+  // resolution on both builds rather than a constant.
+  drawer: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/drawer/__tests__/drawer.ssr-entry.tsx",
+  ),
   // The first **floating** subject, and the inverse of `dialog` above: Popover's render strategy
   // defaults to `false`/`false`, so the served markup carries a whole closed popover and the *lazy*
   // root is the opt-in. Its extra half is `@zag-js/popper`, which writes eight CSS custom properties

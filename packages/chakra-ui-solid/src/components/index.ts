@@ -12,7 +12,11 @@ export type {
   ChakraStylingProps,
   HTMLChakraProps,
 } from "@chakra-ui-solid/core";
-export { chakra } from "@chakra-ui-solid/core";
+// A consumer cannot reach `@chakra-ui-solid/core` themselves — pnpm's strict layout does not resolve
+// a dependency of ours from their node_modules — so a core export they are meant to call has to
+// surface here or it ships unreachable. `registerRecipeDefaults` is one: it is how a consumer's own
+// `defaultVariants` take effect, which our published recipes otherwise bake past.
+export { chakra, registerRecipeDefaults } from "@chakra-ui-solid/core";
 export * from "./absolute-center";
 export * from "./alert";
 export * from "./aspect-ratio";
@@ -33,6 +37,7 @@ export * from "./container";
 export * from "./data-list";
 export * from "./dialog";
 export * from "./download-trigger";
+export * from "./drawer";
 export * from "./em";
 export * from "./empty-state";
 export * from "./environment";

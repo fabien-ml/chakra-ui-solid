@@ -58,6 +58,7 @@ import {
   ContainerPropsProvider,
   createCollapsible,
   createDialog,
+  createDrawer,
   createPopover,
   createTabs,
   DataListItem,
@@ -81,6 +82,21 @@ import {
   DialogTitle,
   DialogTrigger,
   DownloadTrigger,
+  DrawerActionTrigger,
+  DrawerBackdrop,
+  DrawerBody,
+  DrawerCloseTrigger,
+  DrawerContent,
+  DrawerContext,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerPositioner,
+  DrawerPropsProvider,
+  DrawerRoot,
+  DrawerRootProvider,
+  DrawerTitle,
+  DrawerTrigger,
   Em,
   EmptyStateContent,
   EmptyStateDescription,
@@ -685,6 +701,99 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <DownloadTrigger data="hello" fileName="hello.txt" mimeType="text/plain">
       Download
     </DownloadTrigger>
+  ),
+  // A drawer runs the dialog machine, so it inherits the block above wholesale: `lazyMount` and
+  // `unmountOnExit` both default to `true`, and every gated subject here opts out with
+  // `lazyMount={false}` to leave an element for this suite to find.
+  DrawerActionTrigger: () => (
+    <DrawerRoot>
+      <DrawerActionTrigger>Cancel</DrawerActionTrigger>
+    </DrawerRoot>
+  ),
+  DrawerBackdrop: () => (
+    <DrawerRoot lazyMount={false}>
+      <DrawerBackdrop />
+    </DrawerRoot>
+  ),
+  DrawerBody: () => (
+    <DrawerRoot>
+      <DrawerBody>body</DrawerBody>
+    </DrawerRoot>
+  ),
+  DrawerCloseTrigger: () => (
+    <DrawerRoot>
+      <DrawerCloseTrigger>✕</DrawerCloseTrigger>
+    </DrawerRoot>
+  ),
+  DrawerContent: () => (
+    <DrawerRoot lazyMount={false}>
+      <DrawerContent>body</DrawerContent>
+    </DrawerRoot>
+  ),
+  DrawerContext: () => (
+    <DrawerRoot>
+      <DrawerContext>{(drawer) => <span>{drawer.open ? "open" : "closed"}</span>}</DrawerContext>
+    </DrawerRoot>
+  ),
+  DrawerDescription: () => (
+    <DrawerRoot>
+      <DrawerDescription>Pick a shipping address.</DrawerDescription>
+    </DrawerRoot>
+  ),
+  DrawerFooter: () => (
+    <DrawerRoot>
+      <DrawerFooter>actions</DrawerFooter>
+    </DrawerRoot>
+  ),
+  DrawerHeader: () => (
+    <DrawerRoot>
+      <DrawerHeader>head</DrawerHeader>
+    </DrawerRoot>
+  ),
+  // The one subject carrying a variant, and `placement` is the variant Dialog has no equivalent of:
+  // it styles the positioner, so this is where a recipe binding gone to the wrong recipe would show.
+  DrawerPositioner: () => (
+    <DrawerRoot lazyMount={false} placement="start">
+      <DrawerPositioner>placed</DrawerPositioner>
+    </DrawerRoot>
+  ),
+  DrawerPropsProvider: () => (
+    <DrawerPropsProvider value={{ lazyMount: false }}>
+      <DrawerRoot>
+        <DrawerContent>body</DrawerContent>
+      </DrawerRoot>
+    </DrawerPropsProvider>
+  ),
+  // The Root renders no element of its own — the anatomy has no `root` part — so the trigger is what
+  // makes this subject produce markup at all.
+  DrawerRoot: () => (
+    <DrawerRoot>
+      <DrawerTrigger>Open</DrawerTrigger>
+    </DrawerRoot>
+  ),
+  // The one subject that starts its machine outside the component that renders it, and the one open
+  // drawer in this file: `defaultOpen` is the state the presence machine has to reach on a server
+  // where no effect ever runs.
+  DrawerRootProvider: () => {
+    const Subject = () => {
+      const drawer = createDrawer({ defaultOpen: true });
+      return (
+        <DrawerRootProvider value={drawer}>
+          <DrawerContent>body</DrawerContent>
+        </DrawerRootProvider>
+      );
+    };
+    return <Subject />;
+  },
+  DrawerTitle: () => (
+    <DrawerRoot>
+      <DrawerTitle>Shipping address</DrawerTitle>
+    </DrawerRoot>
+  ),
+  DrawerTrigger: () => (
+    <DrawerRoot>
+      <DrawerTrigger>Open</DrawerTrigger>
+    </DrawerRoot>
   ),
   Em: () => <Em>emphasis</Em>,
   EmptyStateContent: () => (
