@@ -1,3 +1,4 @@
+import { getComputedStyle } from "@zag-js/dom-query";
 import * as presence from "@zag-js/presence";
 import { type Accessor, createMemo } from "solid-js";
 import { useMachine } from "../zag/machine";
@@ -70,17 +71,42 @@ export function createPresence(props: Accessor<CreatePresenceProps>): Presence {
 
   const present = createMemo(() => api().present);
 
+  let element: Element | null = null;
+
   // `service.send`, not `api().setNode`: this is called from a ref callback during the render pass,
   // and reading the `api()` memo there is the strict-read `mount()` fails a test on. The machine's
   // own `NODE.SET` handler is all `setNode` wraps anyway.
   const setNode = (node: Element | null) => {
+    element = node;
     if (node) {
       service.send({ type: "NODE.SET", node });
     }
   };
 
+  /**
+   * Whether this node's exit is over before it begins — asked here, synchronously, rather than
+   * waited for.
+   *
+   * The machine answers the same question inside a `raf`, so between a `present` going false and
+   * that frame it still reports the node present and this layer still says `hidden: false`. React
+   * never shows that window because its own re-render lands in the same paint; Solid applies the
+   * *owning* machine's change immediately, so the outgoing node stays visible one frame after the
+   * incoming one appears — two tab panels in flow at once, and the layout jump that comes with it.
+   *
+   * Reading the computed style costs one style resolution on a node we already hold, and it can only
+   * ever hide something the machine is about to hide anyway: a node with a real exit animation
+   * answers `false` here and keeps every frame the machine gives it.
+   */
+  const exitsWithoutAnimating = () => {
+    if (!element) {
+      return true;
+    }
+    const styles = getComputedStyle(element);
+    return styles.animationName === "none" || styles.animationDuration === "0s";
+  };
+
   const presenceProps = createMemo(() => ({
-    hidden: !present(),
+    hidden: !present() || (!props().present && exitsWithoutAnimating()),
     // The `present` PROP, not the machine's `present()`. They diverge for exactly the window that
     // matters: while closing, the prop is already false and the machine is still
     // `unmountSuspended`, so `data-state="closed"` is what *starts* the exit animation on a node
