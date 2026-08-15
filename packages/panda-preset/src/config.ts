@@ -3,7 +3,6 @@ import { recipeKeys, slotRecipeKeys, variantKeysFor } from "./contract";
 import { createChakraSolidPreset } from "./preset";
 import { presetContractPlugin } from "./preset-contract";
 import { recipeGatePlugin } from "./recipe-gate-plugin";
-import { chakraSkin, type Skin } from "./skin";
 
 /**
  * Which recipe variants should also be generated at every breakpoint, so a consumer can write
@@ -102,28 +101,6 @@ export type ChakraConfigOverrides = Omit<Config, LockedKey | "theme" | "staticCs
     include: NonNullable<Config["include"]>;
     theme?: ExtendOnly<ThemeOption, "theme">;
     staticCss?: StaticCssOption;
-    /**
-     * Which look to build the stylesheet from. Omit it and you get Chakra v3's.
-     *
-     * A **skin** is the swappable half of the design system — the token tables, the compositions
-     * that read them, and any recipe *deltas* on top. The other half, the **anatomy**, is fixed: the
-     * 75 recipe bodies, the style-prop utilities and the conditions are the same whichever skin is
-     * loaded, because a recipe body is assembly rather than looks.
-     *
-     * ```ts
-     * import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
-     * import { someSkin } from "some-skin";
-     *
-     * export default defineChakraConfig({ skin: someSkin, include: [...], outdir: "styled-system" })
-     * ```
-     *
-     * A skin **replaces** the default rather than extending it, and a skin that omits a token an
-     * anatomy body references does not fail — Panda emits the unresolved name as a literal instead.
-     * Measured: a skin missing `sizes.5` produced `width: 5px` where the default produces
-     * `width: var(--chakra-sizes-5)`. Not unstyled, *wrong*, and green everywhere. So a skin is
-     * written by starting from `chakraSkin` and overriding what it means to change.
-     */
-    skin?: Skin;
     responsive?: ResponsiveGrain;
     conditional?: ConditionalGrain;
     /**
@@ -212,7 +189,9 @@ const LOCKED = {
  *   `lockedKeysPlugin`.
  * - **Merged** — `presets` and `plugins` concatenate after ours; `theme` is narrowed to its
  *   `extend`, which is the form Panda deep-merges rather than replaces; `staticCss` has no such
- *   form and is unioned by `chakraStaticCss`.
+ *   form and is unioned by `chakraStaticCss`. **`presets` is also how a different look is loaded**:
+ *   a preset written with `defineChakraPreset` lands after `chakraPreset` and its bare
+ *   `theme.recipes` replaces every body, while this layer's `theme.extend` survives on top.
  * - **Theirs** — `include`, `outdir`, `globalCss`, `preflight`, `conditions`, `cssVarRoot`, `hooks`
  *   and the rest, passed straight through. `conditions`, `utilities`, `globalCss` and `patterns`
  *   are safe unnarrowed because Panda merges those **per name**, so a clash is only ever on the one
@@ -223,14 +202,9 @@ const LOCKED = {
  * this function exists to supply.
  */
 export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
-  const { skin, responsive, conditional, components, presets, theme, staticCss, plugins, ...rest } =
+  const { responsive, conditional, components, presets, theme, staticCss, plugins, ...rest } =
     overrides;
-  // `??` rather than presence, which is the whole of *the third hazard*: a wrapper that forwards an
-  // unset `skin` passes the key with `undefined`, and a presence merge would hand Panda a preset
-  // built out of nothing — no tokens, so every token reference in all 75 anatomy bodies emits its
-  // own name as a literal and the page is wrong rather than unstyled.
-  const resolvedSkin = skin ?? chakraSkin;
-  const preset = createChakraSolidPreset(resolvedSkin);
+  const preset = createChakraSolidPreset();
   const { extend, ...bareStaticCss } = staticCss ?? {};
   // Both opt-ins and the consumer's own `staticCss.recipes`, in one list per recipe. Ours first, so
   // two writers on one recipe read as two rules and neither replaces the other.
@@ -325,9 +299,9 @@ type ThemeExtend = NonNullable<ThemeOption["extend"]>;
  * The consumer's `theme.extend` with each placed rule list appended to its recipe's own `staticCss`.
  *
  * Merged into their body rather than assigned over it, so a consumer who extends `recipes.button`
- * with a `base` keeps it. The preset's `jsx` hint and a skin's recipe delta both survive on their
- * own — each is a key on a body Panda deep-merges, written one preset layer below this one, and
- * only the `staticCss` array is replaced.
+ * with a `base` keeps it. The library layer's own `jsx` hint survives on its own — it is a key on a
+ * body Panda deep-merges, written one preset layer below this one, and only the `staticCss` array is
+ * replaced.
  */
 function themeWithRecipeRules(
   theirs: ChakraConfigOverrides["theme"],

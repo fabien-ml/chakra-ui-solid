@@ -11,8 +11,8 @@ does not appear here. Only a file that reproduces an upstream's **expression** g
 `attribution.config.ts` at the repository root is where one is declared.
 
 **`@chakra-ui/panda-preset` — Chakra UI v3's design system as a Panda preset — is vendored into
-this package rather than depended on.** Chakra v3's look is a *skin* here, one preset among several
-a consumer may write, and a skin that can only override a dependency is `theme.extend` with extra
+this package rather than depended on.** Chakra v3's look is one preset among several a consumer may
+write, and a preset that can only override a dependency is `theme.extend` with extra
 steps. So the preset is copied in, under `src/chakra/`, and maintained as ours. One file per
 upstream file, so a Chakra release is a `diff -r` against their `src/` rather than a merge.
 

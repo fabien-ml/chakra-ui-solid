@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { chakraPreset } from "../chakra-preset";
 import { componentNameFor, recipeKeys, slotRecipeKeys } from "../contract";
-import { chakraSolidPreset, createChakraSolidPreset } from "../preset";
-import { chakraSkin, defineSkin } from "../skin";
+import { chakraSolidPreset } from "../preset";
 
 /**
  * What the preset declares per recipe, now that it declares no `staticCss`.
@@ -28,11 +28,15 @@ function presetNamesOf(preset: { presets?: unknown[] }): Array<string | undefine
   );
 }
 
-/** The chain's middle entry — the fixed half, read back out of the preset that assembles it. */
-const anatomyPreset = (chakraSolidPreset.presets ?? [])[1] as {
-  theme?: { recipes?: Record<string, { className?: string }>; slotRecipes?: object };
+/** The library layer's own keys — everything the chain underneath it does not decide. */
+const libraryLayer = chakraSolidPreset as {
   utilities?: { extend?: object };
   conditions?: unknown;
+};
+
+const chakraTheme = chakraPreset.theme as {
+  recipes?: Record<string, { className?: string }>;
+  slotRecipes?: object;
 };
 
 describe("theme.extend — the recipe declarations", () => {
@@ -61,7 +65,7 @@ describe("theme.extend — the recipe declarations", () => {
     // vendored, `chakra/recipes/index.ts` registers it beside the other eighteen and this entry is
     // the same bare hint every other recipe gets.
     expect(extension?.recipes?.container).toEqual({ jsx: ["Container"] });
-    expect(anatomyPreset.theme?.recipes?.container?.className).toBe("container");
+    expect(chakraTheme.recipes?.container?.className).toBe("container");
   });
 
   it("keeps `swittch` under its misspelled key while hinting the real component name", () => {
@@ -96,19 +100,18 @@ describe("theme.extend — the token delta", () => {
 
 describe("the preset's own chain and atomic staticCss", () => {
   it("declares the base preset itself, rather than leaving it to a config file", () => {
-    // `eject: true` drops Panda's defaults, and `@chakra-ui/panda-preset` declares no base of its
-    // own while reaching for `utilities: { extend }`. Left to a config file the fix **fails open**:
-    // a consumer who omits the line gets no style-prop utilities and no `_hover`/`_open`
-    // conditions, and nothing errors.
+    // `eject: true` drops Panda's defaults, and `chakraPreset` declares no base of its own while
+    // reaching for `utilities: { extend }`. Left to a config file the fix **fails open**: a
+    // consumer who omits the line gets no style-prop utilities and no `_hover`/`_open` conditions,
+    // and nothing errors.
     //
-    // Chakra's preset arrives as the second and third entries rather than as one, in the position
-    // the single entry held: `anatomy` for the recipe bodies, utilities and conditions, the skin
-    // for the tokens and the compositions.
+    // Two entries, and the look is the last of them: a consumer's own preset is appended after this
+    // whole preset by `defineChakraConfig()`, so theirs is later still and its bodies win.
     expect(presetNamesOf(chakraSolidPreset)).toEqual([
       "@pandacss/preset-base",
-      "@chakra-ui-solid/anatomy",
-      "@chakra-ui-solid/skin",
+      "@chakra-ui-solid/chakra",
     ]);
+    expect((chakraSolidPreset.presets ?? [])[1]).toBe(chakraPreset);
   });
 
   it("pre-generates the atomic values a component's own logic picks", () => {
@@ -180,16 +183,13 @@ describe("the preset's own chain and atomic staticCss", () => {
   });
 });
 
-describe("the anatomy/skin split", () => {
-  it("claims every key the vendored preset declares, in one half or the other", () => {
-    // **The invariant the whole seam rests on**, and the last thing left of it now that there is no
+describe("the look, and the library layer above it", () => {
+  it("claims every theme key the vendored preset declares", () => {
+    // **The invariant the seam rests on**, and the last thing left of it now that there is no
     // dependency to diff against. Chakra's own `index.ts` declares these nine theme keys plus
-    // `utilities`, `conditions` and `globalCss`; each has to land in exactly one half. A key a
-    // Chakra bump adds and neither half claims goes missing from every consumer's sheet with
-    // nothing to say so.
-    const { globalCss, recipes, slotRecipes, ...skinTheme } = chakraSkin;
-
-    expect(new Set([...Object.keys(anatomyPreset.theme ?? {}), ...Object.keys(skinTheme)])).toEqual(
+    // `globalCss`, and a key a Chakra bump adds that `chakra-preset.ts` does not claim goes missing
+    // from every consumer's sheet with nothing to say so.
+    expect(new Set(Object.keys(chakraPreset.theme))).toEqual(
       new Set([
         "breakpoints",
         "keyframes",
@@ -202,24 +202,22 @@ describe("the anatomy/skin split", () => {
         "animationStyles",
       ]),
     );
-    // The three non-theme keys split two to the anatomy, one to the skin. `conditions` is the whole
-    // of Chakra's own: `_icon` is how a recipe reaches the svg inside a control it does not own the
-    // markup of.
-    expect(anatomyPreset.conditions).toEqual({ extend: { icon: "& :where(svg)" } });
-    expect(Object.keys(anatomyPreset.utilities?.extend ?? {})).toContain("focusRing");
-    expect(globalCss).toBeTypeOf("object");
-    // Deltas are typed on `Skin` and Chakra's own carries none — it is the look itself, not an
-    // override of it.
-    expect([recipes, slotRecipes]).toEqual([undefined, undefined]);
+    expect(chakraPreset.globalCss).toBeTypeOf("object");
   });
 
-  it("puts the skin it was given into the chain", () => {
-    // The parameter is the seam; without this the default export would be the only thing exercised
-    // and `createChakraSolidPreset` could ignore its argument entirely.
-    const preset = createChakraSolidPreset(defineSkin({ breakpoints: { sm: "1px" } }));
-    const skin = (preset.presets ?? [])[2] as { theme?: { breakpoints?: unknown } };
+  it("keeps the two keys a preset cannot own in the library layer", () => {
+    // `utilities` and `conditions` are sealed by the same mechanism as a recipe's variant keys:
+    // every name in them is compiled into the published `styled-system/`. Panda merges both per
+    // name, so a consumer's preset can add to them and never replace them — which is why they sit
+    // above the look rather than inside it. `_icon` is the whole of Chakra's own condition: it is
+    // how a recipe reaches the svg inside a control it does not own the markup of.
+    expect(libraryLayer.conditions).toEqual({ extend: { icon: "& :where(svg)" } });
+    expect(chakraPreset).not.toHaveProperty("utilities");
+    expect(chakraPreset).not.toHaveProperty("conditions");
 
-    expect(presetNamesOf(preset)).toEqual(presetNamesOf(chakraSolidPreset));
-    expect(skin.theme?.breakpoints).toEqual({ sm: "1px" });
+    // Chakra's own, the aliases, and the two `currentBg` transforms, in one object because no two
+    // of the three name the same utility.
+    const declared = Object.keys(libraryLayer.utilities?.extend ?? {});
+    expect(declared).toEqual(expect.arrayContaining(["focusRing", "textDecoration", "background"]));
   });
 });

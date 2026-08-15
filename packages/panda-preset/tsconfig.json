@@ -7,7 +7,7 @@
     "declarationMap": false
   },
   "include": ["src"],
-  // The skin fixture's *consumer* source, and the one directory in this package TypeScript must not
+  // The preset fixture's *consumer* source, and the one directory in this package TypeScript must not
   // read. It imports `chakra-ui-solid` the way a consumer's file does, which resolves through
   // `tsconfig.base.json#paths` to that package's source and drags in 324 files from three siblings —
   // `packages/styled-system/styled-system/**` among them, which Panda *generates*. This package has
@@ -16,6 +16,7 @@
   // types and fail with hundreds of errors about a package this one does not depend on.
   //
   // Nothing is lost. Panda reads the file as **text** — the import gate scans specifiers — and the
-  // fixture's `panda.config.ts` and `skin.ts` stay in the program, reached from `skin.test.ts`.
-  "exclude": ["src/__tests__/__fixtures__/skin-consumer/src"]
+  // fixture's `panda.config.ts` and `preset.ts` stay in the program, reached from
+  // `preset-consumer.test.ts`.
+  "exclude": ["src/__tests__/__fixtures__/preset-consumer/src"]
 }

@@ -4,9 +4,9 @@
  * way to import half of what they need (`plan.md` §3.3).
  */
 
+export { chakraPreset } from "./chakra-preset";
 export type { ChakraConfigOverrides, ConditionalGrain, ResponsiveGrain } from "./config";
 export { defineChakraConfig } from "./config";
 export { defaultVariantsFor, recipeKeys, slotRecipeKeys, variantKeysFor } from "./contract";
+export { defineChakraPreset } from "./define-chakra-preset";
 export { chakraSolidPreset, chakraSolidPreset as default, createChakraSolidPreset } from "./preset";
-export type { Skin } from "./skin";
-export { chakraSkin, defineSkin } from "./skin";

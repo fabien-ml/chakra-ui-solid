@@ -164,10 +164,10 @@ const chakraReact: AttributionEntry[] = [
  * `@chakra-ui/panda-preset`, vendored whole — its token tables, its compositions and all 74 of its
  * recipe bodies, one file per upstream file under `packages/panda-preset/src/chakra/`.
  *
- * This is the **single vendoring exception** `CLAUDE.md` makes, and the reason is that a skin is a
- * replaceable half: a shape contract cannot be designed around bodies nobody can see, and a skin
- * that can only override a dependency is `theme.extend` with extra steps. One file per upstream
- * file is what keeps a Chakra bump a `diff -r`.
+ * This is the **single vendoring exception** `CLAUDE.md` makes, and the reason is that the look is
+ * replaceable: a shape contract cannot be designed around bodies nobody can see, and a preset that
+ * can only override a dependency is `theme.extend` with extra steps. One file per upstream file is
+ * what keeps a Chakra bump a `diff -r`.
  *
  * Five `.map()`s over name lists rather than 105 objects, on the reasoning `zagSolidFork` above
  * uses: the row *set* is the fact worth reading, and a bump changes file contents rather than this

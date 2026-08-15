@@ -1,36 +1,9 @@
 import { definePreset } from "@pandacss/dev";
 import { aliasUtilities } from "./alias-utilities";
-import { recipes } from "./chakra/recipes";
-import { slotRecipes } from "./chakra/slot-recipes";
 import { utilities } from "./chakra/utilities";
+import { chakraPreset } from "./chakra-preset";
 import { componentNameFor, recipeKeys, slotRecipeKeys } from "./contract";
 import { currentBgUtilities } from "./current-bg-utilities";
-import { chakraSkin, type Skin } from "./skin";
-
-/**
- * Chakra's design system minus its design: the 75 recipe bodies, the style-prop utilities and the
- * one condition the preset adds. Fixed — a skin never replaces any of it.
- *
- * The line falls here because a recipe body is *assembly* rather than looks. Measured across the
- * 4,231 declarations in those bodies, 56% are structural and 37% are token references, so swapping
- * a look is swapping the token table in `skin.ts` and leaving all three of these keys alone.
- *
- * None of it is swappable, and the reason is the same for all three: every name here is compiled
- * into the published `styled-system/`. A utility's name lands in `jsx/is-valid-prop.mjs`, a
- * condition's in `css/conditions.mjs`, and a recipe's variant keys in its own generated module — so
- * `focusRing`, `_icon` and `size` are sealed by exactly one mechanism.
- */
-const anatomy = definePreset({
-  name: "@chakra-ui-solid/anatomy",
-
-  theme: { recipes, slotRecipes },
-
-  utilities: { extend: utilities },
-
-  // Chakra's own preset adds exactly one condition, and it is one line — `_icon` is how a recipe
-  // reaches the svg inside a control it does not own the markup of.
-  conditions: { extend: { icon: "& :where(svg)" } },
-});
 
 /**
  * The layout tier's keyword shorthands, whose values arrive as a **prop** and are therefore not in
@@ -139,62 +112,34 @@ function jsxHintsForEvery(keys: string[]): Record<string, { jsx: string[] }> {
 }
 
 /**
- * A skin as the preset Panda merges — the second of the two halves the vendored preset is split
- * into, {@link anatomy} being the first.
- *
- * The seven token keys stay in `theme`, and the two recipe **deltas** move to `theme.extend` — the
- * one difference that matters here, and the reason the destructure separates them.
- *
- * A preset's bare `theme` sits in a **replacing** position: Panda resolves each theme key from the
- * last preset that declares it and takes that value whole. For the token tables that is exactly
- * right, since a skin *is* the whole token table. For a delta it is ruinous — `theme.recipes` here
- * would replace all 75 anatomy bodies with the one the delta named, leaving 74 recipes with no body,
- * no rules and no error. `theme.extend` is the deep-merging position, so a delta placed there adds
- * to the anatomy's body instead: set one `base` property and the other 21 and every variant survive.
- *
- * Putting them here rather than in `defineChakraConfig()` is what keeps them from being lost, and
- * it hands the ordering to Panda instead of to a merge of our own. This preset sits **before** the
- * consumer's `panda.config.ts` in the chain, and later `extend` writers win a contested key — so a
- * consumer's own `theme.extend.recipes.button` beats a skin's delta, and both survive beside the
- * `jsx` hint `createChakraSolidPreset` writes to that same recipe name one layer up.
- */
-function skinAsPreset(skin: Skin) {
-  const { globalCss, recipes, slotRecipes, ...theme } = skin;
-  return {
-    name: "@chakra-ui-solid/skin",
-    theme: { ...theme, extend: { recipes, slotRecipes } },
-    globalCss,
-  };
-}
-
-/**
- * The Panda preset every consumer of `chakra-ui-solid` lists — Chakra v3's design system, plus the
- * four deltas this library needs on top of it.
+ * The Panda preset every consumer of `chakra-ui-solid` lists — Chakra v3's look, plus everything
+ * this library needs on top of whichever look is loaded.
  *
  * `presets` is declared **here rather than in a `panda.config.ts`** so that `presets:
  * [chakraSolidPreset]` is the whole story on both sides of the library/consumer boundary. Panda's
  * `eject: true` (which our config and `defineChakraConfig()` both set, to keep Panda's own default theme
  * from merging alongside Chakra's and disagreeing about `colors.gray.*`) drops the default presets,
- * and Chakra's own preset declares no base of its own while reaching for
- * `utilities: { extend }` and `conditions: { extend }`. Left to a config file this fix works and
- * **fails open**: a consumer who omits the line gets a library with no style-prop utilities and no
- * `_open`/`_hover` conditions, and nothing errors (`plan.md` §3.2).
+ * and `chakraPreset` declares no base of its own while reaching for `utilities: { extend }` and
+ * `conditions: { extend }`. Left to a config file this fix works and **fails open**: a consumer who
+ * omits the line gets a library with no style-prop utilities and no `_open`/`_hover` conditions, and
+ * nothing errors (`plan.md` §3.2).
  *
- * Chakra's preset arrives as **two** entries in that chain rather than one, in the order it held
- * before it was split: `anatomy` carries the recipe bodies, the utilities and the condition, and
- * the skin carries the tokens, the compositions and its recipe deltas. Everything below the chain
- * is the library layer and is the same whichever skin is loaded.
+ * **Everything below the chain is the library layer, and it survives a preset swap.** A consumer's
+ * own preset is appended after this one by `defineChakraConfig()`, so its bare `theme.recipes`
+ * replaces all 75 bodies — measured — while an earlier preset's `theme.extend` merges back on top of
+ * whatever replaced them. That is what keeps the `jsx` hints and the `cursor.switch` token alive
+ * across the swap, and why they are written in this position rather than in `chakraPreset`.
  *
- * A skin is routed **whole** here, deltas included, so this function alone is enough to build a
- * correct preset from one. `defineChakraConfig({ skin })` is still the supported way in — that is
- * where the locked keys, the import gate and the `staticCss` union live, and a raw `panda.config.ts`
- * naming this preset gets none of them.
+ * `utilities` and `conditions` are in the same position for a different reason: they are not
+ * swappable at all. Every name in them is compiled into the published `styled-system/` — a utility's
+ * into `jsx/is-valid-prop.mjs`, a condition's into `css/conditions.mjs` — and Panda merges both keys
+ * per name, so a later preset can only add to them.
  */
-export function createChakraSolidPreset(skin: Skin) {
+export function createChakraSolidPreset() {
   return definePreset({
     name: "@chakra-ui-solid/panda-preset",
 
-    presets: ["@pandacss/preset-base", anatomy, skinAsPreset(skin)],
+    presets: ["@pandacss/preset-base", chakraPreset],
 
     theme: {
       extend: {
@@ -216,12 +161,17 @@ export function createChakraSolidPreset(skin: Skin) {
     },
 
     utilities: {
-      // Two disjoint sets: `aliasUtilities` adds a *name* to a utility Panda already has,
-      // `currentBgUtilities` adds a *transform* to the two background utilities so that Chakra's
-      // `currentBg` keyword — which two of the preset's own recipes write and no shipped utility
-      // resolves — compiles to something a browser accepts.
-      extend: { ...aliasUtilities, ...currentBgUtilities },
+      // Three disjoint sets, spread into one because no two of them name the same utility:
+      // `utilities` is Chakra's own (`focusRing`, `boxSize`), `aliasUtilities` adds a *name* to a
+      // utility Panda already has, and `currentBgUtilities` adds a *transform* to the two background
+      // utilities so that Chakra's `currentBg` keyword — which two recipe bodies write and no
+      // shipped utility resolves — compiles to something a browser accepts.
+      extend: { ...utilities, ...aliasUtilities, ...currentBgUtilities },
     },
+
+    // Chakra's own preset adds exactly one condition, and it is one line — `_icon` is how a recipe
+    // reaches the svg inside a control it does not own the markup of.
+    conditions: { extend: { icon: "& :where(svg)" } },
 
     // The atomic half of the same problem: values **a component's own logic picks**, which no
     // consumer source ever contains. `display` is the shape hope-ui shipped in production for exactly
@@ -264,7 +214,7 @@ export function createChakraSolidPreset(skin: Skin) {
 
 /**
  * The default preset, and the one `packages/styled-system/panda.config.ts` and
- * `defineChakraConfig()` both name: Chakra's own skin over Chakra's own anatomy, which is what
- * every consumer gets until one of them passes something else.
+ * `defineChakraConfig()` both name: the library layer over Chakra v3's own look, which is what every
+ * consumer gets until they list a preset of their own.
  */
-export const chakraSolidPreset = createChakraSolidPreset(chakraSkin);
+export const chakraSolidPreset = createChakraSolidPreset();
