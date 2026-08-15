@@ -90,6 +90,25 @@ neither is `<Button type="button" {...props} />`: a wrapper forwarding an unset 
 
 → `solid-2.0-notes.md`, *where a default may live*.
 
+## The fourth hazard: a dependency's undocumented behavior
+
+**A fix that needs to know something the dependency does not document is a wrong diagnosis, not a
+clever workaround.** Stop and find what actually produces the shape. `omit` leaking `merge`'s private
+`$SOURCES` tag cost several sessions and put recipe variants on the DOM for weeks, because the first
+answer reimplemented `omit` to block the symbol rather than ask why the bag was a proxy at all. The
+real fix deleted four lines from the Zag adapter.
+
+- **Never depend on what a dependency does not export.** No unexported symbol, no `_`-prefixed
+  field, no behavior learned by reading `dist/`. Exported *and* typed is the line — `$PROXY` is API,
+  `$SOURCES` is not.
+- **Never reimplement a dependency's primitive.** A wrapper carrying *our* semantics is fine:
+  `withDefaults` resolves by value where `merge` resolves by presence, and that is a product
+  decision. A wrapper that reproduces the primitive's own job to route around a defect is not — it
+  hides the defect and is never differential-tested against the thing it replaces.
+- **Where undocumented behavior is genuinely load-bearing, pin it in `solid-contract.test.ts` and
+  name the code that rests on it.** The adapter withholding `$PROXY` relies on `omit` branching on
+  it — public symbol, undocumented branch — so both branches are pinned rather than trusted.
+
 ## Every component server-renders, and `check:ssr-coverage` says so
 
 `components/__tests__/components.ssr.test.tsx` renders every barrel export on the server and asserts
