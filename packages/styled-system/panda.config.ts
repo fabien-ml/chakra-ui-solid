@@ -62,7 +62,18 @@ export default defineConfig({
   // `direction: row` rule beside the `flex-direction: row` one. A shorthand name is not a CSS
   // property, so that second rule is a declaration no browser parses, which is what
   // `check:declaration-support` exists to reject. JSX does not do this; only the `raw` call does.
-  exclude: ["../{core,chakra-ui-solid}/src/**/*.test.ts"],
+  //
+  // The other two entries are the consumer fixture and the one test that renders against it, and
+  // they are the same principle as `include`'s: both are written against a **different config**, so
+  // a style key their `utilities` invented is a real property there and a declaration no browser
+  // parses here. Inside a `css` prop or a condition it reaches this sheet — Panda filters an unknown
+  // *JSX prop* out and passes an unknown *style-object key* through — where it is dead CSS that
+  // `check:declaration-support` rejects, correctly.
+  exclude: [
+    "../{core,chakra-ui-solid}/src/**/*.test.ts",
+    "../chakra-ui-solid/src/**/__fixtures__/consumer/**",
+    "../chakra-ui-solid/src/**/consumer-additions.browser.test.tsx",
+  ],
   outdir: "styled-system",
   // The same `importMap` a consumer gets from `defineChakraConfig()`, and it has to be written out here
   // rather than left to the default. The default is `<outdir>/…`, which our `css()` imports match

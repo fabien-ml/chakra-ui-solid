@@ -5,11 +5,12 @@
  * the imported name equals `jsxFactory`. Bundled into a relative chunk it registers nothing, and
  * every `<chakra.button>` in the consumer's app then produces zero rules with no error.
  */
-// The five names under `CreateSystemOptions` are the augmentation seam `styled-system/chakra-system-types.d.ts`
-// writes into, and they are re-exported here because a `declare module` merges into the interface
-// the module it names *exports* — name one that exports none and TypeScript declares a second,
-// unrelated interface and reports nothing. `chakra-ui-solid` is the only specifier a consumer can
-// name, since pnpm's isolated `node_modules` does not resolve `@chakra-ui-solid/core` from theirs.
+// `RecipeVariantOverrides` here and the two below it are the augmentation seam
+// `styled-system/chakra-system-types.d.ts` writes into, and they are re-exported because a `declare
+// module` merges into the interface the module it names *exports* — name one that exports none and
+// TypeScript declares a second, unrelated interface and reports nothing. `chakra-ui-solid` is the
+// only specifier a consumer can name, since pnpm's isolated `node_modules` does not resolve a
+// dependency of ours from theirs.
 export type {
   Chakra,
   ChakraComponent,
@@ -18,8 +19,6 @@ export type {
   ChakraStylingProps,
   CreateSystemOptions,
   CssFn,
-  CustomConditions,
-  CustomStyleProps,
   CxFn,
   HTMLChakraProps,
   PresetVariant,
@@ -32,6 +31,12 @@ export type {
 // surface here or it ships unreachable. `ChakraProvider` and `createSystem` are the pair every app
 // root calls, and nothing renders without them.
 export { ChakraProvider, chakra, createSystem, useChakraContext } from "@chakra-ui-solid/core";
+// The other two seams, and they are Panda's own interfaces rather than a pair of ours. That is what
+// makes a name a consumer's config invented legal *everywhere* a style key is: every style-object
+// type in the library is derived from `SystemProperties` and `Conditions`, so one generated row
+// reaches the JSX prop, the `css` prop, a nested condition and a recipe body alike. A pair of ours
+// could only be mixed into the JSX props, which is a top-level prop and an unknown key one line in.
+export type { Conditions, SystemProperties } from "@chakra-ui-solid/styled-system/types";
 export * from "./absolute-center";
 export * from "./alert";
 export * from "./aspect-ratio";

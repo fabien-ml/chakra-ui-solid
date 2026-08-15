@@ -20,7 +20,6 @@ import type {
 } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { omit, untrack } from "solid-js";
-import type { CustomConditions, CustomStyleProps } from "../recipe/preset-variants";
 import type { RenderProp } from "../render/render";
 import type { PatchHtmlProps } from "../render-styled/html-props";
 import { type RenderStyledOptions, renderStyled } from "../render-styled/render-styled";
@@ -61,15 +60,14 @@ export interface UnstyledProp {
 /**
  * The styling surface the factory adds to whatever props the underlying element already takes.
  *
- * `JsxStyleProps` is Panda's vocabulary as of *our* build; the two interfaces beside it are the
- * consumer's, empty here and filled in by the `styled-system/chakra-system-types.d.ts` their own
- * `panda codegen` writes. That is what makes a `utilities` entry they invented a prop, and a
- * `conditions` entry they invented a style-object key.
+ * `JsxStyleProps` is Panda's, and so is everything a consumer adds to it: their own `panda codegen`
+ * writes a `styled-system/chakra-system-types.d.ts` that augments the `SystemProperties` and
+ * `Conditions` this type is built out of, which is what makes a `utilities` entry they invented a
+ * prop and a `conditions` entry they invented a style-object key — here, inside `css`, and inside
+ * any condition.
  */
 export interface ChakraStylingProps<ElementProps extends object>
   extends JsxStyleProps,
-    CustomStyleProps,
-    CustomConditions,
     UnstyledProp {
   /** Render as a different element/component. Defaults to the element the factory was called with. */
   as?: ValidComponent;
@@ -84,14 +82,14 @@ export interface ChakraStylingProps<ElementProps extends object>
  * Chakra v3's public name for this type, and the one Panda itself generates from
  * `jsxFactory: "chakra"`.
  *
- * A custom utility is omitted from the element's own props alongside Panda's, for the reason the
- * `Omit` is there at all: a style prop and a DOM attribute of the same name are one prop, and the
- * styling side is the one that decides what it means. Custom conditions need no such line — Panda
- * spells every one of them with a leading `_`, which no DOM attribute has.
+ * A utility a consumer's config invented needs no line of its own here: it is a member of
+ * `SystemProperties` by the time this is instantiated, so `keyof JsxStyleProps` already covers it —
+ * which is the reason the `Omit` is there at all, since a style prop and a DOM attribute of the same
+ * name are one prop and the styling side decides what it means.
  */
 export type HTMLChakraProps<Element extends ValidComponent> = Omit<
   PatchHtmlProps<ComponentProps<Element>>,
-  keyof JsxStyleProps | keyof CustomStyleProps
+  keyof JsxStyleProps
 > &
   ChakraStylingProps<ComponentProps<Element>>;
 

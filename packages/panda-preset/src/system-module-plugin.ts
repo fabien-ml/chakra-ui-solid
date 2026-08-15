@@ -134,6 +134,13 @@ type ResolvedConfig = {
 };
 
 /**
+ * The alias the two Panda interfaces are imported under, because the augmentation below declares
+ * those same two names: unaliased, `elevation?: SystemProperties["elevation"]` would be a row
+ * reading itself.
+ */
+const GENERATED = { styleProps: "GeneratedSystemProperties", conditions: "GeneratedConditions" };
+
+/**
  * `styled-system/chakra-system-types.d.ts` — the half of the seam TypeScript cannot infer.
  *
  * A `<ChakraProvider>` carries a *value*, and no type follows a value across a provider into a prop
@@ -143,6 +150,12 @@ type ResolvedConfig = {
  *
  * Every type it names is one Panda generated into this same directory. Nothing is synthesised from
  * the config's own values, so a union here cannot disagree with the one their `css()` enforces.
+ *
+ * **Panda's own two interfaces are the ones augmented, rather than a pair of our own.** Every place
+ * a style key is legal is derived from `SystemProperties` and `Conditions` — the JSX prop, the `css`
+ * prop, a nested condition, a recipe body — so adding a name to them puts it in all of those at
+ * once. A parallel interface mixed into the JSX props reaches only the first, which is what a
+ * custom name looked like before: a top-level prop, and an unknown key one line deeper.
  */
 function declarationModule(config: ResolvedConfig): string {
   const recipes = presentRecipes(config);
@@ -153,23 +166,25 @@ function declarationModule(config: ResolvedConfig): string {
   if (recipes.length > 0) {
     imports.push(typeImport(recipes.map(variantPropsName), "./recipes"));
   }
-  const systemTypes = [
-    ...(styleProps.length > 0 ? ["SystemProperties"] : []),
-    ...(conditions.length > 0 ? ["SystemStyleObject"] : []),
+  const pandaTypes = [
+    ...(conditions.length > 0 ? [`Conditions as ${GENERATED.conditions}`] : []),
+    ...(styleProps.length > 0 ? [`SystemProperties as ${GENERATED.styleProps}`] : []),
   ];
-  if (systemTypes.length > 0) {
-    imports.push(typeImport(systemTypes, "./types"));
+  if (pandaTypes.length > 0) {
+    imports.push(typeImport(pandaTypes, "./types"));
   }
 
   const blocks = [
     ["RecipeVariantOverrides", recipes.map((key) => `${key}: ${variantPropsName(key)};`)],
     [
-      "CustomStyleProps",
-      styleProps.map((name) => `${propertyName(name)}?: SystemProperties["${name}"];`),
+      "SystemProperties",
+      styleProps.map((name) => `${propertyName(name)}?: ${GENERATED.styleProps}["${name}"];`),
     ],
     [
-      "CustomConditions",
-      conditions.map((name) => `${propertyName(`_${name}`)}?: SystemStyleObject;`),
+      // Required, which is how Panda spells every entry of its own: the value is the selector, and
+      // only `keyof Conditions` is ever read, so an optional row would differ for no gain.
+      "Conditions",
+      conditions.map((name) => `${propertyName(`_${name}`)}: ${GENERATED.conditions}["_${name}"];`),
     ],
   ] as const;
 
@@ -193,13 +208,14 @@ function declarationModule(config: ResolvedConfig): string {
  *
  * A \`<ChakraProvider>\` hands the components a runtime, and no type follows a value across a
  * provider — so a utility, a condition or a recipe variant you added works on the element and would
- * be a TypeScript error above it. These three augmentations close that, off the types Panda
- * generated from the same config:
+ * be a TypeScript error above it. These augmentations close that, off the types Panda generated
+ * from the same config:
  *
  * - \`RecipeVariantOverrides\` — the variant keys and values each recipe accepts, so
  *   \`<Button size="huge">\` and a variant key of your own both type-check.
- * - \`CustomStyleProps\` — every \`utilities\` entry that is yours rather than Chakra's, as a style prop.
- * - \`CustomConditions\` — every \`conditions\` entry that is yours, as a style-object prop.
+ * - \`SystemProperties\` and \`Conditions\` — the \`utilities\` and \`conditions\` entries that are yours
+ *   rather than Chakra's. They are Panda's own interfaces and every style object is derived from
+ *   them, so a name you invented is a prop, a \`css\` key, and legal inside a condition.
  */
 ${augmentation(imports, body)}`;
 }

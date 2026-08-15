@@ -121,7 +121,8 @@ describe("the system module a consumer's Panda run generates", () => {
  * What is asserted here is the **mapping**: which rows come out of a resolved config, and which
  * names are subtracted because our own declarations already carry them. That the augmentation then
  * takes effect is a claim about TypeScript rather than about this function, and it is asserted by
- * `pnpm typecheck` over the consumer fixture, whose `src/app.tsx` writes all three additions.
+ * `pnpm typecheck` over the consumer fixture, whose `src/app.tsx` writes all three additions — at
+ * the top level and nested inside `css` and inside another condition.
  */
 describe("the declarations a consumer's Panda run generates", () => {
   const source = readFileSync(generateInto("styled-system-types").types, "utf8");
@@ -151,14 +152,20 @@ describe("the declarations a consumer's Panda run generates", () => {
   });
 
   it("declares the utilities and conditions that are theirs, and only those", () => {
-    expect(source).toContain('elevation?: SystemProperties["elevation"];');
-    expect(source).toContain("_supportsGrid?: SystemStyleObject;");
+    // Panda's own `SystemProperties` and `Conditions`, which is what puts the two names everywhere a
+    // style key is legal rather than only on the JSX prop. Aliased on the way in, or each row would
+    // be reading the interface it is declaring.
+    expect(source).toContain("interface SystemProperties {");
+    expect(source).toContain('elevation?: GeneratedSystemProperties["elevation"];');
+    expect(source).toContain("interface Conditions {");
+    expect(source).toContain('_supportsGrid: GeneratedConditions["_supportsGrid"];');
+    expect(source).toContain('} from "./types";');
 
     // `color` and `hover` are in the resolved config because every preset in the chain is merged
-    // into it. Declaring either a second time is a clash between the two interfaces the styling
-    // surface extends, not a new prop.
+    // into it. Declaring either a second time is a second declaration of a member Panda already has,
+    // not a new prop.
     expect(source).not.toContain("color?:");
-    expect(source).not.toContain("_hover?:");
+    expect(source).not.toContain("_hover:");
   });
 
   it("says it is generated, and where to make the change instead", () => {

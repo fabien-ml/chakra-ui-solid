@@ -22,9 +22,9 @@ type GeneratedVariantProps = {
 };
 
 // The specifier under test. It has to be the package barrel rather than `"../preset-variants"`,
-// because the barrel only *re-exports* the interfaces — augmenting through a re-export is the thing
+// because the barrel only *re-exports* the interface — augmenting through a re-export is the thing
 // that could quietly declare a second, unrelated interface instead of merging. The names below are
-// imported from their declaring modules, so they read the interfaces this block did not name: if the
+// imported from their declaring modules, so they read the interface this block did not name: if the
 // two failed to merge, every augmented assertion would resolve to `never` or to `{}`.
 declare module "@chakra-ui-solid/core" {
   interface RecipeVariantOverrides {
@@ -33,11 +33,17 @@ declare module "@chakra-ui-solid/core" {
     /** Generated, the form the hook writes. */
     input: GeneratedVariantProps;
   }
-  interface CustomStyleProps {
+}
+
+// The other two seams are Panda's own interfaces, augmented here at the module that declares them.
+// `chakra-ui-solid` is the specifier a consumer names and it re-exports both; that hop is proved by
+// the consumer fixture, which type-checks a real `panda codegen` output against the real barrel.
+declare module "@chakra-ui-solid/styled-system/types" {
+  interface SystemProperties {
     elevation?: ConditionalValue<"low" | "high">;
   }
-  interface CustomConditions {
-    _supportsGrid?: SystemStyleObject;
+  interface Conditions {
+    _supportsGrid: string;
   }
 }
 
@@ -120,5 +126,30 @@ describe("the styling surface", () => {
     acceptsDivProps({ _supportsGrid: { display: "grid" } });
     // @ts-expect-error a condition carries styles, not a value
     acceptsDivProps({ _supportsGrid: "grid" });
+  });
+
+  // Everything below is what augmenting Panda's own interfaces buys over a pair of ours mixed into
+  // the JSX props: a style key is legal wherever a style object is, and there is no depth at which
+  // the vocabulary reverts to the one frozen at our build.
+  it("takes both inside the `css` prop", () => {
+    acceptsDivProps({ css: { elevation: "high", _supportsGrid: { display: "grid" } } });
+    // @ts-expect-error still a closed vocabulary — `css` did not open it
+    acceptsDivProps({ css: { elevatian: "high" } });
+  });
+
+  it("takes both inside another condition, at any depth", () => {
+    acceptsDivProps({ _hover: { elevation: "high" } });
+    acceptsDivProps({ _hover: { _supportsGrid: { elevation: "low" } } });
+    acceptsDivProps({ css: { _supportsGrid: { _hover: { elevation: "high" } } } });
+    // @ts-expect-error the values are the ones their utility declares, however deep
+    acceptsDivProps({ _hover: { _supportsGrid: { elevation: 4 } } });
+  });
+
+  it("takes both inside a recipe body", () => {
+    const acceptsStyleObject = (styles: SystemStyleObject) => styles;
+
+    acceptsStyleObject({ elevation: "high", _supportsGrid: { elevation: "low" } });
+    // @ts-expect-error a condition carries styles, not a value
+    acceptsStyleObject({ _supportsGrid: "grid" });
   });
 });

@@ -19,10 +19,11 @@ const PRESET_CHAIN: VocabularySource[] = [basePreset, chakraPreset, chakraSolidP
 /**
  * Every style-prop name our published declarations already carry.
  *
- * It exists for one subtraction: the typegen writes a `CustomStyleProps` row per `utilities` entry a
- * consumer's config adds, and a row for a name Panda already generated into `SystemProperties` is a
- * clash between two interfaces rather than a new prop. Extending `bg` is changing a prop that
- * exists; adding `elevation` is not, and only the second belongs in the augmentation.
+ * It exists for one subtraction: the typegen augments `SystemProperties` with a row per `utilities`
+ * entry a consumer's config adds, and a row for a name Panda already generated into that same
+ * interface is a second declaration of one member — a hard error where the two types differ.
+ * Extending `bg` is changing a prop that exists; adding `elevation` is not, and only the second
+ * belongs in the augmentation.
  *
  * **Shorthands count.** A utility declares extra names for itself (`background` answers to `bg`),
  * and those reach `SystemProperties` exactly as the property does — so a consumer whose new utility
@@ -45,7 +46,8 @@ export function declaredStyleProps(): Set<string> {
 }
 
 /**
- * Every condition our published declarations already carry, for the same subtraction.
+ * Every condition our published declarations already carry, for the same subtraction against
+ * `Conditions`.
  *
  * Breakpoint conditions (`md`, `mdDown`, `smToLg`) are deliberately absent and need no entry: Panda
  * derives those from `theme.breakpoints` rather than from `conditions`, so nothing a consumer writes

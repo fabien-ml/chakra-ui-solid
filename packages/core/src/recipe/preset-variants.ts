@@ -41,9 +41,9 @@
  * TypeScript merges an augmentation into the interface the named module *exports* — it does not
  * search. Name a module that exports no `RecipeVariantOverrides` and TypeScript declares a second,
  * unrelated interface, reports nothing, and leaves every union exactly as closed as it was.
- * `chakra-ui-solid` re-exports this and its three siblings for that reason, and it is the one to
- * name: pnpm's isolated `node_modules` puts only the package a consumer installed on their
- * resolution path, so `@chakra-ui-solid/core` is a specifier their `declare module` cannot resolve.
+ * `chakra-ui-solid` re-exports this for that reason, and it is the one to name: pnpm's isolated
+ * `node_modules` puts only the package a consumer installed on their resolution path, so
+ * `@chakra-ui-solid/core` is a specifier their `declare module` cannot resolve.
  */
 // biome-ignore lint/suspicious/noEmptyInterface: the suggested `type` alias deletes the mechanism — `declare module` merges into an interface and cannot augment an alias, and empty is the shipped state.
 export interface RecipeVariantOverrides {}
@@ -101,69 +101,3 @@ export type PresetVariant<
 export type PresetVariantProps<Recipe extends string> = Recipe extends keyof RecipeVariantOverrides
   ? { [Key in keyof RecipeVariantOverrides[Recipe]]?: RecipeVariantOverrides[Recipe][Key] }
   : Record<never, never>;
-
-/**
- * Style props for the `utilities` a consumer's `panda.config.ts` adds — the third of the three
- * things their config decides and our published declarations cannot see.
- *
- * ```ts
- * // panda.config.ts
- * utilities: {
- *   extend: {
- *     elevation: { values: ["low", "high"], transform: (value) => ({ boxShadow: shadows[value] }) },
- *   },
- * }
- * ```
- *
- * `<Box elevation="high">` already *works* — the element's style props are partitioned by the
- * `isCssProperty` their own Panda run generated, so a name their config invented is folded into the
- * class rather than set as a DOM attribute. This is what makes it type-check, and `panda codegen`
- * writes the row:
- *
- * ```ts
- * declare module "chakra-ui-solid" {
- *   interface CustomStyleProps {
- *     elevation?: SystemProperties["elevation"];
- *   }
- * }
- * ```
- *
- * The value type is Panda's own for that utility rather than one synthesised here, so the prop
- * accepts exactly what their `css({ elevation })` accepts — `var(--…)` and the raw-CSS escape hatch
- * included.
- *
- * Only names the preset does **not** already declare belong here. A consumer who extends `bg` is
- * changing a prop that exists rather than adding one, and a second declaration of it would collide
- * with Panda's own on the styling surface that mixes both in.
- */
-// biome-ignore lint/suspicious/noEmptyInterface: the suggested `type` alias deletes the mechanism — `declare module` merges into an interface and cannot augment an alias, and empty is the shipped state.
-export interface CustomStyleProps {}
-
-/**
- * Style-object props for the `conditions` a consumer's `panda.config.ts` adds.
- *
- * ```ts
- * // panda.config.ts
- * conditions: { extend: { supportsGrid: "@supports (display: grid)" } }
- * ```
- *
- * ```ts
- * // styled-system/chakra-system-types.d.ts, written by `panda codegen`
- * declare module "chakra-ui-solid" {
- *   interface CustomConditions {
- *     _supportsGrid?: SystemStyleObject;
- *   }
- * }
- * ```
- *
- * Panda prefixes a condition name with `_` for the prop that applies it, so `supportsGrid` is
- * `<Box _supportsGrid={{ bg: "red.500" }}>` — and, as with a custom utility, the runtime half is
- * already theirs: their `isCssProperty` answers `true` for the name, and their `css()` knows the
- * selector behind it.
- *
- * **Top-level only.** `SystemStyleObject` derives its nested condition keys from the `Conditions`
- * interface Panda generated for *this* package at *our* build, so a custom condition is a prop but
- * not yet a key inside `css={{ … }}` or inside another condition.
- */
-// biome-ignore lint/suspicious/noEmptyInterface: same as above — the empty interface is the augmentation seam, not an oversight.
-export interface CustomConditions {}

@@ -75,8 +75,6 @@ export { createMachineStore } from "./machine-store/machine-store";
 export type { CreatePresenceProps, Presence } from "./presence/presence";
 export { createPresence } from "./presence/presence";
 export type {
-  CustomConditions,
-  CustomStyleProps,
   PresetVariant,
   PresetVariantProps,
   RecipeVariantOverrides,

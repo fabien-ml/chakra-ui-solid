@@ -28,8 +28,8 @@ import { system as consumerSystem } from "./__fixtures__/consumer/styled-system-
  *
  * The types are the other half and are checked by `tsc` rather than here: `elevation`,
  * `_supportsGrid` and `tone` are written in the fixture's own `src/app.tsx`, which sits in this
- * package's typechecked tree, and none of the three compiles unless `panda codegen` wrote
- * `chakra-system-types.d.ts` into their outdir.
+ * package's typechecked tree, and none of them compiles — at the top level or nested — unless
+ * `panda codegen` wrote `chakra-system-types.d.ts` into their outdir.
  */
 
 let mounted: { container: HTMLElement; dispose: () => void } | undefined;
@@ -98,5 +98,70 @@ describe("what a consumer's own panda.config.ts adds", () => {
 
     // `tone: brand` is `background: red.500`, and their `red.500` is `#00ff00`.
     expect(getComputedStyle(element).backgroundColor).toBe("rgb(0, 255, 0)");
+  });
+});
+
+/**
+ * The same two names one level in, which is what says the declarations augment Panda's own
+ * `SystemProperties` and `Conditions` rather than a pair of interfaces of ours.
+ *
+ * A pair of ours can only be mixed into the JSX props, so a custom name is a top-level prop and an
+ * unknown key one line deeper. Panda derives *every* style object it types — the `css` prop, the
+ * value of a condition, a recipe body — from those two interfaces, so a row in either reaches all of
+ * them at once.
+ *
+ * `data-hover` is what makes the condition assertable without a pointer: Chakra spells `_hover` as
+ * `&:is(:hover, [data-hover])`, so the attribute alone matches.
+ */
+describe("a consumer's own names, nested", () => {
+  it("takes their utility inside `css`", () => {
+    const element = renderUnderConsumerSystem(() => <Box css={{ elevation: "high" }} />);
+
+    expect(getComputedStyle(element).boxShadow).toBe("none");
+
+    applyConsumerStylesheet();
+
+    expect(getComputedStyle(element).boxShadow).toBe("rgb(0, 255, 0) 0px 0px 0px 8px");
+  });
+
+  it("takes their condition inside `css`", () => {
+    const element = renderUnderConsumerSystem(() => (
+      <Box css={{ _supportsGrid: { display: "grid", gap: "4" } }} />
+    ));
+
+    expect(getComputedStyle(element).display).toBe("block");
+
+    applyConsumerStylesheet();
+    const style = getComputedStyle(element);
+
+    expect(style.display).toBe("grid");
+    expect(style.gap).toBe("99px");
+  });
+
+  it("takes their utility inside another condition", () => {
+    const element = renderUnderConsumerSystem(() => (
+      <Box data-hover _hover={{ elevation: "low" }} />
+    ));
+
+    expect(getComputedStyle(element).boxShadow).toBe("none");
+
+    applyConsumerStylesheet();
+
+    // `low` rather than `high`, so the rule that matched can only be the nested one.
+    expect(getComputedStyle(element).boxShadow).toBe("rgb(0, 255, 0) 0px 0px 0px 2px");
+  });
+
+  it("takes their condition inside another condition", () => {
+    const element = renderUnderConsumerSystem(() => (
+      <Box data-hover _hover={{ _supportsGrid: { columnGap: "4" } }} />
+    ));
+
+    expect(getComputedStyle(element).columnGap).toBe("normal");
+
+    applyConsumerStylesheet();
+
+    // Two nested conditions and a token lookup in one assertion: `@supports` had to match, the
+    // `[data-hover]` selector had to match, and `4` had to resolve against their `spacing.4`.
+    expect(getComputedStyle(element).columnGap).toBe("99px");
   });
 });

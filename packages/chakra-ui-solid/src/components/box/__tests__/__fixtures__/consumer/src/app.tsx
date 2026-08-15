@@ -131,13 +131,32 @@ const RecipeTier = () => (
  *
  * They are here for the usual reason every other line in this file is — extraction is a source scan,
  * so a rule for `elevation="high"`, for `_supportsGrid` and for `tone="brand"` exists in their sheet
- * only because these lines do. What is *new* about them is that they are also the phase-5 gate: none
- * of the three type-checks unless `panda codegen` wrote `chakra-system-types.d.ts` beside the system
+ * only because these lines do. What is *new* about them is that they are also the type gate: none of
+ * the three type-checks unless `panda codegen` wrote `chakra-system-types.d.ts` beside the system
  * module, and this file sits in a typechecked tree.
  */
 const ConsumerAdditions = () => (
   <Box elevation="high" _supportsGrid={{ display: "grid", gap: "4" }}>
     <Button tone="brand">Brand</Button>
+  </Box>
+);
+
+/**
+ * The same two names one level in, which is the gate on *which* interfaces the generated
+ * declarations augment.
+ *
+ * A pair of interfaces of our own can only be mixed into the JSX props, so a custom name is a
+ * top-level prop and an unknown key everywhere else. Augmenting Panda's `SystemProperties` and
+ * `Conditions` puts it in every style object the library has — `css`, a condition, a condition
+ * inside a condition — and each line below is one of those positions failing to compile if that
+ * stops being true.
+ *
+ * `data-hover` is what makes the hover half assertable: Chakra spells `_hover` as
+ * `&:is(:hover, [data-hover])`, so the attribute matches with no pointer involved.
+ */
+const NestedConsumerAdditions = () => (
+  <Box css={{ elevation: "high", _supportsGrid: { display: "grid", gap: "4" } }}>
+    <Box data-hover _hover={{ elevation: "low", _supportsGrid: { columnGap: "4" } }} />
   </Box>
 );
 
@@ -154,5 +173,6 @@ export const App = () => (
     <LayoutTier />
     <RecipeTier />
     <ConsumerAdditions />
+    <NestedConsumerAdditions />
   </Box>
 );

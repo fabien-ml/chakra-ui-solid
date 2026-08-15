@@ -35,8 +35,10 @@ export default defineChakraConfig({
   // A **style prop this library has never heard of**, and the first of the three things only the
   // consumer's config can decide. `elevation` is nobody's CSS property and no preset in the chain
   // declares it, so both halves are theirs: their `isCssProperty` is what folds it into a class
-  // instead of setting a DOM attribute, and the `CustomStyleProps` row `panda codegen` writes into
-  // `styled-system-app/chakra-system-types.d.ts` is what makes `<Box elevation="high">` type-check.
+  // instead of setting a DOM attribute, and the `SystemProperties` row `panda codegen` writes into
+  // `styled-system-app/chakra-system-types.d.ts` is what makes `<Box elevation="high">` type-check —
+  // in `css`, in a condition, and anywhere else a style key goes, since that interface is what every
+  // style object in the library is derived from.
   //
   // A colour no Chakra shadow uses, for the same reason the token overrides below are absurd: the
   // assertion cannot pass against a rule from any other run.
