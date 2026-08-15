@@ -1,8 +1,8 @@
 import { Dynamic } from "@solidjs/web";
-import { Box } from "chakra-ui-solid";
+import { Box, Tabs } from "chakra-ui-solid";
 import { For } from "solid-js";
-import { CodeTabs } from "~/components/home/code-tabs";
 import { Eyebrow, HighlightHeading, Subheading } from "~/components/home/typography";
+import { embeddedCodePaneClass } from "~/components/mdx/code-pane";
 import { Container } from "~/components/ui/container";
 import { BoxIcon, PaintBucketIcon, TypeIcon } from "~/components/ui/icons";
 
@@ -119,15 +119,55 @@ export function DesignSystemSection() {
         </Box>
 
         <Box flex="1" minW="0">
-          <CodeTabs
-            label="Design system examples"
-            items={items.map((item) => ({
-              id: item.id,
-              icon: item.icon,
-              label: item.label,
-              html: highlighted(item.id),
-            }))}
-          />
+          {/* No `lazyMount`: every panel is in the prerendered HTML, hidden rather than unmounted,
+            so the code is readable before hydration and indexable after it. The opposite call to
+            the one an `<Example>` takes, and for the opposite reason — there are three panels here,
+            they are the section's content, and a reader who lands on `/` has not asked for
+            anything yet.
+
+            `colorPalette` is scoped to this tree rather than inherited from the page: a selected
+            tab that silently turned gray the first time these tabs were reused elsewhere is the
+            failure the hand-rolled version was written around. */}
+          <Tabs.Root
+            defaultValue={items[0]?.id}
+            translations={{ listLabel: "Design system examples" }}
+            variant="subtle"
+            size="sm"
+            colorPalette="teal"
+            borderWidth="1px"
+            borderColor="border.muted"
+            borderRadius="l3"
+            bg="bg.panel"
+            p="2"
+          >
+            <Tabs.List width="full" p="1">
+              <For each={items}>
+                {(item) => (
+                  <Tabs.Trigger value={item.id}>
+                    <Dynamic component={item.icon} />
+                    {item.label}
+                  </Tabs.Trigger>
+                )}
+              </For>
+            </Tabs.List>
+            <Tabs.ContentGroup mt="1">
+              <For each={items}>
+                {(item) => (
+                  // `p="0"` because the panel *is* the code pane here: the `content` slot's own
+                  // `padding-top` would draw a band of `bg.subtle` above the first line.
+                  <Tabs.Content
+                    value={item.id}
+                    p="0"
+                    borderRadius="l2"
+                    bg="bg.subtle"
+                    overflow="hidden"
+                  >
+                    <Box class={embeddedCodePaneClass} innerHTML={highlighted(item.id)} />
+                  </Tabs.Content>
+                )}
+              </For>
+            </Tabs.ContentGroup>
+          </Tabs.Root>
         </Box>
       </Container>
     </Box>

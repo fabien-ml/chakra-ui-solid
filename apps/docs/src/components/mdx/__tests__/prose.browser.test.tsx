@@ -3,8 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 // The docs app's **own** generated stylesheet, which is where both sides of the collision live: the
 // prose classes, and the atomic classes the examples' style props compile to.
 import "../../../../styled-system/styles.css";
-import SpinnerWithLabel from "../../../examples/spinner/spinner-with-label";
-import SpinnerWithOverlay from "../../../examples/spinner/spinner-with-overlay";
+import { Example } from "../example";
 import { proseClass, proseTagClasses } from "../prose";
 
 /**
@@ -29,15 +28,23 @@ afterEach(() => {
   mounted = undefined;
 });
 
-/** The article, the way `routes/docs.$.tsx` assembles it: prose and a preview under one class. */
+/**
+ * The article, the way `routes/docs.$.tsx` assembles it: prose and two real `<Example>`s under one
+ * class.
+ *
+ * The examples are mounted through `<Example>` rather than imported directly, because that is where
+ * the depth comes from — a preview now sits inside `Tabs.Root > Tabs.ContentGroup > Tabs.Content`,
+ * and the tab chrome itself is a third thing inside the article that a returning descendant selector
+ * would reach. A fixture that hand-assembles the preview cannot see either.
+ */
 function mountArticle() {
   mounted = mount(() => (
     <div class={proseClass}>
       <h2 class={proseTagClasses.h2}>Usage</h2>
       <p class={proseTagClasses.p}>A paragraph of prose.</p>
       <div data-testid="preview">
-        <SpinnerWithLabel />
-        <SpinnerWithOverlay />
+        <Example name="spinner-with-label" />
+        <Example name="spinner-with-overlay" />
       </div>
     </div>
   ));
@@ -73,6 +80,15 @@ describe("prose and the examples inside it", () => {
     // specificity — as `& h2` on the wrapper this measured 20.8px, the prose scale's `1.3em`.
     expect(heading.className).toContain("heading--size_xl");
     expect(getComputedStyle(heading).fontSize).toBe("20px");
+  });
+
+  it("leaves the tab chrome around an example alone", () => {
+    const { preview } = mountArticle();
+    const trigger = query(preview, '[data-part="trigger"]');
+
+    // `sm` on the `subtle` variant, which is 14px — the prose `p` scale would read 16px, and the
+    // recipe cannot defend itself against a descendant selector any better here than a Heading can.
+    expect(getComputedStyle(trigger).fontSize).toBe("14px");
   });
 
   it("still styles the page's own prose", () => {
