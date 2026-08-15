@@ -1,9 +1,9 @@
 import type { Config } from "@pandacss/dev";
 import { recipeKeys, slotRecipeKeys, variantKeysFor } from "./contract";
 import { createChakraSolidPreset } from "./preset";
+import { presetContractPlugin } from "./preset-contract";
 import { recipeGatePlugin } from "./recipe-gate-plugin";
 import { chakraSkin, type Skin } from "./skin";
-import { skinContractPlugin } from "./skin-contract";
 
 /**
  * Which recipe variants should also be generated at every breakpoint, so a consumer can write
@@ -256,7 +256,7 @@ export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
     plugins: [
       ...(plugins ?? []),
       recipeGatePlugin(components),
-      skinContractPlugin(resolvedSkin),
+      presetContractPlugin(),
       lockedKeysPlugin,
     ],
   };
