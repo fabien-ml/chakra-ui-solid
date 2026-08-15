@@ -1,6 +1,11 @@
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import {
+  type CssProp,
+  chakra,
+  composeCss,
+  type HTMLChakraProps,
+  useChakraContext,
+} from "@chakra-ui-solid/core";
 import type { FlexProperties } from "@chakra-ui-solid/styled-system/patterns";
-import { flex } from "@chakra-ui-solid/styled-system/patterns";
 import { type Component, merge, omit } from "solid-js";
 
 export interface FlexOptions extends FlexProperties {
@@ -39,9 +44,14 @@ const SHORTHANDS = [
  * preset's `staticCss`.
  */
 export const Flex: Component<FlexProps> = (props) => {
+  const system = useChakraContext();
+
   const elementProps = merge(omit(props, ...SHORTHANDS, "css"), {
     get css(): CssProp {
-      const styles = flex.raw({
+      // Read here rather than above, so a `<ChakraProvider>` handed a new system remaps these
+      // shorthands through *its* pattern instead of leaving the element on the one it first
+      // rendered under.
+      const styles = system().patterns.flex.raw({
         direction: props.direction,
         align: props.align,
         justify: props.justify,

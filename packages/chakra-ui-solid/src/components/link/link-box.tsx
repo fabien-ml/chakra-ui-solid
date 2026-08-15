@@ -11,8 +11,12 @@
  * This file has been modified from the original.
  */
 
-import { chakra, type HTMLChakraProps, withDefaults } from "@chakra-ui-solid/core";
-import { cx } from "@chakra-ui-solid/styled-system/css";
+import {
+  chakra,
+  type HTMLChakraProps,
+  useChakraContext,
+  withDefaults,
+} from "@chakra-ui-solid/core";
 import { type Component, merge, omit } from "solid-js";
 
 export interface LinkOverlayProps extends HTMLChakraProps<"a"> {}
@@ -49,9 +53,11 @@ const StyledLinkOverlay = chakra("a", {
  * `class` is appended after it, so both survive.
  */
 export const LinkOverlay: Component<LinkOverlayProps> = (props) => {
+  const system = useChakraContext();
+
   const elementProps = merge(omit(props, "class"), {
     get class() {
-      return cx("chakra-linkbox__overlay", props.class as string | undefined);
+      return system().cx("chakra-linkbox__overlay", props.class as string | undefined);
     },
   });
 
@@ -90,10 +96,11 @@ export const LinkBox: Component<LinkBoxProps> = (props) => {
   const merged = withDefaults(props, {
     position: "relative",
   } satisfies Partial<LinkBoxProps>);
+  const system = useChakraContext();
 
   const elementProps = merge(omit(merged, "class"), {
     get class() {
-      return cx("chakra-linkbox", merged.class as string | undefined);
+      return system().cx("chakra-linkbox", merged.class as string | undefined);
     },
   });
 

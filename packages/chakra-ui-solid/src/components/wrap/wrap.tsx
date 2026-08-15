@@ -3,11 +3,10 @@ import {
   chakra,
   composeCss,
   type HTMLChakraProps,
+  useChakraContext,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import { css, cx } from "@chakra-ui-solid/styled-system/css";
 import type { WrapProperties } from "@chakra-ui-solid/styled-system/patterns";
-import { wrap } from "@chakra-ui-solid/styled-system/patterns";
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import { type Component, merge, omit } from "solid-js";
 
@@ -42,12 +41,13 @@ const StyledWrap = chakra("div", {
  */
 export const Wrap: Component<WrapProps> = (props) => {
   const merged = withDefaults(props, { gap: DEFAULT_GAP } satisfies Partial<WrapProps>);
+  const system = useChakraContext();
 
   // `gap` is omitted rather than forwarded as well: the pattern below now emits it on every render,
   // and a style prop carrying the same value is a second declaration of one thing.
   const elementProps = merge(omit(merged, "align", "justify", "direction", "gap", "css", "class"), {
     get css(): CssProp {
-      const styles = wrap.raw({
+      const styles = system().patterns.wrap.raw({
         align: merged.align,
         justify: merged.justify,
         gap: merged.gap,
@@ -56,7 +56,7 @@ export const Wrap: Component<WrapProps> = (props) => {
       return composeCss(styles, merged.css);
     },
     get class() {
-      return cx("chakra-wrap", merged.class as string | undefined);
+      return system().cx("chakra-wrap", merged.class as string | undefined);
     },
   });
 
@@ -65,17 +65,26 @@ export const Wrap: Component<WrapProps> = (props) => {
 
 export interface WrapItemProps extends HTMLChakraProps<"div"> {}
 
-/** In the `css` seam rather than a recipe base, which is where Chakra puts it. */
-const itemStyle = css.raw({ display: "flex", alignItems: "flex-start" });
+/**
+ * In the `css` seam rather than a recipe base, which is where Chakra puts it.
+ *
+ * A plain object rather than a `css.raw()` call, because `css` is the system's now and a system is
+ * only readable from a component body. Both declarations reach a stylesheet through the preset's
+ * `staticCss` — `display: flex` and `align-items: flex-start` are already in its lists for other
+ * components — so nothing here depends on Panda seeing this literal.
+ */
+const itemStyle: SystemStyleObject = { display: "flex", alignItems: "flex-start" };
 
 /** WrapItem — one child of a {@link Wrap}, kept from stretching to the line's height. */
 export const WrapItem: Component<WrapItemProps> = (props) => {
+  const system = useChakraContext();
+
   const elementProps = merge(omit(props, "css", "class"), {
     get css(): CssProp {
       return composeCss(itemStyle, props.css);
     },
     get class() {
-      return cx("chakra-wrap__listitem", props.class as string | undefined);
+      return system().cx("chakra-wrap__listitem", props.class as string | undefined);
     },
   });
 

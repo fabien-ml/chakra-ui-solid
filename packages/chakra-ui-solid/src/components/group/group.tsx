@@ -1,5 +1,9 @@
-import { chakra, type HTMLChakraProps, withDefaults } from "@chakra-ui-solid/core";
-import { cx } from "@chakra-ui-solid/styled-system/css";
+import {
+  chakra,
+  type HTMLChakraProps,
+  useChakraContext,
+  withDefaults,
+} from "@chakra-ui-solid/core";
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import { type ComponentProps, isServer } from "@solidjs/web";
 import { type Component, children, createRenderEffect, merge, omit } from "solid-js";
@@ -137,6 +141,7 @@ export const Group: Component<GroupProps> = (props) => {
     align: "center",
     justify: "flex-start",
   } satisfies Partial<GroupProps>);
+  const system = useChakraContext();
 
   const resolved = children(() => merged.children);
 
@@ -179,7 +184,7 @@ export const Group: Component<GroupProps> = (props) => {
     omit(merged, "align", "justify", "wrap", "skip", "class", "children"),
     {
       get class() {
-        return cx("chakra-group", merged.class as string | undefined);
+        return system().cx("chakra-group", merged.class as string | undefined);
       },
       get children() {
         return resolved();

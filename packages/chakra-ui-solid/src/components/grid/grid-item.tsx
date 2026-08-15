@@ -6,7 +6,6 @@ import {
   type HTMLChakraProps,
   type PlainCssValue,
 } from "@chakra-ui-solid/core";
-import { css } from "@chakra-ui-solid/styled-system/css";
 import type { CssProperties, SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
@@ -41,16 +40,22 @@ export interface GridItemProps extends HTMLChakraProps<"div"> {
  *
  * Splitting column from row also reproduces Chakra's `compact()`: it emits the keys that have a
  * value and nothing else.
+ *
+ * Plain objects rather than `css.raw()` calls, because `css` is the system's now and a system is
+ * only readable from a component body. That took Panda's marker off the literals with it, so the
+ * five rules come from the preset's `staticCss` instead — a class here with no rule in the sheet
+ * renders nothing and reports nothing. Grid's own `var()` declarations are unaffected: they sit in
+ * a `chakra()` style config, which a consumer's build still extracts.
  */
-const areaStyle = css.raw({ gridArea: "var(--grid-item-area)" });
-const columnStyle = css.raw({
+const areaStyle: SystemStyleObject = { gridArea: "var(--grid-item-area)" };
+const columnStyle: SystemStyleObject = {
   gridColumnStart: "var(--grid-item-column-start)",
   gridColumnEnd: "var(--grid-item-column-end)",
-});
-const rowStyle = css.raw({
+};
+const rowStyle: SystemStyleObject = {
   gridRowStart: "var(--grid-item-row-start)",
   gridRowEnd: "var(--grid-item-row-end)",
-});
+};
 
 const OPTIONS = ["area", "colSpan", "colStart", "colEnd", "rowSpan", "rowStart", "rowEnd"] as const;
 

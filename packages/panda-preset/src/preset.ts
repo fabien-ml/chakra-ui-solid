@@ -85,6 +85,30 @@ const linkBoxPositions = ["relative"];
 const skeletonTextWidths = ["full"];
 
 /**
+ * The nine declarations `Bleed` and `GridItem` read a per-element custom property back through, and
+ * the one group here that is a *fixed literal* rather than a value some prop selects.
+ *
+ * They used to need no row at all: both components spelled them in a `css.raw({ … })` call, which
+ * both extractors read. `css` is the `<ChakraProvider>`'s now, and a system can only be read from a
+ * component body — so the literals moved into plain objects, which no extractor reads. The rules
+ * still have to exist, because the *amounts* are inline custom properties and these are the
+ * declarations that consume them: without them a `<Bleed inline="4">` sets a variable nothing reads
+ * and renders flush with its parent, silently.
+ *
+ * `Grid`'s own eight `var()` declarations need no row — they sit in a `chakra()` style config,
+ * which is a channel a consumer's build still extracts.
+ */
+const bleedInlineStartMargins = ["calc(var(--bleed-inline-start, 0) * -1)"];
+const bleedInlineEndMargins = ["calc(var(--bleed-inline-end, 0) * -1)"];
+const bleedBlockStartMargins = ["calc(var(--bleed-block-start, 0) * -1)"];
+const bleedBlockEndMargins = ["calc(var(--bleed-block-end, 0) * -1)"];
+const gridItemAreas = ["var(--grid-item-area)"];
+const gridItemColumnStarts = ["var(--grid-item-column-start)"];
+const gridItemColumnEnds = ["var(--grid-item-column-end)"];
+const gridItemRowStarts = ["var(--grid-item-row-start)"];
+const gridItemRowEnds = ["var(--grid-item-row-end)"];
+
+/**
  * One `jsx` tracking hint per recipe, merged into the inherited recipe body by `theme.extend`.
  *
  * A hint tells Panda that a JSX prop on this component belongs to this recipe. It is an
@@ -200,6 +224,15 @@ export const chakraSolidPreset = definePreset({
       { properties: { width: skeletonTextWidths } },
       { properties: { borderTopWidth: separatorBorderWidths }, responsive: true },
       { properties: { borderInlineStartWidth: separatorBorderWidths }, responsive: true },
+      { properties: { marginInlineStart: bleedInlineStartMargins } },
+      { properties: { marginInlineEnd: bleedInlineEndMargins } },
+      { properties: { marginBlockStart: bleedBlockStartMargins } },
+      { properties: { marginBlockEnd: bleedBlockEndMargins } },
+      { properties: { gridArea: gridItemAreas } },
+      { properties: { gridColumnStart: gridItemColumnStarts } },
+      { properties: { gridColumnEnd: gridItemColumnEnds } },
+      { properties: { gridRowStart: gridItemRowStarts } },
+      { properties: { gridRowEnd: gridItemRowEnds } },
     ],
   },
 });

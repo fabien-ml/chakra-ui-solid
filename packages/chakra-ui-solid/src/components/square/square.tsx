@@ -1,5 +1,10 @@
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
-import { square } from "@chakra-ui-solid/styled-system/patterns";
+import {
+  type CssProp,
+  chakra,
+  composeCss,
+  type HTMLChakraProps,
+  useChakraContext,
+} from "@chakra-ui-solid/core";
 import type { SystemProperties } from "@chakra-ui-solid/styled-system/types";
 import { type Component, merge, omit } from "solid-js";
 
@@ -19,12 +24,15 @@ export interface SquareProps extends Omit<HTMLChakraProps<"div">, "size"> {
  * class their sheet has no rule for, and the square would render with no size and no error.
  *
  * The mapping is a **getter** rather than an inline JSX expression, so `props.size` is read inside
- * whichever scope reads the class — that is what keeps a signal-backed `size` reactive.
+ * whichever scope reads the class — that is what keeps a signal-backed `size` reactive, and it is
+ * where the system is read too.
  */
 export const Square: Component<SquareProps> = (props) => {
+  const system = useChakraContext();
+
   const elementProps = merge(omit(props, "size", "css"), {
     get css(): CssProp {
-      return composeCss(square.raw({ size: props.size }), props.css);
+      return composeCss(system().patterns.square.raw({ size: props.size }), props.css);
     },
   });
 

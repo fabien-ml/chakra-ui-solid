@@ -1,4 +1,7 @@
+import { ChakraProvider, type SystemContext, type TokenFn } from "@chakra-ui-solid/core";
 import { type MountedElement, mountElement } from "@chakra-ui-solid/internal-test-utils";
+import { testSystem } from "@chakra-ui-solid/internal-test-utils/system";
+import { createSignal, flush } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import { Bleed } from "../bleed";
 
@@ -57,4 +60,31 @@ describe("Bleed", () => {
     expect(style.marginBlockEnd).toBe("0px");
     expect(style.marginInlineStart).toBe("0px");
   });
+
+  it("re-resolves the spacing against a system swapped at runtime", () => {
+    // The assertion that proves `token` is read *inside* the `style` getter rather than hoisted
+    // into the component body. Hoisted, the element keeps the token map of whichever system it
+    // first rendered under, and a swapped theme silently keeps the old spacing scale.
+    const [system, setSystem] = createSignal(testSystem);
+
+    mounted = mountElement(() => (
+      <ChakraProvider value={system}>
+        <Bleed inline="4">content</Bleed>
+      </ChakraProvider>
+    ));
+    expect(getComputedStyle(mounted.element).marginInlineStart).toBe("-16px");
+
+    flush(() => setSystem(systemResolvingSpacingTo("12px")));
+    expect(getComputedStyle(mounted.element).marginInlineStart).toBe("-12px");
+  });
 });
+
+/** The repo's own system with one member replaced: a token map that answers a fixed length. */
+function systemResolvingSpacingTo(value: string): SystemContext {
+  const token: TokenFn = Object.assign(
+    (path: string, fallback?: string) => testSystem.token(path, fallback),
+    { var: () => value },
+  );
+
+  return { ...testSystem, token };
+}

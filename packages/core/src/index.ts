@@ -101,7 +101,11 @@ export type {
   CreateSystemOptions,
   CssFn,
   CxFn,
+  PatternFn,
+  PatternStyles,
   SystemContext,
+  SystemPatterns,
+  TokenFn,
 } from "./system/system";
 export { ChakraProvider, createSystem, useChakraContext } from "./system/system";
 export type { WithDefaults } from "./utils/defaults";

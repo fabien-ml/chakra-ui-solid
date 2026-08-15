@@ -115,6 +115,13 @@ describe("the preset's own chain and atomic staticCss", () => {
     // moved the same way and needed no row — `display`, `flexWrap`, `justifyContent` and
     // `alignItems` are already in the lists above.
     //
+    // The last nine reach the same bar by a third route, and they are the only fixed literals in
+    // the list: `Bleed`'s four margins and `GridItem`'s five placements read a per-element custom
+    // property back, and they used to be spelled in a `css.raw({ … })` call that both extractors
+    // read. `css` is the `<ChakraProvider>`'s now, so the literals sit in plain objects no
+    // extractor reads — and without a rule the inline amounts a component sets are variables
+    // nothing consumes.
+    //
     // **A component picking the value is the bar, and the list is exhaustive on purpose.** There is
     // no row for `colorPalette`: no component in this library defaults or forwards one, and a
     // *consumer's* runtime-valued `colorPalette` is the form the library forbids rather than a case
@@ -154,6 +161,15 @@ describe("the preset's own chain and atomic staticCss", () => {
       { properties: { width: ["full"] } },
       { properties: { borderTopWidth: ["1px", "0"] }, responsive: true },
       { properties: { borderInlineStartWidth: ["1px", "0"] }, responsive: true },
+      { properties: { marginInlineStart: ["calc(var(--bleed-inline-start, 0) * -1)"] } },
+      { properties: { marginInlineEnd: ["calc(var(--bleed-inline-end, 0) * -1)"] } },
+      { properties: { marginBlockStart: ["calc(var(--bleed-block-start, 0) * -1)"] } },
+      { properties: { marginBlockEnd: ["calc(var(--bleed-block-end, 0) * -1)"] } },
+      { properties: { gridArea: ["var(--grid-item-area)"] } },
+      { properties: { gridColumnStart: ["var(--grid-item-column-start)"] } },
+      { properties: { gridColumnEnd: ["var(--grid-item-column-end)"] } },
+      { properties: { gridRowStart: ["var(--grid-item-row-start)"] } },
+      { properties: { gridRowEnd: ["var(--grid-item-row-end)"] } },
     ]);
   });
 

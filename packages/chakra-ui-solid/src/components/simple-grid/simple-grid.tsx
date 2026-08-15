@@ -1,4 +1,4 @@
-import { token } from "@chakra-ui-solid/styled-system/tokens";
+import { type TokenFn, useChakraContext } from "@chakra-ui-solid/core";
 import { type Component, merge, omit } from "solid-js";
 import { Grid, type GridProps } from "../grid";
 
@@ -13,12 +13,12 @@ export interface SimpleGridProps extends Omit<GridProps, "columns"> {
  * `minChildWidth` names a **sizes token** when it can, and is a raw length otherwise.
  *
  * Chakra reaches into its runtime theme for this (`sys.tokens.getVar`). We have no runtime theme,
- * so the lookup goes to Panda's generated `token` map, which is the same question asked of the
- * build's output: a hit gives the custom property the stylesheet declares, and a miss means the
- * value was already a length.
+ * so the lookup goes to the `token` map on the `<ChakraProvider>`, which is the same question asked
+ * of the build's output: a hit gives the custom property that stylesheet declares, and a miss means
+ * the value was already a length.
  */
-function resolveWidth(value: string | number): string {
-  return token.var(`sizes.${value}` as Parameters<typeof token.var>[0]) ?? toPx(value);
+function resolveWidth(token: TokenFn, value: string | number): string {
+  return token.var(`sizes.${value}`) ?? toPx(value);
 }
 
 function toPx(value: string | number): string {
@@ -37,11 +37,14 @@ function toPx(value: string | number): string {
  * `minChildWidth` wins when both are given, which is Chakra's precedence.
  */
 export const SimpleGrid: Component<SimpleGridProps> = (props) => {
+  const system = useChakraContext();
+
   const gridProps = merge(omit(props, "columns", "minChildWidth"), {
     get templateColumns(): string | undefined {
       const minChildWidth = props.minChildWidth;
       if (minChildWidth !== undefined) {
-        return `repeat(auto-fit, minmax(${resolveWidth(minChildWidth)}, 1fr))`;
+        // Read here, so a provider handed a new system resolves the token against its map.
+        return `repeat(auto-fit, minmax(${resolveWidth(system().token, minChildWidth)}, 1fr))`;
       }
       return props.columns === undefined ? undefined : `repeat(${props.columns}, minmax(0, 1fr))`;
     },

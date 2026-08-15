@@ -22,8 +22,8 @@ import {
   createRecipeClass,
   type HTMLChakraProps,
   type PresetVariant,
+  useChakraContext,
 } from "@chakra-ui-solid/core";
-import { cx } from "@chakra-ui-solid/styled-system/css";
 import { type CheckmarkVariantProps, checkmark } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import { type Component, Match, omit, Switch } from "solid-js";
@@ -90,6 +90,8 @@ const STATE_KEYS = ["checked", "indeterminate", "disabled"] as const;
  * Chakra's Checkmark sets neither, and a checkbox labels the control rather than the mark inside it.
  */
 export const Checkmark: Component<CheckmarkProps> = (props) => {
+  const system = useChakraContext();
+
   const recipeClass = createRecipeClass(checkmark, {
     variantProps: () => ({ size: props.size, variant: props.variant, filled: props.filled }),
     // Honoured here rather than by `renderStyled`, because the recipe reaches the element through
@@ -133,7 +135,7 @@ export const Checkmark: Component<CheckmarkProps> = (props) => {
       data-state={state()}
       data-disabled={props.disabled === true ? "" : undefined}
       {...elementProps}
-      class={cx(recipeClass(), props.class as string | undefined)}
+      class={system().cx(recipeClass(), props.class as string | undefined)}
     >
       <Switch>
         <Match when={props.indeterminate}>

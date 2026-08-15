@@ -3,10 +3,9 @@ import {
   chakra,
   composeCss,
   type HTMLChakraProps,
+  useChakraContext,
   withDefaults,
 } from "@chakra-ui-solid/core";
-import { cx } from "@chakra-ui-solid/styled-system/css";
-import { flex } from "@chakra-ui-solid/styled-system/patterns";
 import type { ConditionalValue, SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import { Dynamic } from "@solidjs/web";
 import { type Accessor, type Component, children, createContext, merge, omit } from "solid-js";
@@ -77,6 +76,7 @@ export const StackDirectionContext = createContext<Accessor<StackDirection>>(() 
  */
 export const Stack: Component<StackProps> = (props) => {
   const merged = withDefaults(props, { direction: "column" } satisfies Partial<StackProps>);
+  const system = useChakraContext();
 
   const direction = () => merged.direction;
   const resolved = children(() => merged.children);
@@ -98,7 +98,7 @@ export const Stack: Component<StackProps> = (props) => {
   const elementProps = merge(omit(merged, ...OPTIONS, "css", "class", "children"), {
     get css(): CssProp {
       return composeCss(
-        flex.raw({
+        system().patterns.flex.raw({
           direction: direction(),
           align: merged.align,
           justify: merged.justify,
@@ -108,7 +108,7 @@ export const Stack: Component<StackProps> = (props) => {
       );
     },
     get class() {
-      return cx("chakra-stack", merged.class as string | undefined);
+      return system().cx("chakra-stack", merged.class as string | undefined);
     },
   });
 

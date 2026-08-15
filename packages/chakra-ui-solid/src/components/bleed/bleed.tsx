@@ -4,9 +4,10 @@ import {
   composeCss,
   composeStyle,
   type HTMLChakraProps,
+  type TokenFn,
+  useChakraContext,
 } from "@chakra-ui-solid/core";
-import { css } from "@chakra-ui-solid/styled-system/css";
-import { token } from "@chakra-ui-solid/styled-system/tokens";
+import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 
@@ -34,13 +35,18 @@ export interface BleedProps
  *
  * Chakra writes these into `css` rather than as style props, so they outrank a `marginInlineStart`
  * passed alongside; the placement is kept.
+ *
+ * A plain object rather than a `css.raw()` call, because `css` is the system's now and a system is
+ * only readable from a component body. That took Panda's marker off the literal with it, so the
+ * four rules come from the preset's `staticCss` instead — a class here with no rule in the sheet
+ * renders nothing and reports nothing.
  */
-const bleedStyle = css.raw({
+const bleedStyle: SystemStyleObject = {
   marginInlineStart: "calc(var(--bleed-inline-start, 0) * -1)",
   marginInlineEnd: "calc(var(--bleed-inline-end, 0) * -1)",
   marginBlockStart: "calc(var(--bleed-block-start, 0) * -1)",
   marginBlockEnd: "calc(var(--bleed-block-end, 0) * -1)",
-});
+};
 
 const OPTIONS = ["inline", "block", "inlineStart", "inlineEnd", "blockStart", "blockEnd"] as const;
 
@@ -48,15 +54,18 @@ const OPTIONS = ["inline", "block", "inlineStart", "inlineEnd", "blockStart", "b
  * A spacing token resolves to the custom property the stylesheet declares; anything else is already
  * a length and passes through.
  *
- * Chakra decides this with an `isCssUnit` regex over the value. Asking the generated token map
- * instead answers the same question against the build's own output rather than a heuristic — and a
+ * Chakra decides this with an `isCssUnit` regex over the value. Asking the token map instead
+ * answers the same question against the build's own output rather than a heuristic — and a
  * `var(--…)` a consumer hands in falls through the same miss branch.
+ *
+ * The map is the one on the `<ChakraProvider>`, so the variable named here is the one *that* Panda
+ * run declared: a consumer who set their own `prefix.cssVar` gets their spelling rather than ours.
  */
-function resolveSpacing(value: string | number | undefined): string | undefined {
+function resolveSpacing(token: TokenFn, value: string | number | undefined): string | undefined {
   if (value === undefined) {
     return undefined;
   }
-  return token.var(`spacing.${value}` as Parameters<typeof token.var>[0]) ?? String(value);
+  return token.var(`spacing.${value}`) ?? String(value);
 }
 
 /**
@@ -68,17 +77,22 @@ function resolveSpacing(value: string | number | undefined): string | undefined 
  * component take a token name and a raw length through one prop.
  */
 export const Bleed: Component<BleedProps> = (props) => {
+  const system = useChakraContext();
+
   const elementProps = merge(omit(props, ...OPTIONS, "css", "style"), {
     get css(): CssProp {
       return composeCss(bleedStyle, props.css);
     },
     get style(): JSX.HTMLAttributes<HTMLElement>["style"] {
+      // The system is read here rather than above, so a provider handed a new one re-resolves the
+      // amounts against *its* token map.
+      const token = system().token;
       return composeStyle(
         {
-          "--bleed-inline-start": resolveSpacing(props.inline ?? props.inlineStart),
-          "--bleed-inline-end": resolveSpacing(props.inline ?? props.inlineEnd),
-          "--bleed-block-start": resolveSpacing(props.block ?? props.blockStart),
-          "--bleed-block-end": resolveSpacing(props.block ?? props.blockEnd),
+          "--bleed-inline-start": resolveSpacing(token, props.inline ?? props.inlineStart),
+          "--bleed-inline-end": resolveSpacing(token, props.inline ?? props.inlineEnd),
+          "--bleed-block-start": resolveSpacing(token, props.block ?? props.blockStart),
+          "--bleed-block-end": resolveSpacing(token, props.block ?? props.blockEnd),
         },
         props.style,
       );

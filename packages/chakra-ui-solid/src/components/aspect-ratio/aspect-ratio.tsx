@@ -1,5 +1,10 @@
-import { chakra, composeStyle, type HTMLChakraProps, withDefaults } from "@chakra-ui-solid/core";
-import { cx } from "@chakra-ui-solid/styled-system/css";
+import {
+  chakra,
+  composeStyle,
+  type HTMLChakraProps,
+  useChakraContext,
+  withDefaults,
+} from "@chakra-ui-solid/core";
 import type { JSX } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 
@@ -55,6 +60,7 @@ const DEFAULT_RATIO = 4 / 3;
  */
 export const AspectRatio: Component<AspectRatioProps> = (props) => {
   const merged = withDefaults(props, { ratio: DEFAULT_RATIO } satisfies Partial<AspectRatioProps>);
+  const system = useChakraContext();
 
   const elementProps = merge(omit(merged, "ratio", "style", "class"), {
     get style(): JSX.HTMLAttributes<HTMLElement>["style"] {
@@ -64,7 +70,7 @@ export const AspectRatio: Component<AspectRatioProps> = (props) => {
       );
     },
     get class() {
-      return cx("chakra-aspect-ratio", merged.class as string | undefined);
+      return system().cx("chakra-aspect-ratio", merged.class as string | undefined);
     },
   });
 
