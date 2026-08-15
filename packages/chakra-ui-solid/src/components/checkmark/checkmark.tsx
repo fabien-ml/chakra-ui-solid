@@ -17,7 +17,12 @@
  * only the two glyphs do.
  */
 
-import { chakra, createRecipeClass, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import {
+  chakra,
+  createRecipeClass,
+  type HTMLChakraProps,
+  type PresetVariant,
+} from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import { type CheckmarkVariantProps, checkmark } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
@@ -36,14 +41,16 @@ export interface CheckmarkProps extends HTMLChakraProps<"svg"> {
    *
    * @default "md"
    */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg">;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | PresetVariant<"checkmark", "size">>;
   /**
    * How the box is painted once it is checked — `solid` fills it with the palette, `outline` and
    * `inverted` only recolour the border, `subtle` tints it, and `plain` draws no box at all.
    *
    * @default "solid"
    */
-  variant?: ConditionalValue<"solid" | "outline" | "subtle" | "plain" | "inverted">;
+  variant?: ConditionalValue<
+    "solid" | "outline" | "subtle" | "plain" | "inverted" | PresetVariant<"checkmark", "variant">
+  >;
   /**
    * Give the box an opaque background, so it covers whatever it sits on rather than letting it
    * through. Meant for `variant="outline"`, which otherwise has no fill of its own.

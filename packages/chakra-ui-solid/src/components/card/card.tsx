@@ -1,6 +1,7 @@
 import {
   createSlotRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   type PropsProviderProps,
 } from "@chakra-ui-solid/core";
 import {
@@ -24,9 +25,9 @@ export type CardSlot = "root" | "header" | "body" | "footer" | "title" | "descri
  */
 export interface CardVariantProps {
   /** The padding inside every slot and the title's type scale, as one step. */
-  size?: ConditionalValue<"sm" | "md" | "lg">;
+  size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"card", "size">>;
   /** How the card separates itself from the page — a shadow, a border, or a tinted surface. */
-  variant?: ConditionalValue<"elevated" | "outline" | "subtle">;
+  variant?: ConditionalValue<"elevated" | "outline" | "subtle" | PresetVariant<"card", "variant">>;
 }
 
 /** The Root's own props, without the `div`'s — what a `Card.PropsProvider` may supply. */

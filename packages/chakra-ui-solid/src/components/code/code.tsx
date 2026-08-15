@@ -1,4 +1,8 @@
-import { createRecipeContext, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import {
+  createRecipeContext,
+  type HTMLChakraProps,
+  type PresetVariant,
+} from "@chakra-ui-solid/core";
 import { type CodeVariantProps, code } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
@@ -15,13 +19,15 @@ export interface CodeProps extends HTMLChakraProps<"code"> {
    *
    * @default "subtle"
    */
-  variant?: ConditionalValue<"solid" | "subtle" | "outline" | "surface" | "plain">;
+  variant?: ConditionalValue<
+    "solid" | "subtle" | "outline" | "surface" | "plain" | PresetVariant<"code", "variant">
+  >;
   /**
    * The text style and horizontal padding together, with a matching minimum height.
    *
    * @default "sm"
    */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg">;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | PresetVariant<"code", "size">>;
 }
 
 const { withContext, PropsProvider } = createRecipeContext<CodeProps, CodeVariantProps>({

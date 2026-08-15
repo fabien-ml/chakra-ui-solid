@@ -1,6 +1,7 @@
 import {
   createSlotRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   type PropsProviderProps,
   renderStyled,
   withDefaults,
@@ -26,12 +27,14 @@ export type TagSlot = "root" | "label" | "closeTrigger" | "startElement" | "endE
  */
 export interface TagVariantProps {
   /** The label's type scale, the tag's minimum height, and the size of a start or end element. */
-  size?: ConditionalValue<"sm" | "md" | "lg" | "xl">;
+  size?: ConditionalValue<"sm" | "md" | "lg" | "xl" | PresetVariant<"tag", "size">>;
   /**
    * How much of the palette the tag spends — `solid` fills it, `subtle` tints it, `outline` is a
    * ring alone, and `surface` is the tint plus the ring.
    */
-  variant?: ConditionalValue<"subtle" | "solid" | "outline" | "surface">;
+  variant?: ConditionalValue<
+    "subtle" | "solid" | "outline" | "surface" | PresetVariant<"tag", "variant">
+  >;
 }
 
 /** The Root's own props, without the element's — what a `Tag.RootPropsProvider` may supply. */

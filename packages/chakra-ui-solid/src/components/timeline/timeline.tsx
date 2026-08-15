@@ -1,6 +1,7 @@
 import {
   createSlotRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   type PropsProviderProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -31,14 +32,16 @@ export type TimelineSlot =
  */
 export interface TimelineVariantProps {
   /** How the indicator is filled — `solid` and `subtle` tint it, `outline` rings it, `plain` leaves it bare. */
-  variant?: ConditionalValue<"subtle" | "solid" | "outline" | "plain">;
+  variant?: ConditionalValue<
+    "subtle" | "solid" | "outline" | "plain" | PresetVariant<"timeline", "variant">
+  >;
   /**
    * Whether the line continues past the last item. It sets `--timeline-separator-display` on the
    * last item, which is the only thing that hides that item's separator.
    */
   showLastSeparator?: ConditionalValue<boolean>;
   /** The diameter of the indicator, the glyph inside it, and the title's type scale. */
-  size?: ConditionalValue<"sm" | "md" | "lg" | "xl">;
+  size?: ConditionalValue<"sm" | "md" | "lg" | "xl" | PresetVariant<"timeline", "size">>;
 }
 
 /** The Root's own props, without the `div`'s — what a `Timeline.RootPropsProvider` may supply. */

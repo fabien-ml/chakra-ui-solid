@@ -2,6 +2,7 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   renderStyled,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
@@ -22,20 +23,22 @@ export interface SeparatorProps extends Omit<HTMLChakraProps<"span">, "orientati
    *
    * @default "solid"
    */
-  variant?: ConditionalValue<"solid" | "dashed" | "dotted">;
+  variant?: ConditionalValue<"solid" | "dashed" | "dotted" | PresetVariant<"separator", "variant">>;
   /**
    * Which way the line runs. A **vertical** separator has no height of its own — give it one
    * (`<Separator orientation="vertical" height="4" />`) or let a stretching flex row supply it.
    *
    * @default "horizontal"
    */
-  orientation?: ConditionalValue<"vertical" | "horizontal">;
+  orientation?: ConditionalValue<
+    "vertical" | "horizontal" | PresetVariant<"separator", "orientation">
+  >;
   /**
    * How thick the line is, through the `--separator-thickness` custom property the recipe sets.
    *
    * @default "sm"
    */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg">;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | PresetVariant<"separator", "size">>;
 }
 
 /** The DOM props Separator forwards to the rendered element, as Box names its own. */

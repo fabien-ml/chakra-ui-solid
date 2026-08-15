@@ -1,4 +1,4 @@
-import type { HTMLChakraProps, PropsProviderProps } from "@chakra-ui-solid/core";
+import type { HTMLChakraProps, PresetVariant, PropsProviderProps } from "@chakra-ui-solid/core";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
 import type { IconProps } from "../icon";
@@ -247,7 +247,7 @@ export interface FieldItemOverrides
  */
 export interface FieldVariantProps {
   /** Whether the label sits above the control or beside it. */
-  orientation?: ConditionalValue<"vertical" | "horizontal">;
+  orientation?: ConditionalValue<"vertical" | "horizontal" | PresetVariant<"field", "orientation">>;
 }
 
 /**

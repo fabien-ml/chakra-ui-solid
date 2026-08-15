@@ -1,4 +1,9 @@
-import { createRecipeClass, type HTMLChakraProps, renderStyled } from "@chakra-ui-solid/core";
+import {
+  createRecipeClass,
+  type HTMLChakraProps,
+  type PresetVariant,
+  renderStyled,
+} from "@chakra-ui-solid/core";
 import { type RadiomarkVariantProps, radiomark } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
@@ -16,7 +21,7 @@ export interface RadiomarkProps extends HTMLChakraProps<"span"> {
    *
    * @default "md"
    */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg">;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | PresetVariant<"radiomark", "size">>;
   /**
    * How the circle is painted once it is checked — `solid` fills it with the palette, `outline` and
    * `inverted` only recolour the border, and `subtle` tints it. There is no `plain` here, where
@@ -24,7 +29,9 @@ export interface RadiomarkProps extends HTMLChakraProps<"span"> {
    *
    * @default "solid"
    */
-  variant?: ConditionalValue<"solid" | "subtle" | "outline" | "inverted">;
+  variant?: ConditionalValue<
+    "solid" | "subtle" | "outline" | "inverted" | PresetVariant<"radiomark", "variant">
+  >;
   /**
    * Give the circle an opaque background, so it covers whatever it sits on rather than letting it
    * through. Meant for `variant="outline"`, which otherwise has no fill of its own.

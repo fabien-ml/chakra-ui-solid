@@ -1,5 +1,6 @@
 import type {
   HTMLChakraProps,
+  PresetVariant,
   PropsProviderProps,
   PropTypes,
   UnstyledProp,
@@ -215,7 +216,7 @@ export interface PopoverPresenceProps {
  */
 export interface PopoverVariantProps {
   /** How wide the content is and how much padding it carries. */
-  size?: ConditionalValue<"xs" | "sm" | "md" | "lg">;
+  size?: ConditionalValue<"xs" | "sm" | "md" | "lg" | PresetVariant<"popover", "size">>;
 }
 
 /**

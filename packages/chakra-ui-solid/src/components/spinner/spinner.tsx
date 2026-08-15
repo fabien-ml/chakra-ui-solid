@@ -1,4 +1,8 @@
-import { createRecipeContext, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import {
+  createRecipeContext,
+  type HTMLChakraProps,
+  type PresetVariant,
+} from "@chakra-ui-solid/core";
 import { type SpinnerVariantProps, spinner } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 
@@ -16,7 +20,9 @@ export interface SpinnerProps extends HTMLChakraProps<"span"> {
    *
    * @default "md"
    */
-  size?: ConditionalValue<"inherit" | "xs" | "sm" | "md" | "lg" | "xl">;
+  size?: ConditionalValue<
+    "inherit" | "xs" | "sm" | "md" | "lg" | "xl" | PresetVariant<"spinner", "size">
+  >;
 }
 
 const { withContext, PropsProvider } = createRecipeContext<SpinnerProps, SpinnerVariantProps>({

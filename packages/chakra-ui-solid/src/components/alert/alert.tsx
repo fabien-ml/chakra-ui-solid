@@ -2,6 +2,7 @@ import {
   createComponentContext,
   createSlotRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   type PropsProviderProps,
   renderStyled,
 } from "@chakra-ui-solid/core";
@@ -34,13 +35,15 @@ export interface AlertVariantProps {
    * {@link AlertIndicator} reads to pick its glyph — the one thing the styling seam cannot supply,
    * and the reason this Root opens a context of its own.
    */
-  status?: ConditionalValue<AlertStatus>;
+  status?: ConditionalValue<AlertStatus | PresetVariant<"alert", "status">>;
   /** Whether the title and description sit on one line rather than stacking. */
   inline?: ConditionalValue<boolean>;
   /** How much of the palette the alert spends — a tint, a tint plus a ring, a ring, or a fill. */
-  variant?: ConditionalValue<"subtle" | "surface" | "outline" | "solid">;
+  variant?: ConditionalValue<
+    "subtle" | "surface" | "outline" | "solid" | PresetVariant<"alert", "variant">
+  >;
   /** The padding, the gap and the type scale together. */
-  size?: ConditionalValue<"sm" | "md" | "lg">;
+  size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"alert", "size">>;
 }
 
 /** The Root's own props, without the `div`'s — what an `Alert.RootPropsProvider` may supply. */

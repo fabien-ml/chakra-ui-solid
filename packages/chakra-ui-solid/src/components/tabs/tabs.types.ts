@@ -1,5 +1,6 @@
 import type {
   HTMLChakraProps,
+  PresetVariant,
   PropsProviderProps,
   PropTypes,
   RenderStrategyProps,
@@ -114,11 +115,13 @@ export interface TabsVariantProps {
   /** Whether the triggers stretch to fill the list. */
   fitted?: ConditionalValue<boolean>;
   /** Where the triggers sit along the list when they do not fill it. */
-  justify?: ConditionalValue<"start" | "center" | "end">;
+  justify?: ConditionalValue<"start" | "center" | "end" | PresetVariant<"tabs", "justify">>;
   /** How much padding and type size the triggers carry. */
-  size?: ConditionalValue<"sm" | "md" | "lg">;
+  size?: ConditionalValue<"sm" | "md" | "lg" | PresetVariant<"tabs", "size">>;
   /** Which visual treatment marks the selected tab. */
-  variant?: ConditionalValue<"line" | "subtle" | "enclosed" | "outline" | "plain">;
+  variant?: ConditionalValue<
+    "line" | "subtle" | "enclosed" | "outline" | "plain" | PresetVariant<"tabs", "variant">
+  >;
 }
 
 /**

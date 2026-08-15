@@ -2,6 +2,7 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
+  type PresetVariant,
   renderStyled,
   withContextDefaults,
   withDefaults,
@@ -26,7 +27,9 @@ export interface IconProps extends HTMLChakraProps<"svg"> {
    *
    * @default "inherit"
    */
-  size?: ConditionalValue<"inherit" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl">;
+  size?: ConditionalValue<
+    "inherit" | "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | PresetVariant<"icon", "size">
+  >;
   /**
    * Whether the glyph can take focus. Chakra sets it, so we do — it is the attribute that keeps a
    * decorative `svg` out of the tab order in engines that put it there.
