@@ -133,7 +133,15 @@ already answered it. `roadmap.md` §*Reading a row* carries the detail.
 Reading a reference for reasoning, public API shape, or an ARIA pattern owes nothing. Reproducing its
 expression makes the file a derivative: *could someone diff my file against theirs and see the same
 structure and sequence?* Ark is **what**, never **how**; it is not a dependency and never will be.
-Depend on `@chakra-ui/panda-preset`; never re-emit a recipe body or a token table.
+
+**Chakra v3's preset is the one thing we vendor rather than depend on.** The components are headless
+and their styling is a *skin* — a token table plus a full set of recipe bodies, authored from zero
+against a shape contract the components pin (which recipes exist, their slots, their variant keys and
+values). Chakra v3's look is one such skin; the only thing separating it from a consumer's is that we
+wrote it. A shape contract cannot be designed around a dependency whose bodies we cannot see, and a
+skin that can only override `@chakra-ui/panda-preset` is `theme.extend` with extra steps — so that
+package is copied in and becomes ours to maintain. **This makes those files derivatives, and they owe
+the four things below.** It is the single exception; nothing else here is vendored.
 
 **A derivative owes four things, in the same commit as the code:** an entry in
 `attribution.config.ts`, an `@license` header naming the upstream file, a row in the root and owning
