@@ -1,6 +1,9 @@
+import chakraPreset from "@chakra-ui/panda-preset";
 import { describe, expect, it } from "vitest";
-import { chakraSolidPreset } from "../preset";
+import { anatomy } from "../anatomy";
+import { chakraSolidPreset, createChakraSolidPreset } from "../preset";
 import { componentNameFor, recipeKeys, slotRecipeKeys } from "../recipe-registry";
+import { chakraSkin, defineSkin } from "../skin";
 
 /**
  * What the preset declares per recipe, now that it declares no `staticCss`.
@@ -21,6 +24,12 @@ type RecipeExtension = Record<string, { staticCss?: unknown; jsx?: string[] }>;
 const extension = chakraSolidPreset.theme?.extend as
   | { recipes?: RecipeExtension; slotRecipes?: RecipeExtension; tokens?: unknown }
   | undefined;
+
+function presetNamesOf(preset: { presets?: unknown[] }): Array<string | undefined> {
+  return (preset.presets ?? []).map((entry) =>
+    typeof entry === "string" ? entry : (entry as { name?: string }).name,
+  );
+}
 
 describe("theme.extend — the recipe declarations", () => {
   it("declares no `staticCss` on any of the 75 recipes", () => {
@@ -90,10 +99,15 @@ describe("the preset's own chain and atomic staticCss", () => {
     // own while reaching for `utilities: { extend }`. Left to a config file the fix **fails open**:
     // a consumer who omits the line gets no style-prop utilities and no `_hover`/`_open`
     // conditions, and nothing errors.
-    const names = (chakraSolidPreset.presets ?? []).map((entry) =>
-      typeof entry === "string" ? entry : (entry as { name?: string }).name,
-    );
-    expect(names).toEqual(["@pandacss/preset-base", "@chakra-ui/panda-preset"]);
+    //
+    // Chakra's preset arrives as the second and third entries rather than as one, in the position
+    // the single entry held: `anatomy` for the recipe bodies, utilities and conditions, the skin
+    // for the tokens and the compositions.
+    expect(presetNamesOf(chakraSolidPreset)).toEqual([
+      "@pandacss/preset-base",
+      "@chakra-ui-solid/anatomy",
+      "@chakra-ui-solid/skin",
+    ]);
   });
 
   it("pre-generates the atomic values a component's own logic picks", () => {
@@ -162,5 +176,39 @@ describe("the preset's own chain and atomic staticCss", () => {
     // compete with a consumer's own, because spreading a config is shallow. The per-recipe
     // declarations above ride `theme.extend`'s deep merge instead.
     expect(chakraSolidPreset.staticCss?.recipes).toBeUndefined();
+  });
+});
+
+describe("the anatomy/skin split", () => {
+  it("leaves nothing of the upstream preset behind", () => {
+    // **The invariant the whole seam rests on.** The two halves are the same object taken apart, so
+    // loading the default skin resolves to the preset it was and the stylesheet cannot move. An
+    // upstream release that adds a theme key lands here first — unclaimed by either half it would
+    // go missing from every consumer's sheet with nothing to say so.
+    const { globalCss, recipes, slotRecipes, ...skinTheme } = chakraSkin;
+
+    expect(new Set([...Object.keys(anatomy.theme ?? {}), ...Object.keys(skinTheme)])).toEqual(
+      new Set(Object.keys(chakraPreset.theme ?? {})),
+    );
+    // `name` and `theme` aside, the top level splits the same way: two keys to the anatomy, one to
+    // the skin.
+    expect(new Set(Object.keys(chakraPreset))).toEqual(
+      new Set(["name", "theme", "utilities", "conditions", "globalCss"]),
+    );
+    expect(globalCss).toBe(chakraPreset.globalCss);
+    expect(anatomy.utilities).toBe(chakraPreset.utilities);
+    expect(anatomy.conditions).toBe(chakraPreset.conditions);
+    // Deltas are typed on `Skin` and Chakra's own carries none — it is a slice, not an override.
+    expect([recipes, slotRecipes]).toEqual([undefined, undefined]);
+  });
+
+  it("puts the skin it was given into the chain", () => {
+    // The parameter is the seam; without this the default export would be the only thing exercised
+    // and `createChakraSolidPreset` could ignore its argument entirely.
+    const preset = createChakraSolidPreset(defineSkin({ breakpoints: { sm: "1px" } }));
+    const skin = (preset.presets ?? [])[2] as { theme?: { breakpoints?: unknown } };
+
+    expect(presetNamesOf(preset)).toEqual(presetNamesOf(chakraSolidPreset));
+    expect(skin.theme?.breakpoints).toEqual({ sm: "1px" });
   });
 });

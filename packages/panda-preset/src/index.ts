@@ -6,5 +6,7 @@
 
 export type { ChakraConfigOverrides, ConditionalGrain, ResponsiveGrain } from "./config";
 export { defineChakraConfig } from "./config";
-export { chakraSolidPreset, chakraSolidPreset as default } from "./preset";
+export { chakraSolidPreset, chakraSolidPreset as default, createChakraSolidPreset } from "./preset";
 export { defaultVariantsFor, recipeKeys, slotRecipeKeys, variantKeysFor } from "./recipe-registry";
+export type { Skin } from "./skin";
+export { chakraSkin, defineSkin } from "./skin";

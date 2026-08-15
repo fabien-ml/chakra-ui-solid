@@ -20,6 +20,7 @@
   },
   "scripts": {
     "build": "tsdown",
+    "cssgen": "panda cssgen --cwd src/__tests__/__fixtures__/skin-consumer --outfile src/__tests__/__fixtures__/skin-consumer/consumer.css",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

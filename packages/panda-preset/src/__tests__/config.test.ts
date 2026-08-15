@@ -253,6 +253,7 @@ describe("defineChakraConfig — the keys it merges rather than replaces", () =>
     expect(plugins.map((plugin) => plugin.name)).toEqual([
       "mine",
       "chakra-ui-solid:recipe-gate",
+      "chakra-ui-solid:skin-contract",
       "chakra-ui-solid:locked-keys",
     ]);
     expect(plugins[0]).toBe(theirs);

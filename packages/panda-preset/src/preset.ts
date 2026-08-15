@@ -1,8 +1,9 @@
-import chakraPreset from "@chakra-ui/panda-preset";
 import { definePreset } from "@pandacss/dev";
 import { aliasUtilities } from "./alias-utilities";
+import { anatomy } from "./anatomy";
 import { currentBgUtilities } from "./current-bg-utilities";
 import { componentNameFor, recipeBodyFor, recipeKeys, slotRecipeKeys } from "./recipe-registry";
+import { chakraSkin, type Skin } from "./skin";
 
 /**
  * The layout tier's keyword shorthands, whose values arrive as a **prop** and are therefore not in
@@ -122,6 +123,35 @@ function jsxHintsForEvery(keys: string[]): Record<string, { jsx: string[] }> {
 }
 
 /**
+ * A skin as the preset Panda merges — the second of the two halves `@chakra-ui/panda-preset` was
+ * split into, `anatomy` being the first.
+ *
+ * The seven token keys stay in `theme`, and the two recipe **deltas** move to `theme.extend` — the
+ * one difference that matters here, and the reason the destructure separates them.
+ *
+ * A preset's bare `theme` sits in a **replacing** position: Panda resolves each theme key from the
+ * last preset that declares it and takes that value whole. For the token tables that is exactly
+ * right, since a skin *is* the whole token table. For a delta it is ruinous — `theme.recipes` here
+ * would replace all 75 anatomy bodies with the one the delta named, leaving 74 recipes with no body,
+ * no rules and no error. `theme.extend` is the deep-merging position, so a delta placed there adds
+ * to the anatomy's body instead: set one `base` property and the other 21 and every variant survive.
+ *
+ * Putting them here rather than in `defineChakraConfig()` is what keeps them from being lost, and
+ * it hands the ordering to Panda instead of to a merge of our own. This preset sits **before** the
+ * consumer's `panda.config.ts` in the chain, and later `extend` writers win a contested key — so a
+ * consumer's own `theme.extend.recipes.button` beats a skin's delta, and both survive beside the
+ * `jsx` hint `createChakraSolidPreset` writes to that same recipe name one layer up.
+ */
+function skinAsPreset(skin: Skin) {
+  const { globalCss, recipes, slotRecipes, ...theme } = skin;
+  return {
+    name: "@chakra-ui-solid/skin",
+    theme: { ...theme, extend: { recipes, slotRecipes } },
+    globalCss,
+  };
+}
+
+/**
  * The Panda preset every consumer of `chakra-ui-solid` lists — Chakra v3's design system, plus the
  * four deltas this library needs on top of it.
  *
@@ -133,73 +163,92 @@ function jsxHintsForEvery(keys: string[]): Record<string, { jsx: string[] }> {
  * `utilities: { extend }` and `conditions: { extend }`. Left to a config file this fix works and
  * **fails open**: a consumer who omits the line gets a library with no style-prop utilities and no
  * `_open`/`_hover` conditions, and nothing errors (`plan.md` §3.2).
+ *
+ * Chakra's own preset arrives as **two** entries in that chain rather than one, and the order is
+ * the same order it held: `anatomy` carries the recipe bodies, the utilities and the conditions,
+ * and the skin carries the tokens, the compositions and its recipe deltas. Everything below the
+ * chain is the library layer and is the same whichever skin is loaded.
+ *
+ * A skin is routed **whole** here, deltas included, so this function alone is enough to build a
+ * correct preset from one. `defineChakraConfig({ skin })` is still the supported way in — that is
+ * where the locked keys, the import gate and the `staticCss` union live, and a raw `panda.config.ts`
+ * naming this preset gets none of them.
  */
-export const chakraSolidPreset = definePreset({
-  name: "@chakra-ui-solid/panda-preset",
+export function createChakraSolidPreset(skin: Skin) {
+  return definePreset({
+    name: "@chakra-ui-solid/panda-preset",
 
-  presets: ["@pandacss/preset-base", chakraPreset],
+    presets: ["@pandacss/preset-base", anatomy, skinAsPreset(skin)],
 
-  theme: {
-    extend: {
-      recipes: jsxHintsForEvery(recipeKeys),
-      slotRecipes: jsxHintsForEvery(slotRecipeKeys),
+    theme: {
+      extend: {
+        recipes: jsxHintsForEvery(recipeKeys),
+        slotRecipes: jsxHintsForEvery(slotRecipeKeys),
 
-      tokens: {
-        cursor: {
-          // The preset registers this token as `swittch` while its own Switch recipe references
-          // `cursor: "switch"` — so the reference resolves to nothing and Switch silently loses
-          // its `cursor: pointer`, where Chakra's runtime theme (which spells both `switch`) does
-          // not. That makes it a preset defect rather than Chakra behavior, and inheriting it
-          // would be a divergence from what we are porting. One token key restores it; the
-          // slot-recipe key stays misspelled and untouched (`roadmap.md` §1.3c).
-          switch: { value: "pointer" },
+        tokens: {
+          cursor: {
+            // The preset registers this token as `swittch` while its own Switch recipe references
+            // `cursor: "switch"` — so the reference resolves to nothing and Switch silently loses
+            // its `cursor: pointer`, where Chakra's runtime theme (which spells both `switch`) does
+            // not. That makes it a preset defect rather than Chakra behavior, and inheriting it
+            // would be a divergence from what we are porting. One token key restores it; the
+            // slot-recipe key stays misspelled and untouched (`roadmap.md` §1.3c).
+            switch: { value: "pointer" },
+          },
         },
       },
     },
-  },
 
-  utilities: {
-    // Two disjoint sets: `aliasUtilities` adds a *name* to a utility Panda already has,
-    // `currentBgUtilities` adds a *transform* to the two background utilities so that Chakra's
-    // `currentBg` keyword — which two of the preset's own recipes write and no shipped utility
-    // resolves — compiles to something a browser accepts.
-    extend: { ...aliasUtilities, ...currentBgUtilities },
-  },
+    utilities: {
+      // Two disjoint sets: `aliasUtilities` adds a *name* to a utility Panda already has,
+      // `currentBgUtilities` adds a *transform* to the two background utilities so that Chakra's
+      // `currentBg` keyword — which two of the preset's own recipes write and no shipped utility
+      // resolves — compiles to something a browser accepts.
+      extend: { ...aliasUtilities, ...currentBgUtilities },
+    },
 
-  // The atomic half of the same problem: values **a component's own logic picks**, which no
-  // consumer source ever contains. `display` is the shape hope-ui shipped in production for exactly
-  // this reason — a `Flex` with an `inline` prop toggles `display: inline-flex` at runtime, `Grid`
-  // does the same to `inline-grid`, and `Center` carries it as a variant body (`plan.md` §1.3).
-  //
-  // That is the whole bar, and it is narrower than "a value someone might pass at runtime."
-  // Passing one is not supported: a style value must be statically extractable, declared here, or
-  // routed through a custom property (`CLAUDE.md`, *The hazard*), so a row that exists only to
-  // rescue a runtime-valued prop is buying back a form the library forbids — at every consumer's
-  // expense, for a rule most of them never use. Measured, on `colorPalette`, which used to sit in
-  // this list: 8 kB raw / 737 B gzip, seven of its ten palettes used by nothing, and every literal
-  // form — plain, responsive object, forwarded through a wrapper — emitting fine without it. Add a
-  // row when a *component* starts picking the value, not when an example does.
-  //
-  // One property per entry, which is not a style choice: several properties in a single entry
-  // emits nothing.
-  staticCss: {
-    css: [
-      { properties: { display: displays } },
-      { properties: { flexDirection: flexDirections } },
-      { properties: { flexWrap: flexWraps } },
-      { properties: { alignItems: alignItems } },
-      { properties: { justifyContent: justifyContent } },
-      { properties: { captionSide: captionSides } },
-      { properties: { borderRadius: circleBorderRadii } },
-      { properties: { overflow: colorSwatchMixOverflows } },
-      { properties: { paddingInline: iconButtonPaddings } },
-      { properties: { paddingBlock: iconButtonPaddings } },
-      { properties: { fontSize: iconButtonIconFontSizes }, conditions: ["icon"] },
-      { properties: { boxSize: fieldErrorIconSizes } },
-      { properties: { position: linkBoxPositions } },
-      { properties: { width: skeletonTextWidths } },
-      { properties: { borderTopWidth: separatorBorderWidths }, responsive: true },
-      { properties: { borderInlineStartWidth: separatorBorderWidths }, responsive: true },
-    ],
-  },
-});
+    // The atomic half of the same problem: values **a component's own logic picks**, which no
+    // consumer source ever contains. `display` is the shape hope-ui shipped in production for exactly
+    // this reason — a `Flex` with an `inline` prop toggles `display: inline-flex` at runtime, `Grid`
+    // does the same to `inline-grid`, and `Center` carries it as a variant body (`plan.md` §1.3).
+    //
+    // That is the whole bar, and it is narrower than "a value someone might pass at runtime."
+    // Passing one is not supported: a style value must be statically extractable, declared here, or
+    // routed through a custom property (`CLAUDE.md`, *The hazard*), so a row that exists only to
+    // rescue a runtime-valued prop is buying back a form the library forbids — at every consumer's
+    // expense, for a rule most of them never use. Measured, on `colorPalette`, which used to sit in
+    // this list: 8 kB raw / 737 B gzip, seven of its ten palettes used by nothing, and every literal
+    // form — plain, responsive object, forwarded through a wrapper — emitting fine without it. Add a
+    // row when a *component* starts picking the value, not when an example does.
+    //
+    // One property per entry, which is not a style choice: several properties in a single entry
+    // emits nothing.
+    staticCss: {
+      css: [
+        { properties: { display: displays } },
+        { properties: { flexDirection: flexDirections } },
+        { properties: { flexWrap: flexWraps } },
+        { properties: { alignItems: alignItems } },
+        { properties: { justifyContent: justifyContent } },
+        { properties: { captionSide: captionSides } },
+        { properties: { borderRadius: circleBorderRadii } },
+        { properties: { overflow: colorSwatchMixOverflows } },
+        { properties: { paddingInline: iconButtonPaddings } },
+        { properties: { paddingBlock: iconButtonPaddings } },
+        { properties: { fontSize: iconButtonIconFontSizes }, conditions: ["icon"] },
+        { properties: { boxSize: fieldErrorIconSizes } },
+        { properties: { position: linkBoxPositions } },
+        { properties: { width: skeletonTextWidths } },
+        { properties: { borderTopWidth: separatorBorderWidths }, responsive: true },
+        { properties: { borderInlineStartWidth: separatorBorderWidths }, responsive: true },
+      ],
+    },
+  });
+}
+
+/**
+ * The default preset, and the one `packages/styled-system/panda.config.ts` and
+ * `defineChakraConfig()` both name: Chakra's own skin over Chakra's own anatomy, which is what
+ * every consumer gets until one of them passes something else.
+ */
+export const chakraSolidPreset = createChakraSolidPreset(chakraSkin);

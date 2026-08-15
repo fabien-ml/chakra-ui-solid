@@ -1,11 +1,15 @@
-import chakraPreset from "@chakra-ui/panda-preset";
+import { anatomy } from "./anatomy";
 import { containerRecipe } from "./container-recipe";
 
 /**
- * Everything in this package that needs to know *which* recipes exist reads them off the imported
- * preset object rather than from a list of names typed out here. A Chakra release that adds a
- * recipe is then covered by the version bump alone, which is the whole point of *depend, do not
- * vendor* (`CLAUDE.md`, *Reference use*).
+ * Everything in this package that needs to know *which* recipes exist reads them off the anatomy
+ * slice rather than from a list of names typed out here. A Chakra release that adds a recipe is
+ * then covered by the version bump alone, which is the whole point of *depend, do not vendor*
+ * (`CLAUDE.md`, *Reference use*).
+ *
+ * The anatomy rather than the upstream import directly, because the anatomy is what the generated
+ * stylesheet's recipe bodies actually come from — a skin never contributes one, so the two can
+ * never disagree about the list.
  *
  * Panda's own types describe a preset's `theme` as fully optional, so these two reads are narrowed
  * once here instead of at every call site.
@@ -19,7 +23,7 @@ type RecipeRegistry = Record<
   }
 >;
 
-const theme = chakraPreset.theme as
+const theme = anatomy.theme as
   | { recipes?: RecipeRegistry; slotRecipes?: RecipeRegistry }
   | undefined;
 
