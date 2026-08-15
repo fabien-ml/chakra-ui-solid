@@ -36,6 +36,27 @@
   },
   "overrides": [
     {
+      // `src/zag/` is the forked `@zag-js/solid` adapter, and its `any`s are upstream's: the
+      // normalizer is declared over `JSX.HTMLAttributes<any>` because it accepts every element's
+      // props, and `createTrack` takes `any[]` because a machine's dependency list is whatever that
+      // machine tracks. Retyping them would diverge this directory from the file it is re-synced
+      // against (`zag-solid-adapter.md` §1) in a way that says nothing about our code — the diff is
+      // the point of the fork. Its tests sit here too, and they pass deliberately invalid shapes to
+      // prove the normalizer drops them.
+      //
+      // This file is `.jsonc` for these comments: Biome parses a `biome.json` as strict JSON, and a
+      // comment in one fails with `Found a nested root configuration`, naming a gitignored path in
+      // `__reference-impl__` rather than the line it choked on.
+      "includes": ["**/src/zag/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/*.browser.test.tsx"],
       "linter": {
         "rules": {
