@@ -161,19 +161,22 @@ const chakraReact: AttributionEntry[] = [
 ];
 
 /**
- * The vendored half of `@chakra-ui/panda-preset` — its token tables and its compositions, one file
- * per upstream file under `packages/panda-preset/src/chakra/`.
+ * `@chakra-ui/panda-preset`, vendored whole — its token tables, its compositions and all 74 of its
+ * recipe bodies, one file per upstream file under `packages/panda-preset/src/chakra/`.
  *
  * This is the **single vendoring exception** `CLAUDE.md` makes, and the reason is that a skin is a
  * replaceable half: a shape contract cannot be designed around bodies nobody can see, and a skin
  * that can only override a dependency is `theme.extend` with extra steps. One file per upstream
  * file is what keeps a Chakra bump a `diff -r`.
  *
- * Three `.map()`s over name lists rather than 29 objects, on the reasoning `zagSolidFork` above
+ * Five `.map()`s over name lists rather than 105 objects, on the reasoning `zagSolidFork` above
  * uses: the row *set* is the fact worth reading, and a bump changes file contents rather than this
  * block. The lists are each directory as upstream wrote it, `index.ts` barrels included — a barrel
- * that assembles an object is expression like any other file, where one that only re-exports is not
- * (which is why `recipes/` and `slot-recipes/` are absent rather than partially listed).
+ * that assembles an object is expression like any other file.
+ *
+ * `container` is **not** in the recipe list, and its absence is upstream's: their generator deletes
+ * `recipes/container.ts` because Panda ships a `container` pattern of its own. Ours is reproduced
+ * from `@chakra-ui/react`'s theme instead, and its row is in `chakraReact` above.
  */
 const chakraPandaPreset: AttributionEntry[] = [
   ...[
@@ -221,6 +224,98 @@ const chakraPandaPreset: AttributionEntry[] = [
     file: `packages/panda-preset/src/chakra/${name}.ts`,
     upstreamProject: "chakra-ui/chakra-ui",
     upstreamFile: `packages/panda-preset/src/${name}.ts`,
+    license: "MIT" as const,
+    package: "panda-preset",
+  })),
+  ...[
+    "badge",
+    "button",
+    "checkmark",
+    "code",
+    "color-swatch",
+    "heading",
+    "icon",
+    "index",
+    "input",
+    "input-addon",
+    "kbd",
+    "link",
+    "mark",
+    "radiomark",
+    "separator",
+    "skeleton",
+    "skip-nav-link",
+    "spinner",
+    "textarea",
+  ].map((name) => ({
+    file: `packages/panda-preset/src/chakra/recipes/${name}.ts`,
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: `packages/panda-preset/src/recipes/${name}.ts`,
+    license: "MIT" as const,
+    package: "panda-preset",
+  })),
+  ...[
+    "accordion",
+    "action-bar",
+    "alert",
+    "avatar",
+    "blockquote",
+    "breadcrumb",
+    "card",
+    "carousel",
+    "checkbox",
+    "checkbox-card",
+    "code-block",
+    "collapsible",
+    "color-picker",
+    "combobox",
+    "data-list",
+    "date-picker",
+    "dialog",
+    "drawer",
+    "editable",
+    "empty-state",
+    "field",
+    "fieldset",
+    "file-upload",
+    "floating-panel",
+    "hover-card",
+    "index",
+    "list",
+    "listbox",
+    "marquee",
+    "menu",
+    "native-select",
+    "number-input",
+    "pin-input",
+    "popover",
+    "progress",
+    "progress-circle",
+    "qr-code",
+    "radio-card",
+    "radio-group",
+    "rating-group",
+    "scroll-area",
+    "segment-group",
+    "select",
+    "slider",
+    "splitter",
+    "stat",
+    "status",
+    "steps",
+    "switch",
+    "table",
+    "tabs",
+    "tag",
+    "tags-input",
+    "timeline",
+    "toast",
+    "tooltip",
+    "tree-view",
+  ].map((name) => ({
+    file: `packages/panda-preset/src/chakra/slot-recipes/${name}.ts`,
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: `packages/panda-preset/src/slot-recipes/${name}.ts`,
     license: "MIT" as const,
     package: "panda-preset",
   })),

@@ -165,12 +165,11 @@ describe("the stylesheet a skin generates", () => {
   });
 
   it("keeps the library's own recipe body beside a skin's delta on the same name", () => {
-    // `container` is the one recipe this package **declares itself** — `@chakra-ui/panda-preset`
-    // ships none, so `container-recipe.ts` arrives through the library layer's own
-    // `theme.extend.recipes`, one preset above the skin's. The fixture skin writes that same name,
-    // which makes this two `theme.extend` writers on one recipe and the case a merge can silently
-    // collapse. Keep only the skin's and the Container loses its width, its padding and its
-    // variants; keep only the library's and the skin's radius never lands.
+    // `container` is the one recipe this package **reproduces itself** — upstream's generator
+    // strips it, so `container-recipe.ts` is what `chakra/recipes/index.ts` registers. The fixture
+    // skin writes a delta on that same name, which is the case a merge can silently collapse: keep
+    // only the skin's and the Container loses its width, its padding and its variants; keep only
+    // the body and the skin's radius never lands.
     expect(baseRule("container")).toMatch(/border-radius:\s*var\(--chakra-radii-l1\)/);
     expect(baseRule("container")).toMatch(/max-width:\s*var\(--chakra-sizes-8xl\)/);
     expect(baseRule("container")).toMatch(/padding-inline:\s*var\(--chakra-spacing-4\)/);

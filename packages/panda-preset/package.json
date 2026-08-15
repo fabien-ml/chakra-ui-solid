@@ -27,7 +27,6 @@
     "@pandacss/dev": "catalog:"
   },
   "dependencies": {
-    "@chakra-ui/panda-preset": "catalog:",
     "@pandacss/preset-base": "catalog:"
   },
   "devDependencies": {

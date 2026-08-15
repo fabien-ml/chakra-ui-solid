@@ -1,18 +1,18 @@
-import { anatomy } from "./anatomy";
-import { containerRecipe } from "./container-recipe";
+import { recipes } from "./chakra/recipes";
+import { slotRecipes } from "./chakra/slot-recipes";
 
 /**
- * Everything in this package that needs to know *which* recipes exist reads them off the anatomy
- * slice rather than from a list of names typed out here. A Chakra release that adds a recipe is
- * then covered by the version bump alone, which is the whole point of *depend, do not vendor*
- * (`CLAUDE.md`, *Reference use*).
+ * Everything in this package that needs to know *which* recipes exist reads them off the vendored
+ * bodies under `chakra/` rather than from a list of names typed out here. A Chakra release that
+ * adds a recipe is then covered by the `diff -r` that brings its file in, and nothing else has to
+ * be told.
  *
- * The anatomy rather than the upstream import directly, because the anatomy is what the generated
- * stylesheet's recipe bodies actually come from — a skin never contributes one, so the two can
- * never disagree about the list.
+ * The vendored barrels rather than the resolved config, because these names are read at *config*
+ * time — `defineChakraConfig({ responsive })` expands its grains and `staticCss` declares its rows
+ * before Panda has a theme to ask.
  *
- * Panda's own types describe a preset's `theme` as fully optional, so these two reads are narrowed
- * once here instead of at every call site.
+ * Panda's own types describe a recipe body as far wider than the three keys read here, so the two
+ * tables are narrowed once at the top instead of at every call site.
  */
 type RecipeRegistry = Record<
   string,
@@ -23,37 +23,29 @@ type RecipeRegistry = Record<
   }
 >;
 
-const theme = anatomy.theme as
-  | { recipes?: RecipeRegistry; slotRecipes?: RecipeRegistry }
-  | undefined;
+const atomicRecipes = recipes as RecipeRegistry;
+const compoundRecipes = slotRecipes as RecipeRegistry;
 
 /**
- * The recipes this package **declares** rather than inherits, and there is exactly one.
+ * The 19 atomic recipes — `button`, `input`, `heading`, … — `container` among them.
  *
- * `container` is a key `@chakra-ui/react` defines in its own theme and `@chakra-ui/panda-preset`
- * omits, so its body is ported into {@link containerRecipe} and registered here. Registering it in
- * the same table as the inherited 18 is what makes every downstream reader cover it without being
- * told: the `staticCss: ["*"]` declaration, the jsx hint, and `defineChakraConfig({ responsive })`'s
- * expansion each walk `recipeKeys`, and a delta bolted onto the preset alone would be missing from
- * all three.
+ * `container` is the one key upstream's generator strips, since Panda ships a `container` pattern
+ * of its own; `chakra/recipes/index.ts` registers our reproduction of Chakra's body in the same
+ * table as the other 18. That is what makes every downstream reader cover it without being told:
+ * the `staticCss` declaration, the jsx hint, and `defineChakraConfig({ responsive })`'s expansion
+ * each walk this list.
  */
-const localRecipes: RecipeRegistry = { container: containerRecipe };
-
-/** The 18 atomic recipes the preset ships — `button`, `input`, `heading`, … — plus `container`. */
-export const recipeKeys: string[] = [
-  ...Object.keys(theme?.recipes ?? {}),
-  ...Object.keys(localRecipes),
-];
+export const recipeKeys: string[] = Object.keys(atomicRecipes);
 
 /**
  * The 56 slot recipes.
  *
- * **`swittch` is in here, misspelled, and we consume it verbatim.** Aliasing it to `switch` would
- * register the same `className: "switch"` recipe body under two keys and emit its CSS twice;
- * renaming it would fork the package we depend on. The consequence a component author actually
- * trips over is that the *generated function* is named `swittch` too (`roadmap.md` §1.3c).
+ * **`swittch` is in here, misspelled, and we keep it that way.** Panda names the generated function
+ * after the key, and `export const switch` is a syntax error — which is why upstream's own generator
+ * renames it. The consequence a component author trips over is that the function is `swittch()`
+ * (`roadmap.md` §1.3c).
  */
-export const slotRecipeKeys: string[] = Object.keys(theme?.slotRecipes ?? {});
+export const slotRecipeKeys: string[] = Object.keys(compoundRecipes);
 
 /**
  * The component name a recipe styles, derived from the recipe's own `className` rather than its
@@ -87,9 +79,9 @@ export function variantKeysFor(): Array<{ recipe: string; keys: string[] }> {
  *
  * **The docs site's props tables are the caller.** A recipe variant's default belongs to the
  * recipe's `defaultVariants`, so a component's own interface must not restate one: a `@default` tag
- * beside a variant is a second source of truth that drifts silently on a preset bump, and Dialog's
- * four variants deliberately carry none. Reading it here is what lets the generated table print
- * `md` for `size` anyway, out of the one place that decides it.
+ * beside a variant is a second source of truth that drifts silently, and Dialog's four variants
+ * deliberately carry none. Reading it here is what lets the generated table print `md` for `size`
+ * anyway, out of the one place that decides it.
  *
  * A **component-level** default is a different thing and still belongs on the interface —
  * `CloseButton` sets `variant: "ghost"` in its own `withDefaults`, where the `button` recipe says
@@ -100,10 +92,5 @@ export function defaultVariantsFor(recipeKey: string): Record<string, string> {
 }
 
 function registryEntry(recipeKey: string): RecipeRegistry[string] | undefined {
-  return theme?.recipes?.[recipeKey] ?? theme?.slotRecipes?.[recipeKey] ?? localRecipes[recipeKey];
-}
-
-/** The body a locally-declared recipe needs merged into `theme.extend`, since nothing inherits it. */
-export function recipeBodyFor(recipeKey: string): RecipeRegistry[string] | undefined {
-  return localRecipes[recipeKey];
+  return atomicRecipes[recipeKey] ?? compoundRecipes[recipeKey];
 }

@@ -1,6 +1,4 @@
-import chakraPreset from "@chakra-ui/panda-preset";
 import { describe, expect, it } from "vitest";
-import { anatomy } from "../anatomy";
 import { chakraSolidPreset, createChakraSolidPreset } from "../preset";
 import { componentNameFor, recipeKeys, slotRecipeKeys } from "../recipe-registry";
 import { chakraSkin, defineSkin } from "../skin";
@@ -15,8 +13,7 @@ import { chakraSkin, defineSkin } from "../skin";
  * bodies used to be the answer, at 354 kB of CSS for an app that imports Button;
  * `recipe-gate-plugin.ts` is, and `recipe-gate.test.ts` is where that half is asserted.
  *
- * What is left here is one `jsx` hint per recipe, which nothing depends on, and the `container`
- * body, which nothing upstream declares.
+ * What is left here is one `jsx` hint per recipe, and nothing depends on it.
  */
 
 type RecipeExtension = Record<string, { staticCss?: unknown; jsx?: string[] }>;
@@ -30,6 +27,13 @@ function presetNamesOf(preset: { presets?: unknown[] }): Array<string | undefine
     typeof entry === "string" ? entry : (entry as { name?: string }).name,
   );
 }
+
+/** The chain's middle entry — the fixed half, read back out of the preset that assembles it. */
+const anatomyPreset = (chakraSolidPreset.presets ?? [])[1] as {
+  theme?: { recipes?: Record<string, { className?: string }>; slotRecipes?: object };
+  utilities?: { extend?: object };
+  conditions?: unknown;
+};
 
 describe("theme.extend — the recipe declarations", () => {
   it("declares no `staticCss` on any of the 75 recipes", () => {
@@ -51,16 +55,13 @@ describe("theme.extend — the recipe declarations", () => {
     expect(Object.keys(extension?.slotRecipes ?? {})).toEqual(slotRecipeKeys);
   });
 
-  it("carries the ported `container` body alongside its declaration", () => {
-    // The one recipe with nothing upstream to merge into: `theme.extend` deep-merges, so a key the
-    // inherited theme does not have is *created* by this entry — the body has to arrive through it,
-    // or Panda registers a hint for a recipe that does not exist and `container(…)` is not
-    // generated at all.
-    const container = extension?.recipes?.container as
-      | { className?: string; jsx?: string[] }
-      | undefined;
-    expect(container?.className).toBe("container");
-    expect(container?.jsx).toEqual(["Container"]);
+  it("declares `container` as an ordinary recipe rather than a body smuggled through `extend`", () => {
+    // `container` used to arrive here whole, because it was the one recipe the dependency did not
+    // carry and `theme.extend` *creates* a key the base theme lacks. Now that the bodies are
+    // vendored, `chakra/recipes/index.ts` registers it beside the other eighteen and this entry is
+    // the same bare hint every other recipe gets.
+    expect(extension?.recipes?.container).toEqual({ jsx: ["Container"] });
+    expect(anatomyPreset.theme?.recipes?.container?.className).toBe("container");
   });
 
   it("keeps `swittch` under its misspelled key while hinting the real component name", () => {
@@ -180,41 +181,34 @@ describe("the preset's own chain and atomic staticCss", () => {
 });
 
 describe("the anatomy/skin split", () => {
-  it("leaves nothing of the upstream preset behind", () => {
-    // **The invariant the whole seam rests on.** The two halves cover every key the upstream preset
-    // declares, so loading the default skin resolves to the preset it was and the stylesheet cannot
-    // move. An upstream release that adds a theme key lands here first — unclaimed by either half it
-    // would go missing from every consumer's sheet with nothing to say so.
+  it("claims every key the vendored preset declares, in one half or the other", () => {
+    // **The invariant the whole seam rests on**, and the last thing left of it now that there is no
+    // dependency to diff against. Chakra's own `index.ts` declares these nine theme keys plus
+    // `utilities`, `conditions` and `globalCss`; each has to land in exactly one half. A key a
+    // Chakra bump adds and neither half claims goes missing from every consumer's sheet with
+    // nothing to say so.
     const { globalCss, recipes, slotRecipes, ...skinTheme } = chakraSkin;
 
-    expect(new Set([...Object.keys(anatomy.theme ?? {}), ...Object.keys(skinTheme)])).toEqual(
-      new Set(Object.keys(chakraPreset.theme ?? {})),
+    expect(new Set([...Object.keys(anatomyPreset.theme ?? {}), ...Object.keys(skinTheme)])).toEqual(
+      new Set([
+        "breakpoints",
+        "keyframes",
+        "tokens",
+        "semanticTokens",
+        "recipes",
+        "slotRecipes",
+        "textStyles",
+        "layerStyles",
+        "animationStyles",
+      ]),
     );
-    // `name` and `theme` aside, the top level splits the same way: two keys to the anatomy, one to
-    // the skin.
-    expect(new Set(Object.keys(chakraPreset))).toEqual(
-      new Set(["name", "theme", "utilities", "conditions", "globalCss"]),
-    );
-    // `conditions` is still the dependency's own object, so identity is what says so. Everything
-    // the skin carries — and `utilities` — is **vendored** under `chakra/`, so what is asserted
-    // there is value equality against the dependency: that is the byte-neutrality claim the copy
-    // makes, and the only thing that can catch a token dropped in transcription.
-    expect(anatomy.conditions).toBe(chakraPreset.conditions);
-    expect(globalCss).toEqual(chakraPreset.globalCss);
-    // A utility is a `transform` function, so only the **names** can be compared across the copy —
-    // and names are the whole of what is sealed anyway: the published
-    // `styled-system/jsx/is-valid-prop.mjs` hardcodes every one of them, so a lost name is a style
-    // prop that silently stops being a style prop. What the transforms compute is asserted by the
-    // generated stylesheet instead.
-    expect(Object.keys(anatomy.utilities?.extend ?? {})).toEqual(
-      Object.keys(chakraPreset.utilities?.extend ?? {}),
-    );
-    expect(skinTheme).toEqual(
-      Object.fromEntries(
-        Object.entries(chakraPreset.theme ?? {}).filter(([key]) => key in skinTheme),
-      ),
-    );
-    // Deltas are typed on `Skin` and Chakra's own carries none — it is a copy of the look, not an
+    // The three non-theme keys split two to the anatomy, one to the skin. `conditions` is the whole
+    // of Chakra's own: `_icon` is how a recipe reaches the svg inside a control it does not own the
+    // markup of.
+    expect(anatomyPreset.conditions).toEqual({ extend: { icon: "& :where(svg)" } });
+    expect(Object.keys(anatomyPreset.utilities?.extend ?? {})).toContain("focusRing");
+    expect(globalCss).toBeTypeOf("object");
+    // Deltas are typed on `Skin` and Chakra's own carries none — it is the look itself, not an
     // override of it.
     expect([recipes, slotRecipes]).toEqual([undefined, undefined]);
   });

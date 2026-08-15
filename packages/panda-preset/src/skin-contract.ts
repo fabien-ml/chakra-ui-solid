@@ -1,6 +1,6 @@
 import type { Config } from "@pandacss/dev";
-import { anatomy } from "./anatomy";
-import { containerRecipe } from "./container-recipe";
+import { recipes } from "./chakra/recipes";
+import { slotRecipes } from "./chakra/slot-recipes";
 import { defaultVariantsFor } from "./recipe-registry";
 import { chakraSkin, type Skin } from "./skin";
 
@@ -227,15 +227,11 @@ type TokenName = { category: string; name: string };
 type TokenReference = TokenName & { property: string };
 
 /**
- * The bodies a skin's token table has to satisfy: the anatomy's 74, plus the one this package
- * declares itself. `container` is not inherited from anywhere (`container-recipe.ts` says why), and
- * a skin missing `sizes.8xl` would leave it full-bleed the same way.
+ * The bodies a skin's token table has to satisfy — all 75, `container` among them: a skin missing
+ * `sizes.8xl` leaves Container full-bleed exactly as a skin missing `radii.l2` leaves Button
+ * square-cornered.
  */
-const recipeBodies = [
-  ...Object.values(anatomy.theme?.recipes ?? {}),
-  ...Object.values(anatomy.theme?.slotRecipes ?? {}),
-  containerRecipe,
-];
+const recipeBodies = [...Object.values(recipes), ...Object.values(slotRecipes)];
 
 function tokenReferencesInRecipes(utilities: UtilityMap, names: TokenNames): TokenReference[] {
   const scaleFor = scalesByProperty(utilities, names);

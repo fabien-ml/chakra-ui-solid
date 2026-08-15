@@ -13,7 +13,7 @@
 import type { Config } from "@pandacss/dev";
 import basePreset from "@pandacss/preset-base";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { anatomy } from "../anatomy";
+import { utilities } from "../chakra/utilities";
 import { chakraSkin, defineSkin, type Skin } from "../skin";
 import { skinContractPlugin } from "../skin-contract";
 
@@ -30,7 +30,7 @@ function resolvedConfigWith(skin: Skin): Config {
   const { globalCss, recipes, slotRecipes, ...theme } = skin;
   return {
     theme,
-    utilities: { ...basePreset.utilities, ...anatomy.utilities?.extend },
+    utilities: { ...basePreset.utilities, ...utilities },
   } as Config;
 }
 

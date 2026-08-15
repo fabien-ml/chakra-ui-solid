@@ -2,18 +2,19 @@ import { describe, expect, it } from "vitest";
 import { componentNameFor, recipeKeys, slotRecipeKeys, variantKeysFor } from "../recipe-registry";
 
 /**
- * The registry reads the recipe list off the imported `@chakra-ui/panda-preset` rather than from a
- * list typed out here, which is what *depend, do not vendor* buys: a Chakra release that adds a
- * recipe is covered by the version bump alone. These tests pin the reads, not the list — a count
- * that moves is a real upstream change and worth seeing.
+ * The registry reads the recipe list off the vendored barrels under `chakra/` rather than from a
+ * list typed out here, so a Chakra release that adds a recipe is covered by the `diff -r` that
+ * brings its file in. These tests pin the reads, not the list — a count that moves is a real
+ * upstream change and worth seeing.
  *
- * One key is **not** read off it, and is named below for that reason: `container` is a recipe
- * `@chakra-ui/react` has and the preset does not, so its body is ported into this package. The
- * count is therefore 18 + 1, and a 19 that became a 20 by itself is the upstream change to look at.
+ * `container` is the one key upstream's own generator strips, since Panda ships a `container`
+ * pattern of its own; `chakra/recipes/index.ts` registers our reproduction of Chakra's body beside
+ * the other eighteen. The count is therefore 18 + 1, and a 19 that became a 20 by itself is the
+ * upstream change to look at.
  */
 
-describe("the recipe list, read off the upstream preset", () => {
-  it("finds 18 atomic and 56 slot recipes, plus the one recipe we declare", () => {
+describe("the recipe list, read off the vendored bodies", () => {
+  it("finds 18 atomic and 56 slot recipes, plus the one upstream's generator strips", () => {
     expect(recipeKeys).toHaveLength(19);
     expect(slotRecipeKeys).toHaveLength(56);
     // Zero would also be a "successful" read: `Object.keys(theme?.recipes ?? {})` on a preset whose
@@ -36,8 +37,9 @@ describe("the recipe list, read off the upstream preset", () => {
   });
 
   it("carries `swittch` verbatim, misspelling and all", () => {
-    // Aliasing it to `switch` would register the same `className: "switch"` body under two keys and
-    // emit its CSS twice; renaming it forks the package we depend on. So the key stays wrong.
+    // Panda names the generated function after the key, and `export const switch` is a syntax
+    // error — which is why upstream's own generator renames it on the way out. Aliasing it back
+    // would register the same `className: "switch"` body under two keys and emit its CSS twice.
     expect(slotRecipeKeys).toContain("swittch");
     expect(slotRecipeKeys).not.toContain("switch");
   });
