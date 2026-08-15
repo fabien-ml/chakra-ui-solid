@@ -5,6 +5,9 @@
 import solid from "@solidjs/vite-plugin";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
+// The docs app's own plugin, imported rather than re-declared, for the same reason the alias table
+// is: the `browser` project mounts that app's components, so it has to resolve what they import.
+import { exampleSourceHighlighter } from "./apps/docs/highlight-plugin.ts";
 import { solidPluginOptions } from "./solid-babel-options.ts";
 import {
   chakraSolidAlias,
@@ -111,7 +114,15 @@ export default defineConfig({
         // HTML rendered fresh in-process by a nested SSR Vite server, so a hydration round-trip
         // needs no committed `.html` fixture at any component count. See
         // `vitest-hydration-bridge.ts`.
-        plugins: [solid(solidPluginOptions({ hydratable: true })), hydrationFixtureBridge()],
+        // `exampleSourceHighlighter` is here because `<Example>` reads its own source through a
+        // `?highlight` glob, and without the plugin that query resolves to the *module* — so the
+        // code panel's `innerHTML` is a stringified function and every assertion about what a
+        // reader sees is written against a shape the site never renders.
+        plugins: [
+          solid(solidPluginOptions({ hydratable: true })),
+          hydrationFixtureBridge(),
+          exampleSourceHighlighter(),
+        ],
         // `docsSrcAlias` only here: the docs app's components are rendered, so this is the one
         // project that can mount them, and it is the project their tests live in.
         resolve: { alias: [...chakraSolidAlias, ...docsSrcAlias] },

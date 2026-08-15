@@ -114,6 +114,23 @@ describe("the preview/code split", () => {
     await vi.waitFor(() => expect(copyButton(container)).toBeNull());
   });
 
+  it("renders the source as highlighted markup, not a stringified module", async () => {
+    // This assertion is only worth anything because `vitest.config.ts` carries the docs app's
+    // `exampleSourceHighlighter`. Without it the `?highlight` query resolves to the module and this
+    // panel holds a stringified function — which still renders *something*, so a laxer assertion
+    // passed against a shape the site never serves.
+    const container = mountExample();
+    await openCode(container);
+
+    const pre = query(container, "pre.shiki");
+    expect(pre.textContent).toContain("export default function SpinnerWithLabel");
+
+    // Every token carries both colours at once, which is what makes the colour-mode switch a
+    // cascade choice rather than a re-highlight in the browser.
+    const token = query(pre, "span[style*='--shiki-light']");
+    expect(token.style.getPropertyValue("--shiki-dark")).not.toBe("");
+  });
+
   it("draws one border around both panels, on the group", async () => {
     // Computed styles, never class names — `classList.contains("tabs__contentGroup")` passes on an
     // element whose CSS was never generated (`CLAUDE.md`, *silent unstyling*).
