@@ -1,0 +1,252 @@
+---
+title: Writing a preset
+description: Replacing Chakra's look with one of your own — what the recipe contract asks of a Panda preset, and how to write one from zero
+links:
+  source: packages/panda-preset/src/define-chakra-preset.ts
+---
+
+A look here is a **Panda preset**, and nothing else. Chakra v3's is one of them: `chakraPreset` is
+the token tables plus a body for each of the 75 recipes our components compute their class names
+through, and the only thing separating it from yours is that we wrote it. Panda's
+[Presets](https://panda-css.com/docs/customization/presets) page is the reference for what a preset
+*is*; this page is what one for **this** library has to contain.
+
+## theme.extend, or a preset?
+
+Two jobs, and the division is which one you are doing.
+
+| You want | Reach for | Because |
+| --- | --- | --- |
+| A brand colour, one more `button` size, a rounder radius | `theme.extend` in your config | It deep-merges — it names the property it changes and inherits everything else |
+| A different look: your tokens, your recipe bodies | Your own preset, in `presets` | A key it declares **replaces** ours, which is the only way to remove what Chakra's body said |
+
+`theme.extend` can never delete. A delta naming `borderRadius` on `button` inherits every other
+declaration in Chakra's base, which is what you want for a tweak and exactly what you do not want
+when the whole look is the deliverable. A preset's `theme.recipes` sits in a replacing position
+instead: declare it and yours *is* the body.
+
+They compose, and your config is the last word — a `theme.extend` contesting a property your own
+preset also sets wins, because a preset you installed cannot outrank the config you wrote.
+
+## The recipe contract
+
+A preset supplies the bodies. What it does not get to choose is the outline they fill, because our
+runtime was compiled against that outline before you installed it: `<Button size="lg">` emits
+`button--size_lg` whatever your stylesheet declares. A preset that renames the recipe, drops the
+size, or misses a slot produces a sheet full of rules nothing on the page ever wears — every test
+green, every component naked.
+
+The **contract** is that outline written down: 75 rows, one per recipe, and not a single style value
+in any of them.
+
+```ts title="packages/panda-preset/src/contract/recipes/button.ts"
+export const buttonShape = {
+  className: "button",
+  slots: [],
+  variants: {
+    size: ["2xs", "xs", "sm", "md", "lg", "xl", "2xl"],
+    variant: ["solid", "subtle", "surface", "outline", "ghost", "plain"],
+  },
+  defaultVariants: { size: "md", variant: "solid" },
+} as const satisfies RecipeShape;
+```
+
+| It pins | Across all 75 |
+| --- | --- |
+| `className` | The string every class for that recipe starts with. Three are not the kebab-cased key, and they are upstream's: `skipNavLink` → `skip-nav`, `swittch` → `switch`, and `colorPicker`, which is simply not kebabbed |
+| `slots` | 476 part names, in the order the recipe declares them |
+| `variants` | 144 keys, and the 490 values under them |
+| `defaultVariants` | What 64 of the 75 resolve when a consumer passes nothing |
+
+19 of the 75 are atomic recipes and 56 are slot recipes, which is Panda's own split into
+`theme.recipes` and `theme.slotRecipes`. **All 75 are required**, including recipes your app never
+renders: which of them reach your stylesheet is decided later, by the components your source
+imports, and a preset with a hole in it is a hole nothing else can report.
+
+## The editor is the outline
+
+`defineChakraPreset()` is Panda's `definePreset` with the contract added to its type. Every gap is
+reported as a required property whose type is the sentence explaining it, so the message names the
+thing you left out instead of reading `Type 'X' is not assignable to type 'never'`.
+
+A recipe with no body at all:
+
+```txt
+Type '{}' is missing the following properties from type '{ readonly accordion: "this preset declares
+no `accordion` recipe, and our runtime computes its classes either way"; … }': accordion, actionBar,
+alert, avatar, and 52 more
+```
+
+A variant value:
+
+```txt
+Type '{ md: {}; }' is missing the following properties from type '{ xs: "our runtime emits the class
+for `button.size=xs`, and this preset declares no rule for it"; … }': xs, sm, lg, "2xs", and 2 more
+```
+
+A slot:
+
+```txt
+Property 'itemBody' is missing in type '["root", "item", "itemTrigger", "itemContent",
+"itemIndicator"]' but required in type '{ itemBody: "our runtime renders `accordion.itemBody`, and
+this preset styles nothing for it"; }'
+```
+
+**It checks what it can see, which is not everything.** A body built with Panda's own
+`defineRecipe()` comes back with its slots and variants widened to `string`, and passes this
+signature unread — that is how `chakraPreset` itself satisfies it, and why the type cannot be the
+only check. Two things it deliberately leaves alone are `className` and `defaultVariants`. The
+build-time check below covers those, and everything a widened body hid.
+
+## Writing one
+
+<Steps>
+  <Step title="Start from Chakra's tables, or from nothing">
+
+```ts title="my-preset.ts"
+import { chakraPreset, defineChakraPreset } from "@chakra-ui-solid/panda-preset";
+
+export const myPreset = defineChakraPreset({
+  name: "my-look",
+  theme: {
+    ...chakraPreset.theme,
+    // …the keys your look replaces
+  },
+});
+```
+
+The spread is not politeness. Panda takes the last preset that declares `theme.recipes` and takes it
+**whole**, so a `recipes: { button }` on its own leaves the other 18 with no body, no rules and no
+error. Spreading is how you replace the bodies you mean to and inherit the rest; a look that owes
+nothing to Chakra's writes all 75 out and drops the spread.
+
+A key you never mention falls through from ours untouched — a preset that replaces every recipe body
+and says nothing about `keyframes` keeps Chakra's animations.
+
+  </Step>
+  <Step title="Replace the tables those bodies read">
+
+```ts title="my-preset.ts"
+  semanticTokens: {
+    ...chakraPreset.theme.semanticTokens,
+    radii: { l1: { value: "3px" }, l2: { value: "13px" }, l3: { value: "23px" } },
+  },
+```
+
+`tokens` and `semanticTokens` replace whole exactly as `recipes` does, and this is the failure with
+no error anywhere: Panda does not fail on a token it cannot resolve. It emits the **name** as a
+literal CSS value.
+
+```css
+/* resolved */   min-height: var(--chakra-sizes-5);
+/* unresolved */ min-height: 5px;
+```
+
+Wrong rather than missing, and green everywhere — which is why the check below walks every token
+reference in your bodies rather than trusting the table to be complete.
+
+  </Step>
+  <Step title="Write the bodies">
+
+Every recipe, every slot, every variant value the contract lists. What goes *inside* them is yours
+entirely — this is a Panda recipe and nothing here narrows it:
+
+```ts title="my-preset.ts"
+  recipes: {
+    ...chakraPreset.theme.recipes,
+    button: {
+      className: "button",
+      base: { borderRadius: "l3", letterSpacing: "0.02em", textTransform: "uppercase" },
+      variants: {
+        size: {
+          "2xs": { fontSize: "2xs" },
+          xs: { fontSize: "xs" },
+          // …sm, md, lg, xl, 2xl
+        },
+        variant: {
+          solid: { background: "colorPalette.solid" },
+          // …subtle, surface, outline, ghost, plain
+        },
+      },
+      defaultVariants: { size: "md", variant: "solid" },
+    },
+  },
+```
+
+`className` and `defaultVariants` are copied rather than chosen — see
+[what a preset cannot change](#what-a-preset-cannot-change).
+
+  </Step>
+  <Step title="Load it through presets, then read the run">
+
+```ts title="panda.config.ts"
+export default defineChakraConfig({
+  presets: [myPreset],
+  include: ["./node_modules/chakra-ui-solid/dist/panda.buildinfo.json", "./src/**/*.{ts,tsx}"],
+  outdir: "styled-system-app",
+});
+```
+
+There is no key of ours for this. Ours goes first and yours after it, which is exactly what puts
+your preset in the replacing position. Then generate:
+
+```bash
+pnpm panda codegen
+```
+
+  </Step>
+</Steps>
+
+## What your Panda run tells you
+
+Every run re-reads the **resolved** theme — every preset in the chain merged, your own
+`theme.extend` folded in — and reports what the types could not. Counts first, then up to ten names
+per category, because a preset written from zero misses things by the dozen and ten truncated names
+say nothing about how much is left:
+
+```txt
+[chakra-ui-solid] the resolved theme does not satisfy this library's recipe contract: 74 recipes,
+5 tokens. Panda generates a stylesheet either way and nothing else reports any of it, so the build
+stays green and the page is what is wrong.
+  recipes (74) — declared by no body in the resolved theme, so every rule they would have emitted is
+  absent while our runtime goes on computing their classes: `badge`, `code`, `heading`, `input`,
+  `inputAddon`, `kbd`, `link`, `mark`, `separator`, `skeleton`, and 64 more
+  tokens (5) — read by a recipe body and resolved by nothing, so Panda emits the name as a literal
+  CSS value instead of a variable: `layerStyles.disabled` → layerStyle: disabled, `textStyles.xs` →
+  textStyle: xs, and 3 more
+```
+
+Six categories, in severity order: a **recipe** no body declares, a wrong **class name**, a missing
+**slot**, a missing **variant key** or **value**, and a **defaultVariants** disagreeing with the one
+our runtime was compiled with. **Tokens** are the seventh line and the only one that is wrong rather
+than missing.
+
+One warning stands on its own, because nothing is missing and the fix is to write the rule
+differently: a body's `compoundVariants` never apply at all. Our runtime carries the contract's
+compound list, which is empty across all 75, so the CSS is generated and nothing on the page ever
+wears the class it was written for. Nest the other variant's own selector in the variant body
+instead — `size: { sm: { "&.button--variant_outline": { … } } }`.
+
+All of it **warns and never fails a build.** Panda wraps every config hook in a `try`/`catch` that
+logs and continues, so a failed build is not something this could give you even if it wanted to.
+
+## What a preset cannot change
+
+Four things, sealed by one fact: the runtime computing your class names was compiled before your
+config existed.
+
+| | |
+| --- | --- |
+| `className` | Our runtime spells `button--size_md` out of the contract, so a preset renaming the recipe emits every rule and dresses nothing in them — the quietest failure of the lot |
+| `defaultVariants` | Compiled in too. `<Button>` with no props wears `button--size_md` whatever your body resolves for itself |
+| `utilities` | Every style-prop name is compiled into the published `is-valid-prop.mjs`, and Panda merges the key per name — a later preset can only **add** |
+| `conditions` | The same, in the published `conditions.mjs`: 122 names, and yours are added to them rather than replacing them |
+
+`staticCss` is merged rather than sealed, and the merge is not in your favour:
+[`defineChakraConfig()`](/docs/theming/chakra-config#staticcss-is-merged-for-you) carries the
+library's own entries in your config, where Panda lets a config's array replace a preset's outright.
+So a rule your look needs pre-generated — a value a component picks at runtime, which no source file
+spells — belongs in your config's `staticCss`, not in your preset's.
+
+`globalCss` is the friendly one: Panda merges it per selector, so a preset's rules add to Chakra's
+and one naming the same selector wins.

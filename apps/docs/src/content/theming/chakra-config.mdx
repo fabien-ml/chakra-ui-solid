@@ -77,7 +77,7 @@ stand in for yours — if your own globs match nothing, the run says so instead 
 ### theme takes `extend` only
 
 `extend` deep-merges; the key beside it replaces. A bare `theme` would drop Chakra's whole token
-table and all 19 recipes, so `theme` here accepts `extend` and nothing else:
+table and all 75 recipes, so `theme` here accepts `extend` and nothing else:
 
 ```ts title="panda.config.ts"
 export default defineChakraConfig({
@@ -120,9 +120,10 @@ rule is the only thing that makes the prop do anything. Lose them and those prop
 > the peer dependency cannot reach it, and it returns `any` — discarding the `Config` types this
 > function exists to supply.
 
-### An extra preset
+## presets
 
-Ours stays first, so yours is later and wins on a conflict:
+Panda's own key, and how a **different look** reaches your stylesheet. Ours stays first, so yours is
+later and wins on a conflict:
 
 ```ts title="panda.config.ts"
 export default defineChakraConfig({
@@ -131,91 +132,22 @@ export default defineChakraConfig({
 });
 ```
 
-## skin
+There is no key of ours for this, deliberately: a look already has a name in Panda, and that name is
+*preset*. Chakra v3's is `chakraPreset` — the token tables, plus a body for each of the 75 recipes
+our components compute their class names through — and yours is the same kind of object in a later
+position.
 
-Which look your stylesheet is built from. Omit it and you get Chakra v3's:
+What the later position does depends on the key you write. A theme key you **declare** replaces ours
+whole: a preset whose `theme.recipes` names `button` alone leaves the other 18 with no body, no
+rules in your sheet, and no error anywhere. A key you **leave out** falls through from ours, so a
+preset declaring only `recipes` and `slotRecipes` keeps Chakra's tokens. Both halves are Panda's own
+merge, and the replacing half is the point rather than the hazard — it is the one thing a preset can
+do that a `theme.extend` delta cannot, since `extend` deep-merges and can never delete.
 
-```ts title="panda.config.ts"
-import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
-import { mySkin } from "./skin";
-
-export default defineChakraConfig({
-  skin: mySkin,
-  include: [...],
-});
-```
-
-The preset is two halves and only one of them moves. The **anatomy** — the 75 recipe bodies, the
-style-prop utilities and the conditions — is fixed, because a recipe body is assembly rather than
-looks: of its 4,231 declarations, 56% are structural and 37% are token references. The **skin** is
-the table those references resolve against, and it is all eight of `tokens`, `semanticTokens`,
-`textStyles`, `layerStyles`, `animationStyles`, `keyframes`, `breakpoints` and `globalCss`.
-
-### A skin replaces, it does not extend
-
-This is the one thing that goes wrong, and it is silent. A skin is the *whole* token table, so one
-that declares only what it means to change leaves every other name undefined — and Panda does not
-fail on a token it cannot resolve. It emits the name as a literal:
-
-```css
-/* the default skin */         min-height: var(--chakra-sizes-5);
-/* a skin missing `sizes.5` */ min-height: 5px;
-```
-
-Wrong rather than missing, and green everywhere. So a skin starts from `chakraSkin` and overrides
-what it means to change:
-
-```ts title="skin.ts"
-import { chakraSkin, defineSkin } from "@chakra-ui-solid/panda-preset";
-
-export const mySkin = defineSkin({
-  ...chakraSkin,
-  semanticTokens: {
-    ...chakraSkin.semanticTokens,
-    radii: { l1: { value: "3px" }, l2: { value: "13px" }, l3: { value: "23px" } },
-  },
-});
-```
-
-Every Panda run checks the skin against the names the anatomy actually reads, and names the literal
-it would have emitted:
-
-```txt
-[chakra-ui-solid] this skin leaves 1 token(s) a recipe body reads undefined: `sizes.5` → minH: 5px.
-Panda does not fail on a token it cannot resolve — it emits the name as a literal CSS value, so
-those declarations are wrong rather than missing and nothing else reports them.
-```
-
-It warns and never fails the build — Panda catches and logs anything a config hook throws, so a
-failed build is not something this could give you.
-
-### Recipe deltas
-
-A skin may also carry `recipes` / `slotRecipes` deltas, for the part of a look no token expresses:
-
-```ts title="skin.ts"
-export const mySkin = defineSkin({
-  ...chakraSkin,
-  recipes: { button: { base: { borderRadius: "l3" } } },
-});
-```
-
-They reach the anatomy through `theme.extend`, which deep-merges at every level: the delta above
-replaces the one property it names and inherits the body's other 21 base declarations and all four
-variant keys. It also means a skin **cannot delete** — no recipe, no slot and no variant key can be
-removed by one.
-
-Two keys inside a delta do nothing, and both warn. `defaultVariants` is inert, because our runtime
-is compiled with the anatomy's own defaults: `<Button>` goes on emitting `button--size_md` whatever
-your stylesheet declares. `compoundVariants` never fires at all, since the compiled runtime carries
-the anatomy's compound list and that list is empty — nest the other variant's own selector in the
-variant body instead, as `size: { sm: { "&.button--variant_outline": { … } } }`.
-
-### `skin` or `theme.extend`?
-
-`theme.extend` for additions to Chakra's look — a brand colour, one more `button` size. `skin` for a
-different look, where the token table is the deliverable. They compose, and yours is the later
-layer: a `theme.extend` that contests a property the skin also sets wins.
+[Writing a preset](/docs/theming/custom-preset) is the walkthrough: what our recipe contract requires
+of one, and how `defineChakraPreset()` turns "the other 18" into a type error that names them. For a
+brand colour or one more `button` size, stay in [`theme.extend`](#theme-takes-extend-only) instead —
+your config is the last layer in the chain, so it wins over every preset, yours included.
 
 ## responsive
 
@@ -342,8 +274,8 @@ that found nothing is a broken `include` rather than an app with no components:
 
 ## The recipe registry
 
-Three more exports, read off the preset rather than typed out, so a Chakra release that adds a
-recipe is covered by the version bump alone:
+Three more exports, read off the **recipe contract** — the authored table of what a preset for this
+library has to contain, one file per recipe under `packages/panda-preset/src/contract/`:
 
 ```ts
 import { recipeKeys, slotRecipeKeys, variantKeysFor } from "@chakra-ui-solid/panda-preset";
@@ -353,6 +285,12 @@ slotRecipeKeys.length; // => 56
 variantKeysFor().find((entry) => entry.recipe === "button");
 // => { recipe: "button", keys: ["size", "variant"] }
 ```
+
+Authored rather than read off whichever preset happens to be loaded, and that is a difference you can
+observe: these names were compiled into our published runtime before your config existed, so a preset
+[replacing every body](/docs/theming/custom-preset) must not be able to change what `responsive: true`
+expands to or what a props table prints. A Chakra release that adds a recipe adds a row here in the
+same version bump as the body.
 
 `variantKeysFor()` is what expands the coarser grains of both opt-ins: `responsive: ["button"]` and
 `conditional: { button: ["selected"] }` each mean every variant key on Button, and nothing else knows
