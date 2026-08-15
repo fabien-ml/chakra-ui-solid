@@ -1,8 +1,9 @@
 import type { ValidComponent } from "@solidjs/web";
-import { type Component, omit } from "solid-js";
+import type { Component } from "solid-js";
 import type { RenderProp } from "../render/render";
 import { renderStyled } from "../render-styled/render-styled";
 import { withContextDefaults } from "../utils/defaults";
+import { omitProps } from "../utils/omit-props";
 import { createPropsContext, type PropsProviderProps } from "./props-context";
 import { createRecipeClass, type RecipeFn } from "./recipe";
 
@@ -21,9 +22,10 @@ export interface RecipeContextOptions<Props extends object, Variants extends obj
    */
   recipe?: RecipeFn<Variants>;
   /**
-   * The recipe's own inputs, as **literal** keys rather than `recipe.variantKeys` — `omit` narrows
-   * the returned props by the keys it is given, and a `string[]` narrows nothing. The two lists are
-   * the same list, and the owning component's test asserts it against `recipe.variantKeys`.
+   * The recipe's own inputs, as **literal** keys rather than `recipe.variantKeys` — `omitProps`
+   * narrows the returned props by the keys it is given, and a `string[]` narrows nothing. The two
+   * lists are the same list, and the owning component's test asserts it against
+   * `recipe.variantKeys`.
    *
    * Never Panda's generated `splitVariantProps`: it destructures the props object eagerly, which in
    * Solid snapshots every value it reads, so a changed `size` stops re-resolving and every style
@@ -96,7 +98,7 @@ export function createRecipeContext<
         render: props.render,
         // The variant keys are the recipe's inputs, not the element's: forwarded, `size` would
         // reach the DOM as an attribute, and it is not a style prop for `renderStyled` to swallow.
-        props: variantKeys.length === 0 ? props : omit(props, ...variantKeys),
+        props: variantKeys.length === 0 ? props : omitProps(props, ...variantKeys),
         recipeClass:
           recipe === undefined
             ? undefined

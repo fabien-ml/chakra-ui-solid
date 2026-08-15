@@ -4,11 +4,12 @@ import {
   createRenderStrategy,
   type HTMLChakraProps,
   mergeProps,
+  omitProps,
   renderStyled,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, merge, omit, Show } from "solid-js";
+import { type Component, merge, Show } from "solid-js";
 import type {
   DialogActionTriggerProps,
   DialogBackdropProps,
@@ -48,8 +49,8 @@ export const DialogTrigger: Component<DialogTriggerProps> = (props) => {
   const ctx = useDialogContext();
 
   // `value` is a machine argument, not a DOM attribute — Ark splits it out for the same reason.
-  // `omit` on a lazy props source stays lazy.
-  const localProps = omit(props, "value");
+  // `omitProps` on a lazy props source stays lazy.
+  const localProps = omitProps(props, "value");
 
   const elementProps = mergeProps(() => {
     const triggerProps = ctx.getTriggerProps({ value: props.value });

@@ -3,13 +3,14 @@ import {
   chakra,
   composeCss,
   type HTMLChakraProps,
+  omitProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import { css, cx } from "@chakra-ui-solid/styled-system/css";
 import type { WrapProperties } from "@chakra-ui-solid/styled-system/patterns";
 import { wrap } from "@chakra-ui-solid/styled-system/patterns";
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 
 export interface WrapOptions extends WrapProperties {
   /** Shorthand for `flexDirection`. */
@@ -45,20 +46,23 @@ export const Wrap: Component<WrapProps> = (props) => {
 
   // `gap` is omitted rather than forwarded as well: the pattern below now emits it on every render,
   // and a style prop carrying the same value is a second declaration of one thing.
-  const elementProps = merge(omit(merged, "align", "justify", "direction", "gap", "css", "class"), {
-    get css(): CssProp {
-      const styles = wrap.raw({
-        align: merged.align,
-        justify: merged.justify,
-        gap: merged.gap,
-      });
-      styles.flexDirection = merged.direction;
-      return composeCss(styles, merged.css);
+  const elementProps = merge(
+    omitProps(merged, "align", "justify", "direction", "gap", "css", "class"),
+    {
+      get css(): CssProp {
+        const styles = wrap.raw({
+          align: merged.align,
+          justify: merged.justify,
+          gap: merged.gap,
+        });
+        styles.flexDirection = merged.direction;
+        return composeCss(styles, merged.css);
+      },
+      get class() {
+        return cx("chakra-wrap", merged.class as string | undefined);
+      },
     },
-    get class() {
-      return cx("chakra-wrap", merged.class as string | undefined);
-    },
-  });
+  );
 
   return <StyledWrap {...elementProps} />;
 };
@@ -70,7 +74,7 @@ const itemStyle = css.raw({ display: "flex", alignItems: "flex-start" });
 
 /** WrapItem — one child of a {@link Wrap}, kept from stretching to the line's height. */
 export const WrapItem: Component<WrapItemProps> = (props) => {
-  const elementProps = merge(omit(props, "css", "class"), {
+  const elementProps = merge(omitProps(props, "css", "class"), {
     get css(): CssProp {
       return composeCss(itemStyle, props.css);
     },

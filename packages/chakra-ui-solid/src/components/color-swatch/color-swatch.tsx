@@ -3,6 +3,7 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
+  omitProps,
   type PresetVariant,
   renderStyled,
   withContextDefaults,
@@ -11,7 +12,7 @@ import {
 import { type ColorSwatchVariantProps, colorSwatch } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, For, merge, omit, untrack } from "solid-js";
+import { type Component, For, merge, untrack } from "solid-js";
 import { Grid } from "../grid";
 
 /**
@@ -109,7 +110,7 @@ export const ColorSwatch: Component<ColorSwatchProps> = (props) => {
   // `{...localProps}`, so the component's wins. `style` has to be last either way: it is the
   // component's own colour, and `composeStyle` is what lets a caller's `style` layer over it
   // instead of replacing it.
-  const elementProps = merge(omit(merged, ...VARIANT_KEYS, "value", "style"), {
+  const elementProps = merge(omitProps(merged, ...VARIANT_KEYS, "value", "style"), {
     get "data-value"() {
       return merged.value;
     },
@@ -180,7 +181,7 @@ export const ColorSwatchMix: Component<ColorSwatchMixProps> = (props) => {
   // Named rather than spread inline. A **call expression** in a JSX spread is compiled to a memo,
   // and the receiving component then reads a reactive value in its own body — `STRICT_READ_UNTRACKED`,
   // reported against `<Anonymous>` with nothing pointing back here.
-  const swatchProps = omit(merged, "items");
+  const swatchProps = omitProps(merged, "items");
 
   return (
     <ColorSwatch {...swatchProps} value="transparent">

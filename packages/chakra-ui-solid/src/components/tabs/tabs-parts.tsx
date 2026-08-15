@@ -2,10 +2,11 @@ import {
   createPresence,
   createRenderStrategy,
   mergeProps,
+  omitProps,
   renderStyled,
 } from "@chakra-ui-solid/core";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, omit, Show } from "solid-js";
+import { type Component, Show } from "solid-js";
 import type {
   TabsContentGroupProps,
   TabsContentProps,
@@ -55,8 +56,8 @@ export const TabsList: Component<TabsListProps> = (props) => {
 export const TabsTrigger: Component<TabsTriggerProps> = (props) => {
   const ctx = useTabsContext();
 
-  // `omit` on a lazy props source stays lazy.
-  const localProps = omit(props, "value", "disabled");
+  // `omitProps` on a lazy props source stays lazy.
+  const localProps = omitProps(props, "value", "disabled");
 
   const elementProps = mergeProps(
     () => ctx.getTriggerProps({ value: props.value, disabled: props.disabled }),
@@ -99,7 +100,7 @@ export const TabsContent: Component<TabsContentProps> = (props) => {
   const elementProps = mergeProps(
     () => ctx.getContentProps({ value: props.value }),
     () => presence.presenceProps(),
-    omit(props, "value"),
+    omitProps(props, "value"),
   ) as DivProps;
 
   return (

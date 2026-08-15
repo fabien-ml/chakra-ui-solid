@@ -1,6 +1,12 @@
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import {
+  type CssProp,
+  chakra,
+  composeCss,
+  type HTMLChakraProps,
+  omitProps,
+} from "@chakra-ui-solid/core";
 import type { ConditionalValue, SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
-import { type Component, merge, omit, useContext } from "solid-js";
+import { type Component, merge, useContext } from "solid-js";
 import { type StackDirection, StackDirectionContext } from "./stack";
 
 export interface StackSeparatorProps extends HTMLChakraProps<"div"> {}
@@ -81,7 +87,7 @@ function separatorStyle(direction: StackDirection): SystemStyleObject {
 export const StackSeparator: Component<StackSeparatorProps> = (props) => {
   const direction = useContext(StackDirectionContext);
 
-  const elementProps = merge(omit(props, "css"), {
+  const elementProps = merge(omitProps(props, "css"), {
     get css(): CssProp {
       return composeCss(separatorStyle(direction()), props.css);
     },

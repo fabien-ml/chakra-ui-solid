@@ -2,8 +2,10 @@ import { expectNoA11yViolations, mount } from "@chakra-ui-solid/internal-test-ut
 import { button } from "@chakra-ui-solid/styled-system/recipes";
 import type { JsxStyleProps } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
-import { createSignal, flush, omit } from "solid-js";
+import { createSignal, flush } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
+import { omitProps } from "../../utils/omit-props";
+import { mergeProps } from "../../zag/merge-props";
 import { renderStyled } from "../render-styled";
 
 /**
@@ -45,7 +47,7 @@ interface StyleProbeProps extends StyledProps {
 function StyleProbe(props: StyleProbeProps): JSX.Element {
   return renderStyled<StyledProps>({
     as: "button",
-    props: omit(props, "recipeSize") as StyledProps,
+    props: omitProps(props, "recipeSize") as StyledProps,
     recipeClass: () => (props.recipeSize ? button({ size: props.recipeSize }) : undefined),
   });
 }
@@ -207,5 +209,53 @@ describe("renderStyled — plumbing it inherits from renderElement", () => {
     );
 
     await expectNoA11yViolations(element);
+  });
+});
+
+describe("renderStyled — composed through a `render` prop", () => {
+  it("keeps the style props and the withheld prop off the element it renders", () => {
+    // The docs site's burger button, reduced: a part hands `renderStyled` a **lazy proxy** props
+    // bag (every Zag-backed part builds one with `mergeProps`), its `render` prop returns a second
+    // styled component, and that component's own style props are written before the spread.
+    //
+    // Both halves of what leaked are here. `px` is a style prop, consumed into the class by the
+    // inner `renderStyled`; `recipeSize` is a prop the inner *component* withholds, the stand-in
+    // for Button's `variant` and `size`. Neither is an HTML attribute, and an element carrying
+    // them is invalid markup no browser complains about.
+    const element = render(() =>
+      renderStyled<StyledProps>({
+        as: "button",
+        props: mergeProps(() => ({ type: "button" as const }), {
+          children: "styled",
+        }) as StyledProps,
+        render: (props) => <StyleProbe recipeSize="lg" px="1" {...(props as StyleProbeProps)} />,
+      }),
+    );
+
+    // Attribute names, not `class`: the class was right the whole time this was broken, which is
+    // what made it invisible.
+    expect(element.getAttributeNames()).not.toContain("px");
+    expect(element.getAttributeNames()).not.toContain("recipesize");
+    expect(getComputedStyle(element).paddingInline).toBe("4px");
+  });
+
+  it("keeps the withheld prop's own value reactive", () => {
+    // Hiding a key from the element must not snapshot its value: the component still reads it, and
+    // a bag that resolved eagerly here would freeze the recipe at whatever size it opened with.
+    const [size, setSize] = createSignal<"sm" | "lg">("lg");
+    const element = render(() =>
+      renderStyled<StyledProps>({
+        as: "button",
+        props: mergeProps(() => ({ type: "button" as const }), {
+          children: "styled",
+        }) as StyledProps,
+        render: (props) => <StyleProbe recipeSize={size()} {...(props as StyleProbeProps)} />,
+      }),
+    );
+
+    expect(getComputedStyle(element).paddingInline).toBe("20px");
+    flush(() => setSize("sm"));
+    expect(getComputedStyle(element).paddingInline).toBe("14px");
+    expect(element.getAttributeNames()).not.toContain("recipesize");
   });
 });

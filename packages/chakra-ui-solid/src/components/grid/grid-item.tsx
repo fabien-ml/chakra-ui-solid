@@ -4,12 +4,13 @@ import {
   composeCss,
   composeStyle,
   type HTMLChakraProps,
+  omitProps,
   type PlainCssValue,
 } from "@chakra-ui-solid/core";
 import { css } from "@chakra-ui-solid/styled-system/css";
 import type { CssProperties, SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 
 export interface GridItemProps extends HTMLChakraProps<"div"> {
   /** A named area from the parent Grid's `templateAreas`, or a four-line shorthand. */
@@ -74,7 +75,7 @@ function spanned(span: number | "auto" | undefined): string | undefined {
  * of a prop that silently does nothing.
  */
 export const GridItem: Component<GridItemProps> = (props) => {
-  const elementProps = merge(omit(props, ...OPTIONS, "css", "style"), {
+  const elementProps = merge(omitProps(props, ...OPTIONS, "css", "style"), {
     get css(): CssProp {
       const placements: SystemStyleObject[] = [];
       if (props.area !== undefined) {

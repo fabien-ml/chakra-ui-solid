@@ -1,6 +1,7 @@
 import {
   createSlotClasses,
   mergeProps,
+  omitProps,
   type RenderProp,
   type RenderStrategyProps,
   renderStyled,
@@ -11,7 +12,7 @@ import {
   tabs as tabsRecipe,
 } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 import { createTabs } from "./create-tabs";
 import type {
   CreateTabsReturn,
@@ -26,9 +27,9 @@ type DivProps = ComponentProps<"div">;
 
 /**
  * The Root's own inputs, which are machine arguments, mounting props or recipe variants rather than
- * DOM attributes. Literal keys rather than `tabs.props`, because `omit` narrows the returned props
- * by the keys it is handed and a `string[]` narrows nothing; `satisfies` is what keeps this list and
- * the interface one list.
+ * DOM attributes. Literal keys rather than `tabs.props`, because `omitProps` narrows the returned
+ * props by the keys it is handed and a `string[]` narrows nothing; `satisfies` is what keeps this
+ * list and the interface one list.
  *
  * **The four variants are the trap.** There is no bare `fitted` or `justify` style prop, so one left
  * in the bag reaches the element as `fitted="true"` — a literal attribute on the served markup, with
@@ -158,7 +159,7 @@ export const TabsRoot: Component<TabsRootProps> = (props) => {
 
   const elementProps = mergeProps(
     () => store.getRootProps(),
-    omit(merged, ...ROOT_OWN_KEYS),
+    omitProps(merged, ...ROOT_OWN_KEYS),
   ) as DivProps;
 
   return renderRoot(store, merged, elementProps);
@@ -174,12 +175,12 @@ export const TabsRootProvider: Component<TabsRootProviderProps> = (props) => {
   // Letting it through would hand this Root a string where a machine belongs.
   const merged = withContextDefaults<TabsRootProviderProps>(
     props,
-    omit(usePropsContext(), "value"),
+    omitProps(usePropsContext(), "value"),
   );
 
   const elementProps = mergeProps(
     () => merged.value.getRootProps(),
-    omit(merged, ...ROOT_PROVIDER_OWN_KEYS),
+    omitProps(merged, ...ROOT_PROVIDER_OWN_KEYS),
   ) as DivProps;
 
   return renderRoot(merged.value, merged, elementProps);

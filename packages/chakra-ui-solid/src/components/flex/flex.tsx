@@ -1,7 +1,13 @@
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import {
+  type CssProp,
+  chakra,
+  composeCss,
+  type HTMLChakraProps,
+  omitProps,
+} from "@chakra-ui-solid/core";
 import type { FlexProperties } from "@chakra-ui-solid/styled-system/patterns";
 import { flex } from "@chakra-ui-solid/styled-system/patterns";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 
 export interface FlexOptions extends FlexProperties {
   /** Lay the children out inline, as `inline-flex` rather than `flex`. */
@@ -39,7 +45,7 @@ const SHORTHANDS = [
  * preset's `staticCss`.
  */
 export const Flex: Component<FlexProps> = (props) => {
-  const elementProps = merge(omit(props, ...SHORTHANDS, "css"), {
+  const elementProps = merge(omitProps(props, ...SHORTHANDS, "css"), {
     get css(): CssProp {
       const styles = flex.raw({
         direction: props.direction,

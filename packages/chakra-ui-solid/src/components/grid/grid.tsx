@@ -2,11 +2,12 @@ import {
   chakra,
   composeStyle,
   type HTMLChakraProps,
+  omitProps,
   type PlainCssValue,
 } from "@chakra-ui-solid/core";
 import type { CssProperties } from "@chakra-ui-solid/styled-system/types";
 import type { JSX } from "@solidjs/web";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 
 export interface GridOptions {
   /** The column track list — `"repeat(3, 1fr)"`, `"200px 1fr"`. Not responsive; see the note below. */
@@ -89,7 +90,7 @@ const OPTIONS = [
  * silently does nothing. Reach for the `gridTemplateColumns` style prop, which is conditional.
  */
 export const Grid: Component<GridProps> = (props) => {
-  const elementProps = merge(omit(props, ...OPTIONS, "style"), {
+  const elementProps = merge(omitProps(props, ...OPTIONS, "style"), {
     get style(): JSX.HTMLAttributes<HTMLElement>["style"] {
       return composeStyle(
         {

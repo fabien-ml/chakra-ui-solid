@@ -21,12 +21,13 @@ import {
   chakra,
   createRecipeClass,
   type HTMLChakraProps,
+  omitProps,
   type PresetVariant,
 } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import { type CheckmarkVariantProps, checkmark } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
-import { type Component, Match, omit, Switch } from "solid-js";
+import { type Component, Match, Switch } from "solid-js";
 
 /**
  * The three variants spelled out rather than inherited from the generated `CheckmarkVariantProps`,
@@ -107,7 +108,7 @@ export const Checkmark: Component<CheckmarkProps> = (props) => {
   // Named rather than spread inline. A **call expression** in a JSX spread is compiled to a memo,
   // and the receiving component then reads a reactive value in its own body — `STRICT_READ_UNTRACKED`,
   // reported against `<Anonymous>` with nothing pointing back here.
-  const elementProps = omit(props, ...VARIANT_KEYS, ...STATE_KEYS);
+  const elementProps = omitProps(props, ...VARIANT_KEYS, ...STATE_KEYS);
 
   // The five presentation attributes are **style props** on this stack — `isCssProperty` claims
   // `fill`, `stroke` and the three `stroke*` — so they have to be literal attributes on a `chakra.*`

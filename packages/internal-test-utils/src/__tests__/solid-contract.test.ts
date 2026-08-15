@@ -9,6 +9,7 @@ import {
   createSignal,
   flush,
   merge,
+  omit,
   useContext,
 } from "solid-js";
 import { describe, expect, it } from "vitest";
@@ -48,6 +49,36 @@ describe("solid-js contract", () => {
 
     it("lets a later source's explicit `undefined` clobber an earlier value", () => {
       expect(merge({ modal: true }, { modal: undefined }).modal).toBeUndefined();
+    });
+  });
+
+  describe("merge undoes an omit of a proxied source", () => {
+    // Depended on by `omitProps` in `@chakra-ui-solid/core`, which exists *only* because of this.
+    //
+    // `merge` tags its result with an internal symbol holding the sources it was built from, and
+    // unwraps that tag whenever it finds it on a source it is handed. `omit` forwards every key of
+    // a proxied source verbatim, symbols included, so an omit of a merged bag answers the tag with
+    // the bag's own sources — and the next `merge` drops the omit and merges back exactly what was
+    // hidden. Every component here builds its element props as `merge(omit(props, …), { … })`, so
+    // this put recipe variants and style props on the DOM as attributes wherever the props bag was
+    // a proxy, which is every component reached through a `render` prop.
+    //
+    // If stable stops flattening a source it did not build — or stops letting `omit` forward the
+    // tag — `omitProps` becomes a rename of `omit`: delete it.
+    it("restores the omitted keys", () => {
+      const lazy = merge(() => ({ id: "x", size: "sm" }));
+      const rest = omit(lazy, "size");
+
+      expect(Object.keys(rest)).toEqual(["id"]);
+      expect(Object.keys(merge(rest, { class: "computed" }))).toContain("size");
+    });
+
+    it("leaves a plain source's omit alone", () => {
+      // The other half, and why this was invisible for so long: with no proxy anywhere in the
+      // chain `omit` copies own property *names* instead, and the tag is a symbol.
+      const rest = omit(merge({ id: "x" }, { size: "sm" }), "size");
+
+      expect(Object.keys(merge(rest, { class: "computed" }))).not.toContain("size");
     });
   });
 

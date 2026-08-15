@@ -4,11 +4,12 @@ import {
   composeCss,
   composeStyle,
   type HTMLChakraProps,
+  omitProps,
 } from "@chakra-ui-solid/core";
 import { css } from "@chakra-ui-solid/styled-system/css";
 import { token } from "@chakra-ui-solid/styled-system/tokens";
 import type { JSX } from "@solidjs/web";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 
 export interface BleedOptions {
   /** How far to break out on both inline edges — a spacing token like `"10"`, or a CSS length. */
@@ -68,7 +69,7 @@ function resolveSpacing(value: string | number | undefined): string | undefined 
  * component take a token name and a raw length through one prop.
  */
 export const Bleed: Component<BleedProps> = (props) => {
-  const elementProps = merge(omit(props, ...OPTIONS, "css", "style"), {
+  const elementProps = merge(omitProps(props, ...OPTIONS, "css", "style"), {
     get css(): CssProp {
       return composeCss(bleedStyle, props.css);
     },

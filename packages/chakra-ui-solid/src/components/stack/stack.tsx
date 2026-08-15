@@ -3,13 +3,14 @@ import {
   chakra,
   composeCss,
   type HTMLChakraProps,
+  omitProps,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import { flex } from "@chakra-ui-solid/styled-system/patterns";
 import type { ConditionalValue, SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import { Dynamic } from "@solidjs/web";
-import { type Accessor, type Component, children, createContext, merge, omit } from "solid-js";
+import { type Accessor, type Component, children, createContext, merge } from "solid-js";
 
 /** The four axes a Stack can run along, in Panda's conditional form so `{ base, md }` is spellable. */
 export type StackDirection = ConditionalValue<"row" | "column" | "row-reverse" | "column-reverse">;
@@ -95,7 +96,7 @@ export const Stack: Component<StackProps> = (props) => {
     );
   };
 
-  const elementProps = merge(omit(merged, ...OPTIONS, "css", "class", "children"), {
+  const elementProps = merge(omitProps(merged, ...OPTIONS, "css", "class", "children"), {
     get css(): CssProp {
       return composeCss(
         flex.raw({

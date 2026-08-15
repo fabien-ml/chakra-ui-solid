@@ -7,8 +7,9 @@ import { css, cx } from "@chakra-ui-solid/styled-system/css";
 import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import type { JSX, ValidComponent } from "@solidjs/web";
-import { type Accessor, merge, omit } from "solid-js";
+import { type Accessor, merge } from "solid-js";
 import { type RenderProp, renderElement } from "../render/render";
+import { omitProps } from "../utils/omit-props";
 import { HTML_PROP_RENAMES } from "./html-props";
 
 /**
@@ -211,9 +212,9 @@ export function renderStyled<Props extends { class?: unknown }, El extends Eleme
   // `as`/`render`/`class`/`css`/`unstyled` and the style props never reach the element as
   // attributes: `as`/`render` are handled by `renderElement`, `class`/`css` and the style props
   // become the computed class, and `unstyled` is a styling opt-out rather than an attribute.
-  // `omit` keeps the rest reactive. Stripping `as`/`render` defensively lets callers hand us a raw
-  // component props bag (Box) or a machine part's merged bag with no ceremony.
-  const rest = omit(
+  // `omitProps` keeps the rest reactive. Stripping `as`/`render` defensively lets callers hand us a
+  // raw component props bag (Box) or a machine part's merged bag with no ceremony.
+  const rest = omitProps(
     props as Record<string, unknown>,
     "as",
     "render",

@@ -2,12 +2,13 @@ import {
   chakra,
   createRecipeClass,
   type HTMLChakraProps,
+  omitProps,
   renderStyled,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import { skipNavLink } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 
 /**
  * The id both halves agree on when neither is given one. A consumer who passes `id` must pass the
@@ -47,7 +48,7 @@ export const SkipNavLink: Component<SkipNavLinkProps> = (props) => {
 
   // `id` names the *target*, so it is consumed here rather than forwarded — an `id` on the link
   // itself would put two elements with the same id on the page and break the jump it exists for.
-  const elementProps = merge(omit(merged, "id"), {
+  const elementProps = merge(omitProps(merged, "id"), {
     get href() {
       return `#${merged.id}`;
     },

@@ -1,6 +1,6 @@
-import { mergeProps, type RenderProp, renderStyled } from "@chakra-ui-solid/core";
+import { mergeProps, omitProps, type RenderProp, renderStyled } from "@chakra-ui-solid/core";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, children, omit, Show } from "solid-js";
+import { type Component, children, Show } from "solid-js";
 import type {
   PopoverAnchorProps,
   PopoverArrowProps,
@@ -41,8 +41,8 @@ export const PopoverTrigger: Component<PopoverTriggerProps> = (props) => {
   const ctx = usePopoverContext();
 
   // `value` is a machine argument, not a DOM attribute — Ark splits it out for the same reason.
-  // `omit` on a lazy props source stays lazy.
-  const localProps = omit(props, "value");
+  // `omitProps` on a lazy props source stays lazy.
+  const localProps = omitProps(props, "value");
 
   const elementProps = mergeProps(() => {
     const triggerProps = ctx.getTriggerProps({ value: props.value });

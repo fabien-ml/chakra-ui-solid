@@ -1,8 +1,8 @@
-import { chakra, type HTMLChakraProps, withDefaults } from "@chakra-ui-solid/core";
+import { chakra, type HTMLChakraProps, omitProps, withDefaults } from "@chakra-ui-solid/core";
 import { cx } from "@chakra-ui-solid/styled-system/css";
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import { type ComponentProps, isServer } from "@solidjs/web";
-import { type Component, children, createRenderEffect, merge, omit } from "solid-js";
+import { type Component, children, createRenderEffect, merge } from "solid-js";
 
 const StyledGroup = chakra("div", {
   base: {
@@ -163,7 +163,7 @@ export const Group: Component<GroupProps> = (props) => {
 
   // The three shorthands are computed **before** the consumer's own props, so an explicit
   // `alignItems` overrides one — Chakra's order. They are getters over `merged`, so the defaults
-  // survive the `omit` beside them.
+  // survive the `omitProps` beside them.
   const elementProps = merge(
     {
       get alignItems() {
@@ -176,7 +176,7 @@ export const Group: Component<GroupProps> = (props) => {
         return merged.wrap;
       },
     },
-    omit(merged, "align", "justify", "wrap", "skip", "class", "children"),
+    omitProps(merged, "align", "justify", "wrap", "skip", "class", "children"),
     {
       get class() {
         return cx("chakra-group", merged.class as string | undefined);

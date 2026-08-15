@@ -1,7 +1,13 @@
-import { type CssProp, chakra, composeCss, type HTMLChakraProps } from "@chakra-ui-solid/core";
+import {
+  type CssProp,
+  chakra,
+  composeCss,
+  type HTMLChakraProps,
+  omitProps,
+} from "@chakra-ui-solid/core";
 import type { FloatProperties } from "@chakra-ui-solid/styled-system/patterns";
 import { float } from "@chakra-ui-solid/styled-system/patterns";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 
 export interface FloatOptions extends FloatProperties {}
 
@@ -26,7 +32,7 @@ const OPTIONS = ["offset", "offsetX", "offsetY", "placement"] as const;
  * `placement={{ base: "top-end", md: "middle-end" }}` is mapped per breakpoint by the pattern.
  */
 export const Float: Component<FloatProps> = (props) => {
-  const elementProps = merge(omit(props, ...OPTIONS, "css"), {
+  const elementProps = merge(omitProps(props, ...OPTIONS, "css"), {
     get css(): CssProp {
       return composeCss(
         float.raw({

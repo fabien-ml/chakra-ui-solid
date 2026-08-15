@@ -1,6 +1,11 @@
-import { composeEventHandlers, type HTMLChakraProps, renderStyled } from "@chakra-ui-solid/core";
+import {
+  composeEventHandlers,
+  type HTMLChakraProps,
+  omitProps,
+  renderStyled,
+} from "@chakra-ui-solid/core";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 import { type CreateDownloadProps, createDownload } from "./create-download";
 
 /**
@@ -47,7 +52,7 @@ export const DownloadTrigger: Component<DownloadTriggerProps> = (props) => {
   // "attribute before the spread" — it is a fixed value rather than a default. A download trigger is
   // never a submit button in Chakra either (Ark writes `<ark.button {...rest} type="button">`), so
   // `<DownloadTrigger type="submit">` is a button here too.
-  const elementProps = merge(omit(props, ...DOWNLOAD_KEYS), {
+  const elementProps = merge(omitProps(props, ...DOWNLOAD_KEYS), {
     type: "button",
     // Composed inside a getter, so the consumer's handler is read in the element's own event-binding
     // effect rather than untracked in this body. Theirs runs first, which is what makes

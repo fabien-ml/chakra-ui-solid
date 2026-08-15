@@ -1,13 +1,14 @@
 import {
   createSlotClasses,
   mergeProps,
+  omitProps,
   type RenderProp,
   renderStyled,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
 import { collapsible } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, merge, omit } from "solid-js";
+import { type Component, merge } from "solid-js";
 import type {
   CollapsibleRootBaseProps,
   CollapsibleRootProps,
@@ -27,8 +28,8 @@ type DivProps = ComponentProps<"div">;
 /**
  * The Root's own inputs, which are machine arguments rather than DOM attributes and would otherwise
  * reach the `div` as `collapsedheight="120px"` and friends. Literal keys rather than
- * `collapsible.props`, because `omit` narrows the returned props by the keys it is handed and a
- * `string[]` narrows nothing; `satisfies` is what keeps this list and the interface one list.
+ * `collapsible.props`, because `omitProps` narrows the returned props by the keys it is handed and
+ * a `string[]` narrows nothing; `satisfies` is what keeps this list and the interface one list.
  *
  * `unstyled` is deliberately absent — `renderStyled` consumes it and keeps it off the element.
  */
@@ -114,7 +115,7 @@ export const CollapsibleRoot: Component<CollapsibleRootProps> = (props) => {
 
   const elementProps = mergeProps(
     () => store.getRootProps(),
-    omit(merged, ...ROOT_OWN_KEYS),
+    omitProps(merged, ...ROOT_OWN_KEYS),
   ) as DivProps;
 
   return renderRoot(store, merged, elementProps);
@@ -128,7 +129,7 @@ export const CollapsibleRootProvider: Component<CollapsibleRootProviderProps> = 
   const merged = withContextDefaults<CollapsibleRootProviderProps>(props, usePropsContext());
   const elementProps = mergeProps(
     () => merged.value.getRootProps(),
-    omit(merged, "value"),
+    omitProps(merged, "value"),
   ) as DivProps;
 
   return renderRoot(merged.value, merged, elementProps);

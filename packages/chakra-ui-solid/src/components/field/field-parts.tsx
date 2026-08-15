@@ -18,12 +18,13 @@
 import {
   createRegisteredId,
   mergeProps,
+  omitProps,
   type RenderProp,
   renderStyled,
   withDefaults,
 } from "@chakra-ui-solid/core";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, merge, omit, Show } from "solid-js";
+import { type Component, merge, Show } from "solid-js";
 import { createIcon } from "../icon";
 import { deriveFieldItem } from "./create-field";
 import type {
@@ -174,12 +175,16 @@ export const FieldRequiredIndicator: Component<FieldRequiredIndicatorProps> = (p
   const ctx = useFieldContext();
   const styles = useFieldStyles();
 
-  const elementProps = mergeProps(() => ctx.getRequiredIndicatorProps(), omit(props, "fallback"), {
-    get children() {
-      const provided = props.children;
-      return provided !== undefined ? provided : "*";
+  const elementProps = mergeProps(
+    () => ctx.getRequiredIndicatorProps(),
+    omitProps(props, "fallback"),
+    {
+      get children() {
+        const provided = props.children;
+        return provided !== undefined ? provided : "*";
+      },
     },
-  }) as SpanProps;
+  ) as SpanProps;
 
   return (
     <Show when={ctx.required} fallback={props.fallback}>

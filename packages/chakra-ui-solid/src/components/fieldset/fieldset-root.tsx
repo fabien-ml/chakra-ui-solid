@@ -1,6 +1,6 @@
-import { mergeProps, renderStyled, withDefaults } from "@chakra-ui-solid/core";
+import { mergeProps, omitProps, renderStyled, withDefaults } from "@chakra-ui-solid/core";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
-import { type Component, omit } from "solid-js";
+import type { Component } from "solid-js";
 import { createFieldset } from "./create-fieldset";
 import type { FieldsetRootProps } from "./fieldset.types";
 import {
@@ -48,7 +48,7 @@ export const FieldsetRoot: Component<FieldsetRootProps> = (props) => {
 
   const elementProps = mergeProps(
     () => store.getRootProps(),
-    omit(merged, ...ROOT_ONLY_KEYS),
+    omitProps(merged, ...ROOT_ONLY_KEYS),
   ) as FieldsetElementProps;
 
   return (

@@ -1,13 +1,14 @@
 import {
   createRecipeClass,
   type HTMLChakraProps,
+  omitProps,
   type PresetVariant,
   renderStyled,
 } from "@chakra-ui-solid/core";
 import { type RadiomarkVariantProps, radiomark } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
-import { type Component, merge, omit, Show } from "solid-js";
+import { type Component, merge, Show } from "solid-js";
 
 /**
  * The three variants spelled out rather than inherited from the generated `RadiomarkVariantProps`,
@@ -107,7 +108,7 @@ export const Radiomark: Component<RadiomarkProps> = (props) => {
         return props.disabled === true ? "" : undefined;
       },
     },
-    omit(props, ...VARIANT_KEYS, ...STATE_KEYS),
+    omitProps(props, ...VARIANT_KEYS, ...STATE_KEYS),
     { children: dot },
   );
 

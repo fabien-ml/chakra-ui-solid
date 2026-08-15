@@ -2,6 +2,7 @@ import {
   createComponentContext,
   createSlotRecipeContext,
   mergeProps,
+  omitProps,
   renderStyled,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
@@ -10,7 +11,7 @@ import {
   nativeSelect as nativeSelectRecipe,
 } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
-import { type Component, omit, Show } from "solid-js";
+import { type Component, Show } from "solid-js";
 import { useOptionalFieldContext } from "../field/field-context";
 import { ChevronDownIcon } from "../icons";
 import type {
@@ -105,7 +106,7 @@ export const NativeSelectRoot: Component<NativeSelectRootProps> = (props) => {
       <NativeSelectStylesProvider value={slots}>
         {renderStyled<DivProps, HTMLDivElement>({
           as: (merged.as ?? "div") as ValidComponent,
-          props: omit(merged, ...ROOT_ONLY_KEYS) as DivProps,
+          props: omitProps(merged, ...ROOT_ONLY_KEYS) as DivProps,
           render: merged.render,
           recipeClass: () => slots().root,
         })}
@@ -139,7 +140,7 @@ export const NativeSelectField: Component<NativeSelectFieldProps> = (props) => {
       disabled: states?.disabled ?? false,
       "data-invalid": states?.invalid ? "" : undefined,
     }),
-    omit(props, "placeholder"),
+    omitProps(props, "placeholder"),
     {
       // Last, so it replaces the `children` the layer above carries — the caller's own options with
       // the placeholder `<option>` in front of them. Read once, by the element being built, so the

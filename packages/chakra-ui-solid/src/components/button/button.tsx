@@ -2,6 +2,7 @@ import {
   createRecipeClass,
   createRecipeContext,
   type HTMLChakraProps,
+  omitProps,
   type PresetVariant,
   renderStyled,
   withContextDefaults,
@@ -10,7 +11,7 @@ import {
 import { type ButtonVariantProps, button } from "@chakra-ui-solid/styled-system/recipes";
 import type { ConditionalValue } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
-import { type Component, children, merge, omit, Show } from "solid-js";
+import { type Component, children, merge, Show } from "solid-js";
 import { Loader } from "../loader";
 
 // An alias rather than an inline union because {@link CloseButtonProps} re-declares this prop to
@@ -76,8 +77,8 @@ export interface ButtonProps extends HTMLChakraProps<"button"> {
 type ButtonElementProps = ComponentProps<"button">;
 
 /**
- * The recipe's own inputs, as literal keys rather than `button.variantKeys` — `omit` narrows the
- * returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` is what
+ * The recipe's own inputs, as literal keys rather than `button.variantKeys` — `omitProps` narrows
+ * the returned props by the keys it is given, and a `string[]` narrows nothing. `satisfies` is what
  * keeps the two lists one list at compile time: a variant renamed in the recipe stops the build
  * here, and the test asserts the same equality at runtime.
  *
@@ -148,8 +149,8 @@ export const Button: Component<ButtonProps> = (props) => {
   const content = children(() => merged.children);
 
   // Every read below goes to `merged`, never to `props`: `withDefaults` copies nothing, so
-  // `omit(props, …)` would hand the element a bag with the defaults missing.
-  const elementProps = merge(omit(merged, ...VARIANT_KEYS, ...LOADING_KEYS, "children"), {
+  // `omitProps(props, …)` would hand the element a bag with the defaults missing.
+  const elementProps = merge(omitProps(merged, ...VARIANT_KEYS, ...LOADING_KEYS, "children"), {
     /** Chakra's `dataAttr`: present-and-empty when loading, absent when not. */
     get "data-loading"() {
       return merged.loading ? "" : undefined;
