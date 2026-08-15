@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 60 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 61 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component

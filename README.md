@@ -23,7 +23,7 @@ does not pretend to be one. Concretely:
 | Chakra v3 | Here |
 |---|---|
 | Token, recipe, and variant styling | **Full parity** — the bulk of the surface |
-| `useToken()` token lookup | Supported, reimplemented as a CSS-variable read |
+| `useToken()` token lookup | Planned, reimplemented as a read of the build-time token map rather than a runtime dictionary |
 | Style props with **runtime** values | Not supported. Use a CSS custom property, or declare the value at build time |
 | `createSystem(...)` runtime theming | Not supported. Build-time `panda.config.ts` only |
 | Arbitrary one-off values anywhere | Only where they are statically extractable, pre-declared in `staticCss`, or passed as a CSS variable |
@@ -34,14 +34,22 @@ progress fills work.
 
 ## Status
 
-**Pre-release. Nothing is published.** 22 of the 111 components on the roadmap ship from the
-package — the layout and typography primitives, Box through Wrap — alongside the `chakra` factory,
-the style-prop surface, the Panda preset and the test harness. Every machine-backed component is
-still ahead. The stack targets `solid-js@2.0.0-rc.x`, and nothing upstream is built for SolidJS
-2.0 yet, so every Solid-2.0-shaped adaptation here is ours.
+**Pre-release. Nothing is published.** 61 of the roadmap's 110 components ship from the package:
+every layout and typography primitive but `image`, `input-element` and `input-group`; every
+atomic-recipe component but `input-addon`; all fifteen multi-part components that need no state
+machine; and the first four rows that run on one — Collapsible, Dialog, Popover and Tabs, each over
+its Zag machine. Forty-one machine-backed rows and the four utility rows are still ahead.
+
+Around them: the `chakra` factory and the style-prop surface, the Panda preset, a docs site (54
+component pages plus the get-started, styling and theming tracks) that installs the packages by name
+and runs its own Panda build, and a three-project Vitest harness — client, server-render, and real
+Chromium, where every computed-style assertion lives.
+
+The stack targets `solid-js@2.0.0-rc.0`, and nothing upstream is built for SolidJS 2.0 yet, so every
+Solid-2.0-shaped adaptation here is ours.
 
 The library publishes as the unscoped `chakra-ui-solid`; its satellites keep the scope —
-`@chakra-ui-solid/styled-system`, `@chakra-ui-solid/panda-preset`, and the rest.
+`@chakra-ui-solid/core`, `@chakra-ui-solid/styled-system` and `@chakra-ui-solid/panda-preset`.
 
 ## Credit where it is due
 
