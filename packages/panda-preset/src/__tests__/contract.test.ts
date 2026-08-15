@@ -14,14 +14,14 @@ import {
 } from "../contract";
 
 /**
- * `contract.ts` is **authored** — 75 rows typed out by hand rather than computed from whichever
- * preset is loaded, because every reader of it runs at config time, before a theme exists. The
- * price of that is drift, and this file is the whole mechanism that catches it: the vendored Chakra
- * bodies under `chakra/` are one preset that must satisfy the contract, so their shape and the
- * contract are compared here on every `vitest --project=unit` run.
+ * `contract/` is **authored** — 75 shapes written out by hand, one file per recipe, rather than
+ * computed from whichever preset is loaded, because every reader of them runs at config time,
+ * before a theme exists. The price of that is drift, and this file is the whole mechanism that
+ * catches it: the vendored Chakra bodies under `chakra/` are one preset that must satisfy the
+ * contract, so their shape and the contract are compared here on every `vitest --project=unit` run.
  *
  * A body edited upstream that adds a variant value therefore turns this red, and the fix is a
- * deliberate edit to `contract.ts` — which is also the diff telling a reviewer that every
+ * deliberate edit to that recipe's file — which is also the diff telling a reviewer that every
  * third-party preset just stopped satisfying the contract.
  */
 

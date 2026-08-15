@@ -16,13 +16,13 @@
  * the unit suite red and forces a deliberate edit here. That edit is also the diff telling a
  * reviewer that every third-party preset just broke.
  *
- * **Why two data files and not one, and not 75.** The rows are hand-maintained, so they are split
- * on the seam the rest of the system already has: `recipes.ts` and `slot-recipes.ts` pin two
- * different vendored directories (`chakra/recipes/` and `chakra/slot-recipes/`), and Panda takes
- * them as two separate keys, `theme.recipes` and `theme.slotRecipes`. A row is nine to thirty-eight
- * lines and nothing imports one on its own, so a file per recipe would be 75 files bought with no
- * navigation. This file is the seam's other side: it holds the shape they satisfy, the merged
- * table, and the lookups, so `./contract` stays the one import path either way.
+ * **The layout mirrors `chakra/`, one recipe per file.** `recipes/` and `slot-recipes/` are the two
+ * seams the rest of the system already has — two vendored directories, and two separate Panda keys,
+ * `theme.recipes` and `theme.slotRecipes` — and inside each, a row lives in the file named after
+ * the vendored body it pins. `recipes/badge.ts` pins `chakra/recipes/badge.ts`, so a Chakra bump
+ * maps a changed body straight to the row that has to move with it, which a 900-line table did not.
+ * This file is the seam's other side: it holds the shape they satisfy, the merged table, and the
+ * lookups, so `./contract` stays the one import path.
  */
 
 import { recipeContract } from "./recipes";

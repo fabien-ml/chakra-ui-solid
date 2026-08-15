@@ -1,0 +1,41 @@
+import type { RecipeShape } from "../index";
+
+/** The `datePicker` recipe's shape. What a row is, and why it is authored: `../index.ts`. */
+export const datePickerShape = {
+  className: "date-picker",
+  slots: [
+    "clearTrigger",
+    "content",
+    "control",
+    "input",
+    "label",
+    "monthSelect",
+    "nextTrigger",
+    "positioner",
+    "presetTrigger",
+    "prevTrigger",
+    "rangeText",
+    "root",
+    "table",
+    "tableBody",
+    "tableCell",
+    "tableCellTrigger",
+    "tableHead",
+    "tableHeader",
+    "tableRow",
+    "trigger",
+    "view",
+    "viewControl",
+    "viewTrigger",
+    "yearSelect",
+    "view",
+    "valueText",
+    "indicatorGroup",
+  ],
+  variants: {
+    size: ["xs", "sm", "md", "lg", "xl"],
+    hideOutsideDays: ["true"],
+    variant: ["outline", "subtle", "flushed"],
+  },
+  defaultVariants: { size: "md", variant: "outline" },
+} as const satisfies RecipeShape;
