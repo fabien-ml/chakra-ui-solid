@@ -121,10 +121,34 @@ Only what they read may differ.
 
 ## The port rule, and reference use
 
-No accessibility behavior beyond what Zag ships. Nothing invented that Chakra UI v3 does not have.
-SolidJS idioms excepted — those are what the port *is*. Adding a fix Chakra lacks is a divergence; so
-is removing behavior Chakra has. **And nothing ships before what it depends on** — not its source,
-and not its docs page.
+No accessibility behavior beyond what Zag ships. Nothing invented that Chakra UI v3 does not have —
+**invented** means a feature or an API a consumer can see, never a line of code Solid writes
+differently. Adding a fix Chakra lacks is a divergence; so is removing behavior Chakra has. **And
+nothing ships before what it depends on** — not its source, and not its docs page.
+
+**We ship Chakra's features, not Chakra's construction. What ports is the consumer's result — the
+features, the public API, the ergonomics, the UX. How the React code builds it does not port, and
+reproducing that is not parity.** Much of a React component answers a question Solid never asks — how
+to survive a re-render — so copying its shape lands the same names on a worse component: more code,
+more work per keystroke, and stale the moment a value is reactive. That is a loss on both axes this
+file ranks first, bought with a resemblance no consumer can see. **This rule outranks every other
+line in this repo and in `__internal__/` that reads as an argument for the React shape** — where one
+does, it is the line that is wrong.
+
+- **Same feature, different mechanism, is not a divergence.** It owes no argument, no permission and
+  no record; it *is* the port. A signal where React re-renders; a store hook named `createX` where
+  React writes `useX`; a prop read where it is *used* rather than captured, which is how
+  `createDownload` names the file whatever a signal-driven `fileName` says at the moment of the
+  click; `<For>` where React maps. Only a difference a consumer can **observe** is a divergence.
+- **A React-shaped answer that is worse to use or worse to run is a defect, and fidelity never
+  excuses it.** Rebuilding what the compiler already gives you, wrapping a tree to pass what context
+  passes, walking or cloning `props.children`, re-reading a prop to simulate a render — if the Solid
+  version is longer, slower, or loses reactivity, the React shape is the bug, not the finding. Find
+  the expression Solid already has; there is nearly always one, and it is usually smaller.
+
+This is about porting Chakra's components. The Zag adapter under `packages/core/src/zag/` is the
+spine every machine component stands on; it is not what this rule reaches, and it changes only when a
+component needs something it does not do.
 
 **Parity is what a consumer observes, not how React arrives at it.** React redraws on any render;
 Solid redraws what a signal invalidated. Three cases fall out, and only the middle one is settled by

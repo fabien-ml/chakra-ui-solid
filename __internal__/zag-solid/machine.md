@@ -20,11 +20,18 @@ adapter targets Solid 1.x and has not been migrated; this subpath exists only un
 ships a 2.0-compatible release, at which point it is **deleted** and `@zag-js/solid` is installed
 in its place.
 
-Everything follows from that: it is a **minimal-diff fork**. Upstream's file layout and public
-API are preserved verbatim so the eventual swap is a drop-in, and only what Solid 2.0 forces was
-changed. Do not refactor it toward house style, do not merge files, do not rename exports. When
-something here looks unidiomatic, the question to ask is "does upstream write it that way?" — if
-yes, it stays.
+It began as a **minimal-diff fork** — upstream's layout kept verbatim so the eventual swap would be a
+drop-in — and **that constraint was lifted at `ef91b69`**, with the reasons recorded in the fork's own
+`index.ts` (`prior-art.md` §6.1; `zag-solid-adapter.md` §1). What is still held is the **public API**
+— `useMachine`, `mergeProps`, `normalizeProps` — because that is the swap surface a component is
+written against. The internals are Solid 2.0's idioms, not Solid 1.x's: `mergeProps` is a lazy
+`$PROXY`, `bindable`'s signal is boxed, `use-sync-external-store.ts` is gone. So "does upstream write
+it that way?" no longer settles anything here.
+
+What has not changed is that this is the **spine every machine component stands on**. It moves when a
+component needs something it does not do, or when Solid forces it — never for style, and never in the
+same change as a component. In this repo it lives at `packages/core/src/zag/`, and its `index.ts` is
+the authority on what it is now; the table below is the Solid-1.x-to-2.0 half of that story.
 
 The `@zag-js/core` / `@zag-js/types` / `@zag-js/utils` catalog entries are pinned in lockstep with
 the version the fork is *maintained against*, for the same reason the solid trio is pinned together:
