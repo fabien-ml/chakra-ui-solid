@@ -1171,7 +1171,19 @@ The seam's own suite gained the test that would have caught it.
 - [x] grid — ●
       Ships `Grid` **and** `GridItem`; `grid-item.tsx` computes `span ${n}/span ${n}` (§3.1)
 - [x] group
-      Already writes `--group-count`/`--group-index` inline — route 3, legal
+      **No custom properties and no effect** — route 1. Every position React sends through a
+      `data-*` prop is structural, so the recipe selects it directly
+      (`:nth-child(1 of :not([data-group-skip]))` and friends) and the seam is in the server's first
+      byte. Two divergences, both recorded here. **(1)** `skip` is gone: an out-of-flow child marks
+      itself with `data-group-skip`, which is the API the input-group family builds on, and nothing
+      emits `data-group-item` — the preset's avatar ring is its only consumer and takes the props
+      context when Avatar ports. **(2)** `stacking` counts to **8**, with one shared catch-all layer
+      above the ladder for anything past it; a stylesheet cannot count and `sibling-index()` is
+      Chromium-only. Overlapping avatars, upstream's only consumer, stop being legible well before
+      eight. Also measured here: **Panda evaluates a template-literal selector key built from a
+      module `const`, and a `for` loop that builds rungs — but its evaluator is not JS.**
+      `CEILING + 1` came out as the string `"81"` and emitted `z-index: 81` silently, so the ladder
+      is spelled out.
 - [ ] image
       **Two `card.mdx` sections wait on it**, measured at Phase 4: *With Image* and *Horizontal*
       are both `<Image>` beside `Card.Body`, and in *Horizontal* the image is the layout the

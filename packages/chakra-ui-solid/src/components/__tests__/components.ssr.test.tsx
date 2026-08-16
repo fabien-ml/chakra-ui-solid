@@ -906,8 +906,8 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </Grid>
   ),
   GridItem: () => <GridItem colSpan={2}>cell</GridItem>,
-  // Two children and `attached`, which is the shape whose decoration is client-only: the server
-  // sends no `data-first`, and asserting that it sends the markup anyway is `group.ssr.test.tsx`'s.
+  // Two children and `attached`, the shape that has a seam at all. That the seam's classes are in
+  // the server's markup rather than waiting for a client pass is `group.ssr.test.tsx`'s.
   Group: () => (
     <Group attached>
       <button type="button">one</button>

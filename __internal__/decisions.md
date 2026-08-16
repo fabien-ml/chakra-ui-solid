@@ -57,11 +57,19 @@ flat, one component doing both jobs.
   `ids` prop is the documented override. Ark and Chakra both forward it.
 - **Four part shapes (A–D).** The fifth — the *repeated* part (rows, cells, carousel indicators) —
   is not invented until the first component that has one. Accordion settles it.
-- **`Children.toArray` + `cloneElement` becomes `children()` plus a render effect that writes onto
-  the resolved nodes.** Solid cannot clone: by the time a parent sees a child it is a constructed
-  DOM node. Settled on Group, whose `data-first`/`data-last`/`data-between` and `--group-index` are
-  written that way, leaving Chakra's selectors untouched. **The cost is SSR** — server markup
-  carries none of it until the client takes over. That covers *decorating* a child.
+- **A positional fact about a child is a selector, not an attribute — `Children.toArray` +
+  `cloneElement` has no port here because it has nothing to carry.** React's `data-first` /
+  `data-last` / `data-between` and `--group-index` exist because a parent that cannot reach a child
+  has to turn positions into props; the positions themselves are structural, and CSS has selected on
+  them since CSS2. Settled on Group, which spells them `:nth-child(1 of :not([data-group-skip]))`
+  and friends and ships **no** effect: the seam is in the server's first byte, where the decorate
+  route left square corners for a frame. Where an out-of-flow child once needed a `skip` predicate
+  on the parent, the child now marks itself — narrower, Solid-native, and free to CSS.
+  **Reach for the decorate route only for a fact CSS cannot see**, and note that Solid cannot clone
+  even then: by the time a parent sees a child it is a constructed DOM node, so the route is
+  `children()` plus a render effect that writes onto the resolved nodes, and it costs SSR. Avatar's
+  ring is the one thing this repo still owes `data-group-item`, and it takes the context route
+  below when Avatar ports.
 - **Injecting styles into a passed-in child is context, and the child must be a COMPONENT.** Settled
   on Stack's separator, both halves measured. *Styles*: `StackSeparator` reads the direction off a
   `StackDirectionContext` and computes its own class, so unlike the decorate route this one costs no
@@ -251,6 +259,13 @@ Two more things the routes do not cover:
 
 - **Static is not resolving.** `mt="4x"` extracts fine and emits `margin-top: 4x`, which no browser
   parses. `check:declaration-support` puts every emitted declaration to a real Chromium.
+- **Panda's extractor evaluates more than object literals, and it is not JavaScript.** A selector key
+  built as a template literal from a module `const` resolves, and so does a `for` loop generating one
+  entry per rung — measured on Group. But `const CEILING = 8; … CEILING + 1` came out as the string
+  `"81"`, and Panda emitted `z-index: 81` with no error. **Never compute a style *value* in extracted
+  source.** Interpolating a string into a selector is fine; arithmetic is not, and the failure is a
+  wrong rule rather than a missing one, so `check:declaration-support` cannot see it either. Read the
+  emitted sheet after any recipe edit that is not a literal.
 - **Tests assert computed styles, never class names.** `classList.contains("p_4")` passes on a
   completely unstyled element, so a class-name assertion cannot see this failure at all. The one
   exception is `factory.test.ts`, which asks *which key* produced a class and computes every expected

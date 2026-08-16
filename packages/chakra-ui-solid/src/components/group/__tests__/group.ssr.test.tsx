@@ -3,15 +3,19 @@ import { describe, expect, it } from "vitest";
 import { Group } from "../group";
 
 /**
- * Group is the one component here that reaches for the DOM during render, and the server has no DOM
- * at all — not an empty one. `child instanceof Element` is a **global** read, so on the server it is
- * a `ReferenceError` rather than a `false`, and it takes the whole page down: the docs route
- * carrying a Group returned a 500 with `Element is not defined`, with every unit and browser test
- * green.
+ * A class name, where the rest of this suite asserts computed styles — because on the server there
+ * is nothing else to read, and the class is the whole claim: the seam is a rule the browser applies
+ * to the markup it was handed, so it is correct in the first byte with no client pass to wait for.
+ * The `& > *` prefix is dropped from each expectation, since SSR escapes the `&` to `&amp;`.
  *
- * So this asserts the render *completes*, and that the decoration it completes without is the
- * documented cost: no `data-first` in the server's markup until the client takes over.
+ * What guards the class against naming a rule Panda never generated is
+ * `packages/styled-system/styled-system/styles.css`, which the browser suite renders against.
  */
+const FIRST_OF_MANY =
+  "_>_*:nth-child(1_of_:not([data-group-skip])):not(:nth-last-child(1_of_:not([data-group-skip])))]:bdr-e_0!";
+const LAST_OF_MANY =
+  "_>_*:nth-last-child(1_of_:not([data-group-skip])):not(:nth-child(1_of_:not([data-group-skip])))]:bdr-s_0!";
+
 describe("Group on the server", () => {
   it("renders its children rather than throwing", async () => {
     const html = await renderServer(() => (
@@ -26,7 +30,7 @@ describe("Group on the server", () => {
     expect(html).toContain("two");
   });
 
-  it("carries none of the position attributes, which is the route's known cost", async () => {
+  it("carries the seam in its first byte", async () => {
     const html = await renderServer(() => (
       <Group attached>
         <button type="button">one</button>
@@ -34,9 +38,22 @@ describe("Group on the server", () => {
       </Group>
     ));
 
-    // The attribute, not the string: the recipe's own class names spell those selectors out —
-    // `[&_>_*[data-first]]:bdr-e_0!` — so a bare substring match passes on markup that has them.
-    expect(html).not.toContain('data-first=""');
-    expect(html).not.toContain('data-group-item=""');
+    expect(html).toContain(FIRST_OF_MANY);
+    expect(html).toContain(LAST_OF_MANY);
+  });
+
+  it("writes nothing onto the children it was handed", async () => {
+    const html = await renderServer(() => (
+      <Group stacking="last-on-top" attached>
+        <button type="button">one</button>
+        <button type="button">two</button>
+      </Group>
+    ));
+
+    // No longer a caveat about substring matching: the seam's own class names name
+    // `data-group-skip`, and nothing else.
+    expect(html).not.toContain("data-first");
+    expect(html).not.toContain("data-group-item");
+    expect(html).not.toContain("--group-index");
   });
 });

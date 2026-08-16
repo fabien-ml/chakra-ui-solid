@@ -59,13 +59,22 @@ Use the `grow` prop to make the children grow to fill the available space.
 
 <Example name="group-with-grow" />
 
+### Out of flow
+
+Mark a child with `data-group-skip` to take it out of the row. It gets no seam of its own and does
+not count towards the positions of the children around it, so the two buttons below stay attached to
+each other.
+
+```tsx
+<Group attached position="relative">
+  <Button variant="outline">One</Button>
+  <Button variant="outline">Two</Button>
+  <Box data-group-skip position="absolute" top="-2" insetEnd="-2">
+    <Badge>New</Badge>
+  </Box>
+</Group>
+```
+
 ## Props
 
 <PropsTable component="group" />
-
-`Group` positions its children by writing `data-first`, `data-last`, `data-between` and a
-`--group-index` onto the resolved child nodes, where the React version re-creates each child with
-those props. Solid has no `cloneElement` — a child is an already-constructed DOM node by the time a
-parent sees it — so the decoration is written rather than cloned in, and Chakra's own selectors are
-untouched. One consequence: the attributes are applied on the client, so a server-rendered `attached`
-group shows square corners for its first frame.
