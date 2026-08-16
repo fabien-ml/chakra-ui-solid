@@ -33,6 +33,7 @@ const {
   useStyles,
   StylesProvider,
   resolveSlotClasses,
+  useVariantKeys,
   PropsProvider,
   usePropsContext,
 } = createSlotRecipeContext<CardSlot, CardRootProps, CardVariantProps>({
@@ -215,6 +216,27 @@ describe("createSlotRecipeContext — the seams a hand-written body uses", () =>
     ));
 
     expect(getComputedStyle(probe(container, "body")).padding).toBe("16px");
+  });
+
+  it("names the recipe's own variant keys, and none for a family with no recipe key", () => {
+    // The other half of what a hand-written Root needs: `resolveSlotClasses` feeds this list to the
+    // recipe, and the Root omits the same names from its element, so neither states them itself.
+    const familyWithNoRecipe = createSlotRecipeContext<CardSlot, CardRootProps>({ name: "Bare" });
+
+    let cardKeys: string[] | undefined;
+    let bareKeys: string[] | undefined;
+
+    function Probe(): JSX.Element {
+      cardKeys = useVariantKeys();
+      bareKeys = familyWithNoRecipe.useVariantKeys();
+      return <span />;
+    }
+
+    render(() => <Probe />);
+
+    expect(cardKeys).toEqual(card.variantKeys);
+    expect(cardKeys).toContain("size");
+    expect(bareKeys).toEqual([]);
   });
 
   it("wraps the Root's element in a context of the family's own", () => {

@@ -1,9 +1,11 @@
 import {
   createSlotClasses,
   mergeProps,
+  pickVariantProps,
   type RenderProp,
   type RenderStrategyProps,
   renderStyled,
+  useRecipeVariantKeys,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
 import type { TabsVariantProps as TabsRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
@@ -22,16 +24,17 @@ import { PropsProvider, TabsProvider, type TabsSlot, usePropsContext } from "./t
 type DivProps = ComponentProps<"div">;
 
 /**
- * The Root's own inputs, which are machine arguments, mounting props or recipe variants rather than
- * DOM attributes. Literal keys rather than `tabs.props`, because `omit` narrows the returned
- * props by the keys it is handed and a `string[]` narrows nothing; `satisfies` is what keeps this
- * list and the interface one list.
+ * The Root's own inputs, which are machine arguments or mounting props rather than DOM attributes.
+ * Literal keys rather than `tabs.props`, because `omit` narrows the returned props by the keys it is
+ * handed and a `string[]` narrows nothing; `satisfies` is what keeps this list and the interface one
+ * list.
  *
- * **The four variants are the trap.** There is no bare `fitted` or `justify` style prop, so one left
- * in the bag reaches the element as `fitted="true"` — a literal attribute on the served markup, with
- * nothing to catch it.
+ * **The variants are deliberately absent, and that is the point.** What counts as a variant is
+ * whatever the system's own `tabs` recipe accepts, so the Root asks it (`useRecipeVariantKeys`) and
+ * omits that list alongside this one. A consumer who adds `tone` to `theme.extend.slotRecipes.tabs`
+ * gets it fed to the recipe and kept off the `div` without this file naming it.
  *
- * `unstyled` is deliberately absent — `renderStyled` consumes it and keeps it off the element.
+ * `unstyled` is absent for its own reason — `renderStyled` consumes it and keeps it off the element.
  */
 const ROOT_OWN_KEYS = [
   "activationMode",
@@ -49,10 +52,6 @@ const ROOT_OWN_KEYS = [
   "value",
   "lazyMount",
   "unmountOnExit",
-  "fitted",
-  "justify",
-  "size",
-  "variant",
 ] as const satisfies readonly (keyof TabsRootBaseProps)[];
 
 /** The same list for the other Root, which is handed a machine instead of the thirteen props. */
@@ -60,10 +59,6 @@ const ROOT_PROVIDER_OWN_KEYS = [
   "value",
   "lazyMount",
   "unmountOnExit",
-  "fitted",
-  "justify",
-  "size",
-  "variant",
 ] as const satisfies readonly (keyof TabsRootProviderProps)[];
 
 /** What both roots read for themselves, whichever machine they were handed. */
@@ -84,22 +79,18 @@ interface RootStylingProps extends TabsVariantProps, RenderStrategyProps {
 function renderRoot(
   store: CreateTabsReturn,
   styling: RootStylingProps,
+  variantKeys: readonly string[],
   elementProps: DivProps,
 ): JSX.Element {
   // Once, here — never per part. Six parts each calling `sva()` is six times the work for one
   // answer, and it puts six copies of the variant-reading logic in the tree where they can disagree.
   // A memo, because a variant prop is a prop like any other and `size` can change.
   //
-  // The four values are read lazily and passed straight through: `undefined` is what the recipe's
-  // own `defaultVariants` resolves, so restating a default here would be the second source of truth
-  // `TabsVariantProps` declines to be.
+  // The keys are the recipe's, picked inside the accessor so a changed variant re-resolves. An unset
+  // one arrives as `undefined`, which is what the recipe's own `defaultVariants` fills — restating a
+  // default here would be the second source of truth `TabsVariantProps` declines to be.
   const slots = createSlotClasses<TabsSlot, TabsRecipeVariants>("tabs", {
-    variantProps: () => ({
-      fitted: styling.fitted,
-      justify: styling.justify,
-      size: styling.size,
-      variant: styling.variant,
-    }),
+    variantProps: () => pickVariantProps<TabsRecipeVariants>(styling, variantKeys),
     // The Root-level opt-out, which empties every slot. A part opting out for itself is
     // `renderStyled`'s job, and it already suppresses its own `recipeClass` on `unstyled`.
     unstyled: () => styling.unstyled,
@@ -153,12 +144,18 @@ export const TabsRoot: Component<TabsRootProps> = (props) => {
   const merged = withContextDefaults<TabsRootProps>(props, usePropsContext());
   const store = createTabs(merged);
 
+  // One read of the recipe's variant names, feeding both the `omit` that keeps them off the `div`
+  // and the recipe call that consumes them. There is no bare `fitted` or `justify` style prop for
+  // `renderStyled` to swallow, so a variant left in the bag lands on the served markup as
+  // `fitted="true"` with nothing to catch it.
+  const variantKeys = useRecipeVariantKeys<TabsRootProps>("tabs");
+
   const elementProps = mergeProps(
     () => store.getRootProps(),
-    omit(merged, ...ROOT_OWN_KEYS),
+    omit(merged, ...ROOT_OWN_KEYS, ...variantKeys),
   ) as DivProps;
 
-  return renderRoot(store, merged, elementProps);
+  return renderRoot(store, merged, variantKeys, elementProps);
 };
 
 /**
@@ -174,12 +171,14 @@ export const TabsRootProvider: Component<TabsRootProviderProps> = (props) => {
     omit(usePropsContext(), "value"),
   );
 
+  const variantKeys = useRecipeVariantKeys<TabsRootProviderProps>("tabs");
+
   const elementProps = mergeProps(
     () => merged.value.getRootProps(),
-    omit(merged, ...ROOT_PROVIDER_OWN_KEYS),
+    omit(merged, ...ROOT_PROVIDER_OWN_KEYS, ...variantKeys),
   ) as DivProps;
 
-  return renderRoot(merged.value, merged, elementProps);
+  return renderRoot(merged.value, merged, variantKeys, elementProps);
 };
 
 /**

@@ -1,7 +1,7 @@
 import { ChakraProvider } from "@chakra-ui-solid/core";
 import { mount } from "@chakra-ui-solid/internal-test-utils";
 import type { JSX } from "@solidjs/web";
-import { Box, Button } from "chakra-ui-solid";
+import { Box, Button, Dialog, Field, Tabs } from "chakra-ui-solid";
 import { afterEach, describe, expect, it } from "vitest";
 import consumerStylesheet from "./__fixtures__/consumer/consumer.css?raw";
 import { system as consumerSystem } from "./__fixtures__/consumer/styled-system-app/chakra-system";
@@ -42,12 +42,28 @@ afterEach(() => {
   injected = undefined;
 });
 
-/** Mounted under *their* system, nested inside the harness's own — the inner provider wins. */
-function renderUnderConsumerSystem(ui: () => JSX.Element): HTMLElement {
+/**
+ * Mounted under *their* system, nested inside the harness's own — the inner provider wins — and the
+ * container is what comes back, for a tree whose observable is somewhere inside it.
+ */
+function mountUnderConsumerSystem(ui: () => JSX.Element): HTMLElement {
   mounted = mount(() => <ChakraProvider value={consumerSystem}>{ui()}</ChakraProvider>);
-  const element = mounted.container.firstElementChild;
+  return mounted.container;
+}
+
+/** The same mount, narrowed to the one element the tree rendered. */
+function renderUnderConsumerSystem(ui: () => JSX.Element): HTMLElement {
+  const element = mountUnderConsumerSystem(ui).firstElementChild;
   if (!(element instanceof HTMLElement)) {
     throw new Error("expected the tree to render one element");
+  }
+  return element;
+}
+
+function partOf(container: ParentNode, part: string): HTMLElement {
+  const element = container.querySelector(`[data-part="${part}"]`);
+  if (!(element instanceof HTMLElement)) {
+    throw new Error(`expected the tree to render a [data-part="${part}"] element`);
   }
   return element;
 }
@@ -98,6 +114,79 @@ describe("what a consumer's own panda.config.ts adds", () => {
 
     // `tone: brand` is `background: red.500`, and their `red.500` is `#00ff00`.
     expect(getComputedStyle(element).backgroundColor).toBe("rgb(0, 255, 0)");
+  });
+});
+
+/**
+ * The same variant key on a **slot recipe** — one style object per anatomy part instead of one for
+ * the whole component — which is where nine of this library's Roots live.
+ *
+ * Three of them rather than nine, because a Root comes in three shapes and the other six are one of
+ * these:
+ *
+ * - **Tabs** renders an element of its own, so both halves are visible on it: `tone` has to reach
+ *   the recipe *and* stay off the `div`.
+ * - **Dialog** renders no element at all — it publishes one class per slot to its parts — so a part
+ *   is the only place the key is observable.
+ * - **Field** is hand-written over the slot-recipe seam, and asks it for the key list rather than
+ *   calling the recipe hook itself.
+ *
+ * Each recipe styles a different CSS property, so no assertion here can pass against another's rule.
+ */
+describe("a variant key a consumer's own slot recipe gained", () => {
+  it("reaches the recipe on a Root that renders its own element, and not the element", () => {
+    const element = renderUnderConsumerSystem(() => (
+      <Tabs.Root tone="brand" defaultValue="one">
+        <Tabs.List>
+          <Tabs.Trigger value="one">One</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="one">First</Tabs.Content>
+      </Tabs.Root>
+    ));
+
+    expect(element.hasAttribute("tone")).toBe(false);
+    expect(getComputedStyle(element).letterSpacing).toBe("normal");
+
+    applyConsumerStylesheet();
+
+    expect(getComputedStyle(element).letterSpacing).toBe("13px");
+  });
+
+  it("reaches a part of a Root that renders no element", () => {
+    const container = mountUnderConsumerSystem(() => (
+      <Dialog.Root tone="brand" defaultOpen>
+        <Dialog.Positioner>
+          <Dialog.Content>
+            <Dialog.Title>Delete file</Dialog.Title>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Dialog.Root>
+    ));
+    const content = partOf(container, "content");
+
+    // The Root has no element for the key to leak onto, so the assertion is over the whole tree —
+    // nothing below it was handed the prop either.
+    expect(container.querySelector("[tone]")).toBeNull();
+    expect(getComputedStyle(content).wordSpacing).toBe("0px");
+
+    applyConsumerStylesheet();
+
+    expect(getComputedStyle(content).wordSpacing).toBe("17px");
+  });
+
+  it("reaches the recipe through the slot-recipe seam a hand-written Root uses", () => {
+    const element = renderUnderConsumerSystem(() => (
+      <Field.Root tone="brand">
+        <Field.Label>Email</Field.Label>
+      </Field.Root>
+    ));
+
+    expect(element.hasAttribute("tone")).toBe(false);
+    expect(getComputedStyle(element).textIndent).toBe("0px");
+
+    applyConsumerStylesheet();
+
+    expect(getComputedStyle(element).textIndent).toBe("23px");
   });
 });
 

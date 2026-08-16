@@ -2,7 +2,9 @@ import {
   createPresence,
   createRenderStrategy,
   createSlotClasses,
+  pickVariantProps,
   type UnstyledProp,
+  useRecipeVariantKeys,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
 import type { PopoverVariantProps as PopoverRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
@@ -53,15 +55,20 @@ function renderRoot(
   // getters, so the read stays lazy.
   const { unmounted } = createRenderStrategy(presence.present, () => rootProps);
 
+  // What counts as a variant is whatever the system's own `popover` recipe accepts, so the Root asks
+  // it rather than naming `size` here: a consumer who adds `tone` to
+  // `theme.extend.slotRecipes.popover` gets it fed to the recipe without editing this file.
+  const variantKeys = useRecipeVariantKeys("popover");
+
   // Once, here — never per part. Thirteen parts each calling `sva()` is thirteen times the work for
   // one answer, and it puts thirteen copies of the variant-reading logic in the tree where they can
   // disagree. A memo, because a variant prop is a prop like any other and `size` can change.
   //
-  // `size` is read lazily and passed straight through: `undefined` is what the recipe's own
-  // `defaultVariants` resolves, so restating `"md"` here would be the second source of truth
-  // `PopoverVariantProps` declines to be.
+  // Picked inside the accessor so a changed variant re-resolves. An unset one arrives as `undefined`,
+  // which is what the recipe's own `defaultVariants` fills — restating `"md"` here would be the
+  // second source of truth `PopoverVariantProps` declines to be.
   const slots = createSlotClasses<PopoverSlot, PopoverRecipeVariants>("popover", {
-    variantProps: () => ({ size: rootProps.size }),
+    variantProps: () => pickVariantProps<PopoverRecipeVariants>(rootProps, variantKeys),
     // The Root-level opt-out, which empties every slot. A part opting out for itself is
     // `renderStyled`'s job, and it already suppresses its own `recipeClass` on `unstyled`.
     unstyled: () => rootProps.unstyled,

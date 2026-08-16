@@ -46,6 +46,7 @@ const {
   StylesProvider: NativeSelectStylesProvider,
   useStyles: useNativeSelectStyles,
   resolveSlotClasses: resolveNativeSelectSlotClasses,
+  useVariantKeys: useNativeSelectVariantKeys,
   PropsProvider,
   usePropsContext,
 } = createSlotRecipeContext<
@@ -63,8 +64,12 @@ export { useNativeSelectStyles };
  * The Root's own inputs, which are not the `div`'s. `disabled` and `invalid` are states the two
  * parts read from context — forwarded, `invalid` would reach the DOM as `invalid=""` on a `div`,
  * which is an attribute no element has.
+ *
+ * The recipe's variant names are **not** listed here. They come off the system's own `nativeSelect`
+ * recipe at render time, so a consumer who adds a variant in their Panda config gets it partitioned
+ * off too, where a hardcoded name would have put theirs on the `div` as an attribute.
  */
-const ROOT_ONLY_KEYS = ["disabled", "invalid", "variant", "size"] as const;
+const ROOT_ONLY_KEYS = ["disabled", "invalid"] as const;
 
 /**
  * NativeSelect.Root — the box a native `<select>` and its chevron sit in.
@@ -84,6 +89,7 @@ export const NativeSelectRoot: Component<NativeSelectRootProps> = (props) => {
   const merged = withContextDefaults<NativeSelectRootProps>(props, usePropsContext());
 
   const slots = resolveNativeSelectSlotClasses(merged);
+  const variantKeys = useNativeSelectVariantKeys();
 
   // Getters, not a snapshot: a field whose `invalid` flips after mount has to repaint the border on
   // both parts, and an object read once here would freeze them at whatever they were at construction.
@@ -101,7 +107,7 @@ export const NativeSelectRoot: Component<NativeSelectRootProps> = (props) => {
       <NativeSelectStylesProvider value={slots}>
         {renderStyled<DivProps, HTMLDivElement>({
           as: (merged.as ?? "div") as ValidComponent,
-          props: omit(merged, ...ROOT_ONLY_KEYS) as DivProps,
+          props: omit(merged, ...variantKeys, ...ROOT_ONLY_KEYS) as DivProps,
           render: merged.render,
           recipeClass: () => slots().root,
         })}

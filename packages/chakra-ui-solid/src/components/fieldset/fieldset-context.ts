@@ -33,6 +33,7 @@ export const {
   useStyles: useFieldsetStyles,
   withContext: withFieldsetContext,
   resolveSlotClasses: resolveFieldsetSlotClasses,
+  useVariantKeys: useFieldsetVariantKeys,
 } = createSlotRecipeContext<FieldsetSlot, FieldsetRootBaseProps, FieldsetRecipeVariants>({
   name: "Fieldset",
   recipe: "fieldset",

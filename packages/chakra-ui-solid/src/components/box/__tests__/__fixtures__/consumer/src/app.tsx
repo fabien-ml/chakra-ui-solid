@@ -11,7 +11,9 @@ import {
   Circle,
   Container,
   chakra,
+  Dialog,
   Em,
+  Field,
   Flex,
   Float,
   Grid,
@@ -26,6 +28,7 @@ import {
   StackSeparator,
   Sticky,
   Strong,
+  Tabs,
   VisuallyHidden,
   Wrap,
   WrapItem,
@@ -155,6 +158,40 @@ const ConsumerAdditions = () => (
 );
 
 /**
+ * The variant key again, on the three shapes a **slot recipe** reaches a Root in — one per shape
+ * rather than one per component, because the other six Roots in the library are one of these three.
+ *
+ * `Tabs.Root` renders its own element, `Dialog.Root` renders none and publishes a class per slot to
+ * its parts, and `Field.Root` is hand-written over the slot-recipe seam. All three read the key list
+ * off the recipe *this* config produced, so `tone` is fed to the recipe instead of landing on an
+ * element as an attribute — and each line here is the type half of that, since `tone` is on
+ * `PresetVariantProps<"tabs">` and friends only because `panda codegen` wrote the matching
+ * `RecipeVariantOverrides` row.
+ */
+const ConsumerSlotVariants = () => (
+  <Box>
+    <Tabs.Root tone="brand" defaultValue="one">
+      <Tabs.List>
+        <Tabs.Trigger value="one">One</Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="one">First</Tabs.Content>
+    </Tabs.Root>
+
+    <Dialog.Root tone="brand" defaultOpen>
+      <Dialog.Positioner>
+        <Dialog.Content>
+          <Dialog.Title>Delete file</Dialog.Title>
+        </Dialog.Content>
+      </Dialog.Positioner>
+    </Dialog.Root>
+
+    <Field.Root tone="brand">
+      <Field.Label>Email</Field.Label>
+    </Field.Root>
+  </Box>
+);
+
+/**
  * The same two names one level in, which is the gate on *which* interfaces the generated
  * declarations augment.
  *
@@ -186,6 +223,7 @@ export const App = () => (
     <LayoutTier />
     <RecipeTier />
     <ConsumerAdditions />
+    <ConsumerSlotVariants />
     <NestedConsumerAdditions />
   </Box>
 );

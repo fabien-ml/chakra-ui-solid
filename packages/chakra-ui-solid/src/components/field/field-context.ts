@@ -58,6 +58,7 @@ export const {
   StylesProvider: FieldStylesProvider,
   useStyles: useFieldStyles,
   resolveSlotClasses: resolveFieldSlotClasses,
+  useVariantKeys: useFieldVariantKeys,
   PropsProvider,
   usePropsContext,
 } = createSlotRecipeContext<FieldSlot, FieldRootBaseProps, FieldRecipeVariants>({

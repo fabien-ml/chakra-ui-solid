@@ -2,8 +2,10 @@ import {
   createPresence,
   createRenderStrategy,
   createSlotClasses,
+  pickVariantProps,
   type RenderStrategyProps,
   type UnstyledProp,
+  useRecipeVariantKeys,
   withContextDefaults,
   withDefaults,
 } from "@chakra-ui-solid/core";
@@ -65,19 +67,20 @@ function renderRoot(
   // "is the node still animating out", the strategy answers "should the node be in the DOM at all".
   const { unmounted } = createRenderStrategy(presence.present, () => renderStrategy);
 
+  // What counts as a variant is whatever the system's own `drawer` recipe accepts, so the Root asks
+  // it rather than naming three keys here: a consumer who adds `tone` to
+  // `theme.extend.slotRecipes.drawer` gets it fed to the recipe without editing this file.
+  const variantKeys = useRecipeVariantKeys("drawer");
+
   // Once, here — never per part. Ten parts each calling `sva()` is ten times the work for one
   // answer, and it puts ten copies of the variant-reading logic in the tree where they can disagree.
   // A memo, because a variant prop is a prop like any other and `size` can change.
   //
-  // The three values are read lazily and passed straight through: `undefined` is what the recipe's
-  // own `defaultVariants` resolves, so restating a default here would be the second source of truth
-  // `DrawerVariantProps` declines to be.
+  // Picked inside the accessor so a changed variant re-resolves. An unset one arrives as `undefined`,
+  // which is what the recipe's own `defaultVariants` fills — restating a default here would be the
+  // second source of truth `DrawerVariantProps` declines to be.
   const slots = createSlotClasses<DrawerSlot, DrawerRecipeVariants>("drawer", {
-    variantProps: () => ({
-      size: rootProps.size,
-      placement: rootProps.placement,
-      contained: rootProps.contained,
-    }),
+    variantProps: () => pickVariantProps<DrawerRecipeVariants>(rootProps, variantKeys),
     // The Root-level opt-out, which empties every slot. A part opting out for itself is
     // `renderStyled`'s job, and it already suppresses its own `recipeClass` on `unstyled`.
     unstyled: () => rootProps.unstyled,

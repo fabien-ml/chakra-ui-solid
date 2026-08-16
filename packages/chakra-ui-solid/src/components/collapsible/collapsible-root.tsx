@@ -1,10 +1,13 @@
 import {
   createSlotClasses,
   mergeProps,
+  pickVariantProps,
   type RenderProp,
   renderStyled,
+  useRecipeVariantKeys,
   withContextDefaults,
 } from "@chakra-ui-solid/core";
+import type { CollapsibleVariantProps as CollapsibleRecipeVariants } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, JSX, ValidComponent } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 import type {
@@ -28,6 +31,11 @@ type DivProps = ComponentProps<"div">;
  * reach the `div` as `collapsedheight="120px"` and friends. Literal keys rather than
  * `collapsible.props`, because `omit` narrows the returned props by the keys it is handed and
  * a `string[]` narrows nothing; `satisfies` is what keeps this list and the interface one list.
+ *
+ * The recipe's variants are absent too, and for a different reason: the Root asks the system's own
+ * `collapsible` recipe what they are (`useRecipeVariantKeys`) and omits that list alongside this
+ * one. Chakra's ships none, so today it is empty — a consumer who adds one to
+ * `theme.extend.slotRecipes.collapsible` is why the Root asks instead of assuming.
  *
  * `unstyled` is deliberately absent — `renderStyled` consumes it and keeps it off the element.
  */
@@ -62,13 +70,15 @@ interface RootStylingProps {
 function renderRoot(
   store: CreateCollapsibleReturn,
   styling: RootStylingProps,
+  variantKeys: readonly string[],
   elementProps: DivProps,
 ): JSX.Element {
-  const slots = createSlotClasses<CollapsibleSlot, Record<never, never>>("collapsible", {
-    // Zero variants: `collapsibleVariantKeys` is `[]` and `defaultVariants` is `{}`, so the recipe
-    // takes nothing and only its `content` slot has a body. The call still has to happen — it is
-    // what produces the class names all four parts carry.
-    variantProps: () => ({}),
+  const slots = createSlotClasses<CollapsibleSlot, CollapsibleRecipeVariants>("collapsible", {
+    // Chakra's recipe declares no variants, so this picks an empty bag and only the `content` slot
+    // has a body. The keys still come off the system rather than from a literal `{}` — a consumer
+    // who adds one is the case a literal cannot serve — and the call has to happen either way,
+    // because it is what produces the class names all four parts carry.
+    variantProps: () => pickVariantProps<CollapsibleRecipeVariants>(styling, variantKeys),
     // The Root-level opt-out, which empties every slot. A part opting out for itself is
     // `renderStyled`'s job, and it already suppresses its own `recipeClass` on `unstyled`.
     unstyled: () => styling.unstyled,
@@ -111,12 +121,16 @@ export const CollapsibleRoot: Component<CollapsibleRootProps> = (props) => {
   const merged = withContextDefaults<CollapsibleRootProps>(props, usePropsContext());
   const store = createCollapsible(merged);
 
+  // One read of the recipe's variant names, feeding both the `omit` that keeps them off the `div`
+  // and the recipe call that consumes them.
+  const variantKeys = useRecipeVariantKeys<CollapsibleRootProps>("collapsible");
+
   const elementProps = mergeProps(
     () => store.getRootProps(),
-    omit(merged, ...ROOT_OWN_KEYS),
+    omit(merged, ...ROOT_OWN_KEYS, ...variantKeys),
   ) as DivProps;
 
-  return renderRoot(store, merged, elementProps);
+  return renderRoot(store, merged, variantKeys, elementProps);
 };
 
 /**
@@ -125,12 +139,14 @@ export const CollapsibleRoot: Component<CollapsibleRootProps> = (props) => {
  */
 export const CollapsibleRootProvider: Component<CollapsibleRootProviderProps> = (props) => {
   const merged = withContextDefaults<CollapsibleRootProviderProps>(props, usePropsContext());
+  const variantKeys = useRecipeVariantKeys<CollapsibleRootProviderProps>("collapsible");
+
   const elementProps = mergeProps(
     () => merged.value.getRootProps(),
-    omit(merged, "value"),
+    omit(merged, "value", ...variantKeys),
   ) as DivProps;
 
-  return renderRoot(merged.value, merged, elementProps);
+  return renderRoot(merged.value, merged, variantKeys, elementProps);
 };
 
 /**

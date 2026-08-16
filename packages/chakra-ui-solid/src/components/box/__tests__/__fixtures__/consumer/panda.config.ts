@@ -79,6 +79,23 @@ export default defineChakraConfig({
       recipes: {
         button: { variants: { tone: { brand: { background: "red.500" } } } },
       },
+      // The same key on a **slot recipe** — one style object per anatomy part rather than one for
+      // the whole component — and three of them, because a Root comes in three shapes and each
+      // reaches the recipe by a different route:
+      //
+      // - `tabs` renders an element of its own, so the key has to reach the recipe *and* stay off
+      //   the `div`;
+      // - `dialog` renders no element at all and publishes a class per slot to its parts, so a part
+      //   is the only place the key is observable;
+      // - `field` is hand-written over the slot-recipe seam, which reads the key list for it.
+      //
+      // A different CSS property each, on top of the absurd values, so no assertion can pass against
+      // another recipe's rule.
+      slotRecipes: {
+        tabs: { variants: { tone: { brand: { root: { letterSpacing: "13px" } } } } },
+        dialog: { variants: { tone: { brand: { content: { wordSpacing: "17px" } } } } },
+        field: { variants: { tone: { brand: { root: { textIndent: "23px" } } } } },
+      },
     },
   },
 });

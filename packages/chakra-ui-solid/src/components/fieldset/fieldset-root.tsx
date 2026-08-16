@@ -8,6 +8,7 @@ import {
   FieldsetProvider,
   FieldsetStylesProvider,
   resolveFieldsetSlotClasses,
+  useFieldsetVariantKeys,
 } from "./fieldset-context";
 
 type FieldsetElementProps = ComponentProps<"fieldset">;
@@ -19,8 +20,12 @@ type FieldsetElementProps = ComponentProps<"fieldset">;
  * included. `invalid` is not an attribute any element has, and forwarded it would reach the DOM as
  * `invalid=""`; the state travels as `data-invalid` off the prop getter instead. `disabled` is
  * absent from this list on purpose: it *is* the native attribute, and `getRootProps()` emits it.
+ *
+ * `size` is absent for a different reason again: the recipe's variant names come off the system's
+ * own `fieldset` recipe at render time, so a consumer who adds a variant in their Panda config gets
+ * it partitioned off too, where a hardcoded name would have put theirs on the `fieldset`.
  */
-const ROOT_ONLY_KEYS = ["id", "invalid", "size"] as const;
+const ROOT_ONLY_KEYS = ["id", "invalid"] as const;
 
 /**
  * Fieldset.Root — a set of controls grouped under one name, and disabled or marked invalid together.
@@ -44,12 +49,13 @@ export const FieldsetRoot: Component<FieldsetRootProps> = (props) => {
   // Once, here — never per part: the seam resolves the recipe against these props and publishes one
   // class per slot to everything below, including the Root-level `unstyled` opt-out.
   const slots = resolveFieldsetSlotClasses(merged);
+  const variantKeys = useFieldsetVariantKeys();
 
   const store = createFieldset(merged);
 
   const elementProps = mergeProps(
     () => store.getRootProps(),
-    omit(merged, ...ROOT_ONLY_KEYS),
+    omit(merged, ...variantKeys, ...ROOT_ONLY_KEYS),
   ) as FieldsetElementProps;
 
   return (

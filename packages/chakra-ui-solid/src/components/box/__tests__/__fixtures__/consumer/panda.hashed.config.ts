@@ -57,6 +57,11 @@ export default defineChakraConfig({
       recipes: {
         button: { variants: { tone: { brand: { background: "red.500" } } } },
       },
+      slotRecipes: {
+        tabs: { variants: { tone: { brand: { root: { letterSpacing: "13px" } } } } },
+        dialog: { variants: { tone: { brand: { content: { wordSpacing: "17px" } } } } },
+        field: { variants: { tone: { brand: { root: { textIndent: "23px" } } } } },
+      },
     },
   },
 });

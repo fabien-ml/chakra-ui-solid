@@ -9,6 +9,7 @@ import {
   FieldStylesProvider,
   PropsProvider,
   resolveFieldSlotClasses,
+  useFieldVariantKeys,
   usePropsContext,
 } from "./field-context";
 
@@ -19,11 +20,14 @@ type DivProps = ComponentProps<"div">;
  * would be wrong rather than merely noisy: on this component it *seeds* the id scheme, and the
  * element's own id is `field::{id}` — forwarded, it would land after `getRootProps()` in the merge
  * and rename the root to the control's id.
+ *
+ * The recipe's variant names are **not** listed here. They come off the system's own `field` recipe
+ * at render time, so a consumer who adds a variant in their Panda config gets it partitioned off
+ * too, where a hardcoded name would have put theirs on the `div` as an attribute.
  */
 const ROOT_ONLY_KEYS = [
   "id",
   "ids",
-  "orientation",
   "invalid",
   "disabled",
   "readOnly",
@@ -70,12 +74,13 @@ export const FieldRoot: Component<FieldRootProps> = (props) => {
   // every one of them. A part opting out for itself is `renderStyled`'s job, and it already
   // suppresses its own `recipeClass` on `unstyled`.
   const slots = resolveFieldSlotClasses(merged);
+  const variantKeys = useFieldVariantKeys();
 
   const store = createField(merged);
 
   const elementProps = mergeProps(
     () => store.getRootProps(),
-    omit(merged, ...ROOT_ONLY_KEYS),
+    omit(merged, ...variantKeys, ...ROOT_ONLY_KEYS),
   ) as DivProps;
 
   return (

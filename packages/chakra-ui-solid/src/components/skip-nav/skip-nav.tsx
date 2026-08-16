@@ -2,9 +2,12 @@ import {
   chakra,
   createRecipeClass,
   type HTMLChakraProps,
+  pickVariantProps,
   renderStyled,
+  useRecipeVariantKeys,
   withDefaults,
 } from "@chakra-ui-solid/core";
+import type { SkipNavLinkVariantProps } from "@chakra-ui-solid/styled-system/recipes";
 import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
 
@@ -42,11 +45,18 @@ type SkipNavLinkElementProps = ComponentProps<"a">;
 export const SkipNavLink: Component<SkipNavLinkProps> = (props) => {
   const merged = withDefaults(props, { id: FALLBACK_ID } satisfies Partial<SkipNavLinkProps>);
 
-  const recipeClass = createRecipeClass("skipNavLink", { variantProps: () => ({}) });
+  // Chakra's `skipNavLink` recipe declares no variants, so this list is empty today. It still comes
+  // off the system rather than from a literal `{}`: a consumer who adds one under
+  // `theme.extend.recipes.skipNavLink` gets it fed to the recipe and kept off the anchor.
+  const variantKeys = useRecipeVariantKeys<SkipNavLinkProps>("skipNavLink");
+
+  const recipeClass = createRecipeClass("skipNavLink", {
+    variantProps: () => pickVariantProps<SkipNavLinkVariantProps>(merged, variantKeys),
+  });
 
   // `id` names the *target*, so it is consumed here rather than forwarded — an `id` on the link
   // itself would put two elements with the same id on the page and break the jump it exists for.
-  const elementProps = merge(omit(merged, "id"), {
+  const elementProps = merge(omit(merged, "id", ...variantKeys), {
     get href() {
       return `#${merged.id}`;
     },
