@@ -1,5 +1,4 @@
-import { Portal } from "@solidjs/web";
-import { Button, type ButtonProps, Dialog, Field, Input, Stack } from "chakra-ui-solid";
+import { Button, type ButtonProps, Dialog, Field, Input, Portal, Stack } from "chakra-ui-solid";
 
 export default function DialogWithInitialFocus() {
   let lastNameInput: HTMLInputElement | undefined;

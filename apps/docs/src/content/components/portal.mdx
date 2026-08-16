@@ -1,0 +1,51 @@
+---
+title: Portal
+description: Used to render an element outside the DOM hierarchy
+links:
+  source: packages/chakra-ui-solid/src/components/portal
+  chakra: https://chakra-ui.com/docs/components/portal
+---
+
+<Example name="portal-basic" />
+
+## Usage
+
+The `Portal` renders an element at the end of `document.body` or a specific container, so an
+ancestor's `overflow`, `transform` or `z-index` cannot clip it or re-stack it.
+
+```tsx
+import { Portal } from "chakra-ui-solid";
+```
+
+```tsx
+<Portal>
+  <div>Portal content</div>
+</Portal>
+```
+
+## Examples
+
+### Custom Container
+
+Use the `container` prop to render the portal in a custom container.
+
+<Example name="portal-with-container" />
+
+> The prop takes an accessor rather than a ref object, so a signal-valued container moves the
+> content when it changes.
+
+### Disabled
+
+Use the `disabled` prop to disable the portal. This will render the children in the same DOM
+hierarchy.
+
+<Example name="portal-disabled" />
+
+## Server Rendering
+
+The `Portal` renders nothing on the server, and its content arrives when the page hydrates. Content
+that must appear in the served HTML should not be portalled.
+
+## Props
+
+<PropsTable component="portal" />

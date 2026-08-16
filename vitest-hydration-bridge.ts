@@ -203,6 +203,15 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/avatar/__tests__/avatar.ssr-entry.tsx",
   ),
+  // The one subject the server renders **nothing** for, which makes it the only round trip where the
+  // two sides disagree about the tree by design rather than by accident. Siblings sit on both sides
+  // of the portal so a hydration key the portal failed to account for lands on `after`; and the
+  // children are built a flush after hydration finishes, which is the property this fixture exists
+  // to hold still.
+  portal: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/portal/__tests__/portal.ssr-entry.tsx",
+  ),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

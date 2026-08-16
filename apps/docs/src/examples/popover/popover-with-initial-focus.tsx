@@ -1,5 +1,4 @@
-import { Portal } from "@solidjs/web";
-import { Box, Button, type ButtonProps, Group, Popover } from "chakra-ui-solid";
+import { Box, Button, type ButtonProps, Group, Popover, Portal } from "chakra-ui-solid";
 
 export default function PopoverWithInitialFocus() {
   let prevButton: HTMLButtonElement | undefined;

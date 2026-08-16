@@ -1,10 +1,10 @@
-import { Portal } from "@solidjs/web";
 import {
   Button,
   type ButtonProps,
   CloseButton,
   type CloseButtonProps,
   Dialog,
+  Portal,
 } from "chakra-ui-solid";
 
 export default function DialogWithCover() {

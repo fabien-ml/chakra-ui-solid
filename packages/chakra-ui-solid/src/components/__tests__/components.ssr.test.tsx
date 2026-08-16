@@ -182,6 +182,7 @@ import {
   PopoverRootProvider,
   PopoverTitle,
   PopoverTrigger,
+  Portal,
   Quote,
   Radiomark,
   Separator,
@@ -1254,6 +1255,11 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
       <PopoverTrigger>Open</PopoverTrigger>
     </PopoverRoot>
   ),
+  Portal: () => (
+    <Portal>
+      <span>portalled</span>
+    </Portal>
+  ),
   Quote: () => <Quote>quoted</Quote>,
   // Checked, because that is the arm that renders a child — the unchecked one is an empty `span`
   // and would pass the "did any element come back" check with the dot never built.
@@ -1716,6 +1722,15 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   WrapItem: () => <WrapItem>tag</WrapItem>,
 };
 
+/**
+ * The components whose contract on the server is to emit **nothing**, asserted as emptiness rather
+ * than waived. Only `Portal` is in it: `@solidjs/web`'s Portal renders no markup on the server and
+ * the content arrives on hydration, so requiring an element of it would assert the opposite of what
+ * it promises — and letting it merely "not fail" would stop catching the day it starts emitting
+ * markup the client then has to reconcile.
+ */
+const SERVER_EMPTY = new Set(["Portal"]);
+
 describe("every exported component renders on the server", () => {
   it.each(Object.keys(SUBJECTS))("%s", async (name) => {
     const render = SUBJECTS[name];
@@ -1724,6 +1739,11 @@ describe("every exported component renders on the server", () => {
     }
 
     const html = await renderServer(render);
+
+    if (SERVER_EMPTY.has(name)) {
+      expect(html).toBe("");
+      return;
+    }
 
     // An element, not merely a non-empty string: a component that server-rendered to its children
     // and nothing else would pass a length check while having dropped its own markup.

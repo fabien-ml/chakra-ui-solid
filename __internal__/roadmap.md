@@ -1368,7 +1368,7 @@ The seam's own suite gained the test that would have caught it.
 - [x] wrap
       Plus `WrapItem`
 
-## Utilities, providers and re-exports (4)
+## Utilities, providers and re-exports (5)
 
 - [ ] client-only
       Not an exclusion — §5.2
@@ -1383,8 +1383,24 @@ The seam's own suite gained the test that would have caught it.
       whole subject
 - [ ] highlight
       Over `@zag-js/highlight-word`. Plus `useHighlight`
+- [x] portal
+      **Un-excluded, and the exclusion's premise was the finding.** "A re-export would be a wrapper
+      around nothing" held until a Dialog opened from inside a Popover painted the popover *over* the
+      scrim on the docs site. `@solidjs/web`'s Portal reserves its slot in `document.body` inside a
+      scheduled effect but builds its children in the pure phase before it, so a **nested** portal
+      finishes first, reserves first, and lands its content above the portal containing it. React's
+      `createPortal` appends at commit, so upstream orders the other way — measured on
+      chakra-ui.com, popover positioner at body index 296 and the dialog backdrop at 298.
+      Chakra's z-index scheme depends on that order: `dialog.backdrop` is
+      `calc(var(--dialog-z-index) + var(--layer-index, 0) - 1)`, which puts a dialog one layer deep
+      on **1500** — the exact number a layer-0 popover's content carries. Nothing but document order
+      separates them. So the wrapper carries a semantic Solid's own does not, which is what the
+      exclusion said did not exist. It holds its children back one effect flush; `disabled` and
+      `container` both ship, `container` as an accessor. The **server** half of the old note stands
+      and is now asserted rather than assumed: it renders nothing, which `SERVER_EMPTY` in
+      `components.ssr.test.tsx` pins as a contract and `?id=portal` round-trips
 
-## Not ported (5)
+## Not ported (4)
 
 - color-mode — relocated
       **A divergence, flagged rather than absorbed** (`decisions-ledger.md` **D-134**, reversing D-38). Chakra ships colour mode as a CLI snippet over `next-themes`, which has no SolidJS equivalent — porting that faithfully ships a wrapper around nothing. **No provider**: a pre-paint script, a module-level signal, `.light`/`.dark` plus `color-scheme` on the root. Documented on `/docs/styling/dark-mode`, not in the component tier
@@ -1394,10 +1410,3 @@ The seam's own suite gained the test that would have caught it.
       Same. Plus `useFilter`, which is `createFilter` from `@zag-js/i18n-utils` — the same MIT package we already take `isRTL` from. No machine
 - for / show — excluded
       Solid has `<For>` and `<Show>`; a re-export would be a wrapper around nothing
-- portal — excluded
-      `@solidjs/web` ships `<Portal>`; a re-export would be a wrapper around nothing, the same
-      reason `for / show` is here. The `dialog` ship measured the half that was in doubt: the
-      **server** version does not throw, it renders nothing, returns `undefined` and consumes
-      exactly one hydration child id — the same number its client counterpart consumes — so no `_hk`
-      after a portal shifts between the two builds. That closes the environment-aware mount and the
-      SSR guard this row used to specify, and `disabled` was already decided out (§5.1)

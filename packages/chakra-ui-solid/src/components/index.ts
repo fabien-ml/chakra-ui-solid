@@ -82,6 +82,7 @@ export * from "./locale";
 export * from "./mark";
 export * from "./native-select";
 export * from "./popover";
+export * from "./portal";
 export * from "./quote";
 export * from "./radiomark";
 export * from "./separator";

@@ -1,18 +1,19 @@
-import { Portal } from "@solidjs/web";
 import {
   Button,
   type ButtonProps,
   CloseButton,
   type CloseButtonProps,
   Drawer,
+  Portal,
   Stack,
   Text,
 } from "chakra-ui-solid";
-import { createSignal, Show } from "solid-js";
+import { createSignal } from "solid-js";
 
 export default function DrawerWithCustomContainer() {
-  // A **signal**, not a plain `let`: the `<Portal>` below has to be built after the container
-  // element exists, and `mount` is read once when the portal is created.
+  // A **signal**, not a plain `let`: the container element does not exist yet on the render that
+  // writes this, and `Portal` reads `container` reactively — so the drawer moves into the box the
+  // moment the ref fills it.
   const [container, setContainer] = createSignal<HTMLDivElement | undefined>(undefined);
 
   return (
@@ -36,33 +37,29 @@ export default function DrawerWithCustomContainer() {
           Open Drawer
         </Drawer.Trigger>
       </Stack>
-      <Show when={container()}>
-        {(node) => (
-          <Portal mount={node()}>
-            <Drawer.Backdrop pos="absolute" boxSize="full" />
-            <Drawer.Positioner pos="absolute" boxSize="full">
-              <Drawer.Content>
-                <Drawer.Header>
-                  <Drawer.Title>Drawer Title</Drawer.Title>
-                  <Drawer.CloseTrigger
-                    render={(props) => <CloseButton size="sm" {...(props as CloseButtonProps)} />}
-                  />
-                </Drawer.Header>
-                <Drawer.Body>
-                  <Text>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-                    incididunt ut labore et dolore magna aliqua.
-                  </Text>
-                </Drawer.Body>
-                <Drawer.Footer>
-                  <Button variant="outline">Cancel</Button>
-                  <Button>Save</Button>
-                </Drawer.Footer>
-              </Drawer.Content>
-            </Drawer.Positioner>
-          </Portal>
-        )}
-      </Show>
+      <Portal container={container}>
+        <Drawer.Backdrop pos="absolute" boxSize="full" />
+        <Drawer.Positioner pos="absolute" boxSize="full">
+          <Drawer.Content>
+            <Drawer.Header>
+              <Drawer.Title>Drawer Title</Drawer.Title>
+              <Drawer.CloseTrigger
+                render={(props) => <CloseButton size="sm" {...(props as CloseButtonProps)} />}
+              />
+            </Drawer.Header>
+            <Drawer.Body>
+              <Text>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                incididunt ut labore et dolore magna aliqua.
+              </Text>
+            </Drawer.Body>
+            <Drawer.Footer>
+              <Button variant="outline">Cancel</Button>
+              <Button>Save</Button>
+            </Drawer.Footer>
+          </Drawer.Content>
+        </Drawer.Positioner>
+      </Portal>
     </Drawer.Root>
   );
 }

@@ -1,5 +1,4 @@
-import { Portal } from "@solidjs/web";
-import { Button, type ButtonProps, Input, Popover, Stack, Text } from "chakra-ui-solid";
+import { Button, type ButtonProps, Input, Popover, Portal, Stack, Text } from "chakra-ui-solid";
 import { For } from "solid-js";
 
 export default function PopoverWithSizes() {

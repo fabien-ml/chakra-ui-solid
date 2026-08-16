@@ -463,9 +463,15 @@ consumer's stylesheet, runtime only setting an attribute on `<html>`; unprobed t
 - **51 machines, 49 `*.anatomy.ts` exports, 406 parts.** `async-list` and `presence` are headless and
   export none. Re-deriving parts from `createAnatomy(...)`: the first string is the anatomy *name*,
   not a part, and a hyphenated name silently eats a part if the parser fails to drop it.
-- **`Portal` is a standalone component**, used *inside* `Dialog.Root`, not a Dialog part. Its
-  `disabled` prop is **not shipped** — omitting it makes passing it a type error, where a
-  non-reactive prop that silently ignores changes would not. ~6 lines.
+- **`Portal` is a standalone component**, used *inside* `Dialog.Root`, not a Dialog part. **Both of
+  its props ship**, reversing the half of this entry that dropped `disabled`: that reasoning was
+  React's, where a prop the component reads once is a prop that silently ignores every later change,
+  so a type error beats a lie. In Solid the two arms are a `Show`, `disabled` is read where it is
+  used, and toggling it rebuilds the subtree once per swap — pinned by a construction count in
+  `portal.browser.test.tsx`, because a `props.children` read by a gate *and* a body would build twice
+  and show nothing for it. `container` is an accessor rather than Ark's ref object, so a
+  signal-valued container moves the content. Shipped, not ~6 lines: the deferred build is the point
+  (`roadmap.md`, *portal*).
 
 ## The repository mirrors `packages/react/src`, minus the two tiers Panda replaced
 

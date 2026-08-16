@@ -1,5 +1,4 @@
-import { Portal } from "@solidjs/web";
-import { Button, type ButtonProps, Popover, Text } from "chakra-ui-solid";
+import { Button, type ButtonProps, Popover, Portal, Text } from "chakra-ui-solid";
 
 export default function PopoverNested() {
   return (

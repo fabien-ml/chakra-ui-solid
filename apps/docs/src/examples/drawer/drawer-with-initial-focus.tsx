@@ -1,4 +1,3 @@
-import { Portal } from "@solidjs/web";
 import {
   Button,
   type ButtonProps,
@@ -6,6 +5,7 @@ import {
   type CloseButtonProps,
   Drawer,
   Input,
+  Portal,
   Stack,
   Text,
 } from "chakra-ui-solid";

@@ -1,5 +1,4 @@
-import { Portal } from "@solidjs/web";
-import { Button, type ButtonProps, Popover } from "chakra-ui-solid";
+import { Button, type ButtonProps, Popover, Portal } from "chakra-ui-solid";
 
 export default function PopoverWithOffset() {
   return (

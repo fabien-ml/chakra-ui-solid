@@ -1,4 +1,3 @@
-import { Portal } from "@solidjs/web";
 import {
   AspectRatio,
   Button,
@@ -6,6 +5,7 @@ import {
   CloseButton,
   type CloseButtonProps,
   Dialog,
+  Portal,
 } from "chakra-ui-solid";
 
 export default function DialogWithCloseOutside() {

@@ -1,5 +1,4 @@
-import { Portal } from "@solidjs/web";
-import { Button, type ButtonProps, Dialog, Text } from "chakra-ui-solid";
+import { Button, type ButtonProps, Dialog, Portal, Text } from "chakra-ui-solid";
 
 export default function DialogNested() {
   return (

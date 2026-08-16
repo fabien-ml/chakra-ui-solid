@@ -1,5 +1,4 @@
-import { Portal } from "@solidjs/web";
-import { Button, type ButtonProps, Input, Popover, Text } from "chakra-ui-solid";
+import { Button, type ButtonProps, Input, Popover, Portal, Text } from "chakra-ui-solid";
 
 export default function PopoverWithCustomBg() {
   return (

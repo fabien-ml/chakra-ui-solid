@@ -1,5 +1,13 @@
-import { Portal } from "@solidjs/web";
-import { Button, type ButtonProps, Field, Input, Popover, Stack, Textarea } from "chakra-ui-solid";
+import {
+  Button,
+  type ButtonProps,
+  Field,
+  Input,
+  Popover,
+  Portal,
+  Stack,
+  Textarea,
+} from "chakra-ui-solid";
 
 export default function PopoverWithForm() {
   return (

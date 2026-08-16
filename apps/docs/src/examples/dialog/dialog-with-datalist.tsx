@@ -1,4 +1,3 @@
-import { Portal } from "@solidjs/web";
 import {
   Avatar,
   Badge,
@@ -9,6 +8,7 @@ import {
   DataList,
   Dialog,
   HStack,
+  Portal,
   Textarea,
   VStack,
 } from "chakra-ui-solid";
