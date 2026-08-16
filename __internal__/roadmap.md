@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 62 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 65 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -135,12 +135,21 @@ asks, correct **both** in the same commit.
 - [ ] color-picker — S:colorPicker · 24/26 · Z
       Largest anatomy in the library. `+channelText`. Floating — **the seam is free**, measured at
       `popover` (1500/1501): object-form `style` only on the positioner, content stays its
-      `firstElementChild`, and the arrow is captured once per floating-element identity
+      `firstElementChild`, and the arrow is captured once per floating-element identity.
+      **Owes the input-group opt-in** (~3 lines, settled on the `input-group` row): two upstream
+      examples put a `ColorPicker.Input` inside an `InputGroup`, and that part is
+      `ChannelInput channel="hex"` — the `channelInput` slot, which declares `--input-height` per
+      size, as does `trigger`. `useInputGroupPadding()` as the lowest `mergeProps` source on
+      `ColorPicker.ChannelInput` is the whole cost
 - [ ] combobox — S:combobox · 14/16 · Z ⚠
       **Duplicate slot `empty`**. `+indicatorGroup`, `+empty`. Restrictive-content-model hazard
       (§10.4 of the blueprint). Floating — **the seam is free**, measured at `popover` (1500/1501):
       object-form `style` only on the positioner, content stays its `firstElementChild`, and the
-      arrow is captured once per floating-element identity
+      arrow is captured once per floating-element identity.
+      **Owes the input-group opt-in** (~3 lines, settled on the `input-group` row):
+      `combobox-with-input-group` puts a `Combobox.Input` inside an `InputGroup`, and the `input`
+      slot declares `--input-height: var(--combobox-input-height)`. `useInputGroupPadding()` as the
+      lowest `mergeProps` source on `Combobox.Input` is the whole cost
 - [ ] date-picker — S:datePicker · 24/26 · Z
       Its duplicate `view` slot is source-only, for the reason measured on the `dialog` row — it is
       Panda's generator, not the recipe. `+indicatorGroup`. Floating — **the seam is free**,
@@ -156,7 +165,13 @@ asks, correct **both** in the same commit.
       wrong the same way, ship it — not the first, so **measure chakra-ui.com's date picker in a
       browser before touching this**, and expect to record it as expected rather than fix it.
       `switch`'s cursor is the row that looks like this one and is not. The `outline-color` beside it
-      still rings the focused trigger, so this is a second ring lost, not the indicator
+      still rings the focused trigger, so this is a second ring lost, not the indicator.
+      **Owes the input-group opt-in** (~3 lines, settled on the `input-group` row):
+      `date-picker-with-input-group` puts a `DatePicker.Input` inside an `InputGroup`, and the
+      `input` slot declares `--input-height: var(--datepicker-input-height)`.
+      `useInputGroupPadding()` as the lowest `mergeProps` source on `DatePicker.Input` is the whole
+      cost. That example also writes `InputGroup as={DatePicker.Control}`, which our group forwards
+      because everything but its own keys is spread onto `Group`
 - [x] dialog — S:dialog · 7/10 · D ⚠
       `+header/body/footer`. The worked blueprint. **The duplicate `backdrop` slot is
       source-only**: `dialogSlotNames` lists eleven entries for ten slots, both `backdrop` rows
@@ -247,6 +262,12 @@ asks, correct **both** in the same commit.
       `popover` (1500/1501): object-form `style` only on the positioner, content stays its
       `firstElementChild`, and the arrow is captured once per floating-element identity
 - [ ] number-input — S:numberInput · 8/8
+      **Owes the input-group opt-in** (~3 lines, settled on the `input-group` row): three upstream
+      examples put a `NumberInput.Input` inside an `InputGroup` — `with-element`, `with-scrubber`
+      and the explorer demo — and the `input` slot declares `--input-height` per size.
+      `useInputGroupPadding()` as the lowest `mergeProps` source on `NumberInput.Input` is the whole
+      cost. Both scrubber examples also pass `startElementProps={{ pointerEvents: "auto" }}`, which
+      is the group's own prop taking back the `pointerEvents="none"` it writes before the spread
 - [ ] pagination — ✗pagination · 7/—
       Key resolves to nothing in Chakra too (§2.5). **The `staticCss` declaration this page needs is
       on the `button` recipe, not its own** — every one of its eight upstream examples writes
@@ -401,7 +422,13 @@ asks, correct **both** in the same commit.
       upstream writes `asChild`, and the router snippet is `useNavigate` from `@solidjs/router`, on
       `link.mdx`'s precedent.
 - [ ] tags-input — S:tagsInput · 10/10
-      Repeated part (tags)
+      Repeated part (tags).
+      **Owes the input-group opt-in** (~3 lines, settled on the `input-group` row), and **on
+      `Control`, not `Input`** — `tags-input-with-start-element` puts `TagsInput.Control` inside the
+      group, and `control` is the slot that declares `--input-height: var(--tags-input-height)`.
+      `useInputGroupPadding()` as the lowest `mergeProps` source on `TagsInput.Control` is the whole
+      cost; that example's own `pe="8"` is a consumer style prop and has to keep winning, which is
+      exactly what the lowest-source placement buys
 - [ ] toast — S:toast · 6/6
       Imperative `createToaster` store living outside the component tree — the only such surface
 - [ ] toggle — ✗toggle · 2/—
@@ -542,9 +569,15 @@ The seam's own suite gained the test that would have caught it.
       states the parts read and not the `div`'s attributes — React drops `invalid` on a `div` with a
       warning; Solid would write `invalid=""`, so parity means omitting both.
       `placeholder` is not a `select` attribute: it is a leading `<option value="">`.
-      Docs: 8 of upstream's 10 example slots. `Hook Form` is a third-party React package; `Explorer`
-      is www machinery. `Closed Component` keeps its section and loses the `@chakra-ui/cli snippet`
-      note, which addresses a CLI this project does not have
+      **`Field` also opts into the input-group context**, added when that family shipped: one more
+      lowest accessor in the same chain, because `.native-select__field` declares
+      `--input-height: var(--select-field-height)` and `input.mdx`'s *Select* example is an
+      upstream-documented composition that would otherwise ship visibly broken. It is the only
+      opted-in control besides `Input`.
+      Docs: 8 of upstream's 10 example slots — unchanged by that, since
+      `native-select-with-input-group` is referenced by no section on its own page. `Hook Form` is a
+      third-party React package; `Explorer` is www machinery. `Closed Component` keeps its section
+      and loses the `@chakra-ui/cli snippet` note, which addresses a CLI this project does not have
 - [x] alert — S:alert · —/5
       **The only one of the five flat slot recipes with a context of its own**, and the row that
       corrected the seam: `status` is a recipe variant *and* the value `Alert.Indicator` reads to
@@ -996,24 +1029,48 @@ The seam's own suite gained the test that would have caught it.
       variants, `md`/`outline` defaults, fully statically extractable; `staticCss: ["*"]` in
       `packages/panda-preset/src/preset.ts` already covers it, so no preset edit was owed. The
       recipe publishes **`--input-height` per size** — the contract `input-group` reads for its
-      `calc()` padding.
+      `calc()` padding. **Paid again on that ship**: `useInputGroupPadding()` joins the same chain
+      as the *lowest* source, which is what leaves a consumer's own `ps` winning over the group's,
+      and it is a no-op outside an `InputGroup`. Three lines, and they are the whole opt-in.
       Popover's debt is fully paid: `popover-basic`, `-with-sizes` and `-with-custom-bg` carry their
       trailing `<Input>`, and `popover-with-form` plus `popover.mdx`'s `### Form` (upstream places it
       between `### Initial Focus` and `### Custom Background`) landed with `textarea` in Phase 3.
-      Docs: **10 of upstream's 19 example slots**. The five that only ever needed `field` —
-      `Helper Text`, `Error Text`, `Field`, `Focus and Error Color` and `Floating Label` — landed
-      with Phase 4 and the debt is paid. `input-with-floating-label` is the one that is not a
-      transcription: upstream is `useControllableState` + `useState` + a `defineStyle` constant, and
-      ours is two signals and the style object inline in the `css` prop, because `defineStyle` is
-      the runtime style system and a `css` value has to be a literal Panda can see. Six slots stay
-      blocked on the `input-group` family (`Element`, `Addon`, `Button`, `Character Counter`,
-      `Card Number`, `Clear Button`); `Hook Form` and `Mask` are third-party React packages, which
-      do not port
-- [ ] input-addon — A:inputAddon · —/1
-      `useRecipe({ key })` directly — verified against the reference on the `input` ship, and it is
-      the shape that does **not** port: we have no `useRecipe`, we import the generated recipe
-      function. Not `input`'s `createRecipeContext` shape either, since the body splits variant
-      props and honours `unstyled` by hand
+      Docs: **15 of upstream's 18 example slots**, and **the denominator was 19 and was wrong** —
+      `input.mdx` is `input-basic` plus 17 `###` sections, which is the count every other row on
+      this page uses. The five that only ever needed `field` — `Helper Text`, `Error Text`,
+      `Field`, `Focus and Error Color` and `Floating Label` — landed with Phase 4.
+      `input-with-floating-label` is the one that is not a transcription: upstream is
+      `useControllableState` + `useState` + a `defineStyle` constant, and ours is two signals and
+      the style object inline in the `css` prop, because `defineStyle` is the runtime style system
+      and a `css` value has to be a literal Panda can see. The five that were blocked on the
+      `input-group` family — `Element`, `Addon`, `Button`, `Character Counter` and `Clear Button` —
+      landed with that family and **the docs debt is paid**. A slot is a section, not a demo: those
+      five are 11 example files on their own, `Element` holding `start-icon`, `start-text`,
+      `start-and-end-text`, `kbd` and `select` and `Addon` holding three, and the page's 15 slots
+      are 21 files in `apps/docs/src/examples/input/`.
+      **The three that remain are all third-party React packages**, none of them ours: `Hook Form`,
+      `Mask`, and `Card Number` — whose two examples both import `usePaymentInputs` from
+      `react-payment-inputs`, so it left the `input-group` blocked set for the `Hook Form` category
+      rather than being ported
+- [x] input-addon — A:inputAddon · —/1
+      **The `useRecipe({ key })` prediction was wrong, and it is `input`'s shape after all**:
+      `createRecipeContext<InputAddonProps, InputAddonVariantProps>({ recipe: "inputAddon" })` +
+      `withContext("div")`, the ordinary seam. Splitting variant props and honouring `unstyled` by
+      hand is what `useRecipe` costs *React*; the seam already does both, so there was nothing left
+      for a body to do and the component is one exported line. `variantKeys` is `["size",
+      "variant"]` — 7 sizes, 3 variants (`outline | subtle | flushed`), `md`/`outline` defaults, all
+      statically extractable under `staticCss: ["*"]`, so **no preset edit was owed**: the
+      `inputAddon` recipe already shipped in `@chakra-ui/panda-preset` and was already generated.
+      Each size republishes `--input-height`, which is what lines an addon up with the field beside
+      it.
+      **It exports no props provider, and that is upstream.** There is no provider to re-export
+      there at all — `useRecipe` publishes nothing — and `input-addon/index.ts` exports `InputAddon`
+      and `InputAddonProps` and nothing else. So the seam's context is left dormant: `withContext`
+      reads it and nothing writes to it. Shipping the provider because the seam happens to make one
+      would be an API a consumer can see that Chakra v3 lacks — `kbd`'s recorded divergence, not
+      repeated here
+      Docs: its own page, on `docs-site.md`'s rule — upstream documents it only as prose inside
+      `input.mdx`
 - [x] kbd — A:kbd · —/1
       `withContext("kbd")`, four variants and three sizes, `raised`/`md` defaults. The base's
       `wordSpacing: -0.5em` is the load-bearing rule: one element carries a whole chord, so
@@ -1175,8 +1232,10 @@ The seam's own suite gained the test that would have caught it.
       `data-*` prop is structural, so the recipe selects it directly
       (`:nth-child(1 of :not([data-group-skip]))` and friends) and the seam is in the server's first
       byte. Two divergences, both recorded here. **(1)** `skip` is gone: an out-of-flow child marks
-      itself with `data-group-skip`, which is the API the input-group family builds on, and nothing
-      emits `data-group-item` — the preset's avatar ring is its only consumer and takes the props
+      itself with `data-group-skip`, and **`InputElement` is the first thing that does** — the whole
+      input-group family shipped on this row's rebuild with **no change to `Group` at all**, where
+      upstream's `InputGroup` still passes `skip={(el) => el.type === InputElement}`. Nothing emits
+      `data-group-item` — the preset's avatar ring is its only consumer and takes the props
       context when Avatar ports. **(2)** `stacking` counts to **8**, with one shared catch-all layer
       above the ladder for anything past it; a stylesheet cannot count and `sibling-index()` is
       Chromium-only. Overlapping avatars, upstream's only consumer, stop being legible well before
@@ -1188,15 +1247,54 @@ The seam's own suite gained the test that would have caught it.
       **Two `card.mdx` sections wait on it**, measured at Phase 4: *With Image* and *Horizontal*
       are both `<Image>` beside `Card.Body`, and in *Horizontal* the image is the layout the
       section demonstrates rather than decoration, so neither substitutes
-- [ ] input-element
+- [x] input-element
       Part of the input-group family. Upstream is `chakra("div", { base, variants: { placement } })`
-      — no recipe key, no `Field` context; it is also the identity `input-group` compares against
-- [ ] input-group — ●
+      — no recipe key, no `Field` context, and **no `defaultVariants`**, so a bare `<InputElement>`
+      keeps its static position and `placement="start"` is observably different from omitting it.
+      Right about all of that. **Wrong about *"it is also the identity `input-group` compares
+      against"* — nothing compares identity.** The element takes itself out of the row by wearing
+      `data-group-skip`, written *after* the props spread so a consumer forwarding an unset value
+      cannot delete it — an attribute the already-shipped `Group` reads structurally, where upstream
+      asks the *parent* for a `skip` predicate over React element identity.
+      The base is upstream's — `position: absolute`, `height: full`, `px: 3`, `zIndex: 2`,
+      `fg.muted`, `sm` — and **it does not read `--input-height`, which it never could**: it is a
+      *sibling* of the control, not a descendant, so the property the control's own size variant
+      declares does not reach it. That is the whole reason the padding lands on the control instead.
+      An inline base with no recipe key owes no attribution, on `absolute-center`'s precedent
+      Docs: its own page, on `docs-site.md`'s rule
+- [x] input-group — ●
       `calc(var(--input-height) - ${offset})` (§3.1) — **`--input-height` is real and already
       generated**: the `input` recipe publishes it per size, one value per the 7 sizes.
       Upstream's body is `Children.only` + `cloneElement` + `skip={(el) => el.type === InputElement}`
-      — React element identity, the same pattern the `icon` row already found does not port to
-      Solid. The port has to reach the offsets another way; it is not a `cloneElement` translation
+      — right, and the note's open question ("the port has to reach the offsets another way") is
+      **answered by an opt-in context**. `input-group-context.ts` publishes `hasStartElement()` /
+      `hasEndElement()`, and a control reads it as the **lowest** source in its own `mergeProps`
+      chain, which is where upstream's `...children.props`-last precedence lands: the consumer's own
+      `ps` still wins. Nothing is cloned, nothing is walked, and no CSS descendant rule is
+      involved — measured, none of the three cascade spellings can reproduce author precedence, and
+      the `:where()` one silently zeroes a `Textarea` that declares no `--input-height` (IACVT on a
+      non-inherited property).
+      **Three consequences, none of them a divergence** (`CLAUDE.md`, *the port rule*): the control
+      may be nested or wrapped, so `children` is ordinary `JSX.Element` and `Children.only` has no
+      counterpart; a control that has not opted in keeps its own recipe's padding instead of losing
+      it; and `Group` needed **no change at all** — `cb5c8b8` had already made it read a child's
+      position structurally, and `InputElement` marks itself.
+      The `●` route is the two offsets: written as `--input-group-start-offset` /
+      `--input-group-end-offset` inline on the group (`bleed`'s route), which is what keeps the
+      padding a **fixed literal** — `calc(var(--input-height) - var(--input-group-start-offset,
+      0px))` — that two `staticCss.css` rows in `packages/panda-preset/src/preset.ts` pre-generate.
+      Those rows **name the longhands**; `ps` there emits nothing. Interpolating the offset the way
+      upstream does would make the value a template literal no row can cover.
+      The **opted-in set today is `Input` and `NativeSelect.Field`**, and five unshipped rows owe
+      the same ~3 lines when they port — `combobox`, `number-input`, `date-picker`, `color-picker`
+      and `tags-input`, each carrying the cost on its own row. `clipboard` and `file-upload` owe
+      nothing: both compose an `Input` inside the group, and ours reads the context at any depth
+      where upstream's clone only reaches the immediate child. `pin-input` and `select` declare
+      `--input-height` too and are composed into no `InputGroup` upstream, so neither owes it.
+      Measured against chakra-ui.com in a browser: every shared example's computed padding matches
+      exactly. `Start Text` reads 61.7px against 62.7px, which is the example's own `ps="7ch"`
+      resolving against each site's font rather than a port difference
+      Docs: its own page, on `docs-site.md`'s rule
 - [x] loader
       Composition of `Spinner` + `AbsoluteCenter`
 - [x] quote

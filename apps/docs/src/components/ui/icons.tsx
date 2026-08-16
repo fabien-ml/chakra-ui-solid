@@ -2,14 +2,14 @@
  * @license
  * The path data below is copied from lucide-icons/lucide — the SVG sources in `icons/`, one file
  * per glyph, named in the comment above each component. Taken from `lucide-static@1.31.0`, except
- * `house`, `package`, `pen`, `ship`, `shirt` and `slash`, whose path data comes from
+ * `house`, `package`, `pen`, `ship`, `shirt`, `slash` and `user`, whose path data comes from
  * `lucide-react@1.21.0`'s bundled `__iconNode` — the same `icons/` source, compiled.
  * Copyright (c) 2026 Lucide Icons and Contributors. Licensed under the ISC License.
  *
  * Twenty of these are Lucide's own derivatives of Feather, and carry a second notice:
  * Copyright (c) 2013-present Cole Bemis, MIT License. Both licences are reproduced in full, and the
- * twenty named, in the LICENSE and NOTICE.md at the repository root. None of the six above is on
- * that list — Lucide's LICENSE is what names it, and it names neither `home` nor `slash`.
+ * twenty named, in the LICENSE and NOTICE.md at the repository root. None of the seven above is on
+ * that list — Lucide's LICENSE is what names it, and it names neither `home`, `slash` nor `user`.
  *
  * This file has been modified from the original.
  *
@@ -434,6 +434,16 @@ export function TypeIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
       <path d="M12 4v16" />
       <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
       <path d="M9 20h6" />
+    </svg>
+  );
+}
+
+/** lucide `user` — `icons/user.svg` */
+export function UserIcon(props: JSX.SvgSVGAttributes<SVGSVGElement>) {
+  return (
+    <svg {...base} aria-hidden="true" {...props}>
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
     </svg>
   );
 }

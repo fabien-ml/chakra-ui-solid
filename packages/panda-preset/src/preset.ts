@@ -102,6 +102,26 @@ const bleedInlineStartMargins = ["calc(var(--bleed-inline-start, 0) * -1)"];
 const bleedInlineEndMargins = ["calc(var(--bleed-inline-end, 0) * -1)"];
 const bleedBlockStartMargins = ["calc(var(--bleed-block-start, 0) * -1)"];
 const bleedBlockEndMargins = ["calc(var(--bleed-block-end, 0) * -1)"];
+/**
+ * The two declarations a control inside an `InputGroup` contributes for itself, and the reason the
+ * group's offsets are custom properties rather than interpolated into the value.
+ *
+ * `--input-height` is published by the *control's own* size variant and `--input-group-*-offset` by
+ * the group above it, so the `calc()` evaluates in the control's scope with a length the group
+ * chose. Chakra spells the same thing as `` `calc(var(--input-height) - ${startOffset})` `` — a
+ * template literal, which is not a value any extractor can find and not a value a row here can
+ * enumerate. Written this way it is a fixed literal, and these two rows are what make the class the
+ * control emits resolve to a rule; without them a `<InputGroup startElement={…}>` pads nothing,
+ * silently.
+ *
+ * They must stay character-for-character identical to `START_PADDING` / `END_PADDING` in
+ * `components/input-group/input-group-context.ts` — a class name *is* its value here.
+ */
+const inputGroupStartPaddings = [
+  "calc(var(--input-height) - var(--input-group-start-offset, 0px))",
+];
+const inputGroupEndPaddings = ["calc(var(--input-height) - var(--input-group-end-offset, 0px))"];
+
 const gridItemAreas = ["var(--grid-item-area)"];
 const gridItemColumnStarts = ["var(--grid-item-column-start)"];
 const gridItemColumnEnds = ["var(--grid-item-column-end)"];
@@ -228,6 +248,10 @@ export const chakraSolidPreset = definePreset({
       { properties: { marginInlineEnd: bleedInlineEndMargins } },
       { properties: { marginBlockStart: bleedBlockStartMargins } },
       { properties: { marginBlockEnd: bleedBlockEndMargins } },
+      // The longhands, not `ps` / `pe`: `staticCss` keys a row by *property*, and a shorthand there
+      // matches no utility and emits nothing at all.
+      { properties: { paddingInlineStart: inputGroupStartPaddings } },
+      { properties: { paddingInlineEnd: inputGroupEndPaddings } },
       { properties: { gridArea: gridItemAreas } },
       { properties: { gridColumnStart: gridItemColumnStarts } },
       { properties: { gridColumnEnd: gridItemColumnEnds } },

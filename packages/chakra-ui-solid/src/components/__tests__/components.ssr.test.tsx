@@ -134,6 +134,9 @@ import {
   IconButton,
   IconPropsProvider,
   Input,
+  InputAddon,
+  InputElement,
+  InputGroup,
   InputPropsProvider,
   Kbd,
   KbdPropsProvider,
@@ -968,6 +971,25 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </FieldsetRoot>
   ),
   Input: () => <Input placeholder="Enter your email" size="lg" />,
+  InputAddon: () => <InputAddon size="lg">https://</InputAddon>,
+  // `placement="end"`, the arm that resolves a variant at all — and the `data-group-skip` it writes
+  // after the spread has to be in the server's markup, since `Group` reads a child's position from
+  // the selector rather than from anything a client pass could correct.
+  InputElement: () => <InputElement placement="end">.com</InputElement>,
+  // All four slots at once, so every gate takes its rendering arm, plus the offsets — which are the
+  // half of the padding the server has to write, since the class behind it is fixed and only the
+  // inline custom property carries the amount.
+  InputGroup: () => (
+    <InputGroup
+      startAddon="https://"
+      startElement="@"
+      endElement=".com"
+      endAddon="Go"
+      startOffset="4px"
+    >
+      <Input placeholder="yoursite" />
+    </InputGroup>
+  ),
   InputPropsProvider: () => (
     <InputPropsProvider value={{ size: "lg" }}>
       <Input />

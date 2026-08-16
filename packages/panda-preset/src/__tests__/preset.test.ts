@@ -115,12 +115,14 @@ describe("the preset's own chain and atomic staticCss", () => {
     // moved the same way and needed no row — `display`, `flexWrap`, `justifyContent` and
     // `alignItems` are already in the lists above.
     //
-    // The last nine reach the same bar by a third route, and they are the only fixed literals in
-    // the list: `Bleed`'s four margins and `GridItem`'s five placements read a per-element custom
-    // property back, and they used to be spelled in a `css.raw({ … })` call that both extractors
-    // read. `css` is the `<ChakraProvider>`'s now, so the literals sit in plain objects no
-    // extractor reads — and without a rule the inline amounts a component sets are variables
-    // nothing consumes.
+    // The last eleven reach the same bar by a third route, and they are the only fixed literals in
+    // the list: `Bleed`'s four margins, `InputGroup`'s two paddings and `GridItem`'s five
+    // placements read a per-element custom property back. Bleed's and GridItem's used to be spelled
+    // in a `css.raw({ … })` call that both extractors read; `css` is the `<ChakraProvider>`'s now,
+    // so the literals sit in plain objects no extractor reads. `InputGroup`'s were never anywhere
+    // else — Chakra interpolates the offset into the value, and a template literal is not something
+    // any extractor can find or any row here can enumerate. Without a rule the inline amounts a
+    // component sets are variables nothing consumes.
     //
     // **A component picking the value is the bar, and the list is exhaustive on purpose.** There is
     // no row for `colorPalette`: no component in this library defaults or forwards one, and a
@@ -165,6 +167,16 @@ describe("the preset's own chain and atomic staticCss", () => {
       { properties: { marginInlineEnd: ["calc(var(--bleed-inline-end, 0) * -1)"] } },
       { properties: { marginBlockStart: ["calc(var(--bleed-block-start, 0) * -1)"] } },
       { properties: { marginBlockEnd: ["calc(var(--bleed-block-end, 0) * -1)"] } },
+      {
+        properties: {
+          paddingInlineStart: ["calc(var(--input-height) - var(--input-group-start-offset, 0px))"],
+        },
+      },
+      {
+        properties: {
+          paddingInlineEnd: ["calc(var(--input-height) - var(--input-group-end-offset, 0px))"],
+        },
+      },
       { properties: { gridArea: ["var(--grid-item-area)"] } },
       { properties: { gridColumnStart: ["var(--grid-item-column-start)"] } },
       { properties: { gridColumnEnd: ["var(--grid-item-column-end)"] } },

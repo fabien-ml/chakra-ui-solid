@@ -181,6 +181,16 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
   // Under `lazyMount unmountOnExit` only the selected panel exists on either side, so the hydration
   // keys inside the `ContentGroup` are decided by how many panels the *page author* wrote.
   tabs: join(repoRoot, "packages/chakra-ui-solid/src/components/tabs/__tests__/tabs.ssr-entry.tsx"),
+  // Four conditional slots per group, each resolved through `children()` — the most of any subject
+  // here — so the branch each gate took decides every hydration key after it. It is also the first
+  // subject where a **descendant** styles itself off an ancestor's context: the control's padding
+  // class is computed from what the group above it was passed, and a server and client that
+  // disagree about it leave the field padded by whichever side won, with nothing to say so. The
+  // amounts ride inline custom properties on the group, which the server has to write too.
+  "input-group": join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/input-group/__tests__/input-group.ssr-entry.tsx",
+  ),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

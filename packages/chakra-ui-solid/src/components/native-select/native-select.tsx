@@ -10,6 +10,7 @@ import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import { type Component, omit, Show } from "solid-js";
 import { useOptionalFieldContext } from "../field/field-context";
 import { ChevronDownIcon } from "../icons";
+import { useInputGroupPadding } from "../input-group/input-group-context";
 import type {
   NativeSelectFieldProps,
   NativeSelectIndicatorProps,
@@ -129,13 +130,19 @@ export const NativeSelectRoot: Component<NativeSelectRootProps> = (props) => {
  */
 export const NativeSelectField: Component<NativeSelectFieldProps> = (props) => {
   const field = useOptionalFieldContext();
+  const groupPadding = useInputGroupPadding();
   const states = useOptionalNativeSelectStates();
   const styles = useNativeSelectStyles();
 
-  // Three sources, lowest first: the surrounding field, then the Root's resolved states, then the
-  // caller's own props. `mergeProps` resolves by value and calls `getSelectProps()` on each read, so
-  // a field flipping `invalid` after mount reaches the element.
+  // Four sources, lowest first: the surrounding `InputGroup`, then the surrounding field, then the
+  // Root's resolved states, then the caller's own props. `mergeProps` resolves by value and calls
+  // `getSelectProps()` on each read, so a field flipping `invalid` after mount reaches the element.
+  //
+  // The group is lowest for the same reason it is under `Input`: a consumer's own `ps` has to beat
+  // the padding that clears a start element. The recipe already republishes `--input-height` as
+  // `var(--select-field-height)` on this element, which is the scope the padding's `calc()` needs.
   const elementProps = mergeProps(
+    groupPadding,
     () => field?.getSelectProps() ?? {},
     () => ({
       disabled: states?.disabled ?? false,

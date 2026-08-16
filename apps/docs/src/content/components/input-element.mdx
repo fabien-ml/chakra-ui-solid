@@ -1,0 +1,53 @@
+---
+title: Input Element
+description: An icon, a unit or a small button drawn inside an input, at either end.
+links:
+  source: packages/chakra-ui-solid/src/components/input-element
+---
+
+<Example name="input-element-basic" />
+
+## Usage
+
+```tsx
+import { InputElement } from "chakra-ui-solid";
+```
+
+```tsx
+<Group>
+  <InputElement pointerEvents="none">@</InputElement>
+  <Input ps="10" placeholder="username" />
+</Group>
+```
+
+> `InputElement` is the overlay, not the layout. It is absolutely positioned, so it takes no width
+> from the control and the control needs padding of its own to keep its text clear of it.
+> [Input Group](/docs/components/input-group) is the shortcut that places one and pads the control
+> for you.
+
+## Examples
+
+### Placement
+
+Use the `placement` prop to pin the element to the trailing edge. With no `placement` it sits where
+it falls, at the start of the containing block's content box.
+
+<Example name="input-element-with-placement" />
+
+### Pointer Events
+
+Decorative content wants `pointerEvents="none"` so a click reaches the field underneath. An element
+that is itself interactive — a clear button, say — leaves pointer events alone.
+
+```tsx
+<Group>
+  <Input pe="10" placeholder="Email" />
+  <InputElement placement="end">
+    <CloseButton size="xs" />
+  </InputElement>
+</Group>
+```
+
+## Props
+
+<PropsTable component="input-element" />

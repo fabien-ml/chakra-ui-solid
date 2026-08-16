@@ -108,6 +108,13 @@ export function mergeProps<T, U, V, W>(
   source2: MaybeAccessor<V>,
   source3: MaybeAccessor<W>,
 ): T & U & V & W;
+export function mergeProps<T, U, V, W, X>(
+  source: MaybeAccessor<T>,
+  source1: MaybeAccessor<U>,
+  source2: MaybeAccessor<V>,
+  source3: MaybeAccessor<W>,
+  source4: MaybeAccessor<X>,
+): T & U & V & W & X;
 /**
  * Composes several prop objects — or accessors returning them — into one **lazy proxy**: nothing is
  * read until a consumer asks for a key, and every value read goes back to the live sources.

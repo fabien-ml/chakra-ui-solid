@@ -16,6 +16,7 @@ import type { ComponentProps, ValidComponent } from "@solidjs/web";
 import type { Component } from "solid-js";
 import { omit } from "solid-js";
 import { useOptionalFieldContext } from "../field/field-context";
+import { useInputGroupPadding } from "../input-group/input-group-context";
 
 /**
  * The two variants spelled out rather than inherited from the generated `InputVariantProps`, so each
@@ -73,6 +74,7 @@ const { PropsProvider, usePropsContext } = createRecipeContext<InputProps>();
  */
 export const Input: Component<InputProps> = (props) => {
   const field = useOptionalFieldContext();
+  const groupPadding = useInputGroupPadding();
 
   // Context first, local props second, so a local prop wins — Chakra's order, and the seam's — and
   // resolved by value, so a wrapper's unset `size={props.size}` cannot beat the provider with
@@ -84,7 +86,15 @@ export const Input: Component<InputProps> = (props) => {
   // disabled; and it is a lazy proxy, so `getInputProps()` is called on each read instead of once
   // here — an object of live state called once at construction would freeze `invalid`, `required`
   // and the two IDREFs at whatever they were when the input mounted.
-  const merged = mergeProps(() => field?.getInputProps() ?? {}, fromContext) as InputProps;
+  //
+  // The surrounding `InputGroup` goes under *everything*, which is what makes a consumer's own `ps`
+  // win against the padding that clears a start element — Chakra's `...children.props` spread,
+  // expressed as source order here.
+  const merged = mergeProps(
+    groupPadding,
+    () => field?.getInputProps() ?? {},
+    fromContext,
+  ) as InputProps;
 
   // The recipe's own variant names, off the system above.
   const variantKeys = useRecipeVariantKeys<InputProps>("input");

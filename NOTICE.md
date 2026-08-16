@@ -170,11 +170,11 @@ fold on the docs home and in every page's footer.
 
 The docs site's UI icons are Lucide's, copied as path data from **`lucide-static@1.31.0`** (`icons/`,
 one `.svg` per glyph). This is what the React docs use too — their examples and landing page import
-`react-icons/lu`, which is Lucide — so the thirty-eight glyphs below are what a 1:1 port of those
+`react-icons/lu`, which is Lucide — so the thirty-nine glyphs below are what a 1:1 port of those
 pages requires rather than a set we chose. Lucide is not a dependency and has no SolidJS 2.0 build;
 the alternative to copying the paths is not importing them.
 
-**One row for thirty-eight glyphs**, directory-scoped for the same reason `apps/docs/src/content` is
+**One row for thirty-nine glyphs**, directory-scoped for the same reason `apps/docs/src/content` is
 one row rather than 111. Which upstream file each glyph came from is named in the comment above its
 component, and that is what an audit opens.
 
@@ -189,17 +189,17 @@ component, and that is what an audit opens.
 - **Copyright:** Copyright (c) 2013-present Cole Bemis
 
 Lucide began as a fork of Feather and carries Feather's MIT notice forward for the icons that
-descend from it. **Twenty of our thirty-eight are on that list**, and so owe this second notice as
+descend from it. **Twenty of our thirty-nine are on that list**, and so owe this second notice as
 well as the ISC one above:
 
 `arrow-left`, `arrow-right`, `arrow-up-right`, `at-sign`, `check`, `chevron-down`, `chevron-left`,
 `chevron-right`, `circle-check`, `dollar-sign`, `external-link`, `moon`, `plus`, `search`,
 `shopping-cart`, `star`, `terminal`, `type`, `voicemail`, `x`
 
-The other eighteen — `bell`, `box`, `circle-dashed`, `copy`, `heart`, `house`, `image-down`, `menu`,
+The other nineteen — `bell`, `box`, `circle-dashed`, `copy`, `heart`, `house`, `image-down`, `menu`,
 `package`, `paint-bucket`, `party-popper`, `pen`, `phone`, `phone-forwarded`, `ship`, `shirt`,
-`slash`, `sun` — are Lucide's own and are covered by the ISC grant alone. No separate row: they are
-the same file, and `attribution.config.ts` keys one entry per file.
+`slash`, `sun`, `user` — are Lucide's own and are covered by the ISC grant alone. No separate row:
+they are the same file, and `attribution.config.ts` keys one entry per file.
 
 ## Project marks
 
