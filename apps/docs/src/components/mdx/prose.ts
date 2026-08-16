@@ -1,4 +1,4 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { css } from "../../../styled-system/css";
 
 /**
  * Typography for MDX-authored prose — one class per tag, worn by the element `~/mdx-components`

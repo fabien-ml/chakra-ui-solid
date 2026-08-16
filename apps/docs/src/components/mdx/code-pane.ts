@@ -1,4 +1,4 @@
-import { css, cx } from "@chakra-ui-solid/styled-system/css";
+import { css, cx } from "../../../styled-system/css";
 
 /**
  * Shiki's `--shiki-light` / `--shiki-dark` pair, resolved **once, here**.

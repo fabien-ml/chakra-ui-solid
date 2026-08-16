@@ -135,13 +135,21 @@ const LOCKED = {
   // generated JSX types to Chakra v3's own names (`HTMLChakraProps`, `ChakraComponent`,
   // `ChakraVariantProps`).
   jsxFactory: "chakra",
-  // Panda's external-package model: this tells the consumer's extractor that the styled-system API
-  // it is looking for lives in our published package rather than in a directory they generated.
+  // Panda's external-package model: this tells the consumer's extractor that a styled-system API
+  // also arrives from our published package, and it registers the `chakra` factory — the other half
+  // of `jsxFactory` above, and just as load-bearing. Panda takes a factory only from an import whose
+  // NAME is the `jsxFactory` **and** whose MODULE is listed here. `chakra` ships from
+  // `@chakra-ui-solid/core` and is re-exported by `chakra-ui-solid`, so a consumer writes either
+  // import and both register.
   //
-  // The `jsx` half is the other half of `jsxFactory` above, and it is just as load-bearing: Panda
-  // registers a factory only from an import whose NAME is the `jsxFactory` **and** whose MODULE is
-  // listed here. `chakra` ships from `@chakra-ui-solid/core` and is re-exported by
-  // `chakra-ui-solid`, so a consumer writes either import and both register.
+  // **The second entry is also what keeps the consumer's OWN outdir extractable, and that is not
+  // incidental.** Panda unions every entry in the array, and an entry given as an object leaves
+  // every key it does not name at Panda's `<outdir>/…` default — so `css`, `recipes`, `patterns` and
+  // `tokens` still point at the directory they generated. Measured, with the `config:resolved`
+  // restore below disabled so the override survived: on the string spelling alone, a consumer's
+  // `import { flex } from "./styled-system-app/patterns"` produces ZERO rules. `css()`, `cva()` and
+  // `sva()` are matched by identifier and extract either way; patterns and recipes are matched only
+  // through this map. `layout-extraction.test.ts` pins the outcome against the fixture's own sheet.
   importMap: [
     "@chakra-ui-solid/styled-system",
     { jsx: ["@chakra-ui-solid/core", "chakra-ui-solid"] },

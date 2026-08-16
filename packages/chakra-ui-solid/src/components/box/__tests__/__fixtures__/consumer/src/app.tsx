@@ -30,6 +30,7 @@ import {
   Wrap,
   WrapItem,
 } from "chakra-ui-solid";
+import { flex } from "../styled-system-app/patterns";
 
 /**
  * A consumer's source file, and the only thing their Panda run scans.
@@ -42,6 +43,18 @@ import {
  * `jsxFactory` / `importMap` regression is visible. Every runtime test passes on a completely
  * unstyled element, so an unregistered factory emits zero rules with a green suite.
  */
+
+/**
+ * A pattern called out of **their own outdir**, which is ordinary Panda usage and the one thing in
+ * this file that our `importMap` decides rather than merely permits.
+ *
+ * `css()` is matched by identifier and extracts from any specifier; a pattern or a recipe is matched
+ * only through the import map, and the entry that keeps `./styled-system-app/patterns` on it is the
+ * `{ jsx: … }` object in `LOCKED` — an object entry leaves every key it does not name at Panda's
+ * `<outdir>` default. Spelled as a bare string instead, this line produces zero rules and nothing
+ * says so. `layout-extraction.test.ts` reads the answer out of their sheet.
+ */
+export const gutter = flex({ gap: "13px" });
 
 /** Form 2 — the factory as a function, with a style config and no variants. */
 const FactoryLink = chakra("a", {

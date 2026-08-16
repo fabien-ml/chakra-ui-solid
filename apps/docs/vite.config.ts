@@ -49,8 +49,9 @@ const src = fileURLToPath(new URL("./src", import.meta.url));
  * dependency tree through `vitefu` and treats every package whose `exports` carry a `"solid"`
  * condition as one it must compile, recursively. Measured on this app's own tree, it derives
  * `["@chakra-ui-solid/core", "@solidjs/meta", "@tanstack/solid-router", "chakra-ui-solid"]` for
- * both — more than the hand-written lists named, and `@chakra-ui-solid/styled-system` is the only
- * thing they had that it does not, correctly: that package is generated `.mjs` with no JSX in it.
+ * both — more than the hand-written lists named. This app's own `styled-system/` is absent from
+ * them and belongs nowhere near them: it is first-party source in this project rather than a
+ * dependency, which is the whole reason `panda codegen` writes `chakra-system.ts` *into* the outdir.
  * `/docs/get-started/build-setup` is the reader-facing half of this.
  */
 export default defineConfig(({ command }) => ({

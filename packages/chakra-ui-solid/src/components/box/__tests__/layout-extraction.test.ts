@@ -248,6 +248,18 @@ describe("the layout tier reaches a consumer's extractor", () => {
     });
   });
 
+  it("emits a pattern the consumer called out of their own outdir", () => {
+    // **A third channel, and the only one our `importMap` decides rather than merely permits.**
+    // `css()` is matched by identifier and extracts whatever module it was imported from; a pattern
+    // or a recipe is matched only through the import map. What keeps a consumer's own
+    // `./styled-system-app/patterns` on that map is the `{ jsx: … }` entry in `LOCKED`, because an
+    // object entry leaves every key it does not name at Panda's `<outdir>` default — measured with
+    // the string spelling instead, this rule is absent and nothing reports it.
+    //
+    // 13px is not a spacing token, so no other line in either tree can have produced the rule.
+    expect(consumerDeclarations(flex({ gap: "13px" }))).toMatchObject({ gap: "13px" });
+  });
+
   it("finds nothing for a class no source on either side wrote", () => {
     // The negative control. Without it every case above could be passing on a lookup that matches
     // everything, which is exactly the failure they exist to catch.

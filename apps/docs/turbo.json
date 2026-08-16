@@ -15,15 +15,22 @@
     // above read the other way: a cache hit restores the declared outputs and runs nothing, so a
     // file this task writes but does not name is simply absent afterwards. `typecheck` reads it,
     // and its absence is what put `Cannot find module './routeTree.gen'` in CI to begin with.
+    //
+    // `panda codegen` is the third generator this task runs, and it is here rather than beside the
+    // `cssgen` below for the same reason. It writes this app's whole styled-system: the `css()` its
+    // own chrome computes class names with, the `chakra-system.ts` the root route hands
+    // `<ChakraProvider>`, and the `chakra-system-types.d.ts` telling `tsc` what this config decided.
+    // All three are read by `typecheck`, which waits on this task and not on `cssgen`.
     "codegen": {
       "dependsOn": ["^build"],
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/scripts/generate-props-tables.mjs",
         "$TURBO_ROOT$/scripts/generate-route-tree.mjs",
-        "$TURBO_ROOT$/packages/chakra-ui-solid/src/components/**"
+        "$TURBO_ROOT$/packages/chakra-ui-solid/src/components/**",
+        "$TURBO_ROOT$/packages/panda-preset/dist/**"
       ],
-      "outputs": ["src/generated/**", "src/routeTree.gen.ts"]
+      "outputs": ["src/generated/**", "src/routeTree.gen.ts", "styled-system/**"]
     },
     // The same coupling, for the same reason, on the Panda run. `panda.config.ts#include` names
     // two things: this app's own source (covered by `$TURBO_DEFAULT$`) and
@@ -39,7 +46,7 @@
         "$TURBO_ROOT$/packages/chakra-ui-solid/dist/**",
         "$TURBO_ROOT$/packages/panda-preset/dist/**"
       ],
-      "outputs": ["styled-system/**"]
+      "outputs": ["styled-system/styles.css"]
     },
     // The build imports `styled-system/styles.css?url`, so the sheet has to exist first — and
     // `^build` is what makes `@chakra-ui-solid/*` resolve through `exports` → `dist` under the

@@ -321,10 +321,14 @@ export const docsNav: NavItem[] = [
           { title: "Recipes", url: "recipes" },
           { title: "Slot Recipes", url: "slot-recipes" },
           // `defineChakraConfig` is ours and has no Chakra counterpart — their nearest thing is
-          // `createSystem`, which does not exist here (`plan.md` §0.4). It sits in Theming rather
-          // than in a fifth `reference/` tier, which the top bar does not have and
-          // `check:docs-inventory` rejects outright.
+          // `createSystem`, which a `panda codegen` run writes rather than a consumer calling it. It
+          // sits in Theming rather than in a fifth `reference/` tier, which the top bar does not
+          // have and `check:docs-inventory` rejects outright.
           { title: "defineChakraConfig", url: "chakra-config" },
+          // The React version has no counterpart page: nesting two systems is a capability it has
+          // and never wrote down, and the `prefix.className` requirement is only visible once two
+          // sheets are on one document.
+          { title: "Multiple Systems", url: "multiple-systems" },
         ],
       },
       {

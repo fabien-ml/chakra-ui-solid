@@ -502,3 +502,63 @@ matched the entry `chakra-ui-solid`. Never read that as evidence the entry is ri
   `defineChakraConfig({ responsive })`: omitted, `{ button: ["size"] }`, or `["button"]`.
 - **`for` and `show` are excluded** — Solid has `<For>` and `<Show>`. Charts is excluded separately;
   it is not a component folder.
+
+## The consumer's system costs the whole recipe barrel — measured on `apps/docs`
+
+`plan.md`'s cost 2, with the number. The generated `chakra-system.ts` reaches the recipes through
+`import * as recipes from "./recipes"`, and a namespace import defeats tree-shaking by construction,
+so an app that renders three components ships all 75 recipe functions.
+
+Measured on the docs app, one clean `pnpm build:docs` at `033b4a6` (the commit before the plan
+landed) against one at phase 6, same content tree, both prerendered:
+
+```
+                              raw          gzip -9      recipe modules
+before   whole client JS   4,510,269      390,744            39
+after    whole client JS   4,615,936      405,728            76
+delta                       +105,667      +14,984           +37
+
+before   assets/index-*       97,403       32,119
+after    assets/index-*      218,401       55,202
+delta                       +120,998      +23,083
+```
+
+The app chunk is where the styled-system lives, and it is the honest figure for the cost:
+**+121 kB raw, +23 kB gzipped**. The whole-bundle delta is smaller because the same commit rewrote
+four content pages and added a fifth, and the MDX chunk lost 18 kB in the process — content churn,
+not a saving. `__recipe__` occurrences count the recipe functions that survived bundling: 39 before,
+which is the 38 the gate reports for this site plus one, and 76 after, which is all of them.
+
+`plan.md` predicted ~114 kB raw across 153 modules and 12–15 kB gzipped. Raw is within 6% of that;
+gzipped is roughly half again as much as the top of the predicted range, because the recipe bodies
+share fewer strings with the rest of the chunk than the prediction assumed.
+
+**Accepted, not owed.** Every React consumer on `defaultSystem` ships all 75 as full style
+definitions rather than as names — the "both are wrong the same way" case, so it is expected and
+says nothing on a docs page. The improvement that would put us ahead is still available and still
+optional: `chakra-system.ts` could re-export named recipes gated by the same import scan
+`recipeGatePlugin` already runs, which would take the 76 back down to 39.
+
+## A missing recipe key throws, where the React version renders unstyled
+
+**A divergence, and it stays out of `apps/docs`.** `packages/core/src/recipe/recipe.ts` resolves a
+recipe by key off the provider's system and throws when the system has none, naming the key and the
+config change that fixes it. Measured at phase 3 against `__reference-impl__`: React's
+`getRecipeFn` falls back to `cva({})`, so a recipe deleted from a consumer's config there produces
+an element with no theme class and no error — silent unstyling, which is the failure this whole
+design exists to remove.
+
+The keys are ours, one per component, so a system missing one is a system that component cannot be
+styled by. That is the case the fallback is wrong for, and it is not the case `useRecipe({ key })`
+in an app is right for.
+
+The throw is raised twice on purpose — once untracked while the component is being constructed, once
+inside the memo. The construction-time throw is the one that matters: left to the memo alone it
+would fire inside the element's own computation, after the element exists, and SolidJS answers a
+throw there by halting the reactive graph for the whole page (`[REACTIVITY_HALTED]`), which turns a
+loud failure into a mute one.
+
+**A missing *slot* is the opposite and is not fixable the same way**: `slots().content` answers
+`undefined`, `cx()` drops it, and the part renders with its style props and no theme class. There is
+no key to name, because the recipe resolved. `/docs/theming/multiple-systems` says so out loud,
+which is the only place any of this reaches a reader.

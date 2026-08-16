@@ -1,0 +1,139 @@
+---
+title: Multiple systems
+description: Running two styled-systems in one app, and swapping the whole look and feel at runtime
+links:
+  source: packages/core/src/system/system.tsx
+---
+
+`<ChakraProvider>` takes a system, so an app can have more than one. Nest a second provider to
+restyle a subtree, or hand the outer one a signal to swap the whole look and feel while the app runs:
+
+```tsx
+import { ChakraProvider } from "chakra-ui-solid";
+import { createSignal } from "solid-js";
+import { system as material } from "../styled-system-material/chakra-system";
+import { system as shadcnish } from "../styled-system-shadcnish/chakra-system";
+
+const [system, setSystem] = createSignal(material);
+
+<ChakraProvider value={system}>
+  <App />
+</ChakraProvider>;
+
+setSystem(shadcnish); // every element on the page recomputes its classes
+```
+
+The value may be the system itself or a function returning it. A function is what makes the swap
+visible: Solid's contexts are not reactive, so a provider handed a new plain object would leave every
+class already on the page exactly as it was. The context therefore carries an **accessor**, read
+inside each element's `class` getter, which is this port's stand-in for React's re-render.
+
+## Generating the second system
+
+Each system is a Panda run of its own — its own config, its own `outdir`, its own stylesheet:
+
+```ts title="panda.material.ts"
+import { defineChakraConfig } from "@chakra-ui-solid/panda-preset";
+import { materialPreset } from "./material-preset";
+
+export default defineChakraConfig({
+  // Ours is prepended, so yours is later and wins on a conflict.
+  presets: [materialPreset],
+  // Required. See below — this is the one line that is not optional.
+  prefix: { className: "mat", cssVar: "mat" },
+  include: ["./node_modules/chakra-ui-solid/dist/panda.buildinfo.json", "./src/**/*.{ts,tsx}"],
+  outdir: "styled-system-material",
+});
+```
+
+```jsonc title="package.json"
+{
+  "scripts": {
+    "prepare": "panda codegen && panda codegen --config panda.material.ts"
+  }
+}
+```
+
+Both stylesheets are imported, and both `chakra-system.ts` modules are ordinary imports out of their
+own outdirs.
+
+Extending our preset rather than hand-building a system is what makes the contract below hold by
+construction. A hand-assembled object satisfies `SystemContext` just as well — it is plain and
+structural — but then the contract is yours to keep.
+
+## Give every system its own `prefix.className`
+
+**Not optional, and it is the failure that is hardest to see.** Both runs emit `p_4` for `p="4"`, so
+two sheets carry two `.p_4` rules for the same name and the last one loaded wins — for **both**
+subtrees, not just the second. The page is fully styled, nothing errors, and one half of it is
+wearing the other half's padding.
+
+```ts
+prefix: { className: "mat", cssVar: "mat" }
+```
+
+`className` renames every rule; `cssVar` renames every token variable, and the two are separate
+halves of one key. Panda merges nothing inside `prefix`, so writing it at all replaces the
+`{ cssVar: "chakra" }` default whole — name both, every time.
+
+`hash` and `separator` are the same kind of knob and would also separate the two sheets, but neither
+is a substitute: a hash is stable for a given input, so two runs that agree on a style object still
+agree on its hashed name.
+
+## What a second system may and may not do
+
+A system may restyle **everything**. What it may not do is drop something a component calls into:
+
+| It supplies | Because |
+| --- | --- |
+| all 75 recipe keys | A component resolves its recipe by key — `getRecipeFn("button")` |
+| the slot names each part reads | A part reads its own class out of the slot map, by name |
+| the variant keys the components pass | The key list is read off the recipe, so an added key is fine; a removed one is not |
+| `css`, `cva`, `cx`, `isValidProperty`, `token` | Every styled element calls all of them |
+| the `flex`, `float`, `square` and `wrap` patterns | `Flex`, `Float`, `Square`, `Wrap` and `Stack` map their shorthands through them |
+
+A **missing recipe key** throws at first render, naming the key. A **missing slot** does not: the
+lookup answers `undefined`, `cx()` drops it, and the element renders with its style props and no
+theme class behind it. That is an unstyled element with nothing to say so — precisely the failure the
+provider exists to remove elsewhere, so it has to be said out loud here.
+
+Extending the preset gives you all of it. Removing a recipe from `theme` to slim a sheet does not:
+the recipe is what the component asks for by name. The way to ship fewer rules is
+[`components`](/docs/theming/chakra-config#components) and the gate that reads your specifiers, which
+decide what is *generated* rather than what exists.
+
+## It is a look-and-feel swap, not a component-library swap
+
+The DOM structure, the slots and every ARIA attribute come from this port and from
+[Zag](https://zagjs.com/), not from the system. So "Material" here means its tokens, its radii, its
+shadows and its recipe bodies. It does not mean Material's anatomy, and there is no ripple.
+
+## A swap restyles; it does not re-partition props
+
+Which of a component's props become styles and which reach the DOM is decided **once**, when the
+element is constructed, and a later system does not revisit it. Two places make that choice — the
+style-prop split in `renderStyled` and the variant-key split on a recipe — and both read the system
+untracked on purpose, because the list they produce is handed to `omit`, which takes a fixed set of
+names.
+
+So a system whose `utilities` add `elevation` styles an element that is already mounted, but it does
+not move `elevation` from a DOM attribute to a style prop on that element. Remount the subtree if you
+need that, or put the utility in every system.
+
+Everything else is live: classes, tokens, recipe bodies, variant values, conditions.
+
+## Two systems, one TypeScript program
+
+TypeScript merges every `declare module` in a program into one interface, and the same member
+declared twice with different types is an error. Each `panda codegen` writes a
+`chakra-system-types.d.ts` full of exactly those augmentations, so **two systems whose utilities,
+conditions or recipe variants differ cannot share a `tsconfig.json` program**.
+
+Two systems that differ only in tokens, radii, shadows and recipe *bodies* generate identical
+augmentations and share a program happily — which is the usual case, and the one the theme-swap
+example above is.
+
+When they do differ, split the program: give each outdir its own `tsconfig.json`, or exclude all but
+one of the generated declaration files from the program that type-checks your app. Panda's own
+`css()` in each outdir stays correct either way — the conflict is only in the block that augments
+`chakra-ui-solid`.

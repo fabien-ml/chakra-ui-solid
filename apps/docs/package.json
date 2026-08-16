@@ -10,11 +10,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "codegen": "node ../../scripts/generate-route-tree.mjs && node ../../scripts/generate-props-tables.mjs",
+    "codegen": "node ../../scripts/generate-route-tree.mjs && node ../../scripts/generate-props-tables.mjs && panda codegen",
     "cssgen": "panda cssgen --outfile styled-system/styles.css"
   },
   "dependencies": {
-    "@chakra-ui-solid/styled-system": "workspace:*",
     "@solidjs/web": "catalog:",
     "@tanstack/solid-router": "catalog:",
     "@tanstack/solid-start": "catalog:",

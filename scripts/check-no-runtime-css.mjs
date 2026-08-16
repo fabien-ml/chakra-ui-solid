@@ -6,13 +6,18 @@
 //      *is*. A transitive edge is the one nobody adds deliberately, so this reads the installed
 //      tree and cross-checks the lockfile, which sees packages `pnpm ls` prunes.
 //   B. None of OUR source writes a stylesheet at runtime. Judges what our code *does*.
+//   B2. None of OUR source styles anything at MODULE SCOPE. The same scan, one step further: the
+//      styled-system arrives on a context now, so every helper that reads it has to run while a
+//      component is being constructed. At module scope there is no owner, and the read throws
+//      naming `<ChakraProvider>` at import time — a whole route down for a line nobody would look
+//      at twice.
 //   C. What we PUBLISH: no `.css` anywhere in a tarball or an `exports` map, and no Panda-generated
 //      styled-system runtime either. The second half is the same rule one step out — Panda in the
 //      consumer's build is the prerequisite, so they generate the runtime their sheet agrees with,
 //      and a precompiled copy of ours in the tarball is a second set of class names for the same
 //      page.
 //
-// The three stay separate assertions in one file. Merging B into A would flag an audited inline
+// They stay separate assertions in one file. Merging B into A would flag an audited inline
 // `style` attribute as a styling engine; merging A into B would miss the dependency that ships one.
 //
 // Allowed, and routinely needed: the DOM `style` attribute (Zag's `normalizeProps` emits `style`
@@ -29,7 +34,12 @@ import {
   formatCijEngines,
   parseLockfilePackages,
 } from "./lib/no-cij-manifest.mjs";
-import { formatRuntimeSheetHits, scanForRuntimeSheets } from "./lib/no-runtime-sheet.mjs";
+import {
+  formatRuntimeSheetHits,
+  isExcludedFromScan,
+  listOurSourceFiles,
+  scanForRuntimeSheets,
+} from "./lib/no-runtime-sheet.mjs";
 import {
   flattenExports,
   listPackedFiles,
@@ -96,6 +106,161 @@ if (hits.length > 0) {
     `${hits.length} runtime-stylesheet use(s) in our own source:\n\n${formatRuntimeSheetHits(hits)}\n\n` +
       "There is no allow-list here. A dynamic value goes through a custom property — " +
       '`style={{ "--w": w }}` with `w="var(--w)"` — not through a rule written at runtime.',
+  );
+}
+
+// B2 — what our own code does, at MODULE SCOPE.
+
+/**
+ * Every helper whose first act is to read the styled-system off the `<ChakraProvider>` context.
+ *
+ * Panda's own `css()`, `cva()` and `cx()` are deliberately **absent**. They compute strings out of a
+ * generated runtime and read no context, so `apps/docs` computing a class constant at module scope —
+ * `~/components/mdx/prose`, `~/components/layout/shell` — is the documented shape a consumer copies,
+ * not a violation.
+ */
+const CONTEXT_READERS = [
+  "useChakraContext",
+  "renderStyled",
+  "createRecipeClass",
+  "createSlotClasses",
+  "useRecipeVariantKeys",
+];
+
+// Type arguments are allowed between the name and the parenthesis, and never contain a `(` —
+// `createSlotClasses<DialogSlot, DialogVariants>("dialog", …)`. Same shape as
+// `generate-component-recipes.mjs`'s recipe-key sites, for the same reason.
+const CONTEXT_READER_CALL = new RegExp(`\\b(${CONTEXT_READERS.join("|")})\\s*(?:<[^(]*>)?\\s*\\(`);
+
+// `export function renderStyled<Props>(` matches the call pattern exactly, and every one of these
+// helpers is declared at module scope by definition. The declaration is where they are *defined*,
+// which is the one place the parenthesis means a parameter list.
+const CONTEXT_READER_DECLARATION = new RegExp(`\\bfunction\\s+(?:${CONTEXT_READERS.join("|")})\\b`);
+
+/**
+ * The source with comments blanked and string *interiors* blanked, newlines preserved so a match
+ * still maps to its original line.
+ *
+ * Copied from `scripts/check-ssr-coverage.mjs`, which copied it into
+ * `scripts/generate-component-recipes.mjs`, and for the same reason each time: a commented-out call
+ * is not a call, and neither is one inside a string. Blanking strings is what makes the nesting
+ * counter below trustworthy — an unmatched brace in a template literal would otherwise leave every
+ * later line looking like module scope.
+ *
+ * Deliberately not regex-literal aware, as there too. If that ever bites, the answer is hope-ui's
+ * full `source-projection.mjs` tokenizer, not a bigger regex here.
+ */
+function codeOnly(source) {
+  let out = "";
+  let index = 0;
+
+  const blankTo = (end) => {
+    for (; index < end; index++) {
+      out += source[index] === "\n" ? "\n" : " ";
+    }
+  };
+
+  while (index < source.length) {
+    const two = source.slice(index, index + 2);
+
+    if (two === "//") {
+      const end = source.indexOf("\n", index);
+      blankTo(end === -1 ? source.length : end);
+      continue;
+    }
+    if (two === "/*") {
+      const end = source.indexOf("*/", index + 2);
+      blankTo(end === -1 ? source.length : end + 2);
+      continue;
+    }
+
+    const char = source[index];
+    if (char === '"' || char === "'" || char === "`") {
+      out += char;
+      index += 1;
+      while (index < source.length && source[index] !== char) {
+        if (source[index] === "\\") {
+          out += "  ";
+          index += 2;
+          continue;
+        }
+        out += source[index] === "\n" ? "\n" : " ";
+        index += 1;
+      }
+      if (index < source.length) {
+        out += char;
+        index += 1;
+      }
+      continue;
+    }
+
+    out += char;
+    index += 1;
+  }
+
+  return out;
+}
+
+/**
+ * Which lines of a projected source sit at nesting depth zero — outside every function body, object
+ * literal and JSX expression, which is what "module scope" means here.
+ *
+ * A line is judged by the depth it **opens** at, so the line declaring a function counts as module
+ * scope and its body does not. `export const Button = () => renderStyled(…)` is therefore reported,
+ * which is correct: the arrow is a component, but nothing constructs it at import time and the call
+ * would run under whatever owner happens to be current — which at module scope is none.
+ */
+function moduleScopeLines(projected) {
+  const lines = projected.split("\n");
+  const atModuleScope = [];
+  let depth = 0;
+
+  for (const line of lines) {
+    atModuleScope.push(depth === 0);
+    for (const char of line) {
+      if (char === "{" || char === "(" || char === "[") {
+        depth += 1;
+      } else if (char === "}" || char === ")" || char === "]") {
+        depth = Math.max(0, depth - 1);
+      }
+    }
+  }
+
+  return atModuleScope;
+}
+
+const moduleScopeScanned = listOurSourceFiles(repoRoot).filter((file) => !isExcludedFromScan(file));
+const moduleScopeHits = [];
+
+for (const file of moduleScopeScanned) {
+  const projected = codeOnly(readFileSync(join(repoRoot, file), "utf8"));
+  const atModuleScope = moduleScopeLines(projected);
+
+  projected.split("\n").forEach((line, index) => {
+    const match = CONTEXT_READER_CALL.exec(line);
+    if (match && atModuleScope[index] && !CONTEXT_READER_DECLARATION.test(line)) {
+      moduleScopeHits.push({ file, line: index + 1, callee: match[1] });
+    }
+  });
+}
+
+// Never empty: this walks the same file list assertion B does, and that one already refused an empty
+// scan. Kept as its own guard so a future change to either list cannot quietly turn B2 into a pass.
+if (moduleScopeScanned.length === 0) {
+  fail(
+    "read an EMPTY source list for the module-scope scan. That is a broken check reporting " +
+      "success, not a clean tree.",
+  );
+}
+
+if (moduleScopeHits.length > 0) {
+  fail(
+    `${moduleScopeHits.length} styling call(s) at module scope:\n\n` +
+      `${moduleScopeHits.map(({ file, line, callee }) => `  ${file}:${line}  ${callee}()`).join("\n")}\n\n` +
+      "Each of these reads the styled-system off the `<ChakraProvider>` context, so it has to run " +
+      "while a component is being constructed. At module scope the read happens at import time, " +
+      "with no provider anywhere above it: the module throws as it loads and takes the route with " +
+      "it. Move the call into the component body.",
   );
 }
 
@@ -170,6 +335,7 @@ if (runtimeExposures.length > 0) {
 
 console.log(
   `check:no-runtime-css — no CSS-in-JS engine across ${installed.length} installed packages ` +
-    `(${lockfile.length} lockfile entries cross-checked); no runtime stylesheet in ${scanned.length} ` +
-    "source file(s); no published package exposes CSS or ships a styled-system runtime.",
+    `(${lockfile.length} lockfile entries cross-checked); no runtime stylesheet and no ` +
+    `module-scope styling call in ${scanned.length} source file(s); no published package exposes ` +
+    "CSS or ships a styled-system runtime.",
 );

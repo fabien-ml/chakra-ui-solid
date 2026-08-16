@@ -127,12 +127,13 @@ const Component = chakra("div", {}, { shouldForwardProp });
 ```
 
 `shouldForwardProp` replaces the default rule outright, so it also decides which keys become styles.
-Combine it with `isCssProperty`, which knows this preset's own utilities and tokens, to keep the
-default behaviour for everything you are not filtering.
+Combine it with the `isCssProperty` your own Panda run generated — which knows this preset's
+utilities and tokens *and* any of your own — to keep the default behaviour for everything you are not
+filtering.
 
 ```tsx
 import { chakra } from "chakra-ui-solid";
-import { isCssProperty } from "@chakra-ui-solid/styled-system/is-valid-prop";
+import { isCssProperty } from "../styled-system-app/jsx/is-valid-prop";
 
 function shouldForwardProp(prop: string, variantKeys: string[]) {
   return !variantKeys?.includes(prop) && !isCssProperty(prop);

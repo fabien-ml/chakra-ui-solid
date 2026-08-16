@@ -1,4 +1,4 @@
-import { css } from "@chakra-ui-solid/styled-system/css";
+import { css } from "../../../styled-system/css";
 
 /**
  * The page frame's two custom properties, on the `<body>` class.

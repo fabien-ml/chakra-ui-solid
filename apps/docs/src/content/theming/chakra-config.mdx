@@ -1,6 +1,6 @@
 ---
 title: defineChakraConfig
-description: The function that writes your Panda config, so your stylesheet and our compiled runtime name the same classes
+description: The function that writes your Panda config, so one run produces your stylesheet, your styled-system and its types
 links:
   source: packages/panda-preset/src/config.ts
 ---
@@ -17,46 +17,53 @@ export default defineChakraConfig({
 });
 ```
 
-It exists because of one failure mode that has no other guard. Panda's usual model generates the
-runtime and the stylesheet together from a single config; here the runtime was compiled into
-`@chakra-ui-solid/styled-system` before you installed it, and only the stylesheet is yours. Several
-config keys decide names on both sides of that split. Set differently on your side alone, they
-produce a sheet whose rules our class names never match: every component renders unstyled, and
-nothing anywhere raises an error.
+It exists for two jobs, and both are about failures Panda gives you no other guard against.
 
-The function owns the merge so that none of that is constructable. You never spread it, so there is
-no shallow-spread hazard; the keys that must agree are a type error to pass; and the keys that would
-otherwise replace ours are merged for you.
+**Four keys decide what Panda extracts** — not what it names, what it *sees*. Set differently, they
+produce a stylesheet that is missing rules nobody asked Panda for: every `<chakra.button>` in your
+source, every style prop, or Chakra's palette merged with Panda's. Nothing errors, and the page is
+simply unstyled. Those four are a type error to pass.
+
+**And three keys have no merging seam.** A config's `presets`, `theme` and `staticCss` replace a
+preset's rather than adding to them, so this function does the merge for you — including the one
+Panda's own documentation gets wrong, which is `staticCss` below.
+
+You never spread the return value, so there is no shallow-spread hazard on top of either.
+
+The naming knobs — `hash`, `prefix`, `separator` — are yours, and freely. One `panda codegen` run
+writes your stylesheet, the `styled-system/chakra-system.ts` you hand `<ChakraProvider>`, and the
+declarations that type them, so a name can only ever disagree with itself.
 
 ## What it sets
 
-Seven keys, and none of them are yours to choose:
+Four keys, and none of them are yours to choose:
 
 | Key | Value | Why |
 | --- | --- | --- |
-| `eject` | `true` | Drops `@pandacss/preset-panda`, whose palette disagrees with Chakra's about `colors.gray.*`. You keep every utility — the preset declares `@pandacss/preset-base` itself |
+| `eject` | `true` | Drops `@pandacss/preset-panda`, Panda's default theme, whose palette disagrees with Chakra's about `colors.gray.*` — leaving a theme that is neither, with nothing to say so. You keep every utility: the preset declares `@pandacss/preset-base` itself |
 | `jsxFramework` | `"solid"` | Extracts style props from any capitalized JSX component, which is why `<Box p="4">` in your source produces a rule at all |
 | `jsxFactory` | `"chakra"` | A different knob, and the one with the silent failure: `chakra.button` is lowercase, so without it Panda's `isUpperCase` fallback declines the tag and every `<chakra.button bg="…">` you write emits nothing |
-| `importMap` | our packages | Tells your extractor the styled-system API lives in our published package rather than in a directory you generated |
-| `hash` | `false` | Our runtime computes `p_4`; a hashed sheet has no such rule |
-| `separator` | `"_"` | `p_4` would become `p=4` in your sheet only |
-| `prefix` | `{ cssVar: "chakra" }` | Namespaces the variables and nothing else: `--chakra-colors-red-500`, but rules still `p_4`. It is what the React version's `cssVarsPrefix` spells, and it keeps our ~547 token variables off the identically-named ones your app declares. Locked because `token.var()` — and the `var(--chakra-sizes-*)` strings inside `SimpleGrid` and `Bleed` — were compiled before you installed them |
+| `importMap` | our packages, and your outdir | Registers the `chakra` factory. Panda takes a factory only from an import whose **name** is the `jsxFactory` and whose **module** is on this list, so unset, `<chakra.div bg="…">` emits nothing either. Your own outdir stays on the map beside ours, so `import { flex } from "./styled-system-app/patterns"` in your source extracts as it would in any Panda project |
 
 It also sets `presets` to `[chakraSolidPreset]` — Chakra's tokens and all 75 recipes — but that one
 is **merged, not locked**: yours are appended after it.
 
-Writing any of the seven is a type error whose message names the key:
+Writing any of the four is a type error whose message names the key:
 
 ```ts title="panda.config.ts"
 export default defineChakraConfig({
-  // ✗ `hash` is set by defineChakraConfig, because our published runtime already
-  //   committed to these names
-  hash: true,
+  // ✗ `jsxFactory` is set by defineChakraConfig, because it decides what Panda
+  //   extracts rather than what it names
+  jsxFactory: "styled",
   include: [...],
 });
 ```
 
-`preflight` is set to `true` as a **default**, not a lock — pass `false` or a scope and yours wins.
+Two keys are set as **defaults**, not locks, so whatever you pass wins: `preflight: true`, and
+`prefix: { cssVar: "chakra" }` — the React version's own `cssVarsPrefix`, which keeps our ~547 token
+variables out of a collision with the identically-named ones your app declares. Panda merges nothing
+inside `prefix`, so a `prefix` of yours replaces it whole: write `cssVar` too, or the variables lose
+their namespace.
 
 ## What you can pass
 
@@ -64,9 +71,30 @@ Three classes, and the type tells them apart for you.
 
 | | Keys | What happens |
 | --- | --- | --- |
-| **Locked** | the seven above | A type error. If one reaches Panda anyway — an untyped `panda.config.js`, or a spread of the return value — your Panda run prints `[chakra-ui-solid] restoring …` and puts our value back |
+| **Locked** | the four above | A type error. If one reaches Panda anyway — an untyped `panda.config.js`, or a spread of the return value — your Panda run prints `[chakra-ui-solid] restoring …` and puts our value back |
 | **Merged** | `presets`, `plugins`, `theme`, `staticCss` | Added to ours rather than replacing it. Your presets and plugins come after ours; `theme` accepts only `extend`; `staticCss` is merged for you |
-| **Yours** | `include`, `outdir`, `globalCss`, `preflight`, `conditions`, `cssVarRoot`, `hooks`, the rest | Passed straight through |
+| **Yours** | `include`, `outdir`, `hash`, `prefix`, `separator`, `utilities`, `conditions`, `globalCss`, `preflight`, `cssVarRoot`, `hooks`, the rest | Passed straight through |
+
+`utilities` and `conditions` are worth naming there rather than leaving in "the rest": a style
+property or a condition you invent is a typed prop on our components, because your run generates both
+the `isCssProperty` that folds it into a class and the declaration that types it.
+[Overview](/docs/theming/overview#utilities) has both worked through.
+
+## What it generates
+
+Three plugins are appended to your `plugins` array, and two of them write files into your `outdir`
+every `panda codegen`:
+
+| File | What it is |
+| --- | --- |
+| `chakra-system.ts` | Five imports of data and no logic — the `css`, `patterns` and `recipes` namespaces, `isCssProperty` and `token`, passed to `createSystem()`. This is what you hand `<ChakraProvider>` |
+| `chakra-system-types.d.ts` | The `declare module` block telling TypeScript what this config decided: a row per recipe's variants, a row per `utilities` entry, a row per `conditions` entry. Nothing imports it — it is picked up because it is in your program |
+
+The third plugin is the gate behind [`components`](#components), and prints the line every run ends
+with.
+
+Neither generated file is yours to edit: every run rewrites both, so a change belongs in
+`panda.config.ts`.
 
 `include` is the one **required** key. Panda's default (`src/**/*.{js,jsx,ts,tsx}`) misses
 `chakra-ui-solid/dist/panda.buildinfo.json`, and that path is not optional: it is the channel

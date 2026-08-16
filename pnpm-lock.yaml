@@ -355,9 +355,6 @@ importers:
 
   apps/docs:
     dependencies:
-      '@chakra-ui-solid/styled-system':
-        specifier: workspace:*
-        version: link:../../packages/styled-system
       '@solidjs/web':
         specifier: 'catalog:'
         version: 2.0.0-rc.0(solid-js@2.0.0-rc.0)

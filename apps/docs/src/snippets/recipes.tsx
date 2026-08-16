@@ -1,5 +1,5 @@
-import { cva } from "@chakra-ui-solid/styled-system/css";
 import { Box } from "chakra-ui-solid";
+import { cva } from "../../styled-system/css";
 
 const badge = cva({
   base: {

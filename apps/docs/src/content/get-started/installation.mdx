@@ -9,6 +9,10 @@ Every class name a component computes is a name in **your** stylesheet, produced
 run over **your** source. There is no prebuilt sheet to fall back on, and no version of this
 library that works without one.
 
+The same run also writes the styling runtime that computes those names, which you hand to a
+`<ChakraProvider>` at your app root. One config decides both halves, so a custom utility, an added
+variant, a renamed class or a hashed sheet agree by construction.
+
 ## Build Setup
 
 There is no per-framework guide here, because there is no per-framework difference. Client-rendered,
@@ -27,16 +31,16 @@ To set up chakra-ui-solid in your project, follow the steps below.
 <Steps>
   <Step title="Install the packages">
 
-Three of ours, and one of Panda's.
+Two of ours, and one of Panda's.
 
 ```bash
-pnpm add chakra-ui-solid @chakra-ui-solid/panda-preset @chakra-ui-solid/styled-system
+pnpm add chakra-ui-solid @chakra-ui-solid/panda-preset
 pnpm add -D @pandacss/dev
 ```
 
-`@pandacss/dev` is declared as a **non-optional peer dependency** of three of our packages, which
-is deliberate: the install warning is the enforcement. Without it the failure is that you install,
-run the app, every component renders naked, and no tool anywhere says why.
+`@pandacss/dev` is declared as a **non-optional peer dependency** of our packages, which is
+deliberate: the install warning is the enforcement. Without it the failure is that you install, run
+the app, every component renders naked, and no tool anywhere says why.
 
   </Step>
   <Step title="Write panda.config.ts">
@@ -74,21 +78,49 @@ export default defineChakraConfig({
 });
 ```
 
-The keys that must agree with our published runtime — `hash`, `prefix`, `separator` and three more
-— are a **type error** to pass, and if one reaches Panda anyway it is put back with a warning.
-[defineChakraConfig](/docs/theming/chakra-config) is the whole list.
+The four keys that decide what Panda **extracts** — `eject`, `jsxFramework`, `jsxFactory` and
+`importMap` — are a **type error** to pass, and if one reaches Panda anyway it is put back with a
+warning. Every key that decides what Panda **names** is yours, `hash` and `prefix` included.
+[defineChakraConfig](/docs/theming/chakra-config) is the whole account.
 
   </Step>
-  <Step title="Generate, then import the stylesheet you generated">
+  <Step title="Generate the styled-system">
 
 ```bash
 pnpm panda codegen
 ```
 
-Then import **your own** `styled-system-app/styles.css` from your app entry.
+That one run writes three things into `styled-system-app/`: your stylesheet, a `chakra-system.ts`
+holding the styling runtime, and the declarations that type it. Put it in `prepare`, so a fresh
+`install` and a CI checkout both have it:
 
-This is the sentence that keeps *"we publish no CSS"* from reading as *"there is no CSS"*: your
-sheet exists and it is yours; ours does not exist at all.
+```jsonc title="package.json"
+{ "scripts": { "prepare": "panda codegen" } }
+```
+
+Everything on the page below comes out of that single run, which is why a class name on an element
+and the rule behind it cannot disagree.
+
+  </Step>
+  <Step title="Wrap your app, and import the stylesheet you generated">
+
+```tsx title="src/app.tsx"
+import { ChakraProvider } from "chakra-ui-solid";
+import { system } from "../styled-system-app/chakra-system";
+import "../styled-system-app/styles.css";
+
+export default function App() {
+  return <ChakraProvider value={system}>{/* your app */}</ChakraProvider>;
+}
+```
+
+**The provider is required.** It is what hands every component the styling runtime its class names
+are computed from, so a component rendered outside one throws by name rather than rendering
+unstyled. The React version's context is strict in exactly the same way.
+
+It renders no element and injects no stylesheet — the `@layer` order and any `globalCss` arrive in
+the sheet on the line above it. That import is the sentence keeping *"we publish no CSS"* from
+reading as *"there is no CSS"*: your sheet exists and it is yours; ours does not exist at all.
 
   </Step>
   <Step title="Enjoy!">
@@ -132,12 +164,10 @@ Four causes, in the order they actually occur.
 
 1. **Panda never ran**, or it ran before the file that uses a style prop existed. Re-run `codegen`
    and check that the class you expected is in the generated sheet.
-2. **`hash`, `prefix` or `separator` disagrees across the boundary.** Our published runtime emits
-   `p_4`. If your config sets `hash: true`, your sheet carries hashed names instead — so every class
-   we compute is absent from your sheet, with no error anywhere. `defineChakraConfig()` makes those
-   keys a type error; a hand-written config is what makes it possible. If one gets past the types —
-   an untyped `panda.config.js`, or a spread — your Panda run prints
-   `[chakra-ui-solid] restoring …` and puts the value back.
+2. **The page is rendering against a stale `styled-system-app/`.** The runtime and the sheet come
+   out of one run, so they cannot disagree with each other — but both can be older than the config
+   that was supposed to produce them. That is what the `prepare` script above is for, and re-running
+   `panda codegen` settles it.
 3. **Your globs never reached the file that uses the component.** Which components' CSS is
    generated is read off the specifiers your scanned files name us in, so one reached only from a
    file Panda never parsed gets no recipe rules. Every run prints what it found —

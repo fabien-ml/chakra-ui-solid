@@ -10,10 +10,10 @@ import { BoxIcon, PaintBucketIcon, TypeIcon } from "~/components/ui/icons";
 // a snippet nobody can run is a snippet that drifts, so these are real files that `tsc --noEmit`
 // compiles rather than strings in a template.
 //
-// **Every one of them imports from `@chakra-ui-solid/*`.** An earlier set showed `defineTokens`,
-// `defineTextStyles` and `defineRecipe` — all of them Panda's, none of them ours — under a heading
-// that says *build your design system on top of chakra-ui-solid*. A code panel that demonstrates a
-// dependency is an advert for the dependency.
+// **Every one of them names this library or the styled-system its own Panda run generated.** An
+// earlier set showed `defineTokens`, `defineTextStyles` and `defineRecipe` — all of them Panda's,
+// none of them ours — under a heading that says *build your design system on top of
+// chakra-ui-solid*. A code panel that demonstrates a dependency is an advert for the dependency.
 const snippetHtml = import.meta.glob<string>("../../snippets/*.tsx", {
   eager: true,
   query: "?highlight",

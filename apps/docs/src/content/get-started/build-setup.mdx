@@ -54,8 +54,49 @@ ssr.noExternal:       ["@chakra-ui-solid/core", "@solidjs/meta",
                        "@tanstack/solid-router", "chakra-ui-solid"]
 ```
 
-`@chakra-ui-solid/styled-system` is absent from that list and does not belong on it — it is
-generated `.mjs` with no JSX in it, so pre-bundling it is ordinary and harmless.
+Your own `styled-system-app/` is absent from that list and does not belong on it either. It is
+first-party source in your project rather than a dependency, so nothing pre-bundles it and nothing
+externalizes it — the whole reason the generated `chakra-system.ts` is written *into* your outdir is
+that `./css` and its four siblings are then ordinary relative imports, resolved the same way by Vite,
+webpack, Vitest and `tsc`. No alias, no `tsconfig#paths`, no bundler plugin.
+
+## One script, so the generated files are always there
+
+Your build reads three files that do not exist until Panda has run: the stylesheet, the
+`chakra-system.ts` your root imports, and the declarations `tsc` reads. Generate them in `prepare`
+and a fresh `install`, a CI checkout and a teammate's first clone all have them:
+
+```jsonc title="package.json"
+{
+  "scripts": {
+    "prepare": "panda codegen",
+    "dev": "vite dev",
+    "build": "vite build"
+  }
+}
+```
+
+`panda codegen --watch` alongside `vite dev` is the other half if you edit `panda.config.ts` often.
+Nothing here needs a Vite plugin for it: the generated files are source, and Vite watches source.
+
+## The provider goes above whatever renders
+
+`<ChakraProvider>` is required in every environment, and that includes the server: a component
+rendered without one throws by name rather than rendering unstyled. So it wraps the tree at the
+outermost point your framework renders — the root component, the root route, the root layout —
+rather than inside a client-only boundary.
+
+```tsx title="src/app.tsx"
+import type { JSX } from "@solidjs/web";
+import { ChakraProvider } from "chakra-ui-solid";
+import { system } from "../styled-system-app/chakra-system";
+
+export default function App(props: { children: JSX.Element }) {
+  return <ChakraProvider value={system}>{props.children}</ChakraProvider>;
+}
+```
+
+The same holds for tests: a test that renders a component renders it under a provider, or it throws.
 
 ## Client-rendered apps
 

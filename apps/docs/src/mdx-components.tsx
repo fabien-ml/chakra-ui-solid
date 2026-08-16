@@ -1,4 +1,3 @@
-import { cx } from "@chakra-ui-solid/styled-system/css";
 import { Dynamic } from "@solidjs/web";
 import { Box, type BoxProps } from "chakra-ui-solid";
 import type { Component } from "solid-js";
@@ -8,6 +7,7 @@ import { Example } from "~/components/mdx/example";
 import { PropsTable } from "~/components/mdx/props-table";
 import { mdxInlineCodeClass, mdxTableClass, proseTagClasses } from "~/components/mdx/prose";
 import { Step, Steps } from "~/components/mdx/steps";
+import { cx } from "../styled-system/css";
 
 /**
  * MDX funnels every intrinsic element through `_components.<tag>` and **calls it as a component**.
