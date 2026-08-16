@@ -149,6 +149,17 @@ const chakraReact: AttributionEntry[] = [
     package: "chakra-ui-solid",
   },
   {
+    // One path — the person glyph `Avatar.Icon` draws — in a file of part components that are API
+    // shape and owe nothing. `icons.tsx` declines to carry it for the opposite reason to
+    // `field-parts.tsx` below: this glyph is **public**, exported as `Avatar.Icon`, where that file
+    // is the internal set a recipe renders when the caller passes none.
+    file: "packages/chakra-ui-solid/src/components/avatar/avatar-parts.tsx",
+    upstreamProject: "chakra-ui/chakra-ui",
+    upstreamFile: "packages/react/src/components/avatar/avatar.tsx",
+    license: "MIT",
+    package: "chakra-ui-solid",
+  },
+  {
     // One path — the alert circle `Field.ErrorIcon` draws — in a file of part components that are
     // API shape and owe nothing. `icons.tsx` declines to carry it: nothing upstream imports Chakra's
     // own `ErrorIcon`, so `Field` builds its own from the glyph `field.tsx` inlines.

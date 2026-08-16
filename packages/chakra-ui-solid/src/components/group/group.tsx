@@ -7,6 +7,7 @@ import {
 import type { SystemStyleObject } from "@chakra-ui-solid/styled-system/types";
 import type { ComponentProps } from "@solidjs/web";
 import { type Component, merge, omit } from "solid-js";
+import { GroupItemProvider } from "./group-item-context";
 
 /**
  * A child that has taken itself out of the row — an absolutely positioned overlay, say. It is
@@ -29,6 +30,24 @@ const LAST_OF_MANY = `& > *${LAST_IN_ROW}:not(${FIRST_IN_ROW})`;
 const BETWEEN = `& > *${IN_ROW}:not(${FIRST_IN_ROW}):not(${LAST_IN_ROW})`;
 const HAS_A_NEIGHBOUR = `& > *${IN_ROW}:not(${FIRST_IN_ROW}${LAST_IN_ROW})`;
 
+/**
+ * The same "a lone child is left alone" rule, for the one thing a child wears rather than collects:
+ * `data-group-item`, which {@link GroupItemProvider} lets an Avatar write and the preset's avatar
+ * recipe rings with `border-width: 2px`.
+ *
+ * React never reaches this case — `Group` returns its children untouched when only one of them is
+ * in the row, so a lone avatar is handed no attribute and no ring (measured on chakra-ui.com: the
+ * ring is entirely attribute-driven, `2px` with it and `0px` without). A context marker cannot count
+ * siblings, so ours writes the attribute either way and the width is suppressed here instead.
+ *
+ * **Keyed on `[data-group-item]`, not on any lone child**, because the two are not the same rule: a
+ * lone `<Button variant="outline">` in a `Group` keeps its own border, and only an element that
+ * opted into group-item treatment can lose one. What that leaves behind is in
+ * `__internal__/decisions.md` — suppressing the declaration is not the same as never writing the
+ * attribute.
+ */
+const LONE_ITEM = `& > *[data-group-item]${FIRST_IN_ROW}${LAST_IN_ROW}`;
+
 const StyledGroup = chakra("div", {
   base: {
     display: "inline-flex",
@@ -38,6 +57,7 @@ const StyledGroup = chakra("div", {
     [HAS_A_NEIGHBOUR]: {
       _focusVisible: { zIndex: 1 },
     },
+    [LONE_ITEM]: { borderWidth: "0" },
   },
   variants: {
     orientation: {
@@ -163,7 +183,7 @@ export const Group: Component<GroupProps> = (props) => {
         return merged.wrap;
       },
     },
-    omit(merged, "align", "justify", "wrap", "class"),
+    omit(merged, "align", "justify", "wrap", "class", "children"),
     {
       get class() {
         return system().cx("chakra-group", merged.class as string | undefined);
@@ -171,5 +191,13 @@ export const Group: Component<GroupProps> = (props) => {
     },
   );
 
-  return <StyledGroup {...elementProps} />;
+  return (
+    <StyledGroup {...elementProps}>
+      {/* The children are built inside the provider on purpose: SolidJS resolves context through
+          the owner that created a component, so a child read into a local up in this body would be
+          constructed under this component's owner and answer `false` — the same rule Stack's
+          separator provider carries. Read exactly once here, so it owes no `children()`. */}
+      <GroupItemProvider value={true}>{merged.children}</GroupItemProvider>
+    </StyledGroup>
+  );
 };

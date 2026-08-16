@@ -68,8 +68,8 @@ flat, one component doing both jobs.
   **Reach for the decorate route only for a fact CSS cannot see**, and note that Solid cannot clone
   even then: by the time a parent sees a child it is a constructed DOM node, so the route is
   `children()` plus a render effect that writes onto the resolved nodes, and it costs SSR. Avatar's
-  ring is the one thing this repo still owes `data-group-item`, and it takes the context route
-  below when Avatar ports.
+  ring was the one thing this repo owed `data-group-item`; it shipped on the context route, two
+  bullets below.
 - **Injecting styles into a passed-in child is context, and the child must be a COMPONENT.** Settled
   on Stack's separator, both halves measured. *Styles*: `StackSeparator` reads the direction off a
   `StackDirectionContext` and computes its own class, so unlike the decorate route this one costs no
@@ -80,6 +80,27 @@ flat, one component doing both jobs.
   prop takes a component (`separator={StackSeparator}`), which makes the element spelling a type
   error. The value a repeated part carries (Chakra's separator margins are the `gap` prop) has no
   rule in anyone's sheet: Stack keeps the flex `gap` on instead, same geometry, measured not assumed.
+- **`data-group-item` is a context marker on `Group`, and the lone-child case is a suppressed
+  declaration rather than a withheld attribute.** Settled on Avatar's ring, measured on
+  chakra-ui.com before it was written. `Group` publishes a bare `GroupItemProvider` around its
+  children — built inside the provider, per the bullet above — and `Avatar.Root` writes
+  `data-group-item=""` as a merge source *after* the consumer's props, so a wrapper forwarding the
+  key unset cannot delete the ring. It is on **`Group`**, not on `AvatarGroup`: upstream's ring comes
+  from `Group`, so a plain `<Group>` of avatars is ringed there and here, and its own overflow
+  example is written that way.
+  **What does not port is the count.** React's `Group` returns its children untouched when only one
+  is in the row — twice, once for a single child and once for a single *unskipped* child — so a lone
+  avatar is handed no attribute and no ring. A context marker cannot count siblings, so ours writes
+  the attribute anyway and `Group`'s base zeroes the width for `& > *[data-group-item]` that is at
+  once first and last of the row. Both early returns are covered by one rule, because those
+  selectors already discount `[data-group-skip]`. **No `!important`**, unlike the `0!` two rules
+  above it: `@layer utilities` sits after `@layer recipes`, so layer order alone wins, and the
+  narrower rule leaves a consumer's `!important` working (measured — `0px` lone, `2px` in a row).
+  Two residues, both accepted. A consumer's own CSS keyed on `[data-group-item]` still matches a
+  lone child, where upstream has no attribute to match. And the suppression is blunt: a lone grouped
+  avatar with `variant="outline"`, or one carrying a `borderWidth` style prop, computes `0px` where
+  upstream computes `1px` / the prop. Narrowing it further would mean naming the recipe's own
+  values, which is the one thing a dependency's recipe body is never allowed to teach us.
 - **`composeEventHandlers` is for part shapes C and D only.** A machine part never calls it; the
   machine's own prop getter already composes.
 - **`RootProvider`, `PropsProvider` and `Context` ship with each component**, in its batch, never as

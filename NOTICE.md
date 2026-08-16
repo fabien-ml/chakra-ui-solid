@@ -148,6 +148,7 @@ fold on the docs home and in every page's footer.
 | ---- | ------------ |
 | `packages/core/src/factory/factory.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/styled-system/factory.tsx` |
 | `packages/chakra-ui-solid/src/components/icons.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
+| `packages/chakra-ui-solid/src/components/avatar/avatar-parts.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/avatar/avatar.tsx` |
 | `packages/chakra-ui-solid/src/components/checkmark/checkmark.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/checkmark/checkmark.tsx` |
 | `packages/chakra-ui-solid/src/components/field/field-parts.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/field/field.tsx` |
 | `packages/chakra-ui-solid/src/components/link/link-box.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/link/link-box.tsx` |

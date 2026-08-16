@@ -1,15 +1,13 @@
-import { Button, Card, Circle } from "chakra-ui-solid";
+import { Avatar, Button, Card } from "chakra-ui-solid";
 
 export default function CardBasic() {
   return (
     <Card.Root width="320px">
       <Card.Body gap="2">
-        {/* A `Circle` where the React version puts an `Avatar` — that row is not ported yet, and
-            the avatar is decoration here rather than the subject. `float-with-avatar` is the
-            precedent. */}
-        <Circle size="12" bg="bg.emphasized" color="fg" fontWeight="medium">
-          NC
-        </Circle>
+        <Avatar.Root size="lg" shape="rounded">
+          <Avatar.Image src="https://picsum.photos/200/300" />
+          <Avatar.Fallback name="Nue Camp" />
+        </Avatar.Root>
         <Card.Title mt="2">Nue Camp</Card.Title>
         <Card.Description>
           This is the card body. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur

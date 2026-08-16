@@ -40,6 +40,7 @@ export type { Conditions, SystemProperties } from "@chakra-ui-solid/styled-syste
 export * from "./absolute-center";
 export * from "./alert";
 export * from "./aspect-ratio";
+export * from "./avatar";
 export * from "./badge";
 export * from "./bleed";
 export * from "./blockquote";

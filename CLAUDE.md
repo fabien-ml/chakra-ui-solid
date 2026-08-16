@@ -33,10 +33,10 @@ section you need. Never read the tree to get oriented** — it is ~15k lines, no
 and this file is the only one read on every task.
 
 **The corpus predates the 2026-08-10 cut and misstates the tooling. Never build tooling because a
-document specifies it.** It names 51 `check:*` scripts; four exist — `no-runtime-css`,
-`attribution`, `declaration-support`, `ssr-coverage`. `INDEX.md`, `pnpm docs:index` and their checks
-are gone. Status cells (`ships`, `B7`) predate the 22 shipped components. `brief-plan` is the
-approved brief plan, never a file; nothing resolves it.
+document specifies it.** It names 51 `check:*` scripts; five exist — `no-runtime-css`,
+`attribution`, `declaration-support`, `ssr-coverage`, `component-recipes`. `INDEX.md`,
+`pnpm docs:index` and their checks are gone. Status cells (`ships`, `B7`) predate the 22 shipped
+components. `brief-plan` is the approved brief plan, never a file; nothing resolves it.
 
 ## The one rule: no CSS at runtime, no CSS in the package
 

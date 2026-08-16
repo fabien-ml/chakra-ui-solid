@@ -1,11 +1,12 @@
-import { Badge, Box, Circle, Float } from "chakra-ui-solid";
+import { Avatar, Badge, Box, Float } from "chakra-ui-solid";
 
 export default function FloatWithAvatar() {
   return (
     <Box display="inline-block" pos="relative">
-      <Circle size="12" bg="bg.emphasized" color="fg" fontWeight="medium">
-        FS
-      </Circle>
+      <Avatar.Root size="lg" shape="rounded">
+        <Avatar.Image src="https://i.pravatar.cc/150?img=5" />
+        <Avatar.Fallback />
+      </Avatar.Root>
       <Float placement="bottom-end">
         <Badge size="sm" variant="solid" colorPalette="teal">
           New

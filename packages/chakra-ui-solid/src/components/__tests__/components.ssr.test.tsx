@@ -12,6 +12,14 @@ import {
   AlertRoot,
   AlertTitle,
   AspectRatio,
+  AvatarContext,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarIcon,
+  AvatarImage,
+  AvatarPropsProvider,
+  AvatarRoot,
+  AvatarRootProvider,
   Badge,
   BadgePropsProvider,
   Bleed,
@@ -58,6 +66,7 @@ import {
   ColorSwatchPropsProvider,
   Container,
   ContainerPropsProvider,
+  createAvatar,
   createCollapsible,
   createDialog,
   createDrawer,
@@ -316,6 +325,64 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
       <AlertTitle>Heads up</AlertTitle>
     </AlertRoot>
   ),
+  AvatarContext: () => (
+    <AvatarRoot>
+      <AvatarContext>
+        {(avatar) => <span>{avatar.loaded ? "loaded" : "loading"}</span>}
+      </AvatarContext>
+    </AvatarRoot>
+  ),
+  // The icon branch, which is the one that builds JSX inside the fallback's `children()` call — a
+  // glyph hoisted to module scope beside the component would already have been constructed at
+  // import time and taken the whole route down.
+  AvatarFallback: () => (
+    <AvatarRoot>
+      <AvatarFallback />
+    </AvatarRoot>
+  ),
+  // Two children rather than one, so the row is a row: with a single avatar `Group`'s lone-item rule
+  // applies instead, and the server would render the case that has no ring.
+  AvatarGroup: () => (
+    <AvatarGroup size="lg">
+      <AvatarRoot>
+        <AvatarFallback name="Segun Adebayo" />
+      </AvatarRoot>
+      <AvatarRoot>
+        <AvatarFallback name="Ada Lovelace" />
+      </AvatarRoot>
+    </AvatarGroup>
+  ),
+  AvatarIcon: () => <AvatarIcon />,
+  AvatarImage: () => (
+    <AvatarRoot>
+      <AvatarImage src="https://example.com/segun.png" alt="Segun Adebayo" />
+    </AvatarRoot>
+  ),
+  AvatarPropsProvider: () => (
+    <AvatarPropsProvider value={{ shape: "rounded" }}>
+      <AvatarRoot>
+        <AvatarFallback name="Segun Adebayo" />
+      </AvatarRoot>
+    </AvatarPropsProvider>
+  ),
+  AvatarRoot: () => (
+    <AvatarRoot variant="outline" size="sm">
+      <AvatarFallback name="Segun Adebayo" />
+    </AvatarRoot>
+  ),
+  // `createAvatar` under no Root of its own, which is the path a server render takes through the
+  // machine when the consumer owns it.
+  AvatarRootProvider: () => {
+    const Subject = () => {
+      const avatar = createAvatar();
+      return (
+        <AvatarRootProvider value={avatar}>
+          <AvatarFallback name="Segun Adebayo" />
+        </AvatarRootProvider>
+      );
+    };
+    return <Subject />;
+  },
   Badge: () => <Badge colorPalette="green">New</Badge>,
   BadgePropsProvider: () => (
     <BadgePropsProvider value={{ size: "lg" }}>

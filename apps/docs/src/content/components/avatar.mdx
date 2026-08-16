@@ -1,0 +1,151 @@
+---
+title: Avatar
+description: Used to represent user profile picture or initials
+links:
+  source: packages/chakra-ui-solid/src/components/avatar
+  chakra: https://chakra-ui.com/docs/components/avatar
+---
+
+<Example name="avatar-basic" />
+
+## Usage
+
+```tsx
+import { Avatar, AvatarGroup } from "chakra-ui-solid";
+```
+
+```tsx
+<AvatarGroup>
+  <Avatar.Root>
+    <Avatar.Fallback />
+    <Avatar.Image />
+  </Avatar.Root>
+</AvatarGroup>
+```
+
+`Avatar.Image` writes two attributes for you, and both are spelled the way the DOM spells them:
+`referrerpolicy="no-referrer"` is all lowercase where the React version writes `referrerPolicy`,
+and `draggable` takes the **string** `"false"`, since an attribute whose value is the boolean
+`false` is removed rather than written. That spelling is this library's throughout, not something
+Avatar chose.
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the avatar
+
+<Example name="avatar-with-sizes" />
+
+### Variants
+
+Use the `variant` prop to change the variant of the avatar
+
+<Example name="avatar-with-variants" />
+
+### Shape
+
+Use the `shape` prop to change the shape of the avatar, from `rounded` to `square`
+
+<Example name="avatar-with-shape" />
+
+### Colors
+
+Use the `colorPalette` prop to change the color of the avatar
+
+<Example name="avatar-with-colors" />
+
+The palette is written out per row rather than looped over. `colorPalette` is a style prop, so its
+value has to be one this library's build could see: passed as a variable it computes a class with no
+rule behind it, and the avatar renders with no colour and no error.
+
+### Fallback
+
+Render `Avatar.Icon` as the fallback when the name is not provided or when the image fails to load.
+
+<Example name="avatar-with-fallback" />
+
+### Random Color
+
+Combine the `colorPalette` prop with some custom logic to dynamically change the color of the avatar
+
+<Example name="avatar-with-random-color" />
+
+A computed palette is the case the sentence above rules out, so the palettes it picks from have to
+be declared instead of scanned — `staticCss: { css: [{ properties: { colorPalette: palettes } }] }`
+in your Panda config covers every one of them at once.
+
+### Ring
+
+Use the `outline*` props to add a ring around the avatar
+
+<Example name="avatar-with-ring" />
+
+### Group
+
+Use the `Group` component to group multiple avatars together
+
+<Example name="avatar-with-group" />
+
+### Stacking
+
+When using the `AvatarGroup` component, you can use the `stacking` prop to change the stacking order
+of the avatars
+
+<Example name="avatar-group-with-stacking" />
+
+### Persona
+
+Here's an example of how to use the `Avatar` component to display a user persona.
+
+<Example name="avatar-persona" />
+
+### Badge
+
+Show a badge on the right corner of the avatar by composing the `Float` and `Circle` components
+
+<Example name="avatar-with-badge" />
+
+### Store
+
+An alternative way to access the avatar state and methods is to use the `RootProvider` component and
+the `createAvatar` store hook.
+
+<Example name="avatar-with-store" />
+
+The store answers `loaded`, a boolean, and there is no `status` member to read — `onStatusChange` is
+where the `"loaded"` / `"error"` names appear, on the details object it is called with.
+
+### Closed Component
+
+Here's how to setup the Avatar for a closed component composition.
+
+<Example name="avatar-closed-component" />
+
+## Props
+
+### Root
+
+<PropsTable component="avatar" interface="AvatarRootProps" />
+
+### RootProvider
+
+<PropsTable component="avatar" interface="AvatarRootProviderProps" />
+
+### Fallback
+
+<PropsTable component="avatar" interface="AvatarFallbackProps" />
+
+### Context
+
+<PropsTable component="avatar" interface="AvatarContextProps" />
+
+### Group
+
+<PropsTable component="avatar" interface="AvatarGroupProps" />
+
+### createAvatar
+
+<PropsTable component="avatar" interface="CreateAvatarProps" />

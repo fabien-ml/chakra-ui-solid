@@ -80,6 +80,10 @@ catalog:
   # own; nothing else arrives underneath it, because the tab indicator is measured by the machine
   # rather than positioned by `popper`.
   "@zag-js/tabs": 1.43.0
+  # The fifth, and the only one so far that brings nothing new underneath it: its whole dependency
+  # list is `core`, `types`, `utils`, `anatomy` and `dom-query`, and the four above already resolve
+  # all five at 1.43.0.
+  "@zag-js/avatar": 1.43.0
   # A machine package `@chakra-ui-solid/core` depends on directly, unlike every other one: presence
   # is a *primitive* rather than a component, and `createPresence` is what nine components' exit
   # animations are built on.

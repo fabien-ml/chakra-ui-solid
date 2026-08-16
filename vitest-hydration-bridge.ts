@@ -191,6 +191,18 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/input-group/__tests__/input-group.ssr-entry.tsx",
   ),
+  // The first subject whose branch is decided by **where the element sits** rather than by what it
+  // was passed: `Avatar.Root` writes `data-group-item` from a context read, so a provider that moved
+  // between the two builds would leave the attribute — and the ring the preset keys on it — on one
+  // side only. A grouped row, an `AvatarGroup` of one, and three ungrouped Roots are all here.
+  //
+  // Its other half is `Avatar.Fallback`, which resolves a slot through `children()` and picks one of
+  // three shapes from it: a consumer's own child, a text node of initials, or an `<Avatar.Icon />`
+  // whose `svg` and `path` are worth several keys to whatever follows.
+  avatar: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/avatar/__tests__/avatar.ssr-entry.tsx",
+  ),
 };
 
 let ssrServerPromise: Promise<ViteDevServer> | undefined;

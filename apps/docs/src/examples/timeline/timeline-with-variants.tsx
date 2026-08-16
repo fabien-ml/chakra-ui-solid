@@ -1,4 +1,4 @@
-import { Badge, Circle, Span, Stack, Timeline } from "chakra-ui-solid";
+import { Avatar, Badge, Span, Stack, Timeline } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { CheckIcon } from "../../components/ui/icons";
 
@@ -14,11 +14,10 @@ export default function TimelineWithVariants() {
               <Timeline.Connector>
                 <Timeline.Separator />
                 <Timeline.Indicator>
-                  {/* A `Circle` with initials where the React version puts an `Avatar`; the
-                      `avatar` row has not shipped here yet. */}
-                  <Circle size="full" bg="bg.emphasized" color="fg" fontWeight="medium">
-                    S
-                  </Circle>
+                  <Avatar.Root size="full">
+                    <Avatar.Image src="https://bit.ly/sage-adebayo" />
+                    <Avatar.Fallback name="Sage" />
+                  </Avatar.Root>
                 </Timeline.Indicator>
               </Timeline.Connector>
               <Timeline.Content>

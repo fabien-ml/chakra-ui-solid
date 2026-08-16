@@ -29,6 +29,7 @@ upstream's expression.
 | File | Derived from |
 | ---- | ------------ |
 | `src/components/icons.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/icons.tsx` |
+| `src/components/avatar/avatar-parts.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/avatar/avatar.tsx` |
 | `src/components/checkmark/checkmark.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/checkmark/checkmark.tsx` |
 | `src/components/field/field-parts.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/field/field.tsx` |
 | `src/components/link/link-box.tsx` | `chakra-ui/chakra-ui` — `packages/react/src/components/link/link-box.tsx` |

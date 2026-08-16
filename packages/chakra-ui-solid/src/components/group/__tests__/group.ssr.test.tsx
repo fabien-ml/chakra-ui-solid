@@ -50,10 +50,18 @@ describe("Group on the server", () => {
       </Group>
     ));
 
-    // No longer a caveat about substring matching: the seam's own class names name
-    // `data-group-skip`, and nothing else.
-    expect(html).not.toContain("data-first");
-    expect(html).not.toContain("data-group-item");
-    expect(html).not.toContain("--group-index");
+    // The children's own tags, not the whole document — and that is the caveat coming back rather
+    // than a weaker assertion. `Group`'s base now carries a rule keyed on `[data-group-item]` (the
+    // lone-item ring suppression), so its own class name contains that string and a substring match
+    // over `html` reports an attribute nobody wrote. What the claim was always about is what landed
+    // on the children, and this reads exactly that.
+    const buttons = html.match(/<button[^>]*>/g) ?? [];
+    expect(buttons).toHaveLength(2);
+
+    for (const button of buttons) {
+      expect(button).not.toContain("data-first");
+      expect(button).not.toContain("data-group-item");
+      expect(button).not.toContain("--group-index");
+    }
   });
 });

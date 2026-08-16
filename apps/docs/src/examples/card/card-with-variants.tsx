@@ -1,4 +1,4 @@
-import { Button, Card, Circle, Stack } from "chakra-ui-solid";
+import { Avatar, Button, Card, Stack } from "chakra-ui-solid";
 import { For } from "solid-js";
 
 export default function CardWithVariants() {
@@ -11,9 +11,10 @@ export default function CardWithVariants() {
         {(variant) => (
           <Card.Root width="320px" variant={variant}>
             <Card.Body gap="2">
-              <Circle size="12" bg="bg.emphasized" color="fg" fontWeight="medium">
-                NC
-              </Circle>
+              <Avatar.Root size="lg" shape="rounded">
+                <Avatar.Image src="https://picsum.photos/200/300" />
+                <Avatar.Fallback name="Nue Camp" />
+              </Avatar.Root>
               <Card.Title mb="2">Nue Camp</Card.Title>
               <Card.Description>
                 This is the card body. Lorem ipsum dolor sit amet, consectetur adipiscing elit.

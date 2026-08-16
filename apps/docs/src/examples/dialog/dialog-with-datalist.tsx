@@ -1,5 +1,6 @@
 import { Portal } from "@solidjs/web";
 import {
+  Avatar,
   Badge,
   Button,
   type ButtonProps,
@@ -7,6 +8,7 @@ import {
   type CloseButtonProps,
   DataList,
   Dialog,
+  HStack,
   Textarea,
   VStack,
 } from "chakra-ui-solid";
@@ -37,7 +39,15 @@ export default function DialogWithDatalist() {
                   </DataList.Item>
                   <DataList.Item>
                     <DataList.ItemLabel>Assigned to</DataList.ItemLabel>
-                    <DataList.ItemValue>Segun Adebayo</DataList.ItemValue>
+                    <DataList.ItemValue>
+                      <HStack>
+                        <Avatar.Root size="xs">
+                          <Avatar.Image src="https://bit.ly/sage-adebayo" />
+                          <Avatar.Fallback name="Segun Adebayo" />
+                        </Avatar.Root>
+                        Segun Adebayo
+                      </HStack>
+                    </DataList.ItemValue>
                   </DataList.Item>
                   <DataList.Item>
                     <DataList.ItemLabel>Due date</DataList.ItemLabel>

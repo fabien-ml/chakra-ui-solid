@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 65 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 66 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -75,15 +75,46 @@ asks, correct **both** in the same commit.
       reach it**: `ActionBarPositioner` is `withContext("div", "positioner")` — a plain styled div
       carrying none of the machine's positioner props — so no floating element exists for popper to
       write into, and the recipe's `placement` variant does the positioning
-- [ ] avatar — S:avatar · 3/3
-      Anatomy re-exported from Ark unchanged.
-      **Three shipped pages owe it a section each**, all dropped for this row and all measured at
-      Phase 4: `blockquote.mdx`'s *With Avatar*, `card.mdx`'s *With Avatar*, and `tag.mdx`'s
-      *Avatar* — the last of which the `tag` recipe really does style, through
-      `.tag__startElement:has([data-scope=avatar])`, so a substitute glyph would not exercise it.
-      `card-basic` and `card-with-variants` carry a `Circle` in the avatar's place instead
-      (`float-with-avatar`'s precedent), because there the avatar is decoration rather than the
-      subject
+- [x] avatar — S:avatar · 3/3
+      Anatomy is `root` / `image` / `fallback`, three parts against the recipe's three slots.
+      *"Re-exported from Ark unchanged"* was right about that and said nothing else. **The public
+      surface is larger than the anatomy**: seven namespace exports (`Root`, `RootProvider`,
+      `PropsProvider`, `Image`, `Fallback`, `Icon`, `Context`), plus `createAvatar`, plus the
+      standalone `AvatarGroup`, which upstream keeps out of its namespace too. `Icon` is Chakra's
+      own glyph rather than an anatomy part, so `avatar-parts.tsx` is a derivative and carries all
+      four attribution artifacts.
+      **The installed machine and `__reference-impl__/zag-v2/` disagree, and the installed one is
+      what ships.** `@zag-js/avatar@1.43.0`'s `AvatarApi` exposes **`loaded: boolean` and no
+      `status`**; `zag-v2/packages/machines/avatar/src/avatar.types.ts:57` declares both, because
+      that tree is an unreleased branch. So the store answers `loaded`, and the `"loaded"` /
+      `"error"` names appear only on the details object `onStatusChange` is called with. Read a
+      machine's *published* types before planning an API against `zag-v2`.
+      `Avatar.Fallback` is this row's multi-read slot — a gate plus a body over `children`, resolved
+      once with `children()` and branched on the resolved value, never with `??`. `Avatar.Image`
+      carries the only two real defaults (`draggable="false"`, `referrerpolicy="no-referrer"`), both
+      through `withDefaults`, both with a forwarded-`undefined` test. The ring is the `group` row's
+      other half: `Group` publishes a marker context and `Avatar.Root` writes `data-group-item`
+      after its props spread, with two residues recorded in [decisions.md](decisions.md).
+      Docs: **14 of upstream's 17 example slots.** *Next.js* is a `getImageProps` code block with no
+      Solid analogue and *Explorer* is www machinery; **`Overflow` is deferred rather than dropped —
+      its surplus count opens a `Menu`, and that row has not shipped.** The page says nothing about
+      any of the three.
+      **The three sections this row owed now exist**, each positioned where the React version's page
+      puts it: `blockquote.mdx`'s *With Avatar* between *Justify* and *Closed Component*,
+      `card.mdx`'s *With Avatar* after *Sizes*, `tag.mdx`'s *Avatar* between *Overflow* and *Render
+      as button*. **The `tag` selector is real, and now measured in a browser rather than predicted:**
+      `.tag__startElement:has([data-scope=avatar])` swaps `--tag-element-size` for
+      `--tag-avatar-size` and multiplies the offset by 1.5, so a `lg` start element computes 18px
+      against the 16px it takes without an avatar and an `xl` one 24px against 18px, with
+      `margin-inline-start` at −4.5px and −6px. `sm` and `md` declare the two variables equal, so
+      only the offset moves there — a substitute glyph would have matched at half the sizes and
+      missed silently at the other half.
+      **Seven example files gave their avatar back, not the six the plan listed.** `card-basic`,
+      `card-with-variants`, `float-with-avatar` and the three `timeline` examples were known;
+      `dialog-with-datalist` was not, and it carried no comment and no note on the `dialog` row —
+      it had dropped upstream's `HStack` + avatar out of its *Assigned to* value outright. An eighth
+      site was prose rather than code: `float.mdx` carried a paragraph explaining its stand-in,
+      which went with the stand-in
 - [ ] carousel — S:carousel · 10/11
       **Duplicate slot `progressText`** (§1.3b)
 - [ ] checkbox — S:checkbox · 4/5
@@ -260,7 +291,11 @@ asks, correct **both** in the same commit.
 - [ ] menu — S:menu · 14/15 · D
       `+itemCommand`. Presence-gated `aria-controls`. Floating — **the seam is free**, measured at
       `popover` (1500/1501): object-form `style` only on the positioner, content stays its
-      `firstElementChild`, and the arrow is captured once per floating-element identity
+      `firstElementChild`, and the arrow is captured once per floating-element identity.
+      **Two shipped pages owe this row a section**, both deferred rather than dropped and neither
+      saying so: `breadcrumb.mdx`'s *Menu*, and `avatar.mdx`'s *Overflow* — an `AvatarGroup` whose
+      surplus count is a `Menu.Trigger` opening the remaining people as `Menu.Item`s, each with its
+      own `Avatar`. Ship both with this row
 - [ ] number-input — S:numberInput · 8/8
       **Owes the input-group opt-in** (~3 lines, settled on the `input-group` row): three upstream
       examples put a `NumberInput.Input` inside an `InputGroup` — `with-element`, `with-scrubber`
@@ -623,8 +658,9 @@ The seam's own suite gained the test that would have caught it.
       QuoteIcon, "icon")` — the only part in the batch whose slot class is handed to `chakra.svg`
       rather than written on a host element, and it works unchanged.
       `variantKeys: ["justify", "variant"]`; `plain` keeps the padding and drops only the rule.
-      Docs: **8 of upstream's 10 example slots**. `With Avatar` waits on the `avatar` row and
-      `Explorer` is www machinery. `blockquote-with-colors` is the `code-with-colors` case — ten
+      Docs: **9 of upstream's 10 example slots**; only `Explorer` is missing, and it is www
+      machinery. *With Avatar* landed with the `avatar` row.
+      `blockquote-with-colors` is the `code-with-colors` case — ten
       palettes written out, because `colorPalette` is a style prop the preset deliberately keeps out
       of `staticCss` — and `blockquote-with-custom-icon` takes `StarIcon` from the docs' own set
       where upstream imports `react-icons/lu`
@@ -670,11 +706,11 @@ The seam's own suite gained the test that would have caught it.
       thing from the other direction; `field` and `fieldset` carry theirs off prop getters, with the
       one exception the `field` row records — `RequiredIndicator` is hand-written upstream and
       carries none.)
-      Docs: **4 of upstream's 7 example slots**. *With Image* and *Horizontal* wait on the `image`
-      row and *With Avatar* on `avatar`; `Customization` is dropped on `field`'s precedent — its
-      snippets are `defineSlotRecipe` / `createSystem` / `ChakraProvider`, the runtime style system
-      this port structurally does not have — and `Explorer` is www machinery. `card-basic` and
-      `card-with-variants` keep their sections with a `Circle` where the avatar was
+      Docs: **5 of upstream's 7 example slots**. *With Image* and *Horizontal* wait on the `image`
+      row; `Customization` is dropped on `field`'s precedent — its snippets are `defineSlotRecipe` /
+      `createSystem` / `ChakraProvider`, the runtime style system this port structurally does not
+      have — and `Explorer` is www machinery. *With Avatar* landed with the `avatar` row, and
+      `card-basic` and `card-with-variants` took their avatars back with it
 - [x] data-list — S:dataList · —/4
       Repeated part (items) — a non-event, as `list` measured: one `withContext`-minted
       `DataList.Item` rendered per fact, styled from the one class map the Root resolved. Four
@@ -833,9 +869,12 @@ The seam's own suite gained the test that would have caught it.
       label, so the button has no discernible text — **and the React version's does not either**,
       from the identical default. Both wrong the same way, so it ships; the test pins exactly that
       one violation and a second pins that `aria-label` clears it.
-      Docs: **9 of upstream's 11 example slots**. `Avatar` waits on the `avatar` row — and it is the
-      one substitution that would not work, since `.tag__startElement:has([data-scope=avatar])` is a
-      real selector — and `Explorer` is www machinery. `tag-with-colors` is the `code-with-colors`
+      Docs: **10 of upstream's 11 example slots**; only `Explorer` is missing, and it is www
+      machinery. *Avatar* landed with the `avatar` row, which measured the selector this note only
+      guessed at: `.tag__startElement:has([data-scope=avatar])` really does size the start element,
+      observably at `lg` and `xl` (18px and 24px, against the 16px and 18px they take without one)
+      and through a 1.5× `margin-inline-start` at all four sizes.
+      `tag-with-colors` is the `code-with-colors`
       case; `tag-as-button` is `asChild` → `render`, with the cast
       `concepts/composition.mdx` §*Best Practices* explains. The close triggers in the examples stay
       **unlabelled**, 1:1 with upstream, on `badge`'s precedent that the docs examples suite carries
@@ -860,12 +899,13 @@ The seam's own suite gained the test that would have caught it.
       straight through the circles on *Alternating Content*. Fixed in
       `panda-preset/src/current-bg-utilities.ts`, not in this component — the port rule's first
       case. Now `rgb(17, 17, 17)` against the docs card it sits on.
-      Docs: **all 6 of upstream's example slots**, `Explorer` dropped as www machinery. Three
-      adaptations: `timeline-with-sizes`, `timeline-with-variants` and `timeline-composition` put a
-      `Circle` with an initial where upstream puts an `Avatar` — the `float-with-avatar` precedent,
-      since `avatar` has not shipped — `timeline-composition` writes its own filler text where
-      upstream imports `react-lorem-ipsum`, and the glyphs come from the docs' own lucide set
-      (`ShipIcon`, `PackageIcon`, `PenIcon` added for it) where upstream imports `react-icons/lu`
+      Docs: **all 6 of upstream's example slots**, `Explorer` dropped as www machinery. Two
+      adaptations: `timeline-composition` writes its own filler text where upstream imports
+      `react-lorem-ipsum`, and the glyphs come from the docs' own lucide set (`ShipIcon`,
+      `PackageIcon`, `PenIcon` added for it) where upstream imports `react-icons/lu`. **The three
+      `Circle` stand-ins this note listed are gone** — four avatars in `timeline-composition` and one
+      apiece in `timeline-with-sizes` and `timeline-with-variants` are the real component since the
+      `avatar` row shipped
 
 ## Atomic-recipe components (21)
 
@@ -1227,7 +1267,11 @@ The seam's own suite gained the test that would have caught it.
 - [x] flex — ○
       hope-ui's 85-line port; reuse `flex.raw` (`prior-art.md` §2.4)
 - [x] float — ●
-      Placement is finite; `offset` is not (§3.1)
+      Placement is finite; `offset` is not (§3.1).
+      Docs: **all 6 of upstream's example slots**. **`float-with-avatar` is no longer a stand-in, and
+      the precedent two other rows cited to it is retired** — it carries the `Avatar` upstream puts
+      there since the `avatar` row shipped, and the paragraph on `float.mdx` that explained the
+      `Circle` went with it
 - [x] grid — ●
       Ships `Grid` **and** `GridItem`; `grid-item.tsx` computes `span ${n}/span ${n}` (§3.1)
 - [x] group
@@ -1237,9 +1281,17 @@ The seam's own suite gained the test that would have caught it.
       byte. Two divergences, both recorded here. **(1)** `skip` is gone: an out-of-flow child marks
       itself with `data-group-skip`, and **`InputElement` is the first thing that does** — the whole
       input-group family shipped on this row's rebuild with **no change to `Group` at all**, where
-      upstream's `InputGroup` still passes `skip={(el) => el.type === InputElement}`. Nothing emits
-      `data-group-item` — the preset's avatar ring is its only consumer and takes the props
-      context when Avatar ports. **(2)** `stacking` counts to **8**, with one shared catch-all layer
+      upstream's `InputGroup` still passes `skip={(el) => el.type === InputElement}`.
+      **`data-group-item` now has an emitter, and this note named the wrong route for it.** Not the
+      props context: `Group` publishes a bare marker context (`group/group-item-context.ts`) and
+      `Avatar.Root` writes the attribute as a merge source *after* the consumer's props, so a plain
+      `<Group>` of avatars is ringed exactly as upstream's is. The props context is what
+      `AvatarGroup` uses to hand its variants down, which is a different job on a different object.
+      What does not port is the **count** — React's `Group` returns its children untouched when only
+      one is in the row, so a lone avatar gets no attribute and no ring — and ours suppresses the
+      declaration instead, zeroing the border width in `Group`'s own base for a `[data-group-item]`
+      child that is at once first and last. Two residues, both accepted and both in
+      [decisions.md](decisions.md). **(2)** `stacking` counts to **8**, with one shared catch-all layer
       above the ladder for anything past it; a stylesheet cannot count and `sibling-index()` is
       Chromium-only. Overlapping avatars, upstream's only consumer, stop being legible well before
       eight. Also measured here: **Panda evaluates a template-literal selector key built from a

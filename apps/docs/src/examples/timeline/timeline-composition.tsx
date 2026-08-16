@@ -1,12 +1,6 @@
-import { Button, Card, Circle, Icon, Input, Span, Timeline } from "chakra-ui-solid";
+import { Avatar, Button, Card, Icon, Input, Span, Timeline } from "chakra-ui-solid";
 import { PenIcon, XIcon } from "../../components/ui/icons";
 
-/**
- * The React version puts an `Avatar` in four places here. `avatar` has not shipped yet, so a
- * `Circle` with an initial stands in — what the example is about is a timeline composed with the
- * rest of the library. Each one is written out with literal style props, because a size passed
- * through a variable is a value Panda's extractor never sees.
- */
 export default function TimelineComposition() {
   return (
     <Timeline.Root size="lg" variant="subtle" maxW="md">
@@ -19,9 +13,10 @@ export default function TimelineComposition() {
         </Timeline.Connector>
         <Timeline.Content>
           <Timeline.Title>
-            <Circle size="4" bg="bg.emphasized" color="fg" textStyle="2xs">
-              L
-            </Circle>
+            <Avatar.Root size="2xs">
+              <Avatar.Image src="https://i.pravatar.cc/150?u=a" />
+              <Avatar.Fallback />
+            </Avatar.Root>
             Lucas Moras <Span color="fg.muted">has changed</Span>
             <Span fontWeight="medium">3 labels</Span> on
             <Span color="fg.muted">Jan 1, 2024</Span>
@@ -38,9 +33,10 @@ export default function TimelineComposition() {
         </Timeline.Connector>
         <Timeline.Content>
           <Timeline.Title>
-            <Circle size="4" bg="bg.emphasized" color="fg" textStyle="2xs">
-              J
-            </Circle>
+            <Avatar.Root size="2xs">
+              <Avatar.Image src="https://i.pravatar.cc/150?u=x" />
+              <Avatar.Fallback />
+            </Avatar.Root>
             Jenna Smith <Span color="fg.muted">removed</Span>
             <Span fontWeight="medium">Enas</Span>
             <Span color="fg.muted">on Jan 12, 2024</Span>
@@ -57,9 +53,10 @@ export default function TimelineComposition() {
         </Timeline.Connector>
         <Timeline.Content gap="4">
           <Timeline.Title>
-            <Circle size="4" bg="bg.emphasized" color="fg" textStyle="2xs">
-              E
-            </Circle>
+            <Avatar.Root size="2xs">
+              <Avatar.Image src="https://i.pravatar.cc/150?u=y" />
+              <Avatar.Fallback />
+            </Avatar.Root>
             Erica <Span color="fg.muted">commented</Span>
             <Span color="fg.muted">on Jan 12, 2024</Span>
           </Timeline.Title>
@@ -81,9 +78,10 @@ export default function TimelineComposition() {
         <Timeline.Connector>
           <Timeline.Separator />
           <Timeline.Indicator>
-            <Circle size="full" bg="bg.emphasized" color="fg" textStyle="2xs">
-              O
-            </Circle>
+            <Avatar.Root size="full">
+              <Avatar.Image src="https://i.pravatar.cc/150?u=o" />
+              <Avatar.Fallback />
+            </Avatar.Root>
           </Timeline.Indicator>
         </Timeline.Connector>
         <Timeline.Content gap="4" mt="-1" w="full">
