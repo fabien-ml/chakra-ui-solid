@@ -83,6 +83,36 @@ describe("Input", () => {
     expect(getComputedStyle(mounted.element).getPropertyValue("--focus-color")).toBe("lime");
   });
 
+  // `aria-invalid` rather than a `<Field.Root invalid>` around it: the recipe reads
+  // `:is(:invalid, [data-invalid], [aria-invalid=true])`, and the attribute is what Field sets.
+  //
+  // What these pin is a **cascade** outcome, not a declaration. Panda nests a recipe's base styles
+  // as `@layer recipes { @layer _base { … } …variants… }`, and unlayered rules in a layer beat that
+  // layer's sub-layers whatever their specificity — so the flat `variant` border colour used to
+  // defeat the far more specific invalid rule in `base`, and an invalid field rendered in its
+  // resting colour. The preset copies each conditional base block into the variant values, which
+  // puts a `--variant_outline:is(:invalid, …)` rule beside `--variant_outline` in one layer and
+  // hands the decision back to specificity — what the React runtime's merge into one class does for
+  // free.
+  describe.each(["outline", "subtle", "flushed"] as const)("when invalid and %s", (variant) => {
+    it("borders in the error colour rather than the variant's", () => {
+      mounted = mountElement<HTMLInputElement>(() => (
+        <Input variant={variant} aria-invalid="true" />
+      ));
+
+      // `border.error` is `red.500` in the light palette these tests render against.
+      expect(getComputedStyle(mounted.element).borderColor).toBe("rgb(239, 68, 68)");
+    });
+
+    it("takes the `--error-color` seam", () => {
+      mounted = mountElement<HTMLInputElement>(() => (
+        <Input variant={variant} aria-invalid="true" css={{ "--error-color": "green" }} />
+      ));
+
+      expect(getComputedStyle(mounted.element).borderColor).toBe("rgb(0, 128, 0)");
+    });
+  });
+
   it("keeps the recipe's variant props off the element", () => {
     mounted = mountElement<HTMLInputElement>(() => <Input size="lg" variant="subtle" />);
 

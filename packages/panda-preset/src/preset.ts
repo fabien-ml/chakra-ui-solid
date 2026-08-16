@@ -166,6 +166,197 @@ function jsxHintsForEvery(keys: string[]): Record<string, { jsx: string[] }> {
 }
 
 /**
+ * What `theme.extend` carries for one recipe: the `jsx` hint, the corrected variant values, and —
+ * for `container` alone — the body nothing upstream declares.
+ *
+ * Loose where Panda's `RecipeConfig` is exact, because every style value in it was **read back off
+ * the inherited theme** rather than written here. Panda has already accepted those values on the
+ * way in; re-describing them in its own `SystemStyleObject` union would only be this file claiming
+ * to know a shape it copied. The two `theme.extend` keys cast once, at the boundary.
+ */
+type ThemeExtend = NonNullable<NonNullable<ReturnType<typeof definePreset>["theme"]>["extend"]>;
+
+/** Any style object: style properties, nested conditions, and whatever Panda accepts as a value. */
+type StyleObject = Record<string, unknown>;
+
+/** `{ variant: { outline: … } }` — the variant values one recipe's correction reaches. */
+type VariantStyles = Record<string, Record<string, StyleObject>>;
+
+/** An inherited recipe body, narrowed to the two keys this file reads back off the theme. */
+type InheritedBody<Base> = { base: Base; variants: VariantStyles };
+
+/**
+ * The seven inherited bodies the corrections below are read out of — named one by one, because the
+ * whole point is that this file copies a known set of blocks rather than deriving a set.
+ */
+const inherited = chakraPreset.theme as unknown as {
+  recipes: Record<"input" | "textarea" | "checkmark" | "radiomark", InheritedBody<StyleObject>>;
+  slotRecipes: {
+    nativeSelect: InheritedBody<{ field: StyleObject }>;
+    table: InheritedBody<{ row: StyleObject }>;
+    avatar: InheritedBody<{ root: StyleObject }>;
+  };
+};
+
+/** The named conditional blocks out of an inherited `base`, copied rather than transcribed. */
+function conditionsOf(base: StyleObject, ...conditions: string[]): StyleObject {
+  return Object.fromEntries(conditions.map((condition) => [condition, base[condition]]));
+}
+
+/**
+ * A recipe's corrections, padded out to every variant key it declares, in the order it declares
+ * them.
+ *
+ * The merge **moves an overridden key to the end** — it copies the keys the correction does not
+ * mention, then the ones it does — and two things read that order: the generated recipe's
+ * `variantKeys` tuple, which is public API, and the order Panda emits the rules in. A correction
+ * naming `variant` alone would push `radiomark`'s `variant` past `filled`, handing a filled
+ * radiomark's background to `variant.subtle`. A key with no correction is listed as `{}`, which
+ * merges to exactly the body it already had.
+ */
+function inRecipeOrder(recipe: InheritedBody<unknown>, corrections: VariantStyles): VariantStyles {
+  return Object.fromEntries(
+    Object.keys(recipe.variants).map((key) => [key, corrections[key] ?? {}]),
+  );
+}
+
+const inputRecipe = inherited.recipes.input;
+const textareaRecipe = inherited.recipes.textarea;
+const checkmarkRecipe = inherited.recipes.checkmark;
+const radiomarkRecipe = inherited.recipes.radiomark;
+const nativeSelectRecipe = inherited.slotRecipes.nativeSelect;
+const tableRecipe = inherited.slotRecipes.table;
+const avatarRecipe = inherited.slotRecipes.avatar;
+
+/**
+ * The base conditions Panda's layering lets a variant defeat, written back into the variant values
+ * that defeat them.
+ *
+ * Panda emits a recipe as `@layer recipes { @layer _base { …base… } …variant rules… }`, and
+ * **unlayered rules inside a layer beat that layer's nested sub-layers whatever their
+ * specificity** — so a flat declaration in `variants` defeats the same property under a *condition*
+ * in `base`. `input`'s `base._invalid.borderColor` loses to `variants.variant.outline.borderColor`,
+ * and an invalid Input renders in its resting colour where chakra-ui.com renders it red. Chakra's
+ * React runtime never has the problem: it merges base and the chosen variant into one class, where
+ * the condition is a nested block and specificity decides.
+ *
+ * Spelling the condition inside the variant value lands exactly that merge — Panda emits
+ * `.input--variant_outline:is(:invalid, …)` (0,2,0) beside `.input--variant_outline` (0,1,0) in the
+ * *same* layer, and specificity decides again. It is a defect in `@chakra-ui/panda-preset` rather
+ * than Chakra behavior, and these rows correct it only for the recipes we ship.
+ *
+ * Three things keep the list honest, and each entry below can be read as one line because of them:
+ *
+ * - **Every declaration is read off the inherited body**, never transcribed, so a preset upgrade
+ *   that changes a value arrives as a diff in the generated sheet rather than as drift here.
+ * - **Only the variant values that actually shadow the condition carry it.** Panda emits variant
+ *   rules in declaration order and these all land at equal specificity, so a correction written
+ *   into a *later* variant key beats an earlier key's deliberate value.
+ * - **A newly ported component may need a row.** The 13 recipes nothing has ported yet —
+ *   `checkbox`, `checkboxCard`, `colorPicker`, `combobox`, `datePicker`, `numberInput`, `pinInput`,
+ *   `progress`, `radioCard`, `radioGroup`, `select`, `slider`, `tagsInput` — are known to carry the
+ *   same defect, and get their rows when they ship.
+ */
+const shadowedBaseConditions: Record<string, VariantStyles> = {
+  // Each variant picks its own resting `borderColor`; `flushed` spells the longhand
+  // `borderBottomColor`, which collides just the same. The sizes set no colour and need nothing.
+  input: inRecipeOrder(inputRecipe, {
+    variant: {
+      outline: conditionsOf(inputRecipe.base, "_invalid"),
+      subtle: conditionsOf(inputRecipe.base, "_invalid"),
+      flushed: conditionsOf(inputRecipe.base, "_invalid"),
+    },
+  }),
+
+  textarea: inRecipeOrder(textareaRecipe, {
+    variant: {
+      outline: conditionsOf(textareaRecipe.base, "_invalid"),
+      subtle: conditionsOf(textareaRecipe.base, "_invalid"),
+      flushed: conditionsOf(textareaRecipe.base, "_invalid"),
+    },
+  }),
+
+  // `variant.plain` declares nothing outside its own `_checked` block, so it shadows nothing. The
+  // sizes reach `_icon` rather than `_invalid`: what they set is `boxSize`.
+  checkmark: inRecipeOrder(checkmarkRecipe, {
+    variant: {
+      solid: conditionsOf(checkmarkRecipe.base, "_invalid"),
+      outline: conditionsOf(checkmarkRecipe.base, "_invalid"),
+      subtle: conditionsOf(checkmarkRecipe.base, "_invalid"),
+      inverted: conditionsOf(checkmarkRecipe.base, "_invalid"),
+    },
+    size: {
+      xs: conditionsOf(checkmarkRecipe.base, "_icon"),
+      sm: conditionsOf(checkmarkRecipe.base, "_icon"),
+      md: conditionsOf(checkmarkRecipe.base, "_icon"),
+      lg: conditionsOf(checkmarkRecipe.base, "_icon"),
+    },
+  }),
+
+  // The one recipe where the ordering rule bites: `variant.outline` respells `& .dot` to scale it
+  // to 0.6, and `size` and `filled` are declared after `variant` — so a copy of the base dot under
+  // either would be emitted later at equal specificity and take the 0.4 back. Neither shadows it
+  // anyway (a `background` on the root cannot defeat one on a descendant), so neither gets it.
+  radiomark: inRecipeOrder(radiomarkRecipe, {
+    variant: {
+      solid: conditionsOf(radiomarkRecipe.base, "_invalid"),
+      subtle: conditionsOf(radiomarkRecipe.base, "_invalid", "& .dot"),
+      outline: conditionsOf(radiomarkRecipe.base, "_invalid"),
+      inverted: conditionsOf(radiomarkRecipe.base, "_invalid", "& .dot"),
+    },
+  }),
+};
+
+/**
+ * The same correction, slot by slot: a variant value shadows only the slot whose declarations it
+ * writes, so the block travels into that slot and no other.
+ */
+const shadowedSlotBaseConditions: Record<string, VariantStyles> = {
+  nativeSelect: inRecipeOrder(nativeSelectRecipe, {
+    variant: {
+      outline: {
+        field: conditionsOf(nativeSelectRecipe.base.field, "_invalid", "& > option, & > optgroup"),
+      },
+      subtle: {
+        field: conditionsOf(nativeSelectRecipe.base.field, "_invalid", "& > option, & > optgroup"),
+      },
+      plain: { field: conditionsOf(nativeSelectRecipe.base.field, "& > option, & > optgroup") },
+      ghost: { field: conditionsOf(nativeSelectRecipe.base.field, "& > option, & > optgroup") },
+    },
+  }),
+
+  // `variant.line` is the only one that gives `row` a resting `bg`; `outline` styles it through a
+  // `:not(:last-of-type)` border and shadows nothing.
+  table: inRecipeOrder(tableRecipe, {
+    variant: { line: { row: conditionsOf(tableRecipe.base.row, "_selected") } },
+  }),
+
+  // The grouped ring: `base.root` gives a `[data-group-item]` avatar a 2px border, and only
+  // `variant.outline` sets a resting `borderWidth` to defeat it. `borderless` respells the same
+  // condition for itself and is declared after `variant`, so its `0px` still wins.
+  avatar: inRecipeOrder(avatarRecipe, {
+    variant: { outline: { root: conditionsOf(avatarRecipe.base.root, "&[data-group-item]") } },
+  }),
+};
+
+/**
+ * The corrections merged onto the hints. Both ride `theme.extend`'s deep merge, the same path a
+ * consumer uses to override a recipe, so a corrected variant value gains a key and the rest of the
+ * inherited body is neither touched nor re-emitted (`CLAUDE.md`, *Reference use*).
+ */
+function withBaseConditions(
+  hints: Record<string, { jsx: string[] }>,
+  corrections: Record<string, VariantStyles>,
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(hints).map(([key, hint]) => {
+      const correction = corrections[key];
+      return [key, correction === undefined ? hint : { ...hint, variants: correction }];
+    }),
+  );
+}
+
+/**
  * The Panda preset every consumer of `chakra-ui-solid` lists — Chakra v3's design system, plus the
  * four deltas this library needs on top of it.
  *
@@ -185,8 +376,14 @@ export const chakraSolidPreset = definePreset({
 
   theme: {
     extend: {
-      recipes: jsxHintsForEvery(recipeKeys),
-      slotRecipes: jsxHintsForEvery(slotRecipeKeys),
+      recipes: withBaseConditions(
+        jsxHintsForEvery(recipeKeys),
+        shadowedBaseConditions,
+      ) as ThemeExtend["recipes"],
+      slotRecipes: withBaseConditions(
+        jsxHintsForEvery(slotRecipeKeys),
+        shadowedSlotBaseConditions,
+      ) as ThemeExtend["slotRecipes"],
 
       tokens: {
         cursor: {
