@@ -1,9 +1,8 @@
 import { Dynamic } from "@solidjs/web";
-import { Box, Tabs } from "chakra-ui-solid";
+import { Box, Container, Tabs } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { Eyebrow, HighlightHeading, Subheading } from "~/components/home/typography";
 import { embeddedCodePaneClass } from "~/components/mdx/code-pane";
-import { Container } from "~/components/ui/container";
 import { BoxIcon, PaintBucketIcon, TypeIcon } from "~/components/ui/icons";
 
 // Highlighted at build time by the `?highlight` plugin, the same way an example's source pane is —

@@ -1,6 +1,5 @@
 import type { JSX } from "@solidjs/web";
-import { Box } from "chakra-ui-solid";
-import { Container } from "~/components/ui/container";
+import { Box, Container } from "chakra-ui-solid";
 import { DISCLAIMER } from "~/config";
 
 /**

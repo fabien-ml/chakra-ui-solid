@@ -1,9 +1,8 @@
 import type { JSX } from "@solidjs/web";
-import { Box } from "chakra-ui-solid";
+import { Box, Container } from "chakra-ui-solid";
 import { For, Show } from "solid-js";
 import { Blob } from "~/components/home/blob";
 import { HighlightHeading, Subheading } from "~/components/home/typography";
-import { Container } from "~/components/ui/container";
 import { DocLink } from "~/components/ui/doc-link";
 import { BlitzIcon } from "~/components/ui/logo";
 

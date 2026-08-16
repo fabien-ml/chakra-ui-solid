@@ -1,6 +1,6 @@
 import { Dynamic } from "@solidjs/web";
 import { createFileRoute } from "@tanstack/solid-router";
-import { Box } from "chakra-ui-solid";
+import { Box, Container } from "chakra-ui-solid";
 import { Show } from "solid-js";
 import { NotFound } from "~/components/layout/not-found";
 import { PageHeader } from "~/components/layout/page-header";
@@ -8,7 +8,6 @@ import { MdxPagination } from "~/components/layout/pagination";
 import { DocsSidebar } from "~/components/layout/sidebar";
 import { Toc } from "~/components/layout/toc";
 import { proseClass } from "~/components/mdx/prose";
-import { Container } from "~/components/ui/container";
 import { pageForSlug } from "~/lib/site-map";
 
 /**

@@ -4,8 +4,8 @@ import { css } from "../../../styled-system/css";
  * The page frame's two custom properties, on the `<body>` class.
  *
  * **The one place on this site that is still `css()` beside a raw element, and it has to be**: the
- * element is `<body>`, which the root layout renders itself. Everything a component owns is `Box`
- * and style props — see `~/components/ui/container`, which is what the old `containerClass` became.
+ * element is `<body>`, which the root layout renders itself. Everything a component owns is a
+ * component and style props — the old `containerClass` is `Container` from the library itself.
  *
  * chakra-ui.com's shell is a sticky header of a known height with two sticky columns beside the
  * article, and every one of those three pieces measures itself against the header. Their theme

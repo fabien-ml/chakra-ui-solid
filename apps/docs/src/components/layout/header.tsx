@@ -1,9 +1,8 @@
 import { Link, useLocation } from "@tanstack/solid-router";
-import { Box, IconButton } from "chakra-ui-solid";
+import { Box, Container, IconButton } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { ColorModeToggle } from "~/components/layout/color-mode-toggle";
 import { MobileNav } from "~/components/layout/mobile-nav";
-import { Container } from "~/components/ui/container";
 import { DocLink } from "~/components/ui/doc-link";
 import { LogoIcon } from "~/components/ui/logo";
 import { GithubIcon } from "~/components/ui/project-marks";
