@@ -349,11 +349,26 @@ its own** (**D-155**): the top bar is four items, and a fifth content directory 
 - **`/docs/theming/chakra-config`** — §2.1. It sits in Theming's *Concepts* group rather than in a
   `reference/` tier of its own: the top bar is four items, and a fifth content directory is a
   `check:docs-inventory` failure rather than a layout choice (**D-155**).
-- **Component pages Chakra does not document at all.** Chakra's docs cover a subset of its own
-  components: `circle`, `square`, `span`, `strong`, `sticky`, `spacer`, `quote`, `loader`,
-  `input-group`, `input-addon`, `input-element`, `focus-trap`, `format`, `toggle` and others have a
-  source folder and no page. Ours ship with pages, because `roadmap.md` §4 is our inventory and a
-  shipped component without a page is a component nobody can find.
+- **No component pages, and this bullet used to say the opposite.** Until 2026-08-16 it read that
+  Chakra documents a subset of its own components and *ours ship with pages anyway, because a shipped
+  component without a page is a component nobody can find*. **That is retired.** The rule is that a
+  component is documented **where the React version documents it** — and a component it documents
+  nowhere gets nothing here either.
+  - `circle` and `square` are `###` sections of `center.mdx`, examples and props table both, because
+    that is where upstream puts them. `spacer` is a `###` section of `flex.mdx`, same reason. All
+    three already ship that way; none of them owes a page.
+  - `span`, `strong`, `quote`, `sticky` and `loader` have a source folder and no documentation
+    anywhere in chakra-ui.com — not a page, not a section, not a mention. They get none here.
+  - The `roadmap.md` inventory says a component is **ported**. It has never said a component owes a
+    page, and reading it that way is what produced the retired rule.
+- **`input-group`, `input-addon` and `input-element` had pages here until 2026-08-16, and they were
+  deleted** — with their ten example files — because upstream documents that whole family inside
+  `input.mdx` (`### Element`, `### Addon`), which ours already carries with every one of upstream's
+  examples. Nothing needed merging in; the pages were pure addition. What went with them is real:
+  `startOffset` / `endOffset`, `startAddonProps` / `endAddonProps`, `InputElement`'s `placement` and
+  its `pointerEvents` guidance, and a props table for each of the three. **Every one of those is
+  Chakra's own prop that chakra-ui.com documents on no page either**, so the loss is parity, not a
+  regression — and if it is ever felt, the fix is a section of `input.mdx`, never a page.
 
 ### 2.4 The count trap
 

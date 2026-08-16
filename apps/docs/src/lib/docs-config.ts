@@ -16,8 +16,11 @@
  * (**D-140**).
  *
  * The component groups are Chakra's, applied to **our** folder names, which differ in a dozen
- * places (`radio-group` for their `radio`, `segment-group` for their `segmented-control`) and add
- * pages they do not document at all (`docs-site.md` §2.3).
+ * places (`radio-group` for their `radio`, `segment-group` for their `segmented-control`).
+ * **An entry here needs a counterpart entry in chakra-ui.com's own nav** — a component the React
+ * version documents inside another page is documented there too, and one it documents nowhere gets
+ * no entry (`docs-site.md` §2.3). The three `input-*` rows are the open exception that section
+ * names.
  */
 
 /**
@@ -149,9 +152,6 @@ export const docsNav: NavItem[] = [
           { title: "Fieldset", url: "fieldset" },
           { title: "File Upload", url: "file-upload" },
           { title: "Input", url: "input" },
-          { title: "Input Addon", url: "input-addon" },
-          { title: "Input Element", url: "input-element" },
-          { title: "Input Group", url: "input-group" },
           { title: "Number Input", url: "number-input" },
           { title: "Pin Input", url: "pin-input" },
           { title: "Radio Card", url: "radio-card" },

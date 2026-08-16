@@ -64,6 +64,18 @@ export default defineChakraConfig({
   // is in this app's own scanned source. What the line actually adds here is the other three
   // placements at every named breakpoint — 25 positioner rules where extraction alone leaves 6, and
   // 12kB of sheet — which is the surface a consumer needs and this app never renders.
-  responsive: { dialog: ["size"], drawer: ["placement"], separator: ["orientation"] },
+  //
+  // `button` is the fourth, and it measured the way `dialog` and `drawer` did:
+  // `button-with-responsive-size` writes `size={{ base: "md", md: "lg" }}`, and deleting the line
+  // still leaves `md:button--size_lg` in the sheet, because the object literal is in this app's own
+  // scanned source. What the line adds is every size at every named breakpoint — 35 responsive
+  // `button--size_*` rules where extraction alone leaves the one, and 13kB of sheet — which is the
+  // surface a consumer needs and this app never renders.
+  responsive: {
+    button: ["size"],
+    dialog: ["size"],
+    drawer: ["placement"],
+    separator: ["orientation"],
+  },
   outdir: "styled-system",
 });

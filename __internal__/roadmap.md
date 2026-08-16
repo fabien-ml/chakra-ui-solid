@@ -1069,8 +1069,11 @@ The seam's own suite gained the test that would have caught it.
       reads it and nothing writes to it. Shipping the provider because the seam happens to make one
       would be an API a consumer can see that Chakra v3 lacks — `kbd`'s recorded divergence, not
       repeated here
-      Docs: its own page, on `docs-site.md`'s rule — upstream documents it only as prose inside
-      `input.mdx`
+      Docs: **no page, on 2026-08-16.** It had one, on a rule `docs-site.md` §2.3 has since retired;
+      upstream documents this family only inside `input.mdx` (`### Element`, `### Addon`), which
+      ours already carries with every one of upstream's examples, so the page and its examples were
+      deleted rather than merged. `startAddonProps` and the addon's own `size` go undocumented, as
+      they are upstream
 - [x] kbd — A:kbd · —/1
       `withContext("kbd")`, four variants and three sizes, `raised`/`md` defaults. The base's
       `wordSpacing: -0.5em` is the load-bearing rule: one element carries a whole chord, so
@@ -1261,7 +1264,8 @@ The seam's own suite gained the test that would have caught it.
       *sibling* of the control, not a descendant, so the property the control's own size variant
       declares does not reach it. That is the whole reason the padding lands on the control instead.
       An inline base with no recipe key owes no attribution, on `absolute-center`'s precedent
-      Docs: its own page, on `docs-site.md`'s rule
+      Docs: **no page, on 2026-08-16** — see the `input-addon` row. `placement` and the
+      `pointerEvents` guidance go undocumented, as they are upstream
 - [x] input-group — ●
       `calc(var(--input-height) - ${offset})` (§3.1) — **`--input-height` is real and already
       generated**: the `input` recipe publishes it per size, one value per the 7 sizes.
@@ -1294,7 +1298,8 @@ The seam's own suite gained the test that would have caught it.
       Measured against chakra-ui.com in a browser: every shared example's computed padding matches
       exactly. `Start Text` reads 61.7px against 62.7px, which is the example's own `ps="7ch"`
       resolving against each site's font rather than a port difference
-      Docs: its own page, on `docs-site.md`'s rule
+      Docs: **no page, on 2026-08-16** — see the `input-addon` row. `startOffset` / `endOffset` and
+      the `*AddonProps` pass-throughs go undocumented, as they are upstream
 - [x] loader
       Composition of `Spinner` + `AbsoluteCenter`
 - [x] quote

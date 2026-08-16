@@ -1,0 +1,127 @@
+---
+title: Button
+description: Used to trigger an action or event
+links:
+  source: packages/chakra-ui-solid/src/components/button
+  chakra: https://chakra-ui.com/docs/components/button
+---
+
+<Example name="button-basic" />
+
+## Usage
+
+```tsx
+import { Button, ButtonGroup } from "chakra-ui-solid";
+```
+
+```tsx
+<Button>Click me</Button>
+```
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the button.
+
+<Example name="button-with-sizes" />
+
+### Variants
+
+Use the `variant` prop to change the visual style of the Button.
+
+<Example name="button-with-variants" />
+
+### Icon
+
+Use icons within a button
+
+<Example name="button-with-icons" />
+
+### Color
+
+Use the `colorPalette` prop to change the color of the button
+
+<Example name="button-with-colors" />
+
+### Disabled
+
+Use the `disabled` prop to disable the button.
+
+<Example name="button-with-disabled" />
+
+### Disabled Link
+
+When using the `disabled` prop with a link, you need to prevent the default behavior of the link and
+add the `data-disabled` attribute.
+
+<Example name="button-with-disabled-link" />
+
+### Loading
+
+Pass the `loading` and `loadingText` props to the `Button` component to show a loading spinner and
+add a loading text.
+
+<Example name="button-with-loading" />
+
+Here's an example of how to toggle the loading state of a button while keeping the width of the
+button the same.
+
+<Example name="button-with-loading-toggle" />
+
+### Spinner Placement
+
+Use the `spinnerPlacement` prop to change the placement of the spinner.
+
+<Example name="button-with-spinner-placement" />
+
+### Custom Spinner
+
+Use the `spinner` prop to change the spinner.
+
+<Example name="button-with-custom-spinner" />
+
+### Group
+
+Use the `ButtonGroup` component to group buttons together. This component allows you pass common
+recipe properties to inner buttons.
+
+<Example name="button-with-group" />
+
+To flush the buttons, pass the `attached` prop.
+
+<Example name="button-with-group-flushed" />
+
+### Responsive Size
+
+Use the object syntax on the `size` prop to make the button size responsive.
+
+<Example name="button-with-responsive-size" />
+
+### Radius
+
+Use the `rounded` prop to change the radius of the button.
+
+<Example name="button-with-radius" />
+
+### As Link
+
+Use the `render` prop to render a button as a link.
+
+<Example name="button-as-link" />
+
+### Ref
+
+Here's how to access the underlying element reference. Solid has no `forwardRef`, so there is
+nothing to wrap: a `ref` is a prop like any other and reaches the element on the spread.
+
+```tsx
+const Demo = () => {
+  let ref: HTMLButtonElement | undefined;
+  return <Button ref={ref}>Click me</Button>;
+};
+```
+
+## Props
+
+<PropsTable component="button" interface="ButtonProps" />

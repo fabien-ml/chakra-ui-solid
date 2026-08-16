@@ -119,6 +119,19 @@ You can nest dialogs by using the `Dialog.Root` component inside another `Dialog
 
 <Example name="dialog-nested" />
 
+### Open From Popover
+
+Dialogs can be triggered from within a popover. The dialog will appear above the popover thanks to
+the unified z-index system.
+
+<Example name="dialog-open-from-popover" />
+
+### Initial Focus
+
+Use the `initialFocusEl` prop to set the initial focus of the dialog component.
+
+<Example name="dialog-with-initial-focus" />
+
 ### Inside Scroll
 
 Use the `scrollBehavior=inside` prop to change the scroll behavior of the dialog when its content
@@ -162,6 +175,12 @@ you need it, here's what you can do:
 - (optional)set the `closeOnInteractOutside` prop to `false`
 
 <Example name="dialog-non-modal" />
+
+### DataList
+
+Here's an example of how to compose the dialog component with the `DataList` component.
+
+<Example name="dialog-with-datalist" />
 
 ## Props
 
