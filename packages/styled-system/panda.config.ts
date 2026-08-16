@@ -1,4 +1,4 @@
-import { chakraSolidPreset } from "@chakra-ui-solid/panda-preset";
+import { chakraSolidPreset, dropContainerPatternPlugin } from "@chakra-ui-solid/panda-preset";
 import { defineConfig } from "@pandacss/dev";
 
 /**
@@ -7,8 +7,8 @@ import { defineConfig } from "@pandacss/dev";
  *
  * It is not the consumer's config and does not try to be: a consumer calls `defineChakraConfig()`
  * from `@chakra-ui-solid/panda-preset`, which sets the knobs that decide what Panda extracts and
- * takes `include` and `outdir` from them. Two knobs differ deliberately, and both are commented
- * below.
+ * takes `include` and `outdir` from them. Three knobs differ deliberately, and all three are
+ * commented below.
  */
 export default defineConfig({
   // Drops `@pandacss/preset-panda` — Panda's default *theme*. Without it Panda's token palette
@@ -19,6 +19,10 @@ export default defineConfig({
   // One entry. The chain underneath it — base preset, then Chakra's — is the preset's business
   // rather than this file's, which is what makes the same one-liner correct in a consumer's config.
   presets: [chakraSolidPreset],
+  // The third knob that differs, and the only one this file has to spell because it is not calling
+  // `defineChakraConfig()`: Panda's base preset and Chakra's theme both claim the name `container`,
+  // and the hook that settles it has to be reachable before the presets are merged.
+  plugins: [dropContainerPatternPlugin],
   // Generates `jsx/is-valid-prop`, whose `isCssProperty` knows *our* utilities and tokens — the
   // standalone `@pandacss/is-valid-prop` package knows only Panda's defaults, so swapping it in
   // would make every custom style prop silently become a DOM attribute. It also switches on

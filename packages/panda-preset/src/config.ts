@@ -222,12 +222,14 @@ export function defineChakraConfig(overrides: ChakraConfigOverrides): Config {
     theme: themeWithRecipeRules(theme, placed.bodies),
     staticCss: chakraStaticCss(placed.unplaceable, { extend, ...bareStaticCss }),
     // The gate reads the consumer's imports and adds the recipes they reach; the system module is
-    // written into `outdir` once the run's artifacts are on disk; `lockedKeysPlugin` stays last, so
-    // it corrects after a consumer's own plugins have had their say.
+    // written into `outdir` once the run's artifacts are on disk; the container pattern is dropped
+    // while the presets are still being merged; `lockedKeysPlugin` stays last, so it corrects after
+    // a consumer's own plugins have had their say.
     plugins: [
       ...(plugins ?? []),
       recipeGatePlugin(components),
       systemModulePlugin(),
+      dropContainerPatternPlugin,
       lockedKeysPlugin,
     ],
   };
@@ -419,6 +421,54 @@ function mergeRecipeRules(
 }
 
 type RecipeRule = Exclude<RecipeRules, "*">[string][number];
+
+/** The preset the `container` pattern comes from, and the only one this plugin touches. */
+const BASE_PRESET = "@pandacss/preset-base";
+
+/**
+ * Panda's base preset ships a `container` **pattern** — a style transform it also exposes as a
+ * `<Container>` JSX component — and `@chakra-ui/panda-preset` ships no `container` recipe, so this
+ * package ports Chakra's own body and registers it (`container-recipe.ts`). Two artifacts then claim
+ * one name, and the consumer pays for it twice: Panda's validator prints `⚠️ Invalid config` on
+ * every codegen they run, about a collision they did not cause and cannot fix, and
+ * `styled-system/jsx` exports a second `Container` that renders the base styles and silently ignores
+ * `fluid` and `centerContent`.
+ *
+ * Dropping the pattern settles both, and the recipe is the half that has to stay: a recipe variant
+ * takes a conditional value (`fluid={{ base: true, lg: false }}`) where a pattern property is a
+ * plain argument to a transform, `createRecipeContext` is what mints `ContainerPropsProvider`, and
+ * `theme.extend.recipes.container` is the seam Chakra documents. Removing a Panda built-in from a
+ * consumer's system is the same trade `eject: true` above already makes for Panda's default theme.
+ *
+ * **`preset:resolved`, not the `config:resolved` every other correction here uses.** Panda validates
+ * the merged config *before* it calls `config:resolved`, so a hook there would run after the warning
+ * had already been printed. This one fires as each preset comes off the stack, which is early
+ * enough — and it is why the plugin is declared here rather than in `chakraSolidPreset`, since Panda
+ * collects these early hooks from the config's own `plugins` before a single preset is merged.
+ *
+ * `defineChakraConfig()` appends it for you. It is exported for the other way in — a `defineConfig`
+ * that lists `presets: [chakraSolidPreset]` by hand, which is what this repo's own
+ * `packages/styled-system/panda.config.ts` does:
+ *
+ * ```ts
+ * plugins: [dropContainerPatternPlugin]
+ * ```
+ */
+export const dropContainerPatternPlugin: Plugin = {
+  name: "chakra-ui-solid:drop-container-pattern",
+  hooks: {
+    "preset:resolved": ({ preset, name }) => {
+      if (name !== BASE_PRESET || preset.patterns?.container === undefined) {
+        return;
+      }
+      // A copy, not `utils.omit` — the util would have to be stubbed to test this hook, and the
+      // test would then be asserting against the stub rather than against what Panda is handed.
+      const patterns = { ...preset.patterns };
+      delete patterns.container;
+      return { ...preset, patterns };
+    },
+  },
+};
 
 /**
  * The tier the types cannot reach: an untyped `panda.config.js`, an `as any`, and — the likeliest of

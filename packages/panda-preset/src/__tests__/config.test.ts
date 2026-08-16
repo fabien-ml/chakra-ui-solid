@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import type { Config } from "@pandacss/dev";
+import { preset as basePreset } from "@pandacss/preset-base";
 import { describe, expect, it, vi } from "vitest";
 import { type ChakraConfigOverrides, defineChakraConfig } from "../config";
 import { chakraSolidPreset } from "../preset";
@@ -277,6 +278,7 @@ describe("defineChakraConfig — the keys it merges rather than replaces", () =>
       "mine",
       "chakra-ui-solid:recipe-gate",
       "chakra-ui-solid:system-module",
+      "chakra-ui-solid:drop-container-pattern",
       "chakra-ui-solid:locked-keys",
     ]);
     expect(plugins[0]).toBe(theirs);
@@ -345,6 +347,55 @@ describe("defineChakraConfig — the plugin that catches what the types cannot",
     expect(warn).not.toHaveBeenCalled();
 
     warn.mockRestore();
+  });
+});
+
+/**
+ * Both halves of the collision are asserted, because either one alone passes while the bug is live:
+ * that Panda's base preset really does define a `container` pattern (drop that and the hook silently
+ * matches nothing), and that our `container` recipe survives it (drop *that* and the warning goes
+ * away for the wrong reason, taking `fluid` and `centerContent` with it).
+ */
+describe("defineChakraConfig — the one name Panda and Chakra both claim", () => {
+  const dropContainerPattern = (preset: Config, name: string) => {
+    const plugin = (defineChakraConfig(MINIMAL).plugins ?? []).find(
+      (candidate) => candidate.name === "chakra-ui-solid:drop-container-pattern",
+    );
+    return plugin?.hooks?.["preset:resolved"]?.({
+      preset: preset as never,
+      name,
+      utils: {} as never,
+    }) as Config | undefined;
+  };
+
+  it("takes `container` off the base preset and leaves its other patterns alone", () => {
+    expect(basePreset.patterns).toHaveProperty("container");
+
+    const resolved = dropContainerPattern(basePreset as Config, "@pandacss/preset-base");
+
+    expect(resolved).toBeDefined();
+    expect(resolved?.patterns).not.toHaveProperty("container");
+    expect(Object.keys(resolved?.patterns ?? {})).toEqual(
+      Object.keys(basePreset.patterns ?? {}).filter((pattern) => pattern !== "container"),
+    );
+  });
+
+  it("leaves the preset it was handed untouched", () => {
+    dropContainerPattern(basePreset as Config, "@pandacss/preset-base");
+    expect(basePreset.patterns).toHaveProperty("container");
+  });
+
+  it("ignores every other preset, including a consumer's own `container` pattern", () => {
+    const theirs = { patterns: { container: { transform: () => ({}) } } } as unknown as Config;
+    expect(dropContainerPattern(theirs, "my-design-system")).toBeUndefined();
+  });
+
+  it("keeps the recipe, which is the half that carries the variants", () => {
+    expect(chakraSolidPreset.theme?.extend?.recipes).toHaveProperty("container");
+    expect(variantKeysFor().find((entry) => entry.recipe === "container")?.keys).toEqual([
+      "centerContent",
+      "fluid",
+    ]);
   });
 });
 
