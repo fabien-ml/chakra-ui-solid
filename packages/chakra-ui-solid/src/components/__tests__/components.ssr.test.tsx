@@ -92,6 +92,7 @@ import {
   createDialog,
   createDrawer,
   createPopover,
+  createRadioCard,
   createRadioGroup,
   createSwitch,
   createTabs,
@@ -207,6 +208,20 @@ import {
   PopoverTrigger,
   Portal,
   Quote,
+  RadioCardContext,
+  RadioCardItem,
+  RadioCardItemAddon,
+  RadioCardItemContent,
+  RadioCardItemContext,
+  RadioCardItemControl,
+  RadioCardItemDescription,
+  RadioCardItemHiddenInput,
+  RadioCardItemIndicator,
+  RadioCardItemText,
+  RadioCardLabel,
+  RadioCardPropsProvider,
+  RadioCardRoot,
+  RadioCardRootProvider,
   RadioGroupContext,
   RadioGroupItem,
   RadioGroupItemContext,
@@ -1449,6 +1464,118 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </Portal>
   ),
   Quote: () => <Quote>quoted</Quote>,
+  RadioCardContext: () => (
+    <RadioCardRoot>
+      <RadioCardContext>{(group) => <span>{String(group.value)}</span>}</RadioCardContext>
+    </RadioCardRoot>
+  ),
+  // Two cards rather than one, everywhere below: a repeated part that works for N=1 proves nothing
+  // about the getter argument, since a single card cannot be handed the wrong one.
+  RadioCardItem: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardItem value="next" />
+      <RadioCardItem value="vite" />
+    </RadioCardRoot>
+  ),
+  RadioCardItemAddon: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardItem value="next">
+        <RadioCardItemAddon>Free</RadioCardItemAddon>
+      </RadioCardItem>
+    </RadioCardRoot>
+  ),
+  RadioCardItemContent: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardItem value="next">
+        <RadioCardItemControl>
+          <RadioCardItemContent>
+            <RadioCardItemText>Next.js</RadioCardItemText>
+          </RadioCardItemContent>
+        </RadioCardItemControl>
+      </RadioCardItem>
+    </RadioCardRoot>
+  ),
+  RadioCardItemContext: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardItem value="next">
+        <RadioCardItemContext>{(item) => <span>{item.value}</span>}</RadioCardItemContext>
+      </RadioCardItem>
+    </RadioCardRoot>
+  ),
+  RadioCardItemControl: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardItem value="next">
+        <RadioCardItemControl />
+      </RadioCardItem>
+    </RadioCardRoot>
+  ),
+  RadioCardItemDescription: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardItem value="next">
+        <RadioCardItemDescription>Best for apps</RadioCardItemDescription>
+      </RadioCardItem>
+    </RadioCardRoot>
+  ),
+  RadioCardItemHiddenInput: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardItem value="next">
+        <RadioCardItemHiddenInput />
+      </RadioCardItem>
+    </RadioCardRoot>
+  ),
+  // Checked, because that is the arm where the Radiomark renders its dot — an unchecked circle is
+  // an empty `span` and would pass the "did any element come back" check with nothing drawn.
+  RadioCardItemIndicator: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardItem value="next">
+        <RadioCardItemIndicator />
+      </RadioCardItem>
+    </RadioCardRoot>
+  ),
+  RadioCardItemText: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardItem value="next">
+        <RadioCardItemText>Next.js</RadioCardItemText>
+      </RadioCardItem>
+    </RadioCardRoot>
+  ),
+  RadioCardLabel: () => (
+    <RadioCardRoot>
+      <RadioCardLabel>Select framework</RadioCardLabel>
+    </RadioCardRoot>
+  ),
+  RadioCardPropsProvider: () => (
+    <RadioCardPropsProvider value={{ size: "lg" }}>
+      <RadioCardRoot>
+        <RadioCardItem value="next">
+          <RadioCardItemIndicator />
+        </RadioCardItem>
+      </RadioCardRoot>
+    </RadioCardPropsProvider>
+  ),
+  RadioCardRoot: () => (
+    <RadioCardRoot defaultValue="next">
+      <RadioCardLabel>Select framework</RadioCardLabel>
+      <RadioCardItem value="next">
+        <RadioCardItemHiddenInput />
+        <RadioCardItemControl>
+          <RadioCardItemContent>
+            <RadioCardItemText>Next.js</RadioCardItemText>
+            <RadioCardItemDescription>Best for apps</RadioCardItemDescription>
+          </RadioCardItemContent>
+          <RadioCardItemIndicator />
+        </RadioCardItemControl>
+      </RadioCardItem>
+    </RadioCardRoot>
+  ),
+  RadioCardRootProvider: () => (
+    <RadioCardRootProvider value={createRadioCard({ defaultValue: "next" })}>
+      <RadioCardItem value="next">
+        <RadioCardItemHiddenInput />
+        <RadioCardItemIndicator />
+      </RadioCardItem>
+    </RadioCardRootProvider>
+  ),
   RadioGroupContext: () => (
     <RadioGroupRoot>
       <RadioGroupContext>{(group) => <span>{String(group.value)}</span>}</RadioGroupContext>

@@ -186,7 +186,7 @@ type VariantStyles = Record<string, Record<string, StyleObject>>;
 type InheritedBody<Base> = { base: Base; variants: VariantStyles };
 
 /**
- * The eight inherited bodies the corrections below are read out of — named one by one, because the
+ * The ten inherited bodies the corrections below are read out of — named one by one, because the
  * whole point is that this file copies a known set of blocks rather than deriving a set.
  */
 const inherited = chakraPreset.theme as unknown as {
@@ -198,6 +198,7 @@ const inherited = chakraPreset.theme as unknown as {
     checkbox: InheritedBody<{ control: StyleObject }>;
     checkboxCard: InheritedBody<{ indicator: StyleObject }>;
     radioGroup: InheritedBody<{ itemControl: StyleObject }>;
+    radioCard: InheritedBody<{ item: StyleObject; itemIndicator: StyleObject }>;
   };
 };
 
@@ -233,6 +234,7 @@ const avatarRecipe = inherited.slotRecipes.avatar;
 const checkboxRecipe = inherited.slotRecipes.checkbox;
 const checkboxCardRecipe = inherited.slotRecipes.checkboxCard;
 const radioGroupRecipe = inherited.slotRecipes.radioGroup;
+const radioCardRecipe = inherited.slotRecipes.radioCard;
 
 /**
  * The base conditions Panda's layering lets a variant defeat, written back into the variant values
@@ -258,10 +260,9 @@ const radioGroupRecipe = inherited.slotRecipes.radioGroup;
  * - **Only the variant values that actually shadow the condition carry it.** Panda emits variant
  *   rules in declaration order and these all land at equal specificity, so a correction written
  *   into a *later* variant key beats an earlier key's deliberate value.
- * - **A newly ported component may need a row.** The 10 recipes nothing has ported yet —
- *   `colorPicker`, `combobox`, `datePicker`, `numberInput`, `pinInput`, `progress`, `radioCard`,
- *   `select`, `slider`, `tagsInput` — are known to carry the same defect, and get their rows when
- *   they ship.
+ * - **A newly ported component may need a row.** The 9 recipes nothing has ported yet —
+ *   `colorPicker`, `combobox`, `datePicker`, `numberInput`, `pinInput`, `progress`, `select`,
+ *   `slider`, `tagsInput` — are known to carry the same defect, and get their rows when they ship.
  */
 const shadowedBaseConditions: Record<string, VariantStyles> = {
   // Each variant picks its own resting `borderColor`; `flushed` spells the longhand
@@ -394,6 +395,38 @@ const shadowedSlotBaseConditions: Record<string, VariantStyles> = {
       outline: { itemControl: conditionsOf(radioGroupRecipe.base.itemControl, "_invalid") },
       subtle: { itemControl: conditionsOf(radioGroupRecipe.base.itemControl, "_invalid") },
       solid: { itemControl: conditionsOf(radioGroupRecipe.base.itemControl, "_invalid") },
+    },
+  }),
+
+  // The `radioGroup` row one slot over — `itemIndicator` is where this recipe puts the `radiomark`
+  // body — plus a second slot no other recipe here needs. All four variants give the circle a
+  // resting `borderColor` and defeat `_invalid`'s `red.500`, and `subtle` alone gives the **card**
+  // a resting `bg`, which defeats `base.item._focus`'s `colorPalette.muted/20` and leaves a focused
+  // subtle card in its resting fill.
+  //
+  // The `_invalid` half is the narrower of the two, and knowing why is worth a line: `_invalid` is
+  // `&:is(:invalid, [data-invalid], …)` — **self only** — and a `RadioCard.ItemIndicator` is not a
+  // machine part, so nothing puts `data-invalid` on that element. A `RadioGroup.ItemIndicator`
+  // renders the machine's own `itemControl` and inherits one, which is why the same block is live
+  // there and reachable here only through an attribute a consumer writes. The correction still
+  // belongs: it is what makes that attribute win over the variant's flat `borderColor` when someone
+  // does.
+  //
+  // **The three sizes carry nothing**, for `radioGroup`'s reason: what they set on the indicator is
+  // `boxSize`, `base.itemIndicator` declares no `_icon`, and the only other block a size could
+  // shadow is `& .dot` — which `variant.subtle` respells to `scale: 0.6`. `size` is declared
+  // *before* `variant` here, so a copy under a size would be emitted first and lose anyway; it
+  // would still be a rule that corrects nothing. `justify`, `align` and `orientation` write custom
+  // properties, `textAlign` and `flexDirection`, and shadow no condition at all.
+  radioCard: inRecipeOrder(radioCardRecipe, {
+    variant: {
+      surface: { itemIndicator: conditionsOf(radioCardRecipe.base.itemIndicator, "_invalid") },
+      subtle: {
+        item: conditionsOf(radioCardRecipe.base.item, "_focus"),
+        itemIndicator: conditionsOf(radioCardRecipe.base.itemIndicator, "_invalid"),
+      },
+      outline: { itemIndicator: conditionsOf(radioCardRecipe.base.itemIndicator, "_invalid") },
+      solid: { itemIndicator: conditionsOf(radioCardRecipe.base.itemIndicator, "_invalid") },
     },
   }),
 };

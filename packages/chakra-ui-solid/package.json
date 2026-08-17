@@ -61,6 +61,7 @@
       "native-select": "src/components/native-select/index.ts",
       "popover": "src/components/popover/index.ts",
       "quote": "src/components/quote/index.ts",
+      "radio-card": "src/components/radio-card/index.ts",
       "radio-group": "src/components/radio-group/index.ts",
       "radiomark": "src/components/radiomark/index.ts",
       "separator": "src/components/separator/index.ts",

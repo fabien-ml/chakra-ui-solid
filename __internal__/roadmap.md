@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 71 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 72 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -476,7 +476,9 @@ asks, correct **both** in the same commit.
       Second public component on one machine
 - [ ] qr-code — S:qrCode · 5/5
 - [x] radio-group — S:radioGroup · 6/8
-      `+itemAddon`, `+itemIndicator`, neither with a body in *this* recipe. **The row that defines
+      `+itemAddon`, `+itemIndicator`, neither with a body in *this* recipe — and the `radioCard` ship
+      confirmed it is the one that gives both declarations. `indicator` has a body in **neither**, so
+      the segmented control's highlight is the only thing that slot was ever for. **The row that defines
       shape E** — the repeated part — and `parity-matrix.md` §7 is rewritten to say so: its stated
       reason for rejecting this component ("its item context is `{ value }` alone") was a prediction,
       and Zag's `ItemState` is **eight** fields (`value invalid disabled checked focused
@@ -507,16 +509,38 @@ asks, correct **both** in the same commit.
       `itemControl`, three variants, `_invalid` only — the four sizes take nothing, because copying
       `& .dot` under a size would be emitted after `variant.outline`'s respelt `scale: 0.6` and take
       it back. Docs: upstream's page is `radio.mdx` titled **Radio**, and the nav row moved to match
-- [ ] radio-card — radio-group · S:radioCard · 6/10
+- [x] radio-card — radio-group · S:radioCard · 6/10
       Extends Chakra's *extended* radioGroup anatomy: `+itemContent`, `+itemDescription`.
       Composes `radiomark` the same two ways as `radio-group`, on `itemIndicator` rather than
-      `itemControl`, and adds `aria-hidden` at the call site — measured on the `radiomark` row,
-      where this line said nothing at all. **Shape E is settled** (`component-blueprint.md` §3.2, the
-      `radio-group` ship): reuse `createRadioGroup` and the item context as-is, and note the contrast
-      this row carries — `RadioCardItemIndicator` is *not* a machine part, so it inherits no
-      `aria-hidden`, where `RadioGroupItemIndicator` renders the machine's `itemControl` and inherits
-      one. Its `ItemControl` is hand-written and deliberately omits seven of the attributes the
-      machine would have written
+      `itemControl`, and adds `aria-hidden` at the call site — on **both** branches, because
+      `RadioCardItemIndicator` is not a machine part and inherits nothing, where
+      `RadioGroupItemIndicator` renders the machine's `itemControl` and inherits one.
+      **Shape E held as a reuse with nothing added** (`component-blueprint.md` §3.2): the Item is the
+      radio-group one with a second slot map, and the only judgement call was giving the card its own
+      *item* context rather than importing radio-group's — same value type, an error naming
+      `RadioCard.Item`.
+      **Five of the ten slots have no anatomy pair at all**, `itemControl` among them: the component
+      is a hand-written `div` writing six `data-*` off the item context, and it omits eight of the
+      machine's — `data-scope`/`data-part` as well as the seven the note predicted. The absent `id`
+      is the load-bearing one, and it is *why* a card renders an `ItemControl` **and** an
+      `ItemIndicator` where a radio renders one or the other.
+      **`_invalid` on `itemIndicator` is unreachable, in both libraries.** `_invalid` is
+      `&:is(:invalid, [data-invalid], …)` — self only — and nothing puts `data-invalid` on that span:
+      Chakra's Radiomark writes `data-checked` and `data-disabled` and no more. No other slot in the
+      recipe declares `_invalid` either, so **an invalid radio card is drawn exactly like a valid
+      one** on chakra-ui.com too; `aria-invalid` on the input is the whole of it. Expected, not
+      tolerated, and nothing on the page says so.
+      **`orientation` is a recipe variant here and a machine prop in `radio-group`**, and upstream's
+      `splitVariantProps` consumes it before the Ark Root — so the card's contents turn while the
+      group keeps the machine's own `vertical` for its arrow keys and its `aria-orientation`.
+      `createRadioCard` + a `RootProvider` is how the machine's is set. Preset:
+      `shadowedSlotBaseConditions` row, `_invalid` on `itemIndicator` under all four variants (the
+      unreachable half, kept because a consumer's own `data-invalid` needs it to beat the variant's
+      flat `borderColor`) **plus `_focus` on `item` under `subtle` alone** — the one variant that
+      gives the card a resting `bg`, and the only correction in the row a rendered page can see. The
+      three sizes take nothing, as `radioGroup`'s four do not. Docs: 14 slots;
+      `radio-card-with-responsive-orientation` is the MDX's own CSS-`display` alternative, and
+      `radio-card-with-custom-indicator` is referenced by no page and lives in the browser test
 - [ ] rating-group — S:ratingGroup · 4/5
       `+itemIndicator`. Repeated part — **unblocked**: `parity-matrix.md` §7's "no other component
       with a repeated part starts" closed on the `radio-group` ship, and shape E is
@@ -531,9 +555,14 @@ asks, correct **both** in the same commit.
       served segment keeps its highlight until the machine starts and its `entry` action clears the
       flag — **confirmed at the `radio-group` ship**: the machine writes `data-ssr` on `item`,
       `itemText` and `itemControl`, on the server only, and the hydrated nodes lose it once `entry`
-      runs. Shape E is settled there too, and `orientation` is the trap this row inherits: the
-      *machine's* default is `vertical`, and upstream's `forwardProps: ["orientation"]` with a
-      `"horizontal"` default is Chakra's own, so both halves have to be checked rather than assumed
+      runs. Shape E is settled there too, and it survived its first reuse on `radio-card` unamended.
+      `orientation` is the trap this row inherits: the *machine's* default is `vertical`, and
+      upstream's `forwardProps: ["orientation"]` (`segment-group.tsx:62`, confirmed at the
+      `radio-card` ship) with a `"horizontal"` default is Chakra's own, so both halves have to be
+      checked rather than assumed. **`radio-card` measured the other resolution of the same
+      collision**, and it is the one to compare against: there `orientation` is a `radioCard` variant,
+      so `splitVariantProps` eats it and the machine never sees it. This is the only one of the three
+      components that forwards, and that one line is the whole difference
 - [ ] select — S:select · 15/16 · Z ⚠
       `+indicatorGroup`. Hidden native `<select>` → restrictive-content-model hazard. **No collision
       with `native-select`**, settled on that row's ship: its anatomy is `createAnatomy("select")`
@@ -1335,7 +1364,11 @@ The seam's own suite gained the test that would have caught it.
       generated CSS and this row owes them nothing. What B4 consumes is the **component**:
       `RadioGroupItemIndicator` and `RadioCardItemIndicator` each render `<Radiomark unstyled>` and
       hand it their own slot's styles through `css`, and `radio-card` adds `aria-hidden` at the call
-      site. **This line said `RadioGroupItemControl` until the `radio-group` ship**, which is the one
+      site — on **both** branches of its `checked` escape hatch, confirmed at that row's ship.
+      **The mark writes `data-checked` and `data-disabled` and nothing else**, upstream included —
+      which is what makes `radioCard.itemIndicator`'s `_invalid` block unreachable in both libraries,
+      since that slot's element *is* this component and `_invalid` selects on self.
+      **This line said `RadioGroupItemControl` until the `radio-group` ship**, which is the one
       name upstream does not use — `ItemControl` is a plain part there, and the indicator is what
       composes the mark onto the same machine element through `asChild` (`render`, here). `class="dot"`
       is the seam that survives `unstyled` — the slot recipes carry the `& .dot` rule the dropped

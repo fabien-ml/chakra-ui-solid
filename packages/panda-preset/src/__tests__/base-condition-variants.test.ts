@@ -214,6 +214,37 @@ describe("the corrections written into a slot recipe's variants", () => {
     expect(variantsOf("checkboxCard")?.variant?.outline?.root).toBeUndefined();
   });
 
+  it("gives `radioCard` the `radioGroup` row one slot over, and a second slot besides", () => {
+    // `radioGroup` puts the `radiomark` body on `itemControl`; `radioCard` puts it on
+    // `itemIndicator`, so the slot that needs `_invalid` moves with it — and here all *four*
+    // variants set a resting `borderColor` on it, where `radioGroup` has three.
+    //
+    // `variant.subtle` carries a second correction no other recipe in this file needs: it is the one
+    // value that gives the **card** a resting `bg`, which defeats `base.item._focus`'s
+    // `colorPalette.muted/20` and leaves a focused subtle card in its resting fill.
+    expect(correctedValues("radioCard")).toEqual([
+      "variant.surface",
+      "variant.subtle",
+      "variant.outline",
+      "variant.solid",
+    ]);
+
+    const itemIndicator = inheritedBody("radioCard").base.itemIndicator as StyleObject;
+    const item = inheritedBody("radioCard").base.item as StyleObject;
+
+    expect(variantsOf("radioCard")?.variant?.surface).toEqual({
+      itemIndicator: { _invalid: itemIndicator._invalid },
+    });
+    expect(variantsOf("radioCard")?.variant?.subtle).toEqual({
+      item: { _focus: item._focus },
+      itemIndicator: { _invalid: itemIndicator._invalid },
+    });
+
+    // The three sizes take nothing: they set `boxSize` on the indicator, whose base declares no
+    // `_icon` — which is where `checkbox` and `checkboxCard`'s size corrections go.
+    expect(variantsOf("radioCard")?.size).toEqual({});
+  });
+
   it("keeps a grouped outline Avatar's ring at the width `base` asks for", () => {
     // `variant.outline` sets a resting 1px border, which defeated `base.root`'s
     // `&[data-group-item]` 2px. `borderless` respells the same condition for itself and is declared
@@ -241,6 +272,7 @@ describe("what the list leaves alone", () => {
       "avatar",
       "checkbox",
       "checkboxCard",
+      "radioCard",
     ];
 
     for (const recipe of corrected) {
@@ -272,6 +304,7 @@ describe("what the list leaves alone", () => {
       "checkbox",
       "checkboxCard",
       "nativeSelect",
+      "radioCard",
       "radioGroup",
       "table",
     ]);
@@ -379,6 +412,18 @@ const reviewedShadowedConditions: ReviewedCondition[] = [
       "Root against descendant, as with `outline`. Only the coarse border family relates the two " +
       "at all: the dot's own border declaration is `borderRadius`.",
   },
+  ...["surface", "subtle", "outline", "solid"].map((value) => ({
+    recipe: "radioCard",
+    slot: "itemIndicator",
+    condition: "& .dot",
+    variantKey: "variant",
+    value,
+    reason:
+      "The `radioGroup` rows one slot over: this recipe puts `radiomark`'s body on `itemIndicator`, " +
+      "and every variant sets `borderWidth`/`borderColor` — `solid` a `bg` as well — on the circle " +
+      "while the block styles its `.dot` child. `subtle` also respells `& .dot` for itself to scale " +
+      "the dot to 0.6, so copying the base block in would merge `scale: 0.4` over that.",
+  })),
   {
     recipe: "nativeSelect",
     slot: "field",
@@ -647,7 +692,6 @@ describe("the base conditions a shipped recipe loses to its own variants", () =>
       "numberInput",
       "pinInput",
       "progress",
-      "radioCard",
       "select",
       "slider",
       "tagsInput",

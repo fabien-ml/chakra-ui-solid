@@ -1,4 +1,3 @@
-import { Dynamic } from "@solidjs/web";
 import { CheckboxCard, CheckboxGroup, Float, Icon, SimpleGrid } from "chakra-ui-solid";
 import { For } from "solid-js";
 import { AtSignIcon, CircleCheckIcon, SlashIcon, UserIcon } from "../../components/ui/icons";
@@ -20,9 +19,9 @@ export default function CheckboxCardWithIcon() {
               <CheckboxCard.HiddenInput />
               <CheckboxCard.Control>
                 <CheckboxCard.Content>
-                  <Icon fontSize="2xl" mb="2">
-                    <Dynamic component={item.icon} />
-                  </Icon>
+                  {/* `as`, never a whole `svg` as a child: Solid has no `cloneElement`, so a nested
+                      glyph draws inside an empty box the recipe sized. */}
+                  <Icon as={item.icon} size="xl" mb="2" />
                   <CheckboxCard.Label>{item.label}</CheckboxCard.Label>
                   <CheckboxCard.Description>{item.description}</CheckboxCard.Description>
                 </CheckboxCard.Content>

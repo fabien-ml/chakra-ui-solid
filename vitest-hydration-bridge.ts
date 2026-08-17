@@ -200,6 +200,19 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/radio-group/__tests__/radio-group.ssr-entry.tsx",
   ),
+  // The same machine one recipe over, and the first subject whose gate is **inside** the repeated
+  // part and decided **per item**: `RadioCard.ItemIndicator`'s `checked` escape hatch draws a
+  // consumer's own glyph on the picked card and a `Radiomark` on every other, so one card in five
+  // takes a different subtree and every hydration key after it moves with the answer. `radio-group`
+  // proves N of a part under one machine; every earlier gate here is decided by a prop the body read
+  // (`loader`, `avatar`) or by a machine's whole state (`collapsible`, `tabs`), never by the
+  // machine's answer *about one item*. Its cards also render an `ItemControl` **and** an
+  // `ItemIndicator`, where a radio renders one or the other — this recipe's control is not the
+  // machine's element and carries no id of its own.
+  "radio-card": join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/radio-card/__tests__/radio-card.ssr-entry.tsx",
+  ),
   // The first subject whose branch is decided by a **context the Root opened around its own
   // element**. `Alert.Indicator` defaults its children to a glyph chosen from the Root's `status`,
   // so three roots give three shapes — the default glyph, nothing at all (a responsive `status`

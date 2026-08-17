@@ -1,0 +1,152 @@
+---
+title: Radio Card
+description: Used to select an option from list
+links:
+  source: packages/chakra-ui-solid/src/components/radio-card
+  chakra: https://chakra-ui.com/docs/components/radio-card
+---
+
+<Example name="radio-card-basic" />
+
+## Usage
+
+```tsx
+import { RadioCard } from "chakra-ui-solid";
+```
+
+```tsx
+<RadioCard.Root>
+  <RadioCard.Label />
+  <RadioCard.Item>
+    <RadioCard.ItemHiddenInput />
+    <RadioCard.ItemControl>
+      <RadioCard.ItemContent>
+        <RadioCard.ItemText />
+        <RadioCard.ItemDescription />
+      </RadioCard.ItemContent>
+      <RadioCard.ItemIndicator />
+    </RadioCard.ItemControl>
+  </RadioCard.Item>
+</RadioCard.Root>
+```
+
+A radio card is a radio group wearing a second set of styles, so one machine drives every
+`RadioCard.Item` inside a `RadioCard.Root`: the group owns the picked value and a card owns only its
+`value`.
+
+`RadioCard.Item` renders the `<label>` and `RadioCard.ItemHiddenInput` renders the real
+`<input type="radio">` inside it, so a click anywhere on the card picks it. The input is not optional
+— without it there is nothing focusable, nothing to submit, and nothing for the card to point at.
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Description
+
+Here's an example of how to add some further description to the radio card.
+
+<Example name="radio-card-with-description" />
+
+### Sizes
+
+Pass the `size` prop to the `RadioCard.Root` component to change the size of the radio card.
+
+<Example name="radio-card-with-sizes" />
+
+### Colors
+
+Pass the `colorPalette` prop to the `RadioCard.Root` component to change the color of the radio card.
+
+<Example name="radio-card-with-colors" />
+
+### Variants
+
+Pass the `variant` prop to the `RadioCard.Root` component to change the visual style of the radio
+card.
+
+<Example name="radio-card-with-variants" />
+
+### Icon
+
+Render a custom icon inside the radio card by placing it within `RadioCard.ItemContent`.
+
+<Example name="radio-card-with-icon" />
+
+### Controlled
+
+Pass the `value` and `onValueChange` props to the `RadioCard.Root` component to control the selected
+radio card.
+
+<Example name="radio-card-controlled" />
+
+### No Indicator
+
+Here's an example of how to use the radio card without an indicator.
+
+<Example name="radio-card-without-indicator" />
+
+### No Indicator (Vertical)
+
+Here's an example of a radio card with no indicator and content aligned vertically.
+
+<Example name="radio-card-without-indicator-vertical" />
+
+### Responsive Orientation
+
+`orientation` is a recipe variant, so it resolves to one value and does not take a responsive object.
+Render two `RadioCard.Root` instances — one horizontal, one vertical — and show or hide each with the
+`display` style prop.
+
+<Example name="radio-card-with-responsive-orientation" />
+
+### Centered
+
+Here's an example of a radio card with centered text.
+
+<Example name="radio-card-centered" />
+
+### Composition
+
+Here's an example of composing the RadioCard with the `Group` component.
+
+<Example name="radio-card-composition" />
+
+### Addon
+
+Use the `RadioCard.ItemAddon` component to add metadata to the radio card.
+
+<Example name="radio-card-with-addon" />
+
+### Closed Component
+
+Here's how to setup the Radio card for a closed component composition.
+
+<Example name="radio-card-closed-component" />
+
+Here's how to use it:
+
+```tsx
+<RadioCardRoot>
+  <RadioCardLabel />
+  <RadioCardItem />
+</RadioCardRoot>
+```
+
+## Props
+
+### Root
+
+<PropsTable component="radio-card" interface="RadioCardRootProps" />
+
+### RootProvider
+
+<PropsTable component="radio-card" interface="RadioCardRootProviderProps" />
+
+### Item
+
+<PropsTable component="radio-card" interface="RadioCardItemProps" />
+
+### ItemIndicator
+
+<PropsTable component="radio-card" interface="RadioCardItemIndicatorProps" />
