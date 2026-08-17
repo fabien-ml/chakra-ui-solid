@@ -49,6 +49,7 @@ export * from "./breadcrumb";
 export * from "./button";
 export * from "./card";
 export * from "./center";
+export * from "./checkbox";
 export * from "./checkmark";
 export * from "./circle";
 export * from "./code";

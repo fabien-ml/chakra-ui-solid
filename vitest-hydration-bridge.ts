@@ -160,6 +160,22 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/skeleton/__tests__/skeleton.ssr-entry.tsx",
   ),
+  // The first subject whose **node count is decided by a store that is not a machine**.
+  // `CheckboxGroup` is plain signals over an array of strings, and each `Checkbox.Root` seeds its
+  // own machine from that array — so the group's `defaultValue` decides whether a box draws a
+  // `polyline`, a `path` or nothing, and each of those is a different number of hydration keys for
+  // every sibling after it. `avatar` reads a context on both builds too; what it decides there is an
+  // *attribute*, and a wrong answer here moves nodes.
+  //
+  // Its second half is the only place a machine's **element ids** come from a component that owns
+  // neither element: a `Field.Root` supplies `label` and `hiddenInput`, so the served `<label>`'s
+  // `for` is resolved outside the machine — and the field's helper text registers itself in
+  // `onSettled`, which no server runs, so the served input carries no `aria-describedby` and the
+  // hydrated one grows one on the node the server sent.
+  checkbox: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/checkbox/__tests__/checkbox.ssr-entry.tsx",
+  ),
   // The first subject whose branch is decided by a **context the Root opened around its own
   // element**. `Alert.Indicator` defaults its children to a glyph chosen from the Root's `status`,
   // so three roots give three shapes — the default glyph, nothing at all (a responsive `status`

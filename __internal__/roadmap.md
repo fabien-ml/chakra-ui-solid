@@ -117,11 +117,76 @@ asks, correct **both** in the same commit.
       which went with the stand-in
 - [ ] carousel — S:carousel · 10/11
       **Duplicate slot `progressText`** (§1.3b)
-- [ ] checkbox — S:checkbox · 4/5
-      Its indicator part renders `<Checkmark unstyled>` and passes it `styles.indicator` — the
-      component, not the `checkmark` recipe, which is shipped
+- [x] checkbox — S:checkbox · 4/5
+      **The note's component half was right and its slot half was a trap.** `CheckboxIndicator` does
+      render `<Checkmark unstyled>` and does pass it `styles.indicator` — and **that slot is empty**.
+      `theme/recipes/checkbox.ts` never mentions `indicator`; the whole checkmark body (border,
+      radius, `boxSize`, `cursor`, `_invalid`, `_disabled`, and every size and variant) sits on
+      **`control`**, which the installed preset ships with `checkmarkRecipe.base` already inlined. So
+      the box a reader sees *is* the `control` slot, `checkbox__indicator` is a class with no rule,
+      and the browser test asserts the box on `control` for that reason. **`checkbox-card` is the
+      exact inverse**, and its row now says so.
+      **Three of the four anatomy parts reach the DOM.** Chakra's `Checkbox.Indicator` is a bare
+      component reading context — it never calls `getIndicatorProps()` — so no element carries
+      `data-part="indicator"`, no `hidden`, and `data-state` on the mark is `Checkmark`'s own. Ark's
+      indicator *is* a machine part; Chakra's replaces it, and the port follows Chakra.
+      **`group` is Ark's fifth anatomy name, and it is styling-free on both sides**: no prop getter,
+      no recipe body in `checkbox` or `checkboxCard`. The column comes from a `chakra("div", { base })`
+      config on the element — Chakra's own `chakra(ArkCheckbox.Group, { base })`, which is a recipe
+      base rather than a JSX attribute and therefore survives a forwarded `undefined`.
+      **`CheckboxGroup` is not a Zag machine** and ours is written from the observable API rather
+      than from Ark's file. One trap in that API, reproduced: `getItemProps` returns
+      `disabled: disabled || (isAtMax && !checked)`, a hard `false` when the group is live — so a
+      checkbox inside a group inside a **disabled `Field.Root`** is not disabled. That is Ark's
+      arithmetic, and a group inside a Field is the composition the page's own *Guides* section warns
+      against.
+      **`defaultChecked` is not inert on the server, which the plan predicted it was.** Zag hands it
+      back from `getHiddenInputProps()` and SolidJS's server build resolves the alias onto the real
+      `checked` attribute — so a served box is ticked before any script runs. What it cannot carry is
+      `indeterminate`, which has no attribute: Zag's `watch` is **change-only** on every adapter it
+      ships, so `syncInputElement` never runs for a box that *started* indeterminate and the input's
+      property stays `false` while `data-state` and the glyph say otherwise. The React version is
+      identical; expected, not tolerated.
+      **`cursor: "checkbox"` resolves to `default`, not `pointer`** — the token's own value. A
+      computed `auto` would mean the token scale was never generated, which is what the assertion is
+      for; Switch's `swittch` misspelling has no counterpart here.
+      Preset: `shadowedSlotBaseConditions.checkbox` is the `checkmark` row one slot down — the three
+      variants take `_invalid` (each writes a flat `borderColor` that defeats `base.control._invalid`),
+      the four sizes take `_icon`. One consequence of the merge order, shared with the shipped
+      `checkmark` row: the copied `_invalid` lands **after** the variant's own
+      `&:is([data-state=checked])` block for `solid` and `outline`, so an invalid *and* checked box
+      takes `border.error` where chakra-ui.com takes `colorPalette.solid` — both red, one step apart.
+      **The two escape hatches are `RenderProp`s here, not `JSX.Element`s, and nothing is lost.**
+      Upstream renders `<chakra.svg asChild {...rest} css={…}>{checked}</chakra.svg>`, so its
+      `checked` element is the child of an `asChild` and its contract is "you will be cloned with the
+      computed props". Solid has no `cloneElement` and walking a constructed element is forbidden, so
+      typing these as elements meant rendering them bare and dropping every computed prop — the
+      `indicator` class included, silently. They take the shape `asChild` already took on this
+      library instead: `RenderProp<ComponentProps<"svg">>`, the same signature as `render`. Each arm
+      is `<chakra.svg {...markProps} class={indicatorClass()} render={glyph} />` — upstream's own
+      expression with `render` where it writes `asChild` — so a style prop on the
+      `Checkbox.Indicator` still resolves into the class before the glyph is handed it. A consumer's
+      JSX element is now a compile error, which is the right failure mode.
+      **Wrapping the glyph in a `span` was measured and rejected.** `.checkbox__control :where(svg)`
+      is `width: 100%`, which resolves against the control's definite `boxSize` only while the glyph
+      is a direct flex item; a wrapper makes it a grandchild, the `100%` resolves against the
+      auto-sized span, and the glyph collapses to its intrinsic size. The browser test asserts the
+      glyph's width against the control's content box for that reason.
+      Docs: **17 of upstream's 18 slots.** `checkbox-explorer-demo` is the Explorer, which this site
+      has on no page. `checkbox-with-hook-form` and `checkbox-with-group-hook-form` are
+      `react-hook-form` + `zod` upstream and are rewritten against a signal and a plain `<form>` with
+      the same visible behaviour; their headings become *Form Validation* and *Group Validation*.
+      `checkbox-with-store` drops upstream's nested `<Checkbox.RootProvider><Checkbox.Root>`, which
+      starts two machines and labels two inputs
 - [ ] checkbox-card — checkbox · S:checkboxCard · 4/7
-      Second public component on one machine
+      Second public component on one machine. **The inverse of `checkbox`, measured on that row:**
+      `theme/recipes/checkbox-card.ts` puts `checkmarkRecipe.base` on **`indicator`** and leaves
+      `control` plain, so the assertion `checkbox` puts on `control` belongs on `indicator` here.
+      Its `Indicator` takes plain `HTMLChakraProps<"svg">` — no `checked`/`indeterminate` overrides
+      at all — so the escape hatches `checkbox` types as `RenderProp`s have no counterpart here.
+      `group` is dropped
+      from the anatomy here and stays body-less either way; `CheckboxGroup` and the whole context
+      come from `checkbox` unchanged, and the only difference is the recipe key
 - [ ] clipboard — ✗clipboard · 6/—
       Recipe key resolves to nothing **in Chakra too** (§2.5). **There is no coverage check to
       allow-list into** — the four that exist are `no-runtime-css`, `attribution`,

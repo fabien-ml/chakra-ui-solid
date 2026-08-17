@@ -49,6 +49,15 @@ import {
   CardTitle,
   Center,
   ChakraProvider,
+  CheckboxContext,
+  CheckboxControl,
+  CheckboxGroup,
+  CheckboxHiddenInput,
+  CheckboxIndicator,
+  CheckboxLabel,
+  CheckboxPropsProvider,
+  CheckboxRoot,
+  CheckboxRootProvider,
   Checkmark,
   Circle,
   CloseButton,
@@ -67,6 +76,7 @@ import {
   Container,
   ContainerPropsProvider,
   createAvatar,
+  createCheckbox,
   createCollapsible,
   createDialog,
   createDrawer,
@@ -556,6 +566,72 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <ChakraProvider value={testSystem}>
       <Box>provided</Box>
     </ChakraProvider>
+  ),
+  CheckboxContext: () => (
+    <CheckboxRoot>
+      <CheckboxContext>{(checkbox) => <span>{checkbox.checkedState}</span>}</CheckboxContext>
+    </CheckboxRoot>
+  ),
+  // No children, which is the arm that builds the default `<Checkbox.Indicator />` inside a
+  // `children()` call — a glyph hoisted to module scope beside the component would already have
+  // been constructed at import time and taken the whole route down.
+  CheckboxControl: () => (
+    <CheckboxRoot defaultChecked>
+      <CheckboxControl />
+    </CheckboxRoot>
+  ),
+  // Two boxes and a `defaultValue`, so the group's array really decides a state: with one child the
+  // server would render the case where nothing is ticked either way.
+  CheckboxGroup: () => (
+    <CheckboxGroup defaultValue={["react"]}>
+      <CheckboxRoot value="react">
+        <CheckboxHiddenInput />
+        <CheckboxControl />
+      </CheckboxRoot>
+      <CheckboxRoot value="solid">
+        <CheckboxHiddenInput />
+        <CheckboxControl />
+      </CheckboxRoot>
+    </CheckboxGroup>
+  ),
+  CheckboxHiddenInput: () => (
+    <CheckboxRoot>
+      <CheckboxHiddenInput />
+    </CheckboxRoot>
+  ),
+  // Indeterminate, because that is the `path` arm — the other two draw a `polyline` and nothing at
+  // all, and only a state that draws something proves the `Switch` inside `Checkmark` ran.
+  CheckboxIndicator: () => (
+    <CheckboxRoot defaultChecked="indeterminate">
+      <CheckboxControl>
+        <CheckboxIndicator />
+      </CheckboxControl>
+    </CheckboxRoot>
+  ),
+  CheckboxLabel: () => (
+    <CheckboxRoot>
+      <CheckboxLabel>Accept terms</CheckboxLabel>
+    </CheckboxRoot>
+  ),
+  CheckboxPropsProvider: () => (
+    <CheckboxPropsProvider value={{ size: "lg" }}>
+      <CheckboxRoot>
+        <CheckboxControl />
+      </CheckboxRoot>
+    </CheckboxPropsProvider>
+  ),
+  CheckboxRoot: () => (
+    <CheckboxRoot>
+      <CheckboxHiddenInput />
+      <CheckboxControl />
+      <CheckboxLabel>Accept terms</CheckboxLabel>
+    </CheckboxRoot>
+  ),
+  CheckboxRootProvider: () => (
+    <CheckboxRootProvider value={createCheckbox({ defaultChecked: true })}>
+      <CheckboxHiddenInput />
+      <CheckboxControl />
+    </CheckboxRootProvider>
   ),
   // Checked, because that is the arm that draws a glyph — the unchecked one renders an empty `svg`
   // and would pass the "did any element come back" check with the whole `Switch` dead.

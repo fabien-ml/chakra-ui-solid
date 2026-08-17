@@ -46,6 +46,50 @@ needs a cast. A target that renders the same element needs none, and neither doe
 typed against the same `JSX.HTMLAttributes`. A component whose props are a *Chakra* type needs one
 for a different reason, which Best Practices below spells out.
 
+## Merging the Computed Class
+
+`render` hands your element the computed props and steps back. It does not reconcile them with what
+you write beside the spread — a JSX spread is last-wins, and `class` is a prop like any other:
+
+```tsx
+// your class wins — the computed class is lost
+<Foo {...props} class="my-icon" />
+
+// the computed class wins — yours is lost
+<Foo class="my-icon" {...props} />
+```
+
+Merging the two is yours to spell, with Panda's own `cx`:
+
+```tsx
+import { cx } from "./styled-system/css";
+
+<Button
+  render={(props) => (
+    <MyButton {...props} class={cx(props.class, "my-button")} />
+  )}
+/>;
+```
+
+You already have `cx`. Running Panda in your build is this library's hard prerequisite — it is the
+only thing that turns a recipe or a style prop into CSS at all — so `./styled-system/css` is
+generated in your project whether you have imported from it before or not.
+
+The library cannot do the merge for you. It knows the string it computed and nothing about yours:
+whether it is meant to layer over the recipe, to replace it, or to belong to some other element in
+the tree you returned. Only the call site sees both, so only the call site can decide.
+
+That is deliberately **more** capable than the React version's `asChild`, which clones your element
+and always concatenates the two — so a consumer who wants to *replace* the computed class has no way
+to say so. A function is handed both strings and picks: stack them with `cx`, keep only yours, or
+keep only the computed one.
+
+Getting it wrong is quiet. The computed class is where the component's recipe lives, and an element
+whose class names no rule renders exactly as it would with the right one — nothing throws, nothing
+warns, nothing is missing from the tree. There is no runtime stylesheet to catch it either, because
+this library never writes one. So when a composed element comes out looking unstyled, the class
+attribute is the first thing to read.
+
 ## The `unstyled` Prop
 
 Used to drop a component's own theme styles while keeping everything else it does. Style props and

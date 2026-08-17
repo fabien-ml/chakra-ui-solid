@@ -186,7 +186,7 @@ type VariantStyles = Record<string, Record<string, StyleObject>>;
 type InheritedBody<Base> = { base: Base; variants: VariantStyles };
 
 /**
- * The seven inherited bodies the corrections below are read out of — named one by one, because the
+ * The eight inherited bodies the corrections below are read out of — named one by one, because the
  * whole point is that this file copies a known set of blocks rather than deriving a set.
  */
 const inherited = chakraPreset.theme as unknown as {
@@ -195,6 +195,7 @@ const inherited = chakraPreset.theme as unknown as {
     nativeSelect: InheritedBody<{ field: StyleObject }>;
     table: InheritedBody<{ row: StyleObject }>;
     avatar: InheritedBody<{ root: StyleObject }>;
+    checkbox: InheritedBody<{ control: StyleObject }>;
   };
 };
 
@@ -227,6 +228,7 @@ const radiomarkRecipe = inherited.recipes.radiomark;
 const nativeSelectRecipe = inherited.slotRecipes.nativeSelect;
 const tableRecipe = inherited.slotRecipes.table;
 const avatarRecipe = inherited.slotRecipes.avatar;
+const checkboxRecipe = inherited.slotRecipes.checkbox;
 
 /**
  * The base conditions Panda's layering lets a variant defeat, written back into the variant values
@@ -252,8 +254,8 @@ const avatarRecipe = inherited.slotRecipes.avatar;
  * - **Only the variant values that actually shadow the condition carry it.** Panda emits variant
  *   rules in declaration order and these all land at equal specificity, so a correction written
  *   into a *later* variant key beats an earlier key's deliberate value.
- * - **A newly ported component may need a row.** The 13 recipes nothing has ported yet —
- *   `checkbox`, `checkboxCard`, `colorPicker`, `combobox`, `datePicker`, `numberInput`, `pinInput`,
+ * - **A newly ported component may need a row.** The 12 recipes nothing has ported yet —
+ *   `checkboxCard`, `colorPicker`, `combobox`, `datePicker`, `numberInput`, `pinInput`,
  *   `progress`, `radioCard`, `radioGroup`, `select`, `slider`, `tagsInput` — are known to carry the
  *   same defect, and get their rows when they ship.
  */
@@ -336,6 +338,25 @@ const shadowedSlotBaseConditions: Record<string, VariantStyles> = {
   // condition for itself and is declared after `variant`, so its `0px` still wins.
   avatar: inRecipeOrder(avatarRecipe, {
     variant: { outline: { root: conditionsOf(avatarRecipe.base.root, "&[data-group-item]") } },
+  }),
+
+  // `control` is the `checkmark` recipe's whole body on a slot, so this row is that recipe's row
+  // slot-scoped: the three variants each pick a resting `borderColor` and defeat `_invalid`'s
+  // `border.error`, and the four sizes reach `_icon` with the `boxSize` they set. `root` and `label`
+  // take nothing — a size gives them `gap` and `textStyle`, and neither slot's base has a condition
+  // declaring either.
+  checkbox: inRecipeOrder(checkboxRecipe, {
+    variant: {
+      outline: { control: conditionsOf(checkboxRecipe.base.control, "_invalid") },
+      solid: { control: conditionsOf(checkboxRecipe.base.control, "_invalid") },
+      subtle: { control: conditionsOf(checkboxRecipe.base.control, "_invalid") },
+    },
+    size: {
+      xs: { control: conditionsOf(checkboxRecipe.base.control, "_icon") },
+      sm: { control: conditionsOf(checkboxRecipe.base.control, "_icon") },
+      md: { control: conditionsOf(checkboxRecipe.base.control, "_icon") },
+      lg: { control: conditionsOf(checkboxRecipe.base.control, "_icon") },
+    },
   }),
 };
 

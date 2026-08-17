@@ -165,6 +165,29 @@ describe("the corrections written into a slot recipe's variants", () => {
     });
   });
 
+  it("gives `checkbox` the `checkmark` row one slot down", () => {
+    // The `control` slot *is* the `checkmark` recipe's body, so the split is the same one:
+    // the three variants pick a resting `borderColor` and take `_invalid`, the four sizes set
+    // `boxSize` and take `_icon`. `root` and `label` take nothing — a size gives them `gap` and
+    // `textStyle`, and neither slot's base declares either under a condition.
+    expect(correctedValues("checkbox")).toEqual([
+      "size.xs",
+      "size.sm",
+      "size.md",
+      "size.lg",
+      "variant.outline",
+      "variant.solid",
+      "variant.subtle",
+    ]);
+
+    const control = inheritedBody("checkbox").base.control as StyleObject;
+
+    expect(variantsOf("checkbox")?.variant?.solid).toEqual({
+      control: { _invalid: control._invalid },
+    });
+    expect(variantsOf("checkbox")?.size?.md).toEqual({ control: { _icon: control._icon } });
+  });
+
   it("keeps a grouped outline Avatar's ring at the width `base` asks for", () => {
     // `variant.outline` sets a resting 1px border, which defeated `base.root`'s
     // `&[data-group-item]` 2px. `borderless` respells the same condition for itself and is declared
@@ -190,6 +213,7 @@ describe("what the list leaves alone", () => {
       "nativeSelect",
       "table",
       "avatar",
+      "checkbox",
     ];
 
     for (const recipe of corrected) {
@@ -203,13 +227,13 @@ describe("what the list leaves alone", () => {
     expect(variantsOf("avatar")?.borderless).toEqual({});
   });
 
-  it("declares `variants` for those seven recipes and nothing else", () => {
+  it("declares `variants` for those eight recipes and nothing else", () => {
     const declared = { ...extension?.recipes, ...extension?.slotRecipes };
     const withVariants = Object.keys(declared).filter(
       (key) => declared[key]?.variants !== undefined,
     );
 
-    // `container` is the eighth for an unrelated reason: it is the one recipe this package declares
+    // `container` is the ninth for an unrelated reason: it is the one recipe this package declares
     // a whole body for, because nothing upstream declares it, and those are its own variants.
     expect(withVariants).toEqual([
       "input",
@@ -218,6 +242,7 @@ describe("what the list leaves alone", () => {
       "radiomark",
       "container",
       "avatar",
+      "checkbox",
       "nativeSelect",
       "table",
     ]);
@@ -549,11 +574,10 @@ describe("the base conditions a shipped recipe loses to its own variants", () =>
   });
 
   it("widens with the barrel rather than with anyone's memory", () => {
-    // The 13 recipes known to carry the same defect that nothing has ported yet. They are out of
+    // The 12 recipes known to carry the same defect that nothing has ported yet. They are out of
     // scope because `componentRecipes["."]` does not name them — not because this file does — and
-    // `checkbox` proves it: it reports collisions today and is simply not asked about.
+    // `checkboxCard` proves it: it reports collisions today and is simply not asked about.
     const unported = [
-      "checkbox",
       "checkboxCard",
       "colorPicker",
       "combobox",
@@ -569,6 +593,6 @@ describe("the base conditions a shipped recipe loses to its own variants", () =>
     ];
 
     expect(unported.filter((recipe) => shippedRecipes.includes(recipe))).toEqual([]);
-    expect(shadowedConditionsIn("checkbox").length).toBeGreaterThan(0);
+    expect(shadowedConditionsIn("checkboxCard").length).toBeGreaterThan(0);
   });
 });

@@ -1,0 +1,225 @@
+---
+title: Checkbox
+description:
+  Used in forms when a user needs to select multiple values from several options
+links:
+  source: packages/chakra-ui-solid/src/components/checkbox
+  chakra: https://chakra-ui.com/docs/components/checkbox
+---
+
+<Example name="checkbox-basic" />
+
+## Usage
+
+```tsx
+import { Checkbox } from "chakra-ui-solid";
+```
+
+```tsx
+<Checkbox.Root>
+  <Checkbox.HiddenInput />
+  <Checkbox.Control>
+    <Checkbox.Indicator />
+  </Checkbox.Control>
+  <Checkbox.Label />
+</Checkbox.Root>
+```
+
+`Checkbox.Root` renders the `<label>` and `Checkbox.HiddenInput` renders the real
+`<input type="checkbox">` inside it, so a click anywhere in the row toggles the box. The input is
+not optional — without it there is nothing focusable, nothing to submit, and nothing for the label
+to point at.
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Shortcuts
+
+The `Checkbox` component also provides a set of shortcuts for common use cases.
+
+### CheckboxControl
+
+This component renders the `Checkbox.Indicator` within it by default.
+
+This works:
+
+```tsx
+<Checkbox.Control>
+  <Checkbox.Indicator />
+</Checkbox.Control>
+```
+
+This might be more concise, if you don't need to customize the indicator:
+
+```tsx
+<Checkbox.Control />
+```
+
+## Examples
+
+### Variants
+
+Pass the `variant` prop to the `Checkbox.Root` component to change the visual style of the checkbox.
+
+<Example name="checkbox-with-variants" />
+
+### Colors
+
+Pass the `colorPalette` prop to the `Checkbox.Root` component to change the color of the checkbox.
+
+<Example name="checkbox-with-colors" />
+
+### Sizes
+
+Pass the `size` prop to the `Checkbox.Root` component to change the size of the checkbox.
+
+<Example name="checkbox-with-sizes" />
+
+### States
+
+Pass the `disabled` or `invalid` prop to the `Checkbox.Root` component to change the visual state of
+the checkbox.
+
+<Example name="checkbox-with-states" />
+
+### Controlled
+
+Use the `checked` and `onCheckedChange` props to control the state of the checkbox.
+
+<Example name="checkbox-controlled" />
+
+### Label Position
+
+Here's an example of how to change the label position to the right.
+
+<Example name="checkbox-with-label-position" />
+
+### Store
+
+An alternative way to control the checkbox is to use the `RootProvider` component and the
+`createCheckbox` store hook.
+
+This way you can access the checkbox state and methods from outside the checkbox.
+
+<Example name="checkbox-with-store" />
+
+### Composition
+
+Here's an example of how to compose a checkbox with a field component.
+
+<Example name="checkbox-with-form" />
+
+### Form Validation
+
+Here's an example of a checkbox driven by a signal, with a validation message on submit.
+
+<Example name="checkbox-with-hook-form" />
+
+### Group
+
+Use the `CheckboxGroup` component to group multiple checkboxes together.
+
+<Example name="checkbox-with-group" />
+
+### Group Validation
+
+The same, for a group: the ticked values are one array, and the message hangs off the fieldset.
+
+<Example name="checkbox-with-group-hook-form" />
+
+### Custom Icon
+
+Render a custom icon within `Checkbox.Control` to change the icon of the checkbox.
+
+<Example name="checkbox-with-custom-icon" />
+
+To replace the mark for one state only, pass `checked` or `indeterminate` to `Checkbox.Indicator`.
+Each is a function handed the indicator's computed props, so spread them onto your glyph —
+[Merging the computed class](/docs/components/concepts/composition#merging-the-computed-class) is
+what to read if your own `class` has to survive that spread.
+
+### Indeterminate
+
+Set the `checked` prop to `indeterminate` to show the checkbox in an indeterminate state.
+
+<Example name="checkbox-indeterminate" />
+
+### Description
+
+Here's an example of how to add some further description to the checkbox.
+
+<Example name="checkbox-with-description" />
+
+### Link
+
+Render an anchor tag within the `Checkbox.Label` to add a link to the label.
+
+<Example name="checkbox-with-link" />
+
+### Closed Component
+
+Here's how to setup the Checkbox for a closed component composition.
+
+<Example name="checkbox-closed-component" />
+
+## Guides
+
+### CheckboxGroup + Field vs Fieldset
+
+When working with multiple checkboxes, it's important to understand the semantic difference between
+`Field` and `Fieldset`:
+
+- **Single Checkbox**: Wrap with `Field.Root` for proper form field structure with labels and helper
+  text
+- **CheckboxGroup**: Wrap with `Fieldset.Root`, not `Field.Root`
+
+A checkbox group represents a collection of related options and should be marked up as a fieldset
+with a legend, not as a single field. Wrapping `CheckboxGroup` in `Field.Root` can cause interaction
+issues where only the first checkbox responds to clicks.
+
+**✅ Correct Usage:**
+
+```tsx
+<Fieldset.Root>
+  <CheckboxGroup name="framework">
+    <Fieldset.Legend>Select framework</Fieldset.Legend>
+    {/* ... checkboxes ... */}
+  </CheckboxGroup>
+</Fieldset.Root>
+```
+
+**❌ Incorrect Usage:**
+
+```tsx
+// Don't wrap CheckboxGroup with Field.Root
+<Field.Root>
+  <CheckboxGroup>{/* ... checkboxes ... */}</CheckboxGroup>
+</Field.Root>
+```
+
+### Styling the box
+
+The whole checkmark — the border, the radius, the fill and the size — is on the `control` slot, not
+on `Checkbox.Indicator`. Style `Checkbox.Control` to change how the box looks; the indicator only
+carries the glyph inside it.
+
+```tsx
+<Checkbox.Control borderRadius="full" />
+```
+
+## Props
+
+### Root
+
+<PropsTable component="checkbox" interface="CheckboxRootProps" />
+
+### RootProvider
+
+<PropsTable component="checkbox" interface="CheckboxRootProviderProps" />
+
+### Indicator
+
+<PropsTable component="checkbox" interface="CheckboxIndicatorProps" />
+
+### Group
+
+<PropsTable component="checkbox" interface="CheckboxGroupProps" />
