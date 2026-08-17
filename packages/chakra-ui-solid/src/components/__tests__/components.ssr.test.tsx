@@ -49,6 +49,17 @@ import {
   CardTitle,
   Center,
   ChakraProvider,
+  CheckboxCardAddon,
+  CheckboxCardContent,
+  CheckboxCardContext,
+  CheckboxCardControl,
+  CheckboxCardDescription,
+  CheckboxCardHiddenInput,
+  CheckboxCardIndicator,
+  CheckboxCardLabel,
+  CheckboxCardRoot,
+  CheckboxCardRootPropsProvider,
+  CheckboxCardRootProvider,
   CheckboxContext,
   CheckboxControl,
   CheckboxGroup,
@@ -566,6 +577,84 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     <ChakraProvider value={testSystem}>
       <Box>provided</Box>
     </ChakraProvider>
+  ),
+  CheckboxCardAddon: () => (
+    <CheckboxCardRoot>
+      <CheckboxCardAddon>New</CheckboxCardAddon>
+    </CheckboxCardRoot>
+  ),
+  CheckboxCardContent: () => (
+    <CheckboxCardRoot>
+      <CheckboxCardControl>
+        <CheckboxCardContent>
+          <CheckboxCardLabel>Next.js</CheckboxCardLabel>
+        </CheckboxCardContent>
+      </CheckboxCardControl>
+    </CheckboxCardRoot>
+  ),
+  CheckboxCardContext: () => (
+    <CheckboxCardRoot>
+      <CheckboxCardContext>{(card) => <span>{card.checkedState}</span>}</CheckboxCardContext>
+    </CheckboxCardRoot>
+  ),
+  // Empty, which is this Control's own arm: unlike `Checkbox.Control` it fills an absent child with
+  // nothing, so a server render proves the element exists rather than that a default resolved.
+  CheckboxCardControl: () => (
+    <CheckboxCardRoot>
+      <CheckboxCardControl />
+    </CheckboxCardRoot>
+  ),
+  // Checked, because this part derives `data-state` from context by hand rather than merging a prop
+  // getter — the checked arm is the one that could be wrong without the markup changing shape.
+  CheckboxCardDescription: () => (
+    <CheckboxCardRoot defaultChecked>
+      <CheckboxCardDescription>Best for apps</CheckboxCardDescription>
+    </CheckboxCardRoot>
+  ),
+  CheckboxCardHiddenInput: () => (
+    <CheckboxCardRoot>
+      <CheckboxCardHiddenInput />
+    </CheckboxCardRoot>
+  ),
+  // Indeterminate, because that is the `path` arm — the other two draw a `polyline` and nothing at
+  // all, and only a state that draws something proves the `Switch` inside `Checkmark` ran.
+  CheckboxCardIndicator: () => (
+    <CheckboxCardRoot defaultChecked="indeterminate">
+      <CheckboxCardControl>
+        <CheckboxCardIndicator />
+      </CheckboxCardControl>
+    </CheckboxCardRoot>
+  ),
+  CheckboxCardLabel: () => (
+    <CheckboxCardRoot>
+      <CheckboxCardLabel>Next.js</CheckboxCardLabel>
+    </CheckboxCardRoot>
+  ),
+  CheckboxCardRoot: () => (
+    <CheckboxCardRoot>
+      <CheckboxCardHiddenInput />
+      <CheckboxCardControl>
+        <CheckboxCardLabel>Next.js</CheckboxCardLabel>
+        <CheckboxCardIndicator />
+      </CheckboxCardControl>
+    </CheckboxCardRoot>
+  ),
+  CheckboxCardRootPropsProvider: () => (
+    <CheckboxCardRootPropsProvider value={{ variant: "surface" }}>
+      <CheckboxCardRoot>
+        <CheckboxCardControl />
+      </CheckboxCardRoot>
+    </CheckboxCardRootPropsProvider>
+  ),
+  // The machine is the checkbox's, so `createCheckboxCard` is `createCheckbox` — which is what makes
+  // this Root take one built by either.
+  CheckboxCardRootProvider: () => (
+    <CheckboxCardRootProvider value={createCheckbox({ defaultChecked: true })}>
+      <CheckboxCardHiddenInput />
+      <CheckboxCardControl>
+        <CheckboxCardIndicator />
+      </CheckboxCardControl>
+    </CheckboxCardRootProvider>
   ),
   CheckboxContext: () => (
     <CheckboxRoot>

@@ -1,0 +1,151 @@
+---
+title: Checkbox Card
+description: Used to select or deselect options displayed within cards
+links:
+  source: packages/chakra-ui-solid/src/components/checkbox-card
+  chakra: https://chakra-ui.com/docs/components/checkbox-card
+---
+
+<Example name="checkbox-card-basic" />
+
+## Usage
+
+```tsx
+import { CheckboxCard } from "chakra-ui-solid";
+```
+
+```tsx
+<CheckboxCard.Root>
+  <CheckboxCard.HiddenInput />
+  <CheckboxCard.Control>
+    <CheckboxCard.Content>
+      <CheckboxCard.Label />
+      <CheckboxCard.Description />
+    </CheckboxCard.Content>
+    <CheckboxCard.Indicator />
+  </CheckboxCard.Control>
+</CheckboxCard.Root>
+```
+
+`CheckboxCard.Root` renders the `<label>` and `CheckboxCard.HiddenInput` renders the real
+`<input type="checkbox">` inside it, so a click anywhere on the card toggles it. The input is not
+optional — without it there is nothing focusable, nothing to submit, and nothing for the label to
+point at.
+
+It runs the same machine `Checkbox` does, so everything a checkbox composes with a checkbox card
+composes with too: `CheckboxGroup`, `Field.Root` and `Fieldset.Root`.
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Description
+
+Use the `CheckboxCard.Description` component to add a description to the checkbox card.
+
+<Example name="checkbox-card-with-description" />
+
+### Group
+
+Use the `CheckboxGroup` component to group multiple checkbox cards.
+
+<Example name="checkbox-card-with-group" />
+
+### Sizes
+
+Pass the `size` prop to the `CheckboxCard.Root` component to change the size of the checkbox card.
+
+<Example name="checkbox-card-with-sizes" />
+
+### Variants
+
+Pass the `variant` prop to the `CheckboxCard.Root` component to change the variant of the checkbox
+card.
+
+<Example name="checkbox-card-with-variants" />
+
+### Disabled
+
+Pass the `disabled` prop to the `CheckboxCard.Root` component to make the checkbox card disabled.
+
+<Example name="checkbox-card-disabled" />
+
+### Addon
+
+Render additional content within the `CheckboxCard.Addon` component to add some more context to the
+checkbox card.
+
+<Example name="checkbox-card-with-addon" />
+
+### No Indicator
+
+Here's an example of how to use the checkbox card without an indicator.
+
+<Example name="checkbox-card-no-indicator" />
+
+### Icon
+
+Here's an example of how to render custom icons within the checkbox card.
+
+<Example name="checkbox-card-with-icon" />
+
+### Closed Component
+
+Here's how to setup the Checkbox card for a closed component composition.
+
+<Example name="checkbox-card-closed-component" />
+
+## Guides
+
+### CheckboxGroup + Field vs Fieldset
+
+When working with multiple checkbox cards, it's important to understand the semantic difference
+between `Field` and `Fieldset`:
+
+- **Single CheckboxCard**: Can be wrapped with `Field.Root` for proper form field structure with
+  labels and helper text
+- **CheckboxGroup**: Should be wrapped with `Fieldset.Root`, not `Field.Root`
+
+A group of checkbox cards represents a collection of related options and should be marked up as a
+fieldset with a legend, not as a single field. Wrapping `CheckboxGroup` in `Field.Root` can cause
+interaction issues where only the first checkbox card responds to clicks.
+
+**✅ Correct Usage:**
+
+```tsx
+<Fieldset.Root>
+  <CheckboxGroup name="framework">
+    <Fieldset.Legend>Select framework(s)</Fieldset.Legend>
+    {/* ... checkbox cards ... */}
+  </CheckboxGroup>
+</Fieldset.Root>
+```
+
+**❌ Incorrect Usage:**
+
+```tsx
+// Don't wrap CheckboxGroup with Field.Root
+<Field.Root>
+  <CheckboxGroup>{/* ... checkbox cards ... */}</CheckboxGroup>
+</Field.Root>
+```
+
+### Styling the box
+
+The tick's box — the border, the radius, the fill and its size — is on the `indicator` slot, which is
+the opposite of `Checkbox`, where the box lives on `Checkbox.Control`. Style `CheckboxCard.Indicator`
+to change how the tick looks and `CheckboxCard.Control` to change the card around it.
+
+```tsx
+<CheckboxCard.Indicator borderRadius="full" />
+```
+
+## Props
+
+### Root
+
+<PropsTable component="checkbox-card" interface="CheckboxCardRootProps" />
+
+### RootProvider
+
+<PropsTable component="checkbox-card" interface="CheckboxCardRootProviderProps" />

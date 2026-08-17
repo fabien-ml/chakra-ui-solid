@@ -130,8 +130,10 @@ asks, correct **both** in the same commit.
       component reading context — it never calls `getIndicatorProps()` — so no element carries
       `data-part="indicator"`, no `hidden`, and `data-state` on the mark is `Checkmark`'s own. Ark's
       indicator *is* a machine part; Chakra's replaces it, and the port follows Chakra.
-      **`group` is Ark's fifth anatomy name, and it is styling-free on both sides**: no prop getter,
-      no recipe body in `checkbox` or `checkboxCard`. The column comes from a `chakra("div", { base })`
+      **`group` is Ark's fifth anatomy name, and it is styling-free**: no prop getter, no recipe body
+      in `checkbox` — and `checkboxCard` does not name the slot at all, which the `checkbox-card` ship
+      measured (its seven are `root control label description addon indicator content`). The column
+      comes from a `chakra("div", { base })`
       config on the element — Chakra's own `chakra(ArkCheckbox.Group, { base })`, which is a recipe
       base rather than a JSX attribute and therefore survives a forwarded `undefined`.
       **`CheckboxGroup` is not a Zag machine** and ours is written from the observable API rather
@@ -178,15 +180,58 @@ asks, correct **both** in the same commit.
       the same visible behaviour; their headings become *Form Validation* and *Group Validation*.
       `checkbox-with-store` drops upstream's nested `<Checkbox.RootProvider><Checkbox.Root>`, which
       starts two machines and labels two inputs
-- [ ] checkbox-card — checkbox · S:checkboxCard · 4/7
-      Second public component on one machine. **The inverse of `checkbox`, measured on that row:**
-      `theme/recipes/checkbox-card.ts` puts `checkmarkRecipe.base` on **`indicator`** and leaves
-      `control` plain, so the assertion `checkbox` puts on `control` belongs on `indicator` here.
-      Its `Indicator` takes plain `HTMLChakraProps<"svg">` — no `checked`/`indeterminate` overrides
-      at all — so the escape hatches `checkbox` types as `RenderProp`s have no counterpart here.
-      `group` is dropped
-      from the anatomy here and stays body-less either way; `CheckboxGroup` and the whole context
-      come from `checkbox` unchanged, and the only difference is the recipe key
+- [x] checkbox-card — checkbox · S:checkboxCard · 4/7
+      Second public component on one machine. **The inversion held**: the installed preset puts the
+      whole `checkmark` body on **`indicator`** — border, radius, `boxSize`, `cursor: checkbox`,
+      `_icon`, `_invalid`, `_disabled` and every variant's paint — so the browser assertion
+      `checkbox` makes on `control` is made on `indicator` here. **`control` is not "plain", which
+      the note predicted**: it carries `display: inline-flex`, `flex: 1`, `position: relative`,
+      `borderRadius: inherit`, the two `var(--checkbox-card-*)` reads, the sizes' `padding`/`gap`,
+      `orientation`'s `flexDirection` and `variant.subtle`'s `_checked` fill.
+      `Indicator` takes plain `HTMLChakraProps<"svg">` — confirmed, no `checked`/`indeterminate`
+      overrides — so the escape hatches `checkbox` types as `RenderProp`s have no counterpart, and
+      the one part where a dropped class would cost the whole mark is the one part with no hatch to
+      drop it through.
+      **`Control` defaults no children**, where `Checkbox.Control` fills an absent child with its
+      own indicator: upstream gives this one no `defaultProps`, so `<CheckboxCard.Control />` is an
+      empty box and the row owes no JSX-slot `children()` at all.
+      **Two `data-scope`s live in one card, and that is upstream's shape.** `root`, `control` and
+      `label` come from the checkbox machine's prop getters and say `checkbox`; `description` and
+      `indicator` are written by the component and say `checkbox-card`; `content` and `addon` are
+      slots with no anatomy name and carry no `data-part` at all. The ids the machine hands out are
+      `checkbox:{id}:…` for the same reason.
+      **Two base conditions are unreachable on both libraries.** `_invalid` selects
+      `:is(:invalid, [data-invalid], [aria-invalid=true])` on the element itself, and
+      `base.indicator._invalid` sits on a mark that is not a machine part — `Checkmark` writes
+      `data-state` and `data-disabled` and nothing else — so an invalid card shows only the `root`
+      slot's own 2px outline. `base.addon._disabled` is dead the same way: the addon has no prop
+      getter and nothing writes `data-disabled` on it. Expected, not tolerated; the browser test
+      drives `_invalid` by writing `data-invalid` on the part.
+      **`justify` really has no default** — the four other variant keys resolve from
+      `defaultVariants` and `--checkbox-card-justify` is never written, so `control` and `content`
+      compute `justify-content: normal`. Reproduced rather than defaulted.
+      `group` is dropped from the anatomy here and stays body-less either way; `CheckboxGroup` and
+      `createCheckbox` come from `checkbox` unchanged, and the only differences are the recipe key
+      and the slot map — **which is why the context is this row's own** rather than the checkbox's:
+      our context value carries the resolved slot classes, and the two recipes do not name the same
+      slots. Upstream splits the same pair the other way (Ark's machine context + a per-recipe styles
+      context) and forbids the same mixing, since a `Checkbox.Label` inside a `CheckboxCard.Root` has
+      no checkbox styles context to read either.
+      Upstream names the props provider `CheckboxCardRootPropsProvider`, aliased
+      `CheckboxCard.RootPropsProvider` — not `PropsProvider` as `checkbox` does. Ported verbatim, as
+      `table`, `tag`, `timeline`, `list` and `alert` already are.
+      Preset: `shadowedSlotBaseConditions.checkboxCard` is `checkbox`'s row one slot over —
+      `surface`, `outline` and `solid` each give the indicator a resting `borderColor` and take
+      `_invalid`, `subtle` declares nothing flat and takes neither, and the three sizes set
+      `boxSize` and take `_icon`.
+      It also cost the `base-condition-variants` suite its "widens with the barrel" probe,
+      which moved from `checkboxCard` to `select`.
+      Docs: **10 of upstream's 11 slots.** `checkbox-card-explorer-demo` is the Explorer, which this
+      site has on no page. `checkbox-card-with-icon` swaps `react-icons` for the docs app's own
+      glyphs and adds the `value` prop upstream's example omits — without it every card in the group
+      shares the machine's default `"on"` and the four toggle as one. No hydration entry: nothing in
+      this tree is conditional or resolved through `children()` that `checkbox`'s entry does not
+      already cover
 - [ ] clipboard — ✗clipboard · 6/—
       Recipe key resolves to nothing **in Chakra too** (§2.5). **There is no coverage check to
       allow-list into** — the four that exist are `no-runtime-css`, `attribution`,

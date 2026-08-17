@@ -8,8 +8,8 @@ import type {
 
 /**
  * The five names the slot recipe carries, where the machine's anatomy carries four: `group` is
- * Ark's own extension, with no machine part behind it — and no recipe body either, in this recipe or
- * in `checkboxCard`.
+ * Ark's own extension, with no machine part behind it and no recipe body. `checkboxCard` — the other
+ * public component on this machine — does not name the slot at all.
  */
 export type CheckboxSlot = "root" | "label" | "control" | "indicator" | "group";
 

@@ -188,6 +188,32 @@ describe("the corrections written into a slot recipe's variants", () => {
     expect(variantsOf("checkbox")?.size?.md).toEqual({ control: { _icon: control._icon } });
   });
 
+  it("gives `checkboxCard` the same row one slot over, because the recipe is inverted", () => {
+    // `checkbox` puts the whole `checkmark` body on `control` and leaves `indicator` empty;
+    // `checkboxCard` does the reverse, so the slot that needs the correction moves with it. Three of
+    // the four variants give the indicator a resting `borderColor`; `subtle` declares nothing
+    // outside its own `&:is([data-state=checked], …)` block and takes neither condition.
+    expect(correctedValues("checkboxCard")).toEqual([
+      "size.sm",
+      "size.md",
+      "size.lg",
+      "variant.surface",
+      "variant.outline",
+      "variant.solid",
+    ]);
+
+    const indicator = inheritedBody("checkboxCard").base.indicator as StyleObject;
+
+    expect(variantsOf("checkboxCard")?.variant?.surface).toEqual({
+      indicator: { _invalid: indicator._invalid },
+    });
+    expect(variantsOf("checkboxCard")?.size?.md).toEqual({ indicator: { _icon: indicator._icon } });
+
+    // `root`'s own `_invalid` is an `outline`, and no variant declares one — so the slot every
+    // variant *does* write a flat `borderColor` on takes nothing.
+    expect(variantsOf("checkboxCard")?.variant?.outline?.root).toBeUndefined();
+  });
+
   it("keeps a grouped outline Avatar's ring at the width `base` asks for", () => {
     // `variant.outline` sets a resting 1px border, which defeated `base.root`'s
     // `&[data-group-item]` 2px. `borderless` respells the same condition for itself and is declared
@@ -214,6 +240,7 @@ describe("what the list leaves alone", () => {
       "table",
       "avatar",
       "checkbox",
+      "checkboxCard",
     ];
 
     for (const recipe of corrected) {
@@ -243,6 +270,7 @@ describe("what the list leaves alone", () => {
       "container",
       "avatar",
       "checkbox",
+      "checkboxCard",
       "nativeSelect",
       "table",
     ]);
@@ -574,11 +602,12 @@ describe("the base conditions a shipped recipe loses to its own variants", () =>
   });
 
   it("widens with the barrel rather than with anyone's memory", () => {
-    // The 12 recipes known to carry the same defect that nothing has ported yet. They are out of
+    // The 11 recipes known to carry the same defect that nothing has ported yet. They are out of
     // scope because `componentRecipes["."]` does not name them — not because this file does — and
-    // `checkboxCard` proves it: it reports collisions today and is simply not asked about.
+    // `select` proves it: it reports collisions today and is simply not asked about. `checkboxCard`
+    // used to be the probe and is now shipped and corrected, which is exactly the transition this
+    // assertion exists to make visible.
     const unported = [
-      "checkboxCard",
       "colorPicker",
       "combobox",
       "datePicker",
@@ -593,6 +622,6 @@ describe("the base conditions a shipped recipe loses to its own variants", () =>
     ];
 
     expect(unported.filter((recipe) => shippedRecipes.includes(recipe))).toEqual([]);
-    expect(shadowedConditionsIn("checkboxCard").length).toBeGreaterThan(0);
+    expect(shadowedConditionsIn("select").length).toBeGreaterThan(0);
   });
 });

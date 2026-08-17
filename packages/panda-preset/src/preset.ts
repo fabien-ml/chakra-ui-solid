@@ -196,6 +196,7 @@ const inherited = chakraPreset.theme as unknown as {
     table: InheritedBody<{ row: StyleObject }>;
     avatar: InheritedBody<{ root: StyleObject }>;
     checkbox: InheritedBody<{ control: StyleObject }>;
+    checkboxCard: InheritedBody<{ indicator: StyleObject }>;
   };
 };
 
@@ -229,6 +230,7 @@ const nativeSelectRecipe = inherited.slotRecipes.nativeSelect;
 const tableRecipe = inherited.slotRecipes.table;
 const avatarRecipe = inherited.slotRecipes.avatar;
 const checkboxRecipe = inherited.slotRecipes.checkbox;
+const checkboxCardRecipe = inherited.slotRecipes.checkboxCard;
 
 /**
  * The base conditions Panda's layering lets a variant defeat, written back into the variant values
@@ -254,10 +256,10 @@ const checkboxRecipe = inherited.slotRecipes.checkbox;
  * - **Only the variant values that actually shadow the condition carry it.** Panda emits variant
  *   rules in declaration order and these all land at equal specificity, so a correction written
  *   into a *later* variant key beats an earlier key's deliberate value.
- * - **A newly ported component may need a row.** The 12 recipes nothing has ported yet —
- *   `checkboxCard`, `colorPicker`, `combobox`, `datePicker`, `numberInput`, `pinInput`,
- *   `progress`, `radioCard`, `radioGroup`, `select`, `slider`, `tagsInput` — are known to carry the
- *   same defect, and get their rows when they ship.
+ * - **A newly ported component may need a row.** The 11 recipes nothing has ported yet —
+ *   `colorPicker`, `combobox`, `datePicker`, `numberInput`, `pinInput`, `progress`, `radioCard`,
+ *   `radioGroup`, `select`, `slider`, `tagsInput` — are known to carry the same defect, and get
+ *   their rows when they ship.
  */
 const shadowedBaseConditions: Record<string, VariantStyles> = {
   // Each variant picks its own resting `borderColor`; `flushed` spells the longhand
@@ -356,6 +358,25 @@ const shadowedSlotBaseConditions: Record<string, VariantStyles> = {
       sm: { control: conditionsOf(checkboxRecipe.base.control, "_icon") },
       md: { control: conditionsOf(checkboxRecipe.base.control, "_icon") },
       lg: { control: conditionsOf(checkboxRecipe.base.control, "_icon") },
+    },
+  }),
+
+  // The same row one slot over, because this recipe is `checkbox` inverted: the `checkmark` body is
+  // on `indicator` here and `control` styles the card around it. Three of the four variants give the
+  // indicator a resting `borderColor` and defeat `_invalid`'s `border.error`; `subtle` declares
+  // nothing outside its own `&:is([data-state=checked], …)` block and shadows nothing. The three
+  // sizes set `boxSize` and reach `_icon`. `root` takes nothing — its `_invalid` is an `outline`,
+  // and no variant declares one.
+  checkboxCard: inRecipeOrder(checkboxCardRecipe, {
+    variant: {
+      surface: { indicator: conditionsOf(checkboxCardRecipe.base.indicator, "_invalid") },
+      outline: { indicator: conditionsOf(checkboxCardRecipe.base.indicator, "_invalid") },
+      solid: { indicator: conditionsOf(checkboxCardRecipe.base.indicator, "_invalid") },
+    },
+    size: {
+      sm: { indicator: conditionsOf(checkboxCardRecipe.base.indicator, "_icon") },
+      md: { indicator: conditionsOf(checkboxCardRecipe.base.indicator, "_icon") },
+      lg: { indicator: conditionsOf(checkboxCardRecipe.base.indicator, "_icon") },
     },
   }),
 };

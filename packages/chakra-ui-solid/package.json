@@ -26,6 +26,7 @@
       "card": "src/components/card/index.ts",
       "center": "src/components/center/index.ts",
       "checkbox": "src/components/checkbox/index.ts",
+      "checkbox-card": "src/components/checkbox-card/index.ts",
       "checkmark": "src/components/checkmark/index.ts",
       "circle": "src/components/circle/index.ts",
       "code": "src/components/code/index.ts",
