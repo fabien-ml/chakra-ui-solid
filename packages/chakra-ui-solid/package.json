@@ -64,6 +64,7 @@
       "radio-card": "src/components/radio-card/index.ts",
       "radio-group": "src/components/radio-group/index.ts",
       "radiomark": "src/components/radiomark/index.ts",
+      "segment-group": "src/components/segment-group/index.ts",
       "separator": "src/components/separator/index.ts",
       "simple-grid": "src/components/simple-grid/index.ts",
       "skeleton": "src/components/skeleton/index.ts",

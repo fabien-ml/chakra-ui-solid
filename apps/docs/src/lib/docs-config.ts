@@ -161,7 +161,7 @@ export const docsNav: NavItem[] = [
           { title: "Radio Card", url: "radio-card" },
           { title: "Radio", url: "radio" },
           { title: "Rating Group", url: "rating-group" },
-          { title: "Segment Group", url: "segment-group" },
+          { title: "Segmented Control", url: "segmented-control" },
           { title: "Select (Native)", url: "native-select" },
           { title: "Slider", url: "slider" },
           { title: "Switch", url: "switch" },

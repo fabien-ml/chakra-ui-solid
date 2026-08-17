@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 72 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 73 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -498,7 +498,8 @@ asks, correct **both** in the same commit.
       **Its item emits `data-ssr`, and no `radioGroup` rule reads it** — the only other emitter is
       `tabs`, and the only two consumers are the `tabs` and `segmentGroup` recipes, so this machine's
       attribute is styled entirely by a *different* component's recipe (measured on the `tabs` row).
-      Asserted here, styled nowhere.
+      Asserted here, styled nowhere — and the `segment-group` ship is where it earns its keep, with
+      the served-vs-hydrated computed styles measured on both sides.
       Three measurements the notes did not predict: the machine's `orientation` defaults to
       **`vertical`**, not horizontal, and the recipe lays out neither — every example puts the row in
       an `HStack` of its own; `value` on an untouched group is **`undefined`** where Zag types it
@@ -547,22 +548,57 @@ asks, correct **both** in the same commit.
       `component-blueprint.md` §3.2
 - [ ] scroll-area — S:scrollArea · 6/6
       Browser tests keep real scrollbars (`brief-plan` §2.8)
-- [ ] segment-group — radio-group · S:segmentGroup · 6/6
-      Third public component on the radio-group machine. **The one recipe that styles an attribute
-      its own machine does not emit**: `&[data-state=checked][data-ssr]` on the item reads the flag
-      the *radio-group* machine writes, and `tabs` is the only other emitter/consumer pair in either
-      set (measured on the `tabs` row). It is the pre-hydration stand-in for the indicator, so a
-      served segment keeps its highlight until the machine starts and its `entry` action clears the
-      flag — **confirmed at the `radio-group` ship**: the machine writes `data-ssr` on `item`,
-      `itemText` and `itemControl`, on the server only, and the hydrated nodes lose it once `entry`
-      runs. Shape E is settled there too, and it survived its first reuse on `radio-card` unamended.
-      `orientation` is the trap this row inherits: the *machine's* default is `vertical`, and
-      upstream's `forwardProps: ["orientation"]` (`segment-group.tsx:62`, confirmed at the
-      `radio-card` ship) with a `"horizontal"` default is Chakra's own, so both halves have to be
-      checked rather than assumed. **`radio-card` measured the other resolution of the same
-      collision**, and it is the one to compare against: there `orientation` is a `radioCard` variant,
-      so `splitVariantProps` eats it and the machine never sees it. This is the only one of the three
-      components that forwards, and that one line is the whole difference
+- [x] segment-group — radio-group · S:segmentGroup · 6/6
+      Third public component on the radio-group machine, and **the only consumer of `data-ssr` that
+      draws something with it**. `&[data-state=checked][data-ssr]` on the item gives the served
+      segment the shadow, background and radius the indicator will draw once it has measured a rect;
+      `tabs` is the only other recipe that selects on the flag, and `radioGroup` and `radioCard` read
+      it nowhere. The predicted phrasing — *"the one recipe that styles an attribute its own machine
+      does not emit"* — was wrong twice: the recipe's machine **is** `@zag-js/radio-group`, and what
+      is unusual is only that the recipe is named after neither the machine nor the page. Measured
+      both sides in a real browser: served, the checked segment computes `rgb(255,255,255)` with a
+      live `box-shadow` and the indicator is `hidden` with none of its four properties written;
+      after `entry` runs `syncSsr` the segment is back to `rgba(0,0,0,0)`/`none` and the indicator —
+      the same node the server sent — carries the segment's offset rect and paints it.
+      **The indicator is machine-measured, not a pseudo-element.** `getIndicatorProps` emits
+      `--left`/`--top`/`--width`/`--height` from `dom.getOffsetRect` as inline custom properties and
+      the recipe reads all four back through `var()`; the adapter's `cssify` passes a `--`-prefixed
+      key through untouched and drops the `undefined` a server has to write, which is why the served
+      element carries `left:var(--left)` and no `--left:` at all. `animateIndicator` starts `false`,
+      so the first paint lands rather than slides, and a real value change turns
+      `transition-property` on.
+      **Ark renames the anatomy and we port that** (`anatomy.rename('segment-group')`): every part
+      announces `data-scope="segment-group"` where the machine stamps `radio-group`, which is what
+      chakra-ui.com serves and what a consumer's CSS already targets. `radio-card` is the contrast —
+      it wraps Ark's *RadioGroup*, so its parts keep the machine's scope. Safe because
+      `radio-group.dom.ts` finds every element by `id`, and the ids stay the machine's
+      (`radio-group:{id}:…`).
+      `orientation` resolved as predicted: `forwardProps: ["orientation"]` plus `defaultProps: {
+      orientation: "horizontal" }`, so it reaches **both** the machine (arrow keys,
+      `aria-orientation`) and the recipe (through `data-orientation`, which `_horizontal` /
+      `_vertical` select on). It is in `ROOT_OWN_KEYS`, not in the variant omit — the recipe has no
+      `orientation` variant, so `radio-card`'s resolution would have left it on the `div` and the
+      machine on `vertical`. `withDefaults` is what survives a forwarded `undefined`; the
+      `RootProvider` defaults nothing, because Chakra gives it no `defaultProps`.
+      **Two of the six slots have no body and no component**: `label` and `itemControl` are names on
+      the class map alone. The `label` one has a consequence in both libraries — `getRootProps()`
+      writes `aria-labelledby` unconditionally and Chakra ships no `Label` part, so a
+      `<SegmentGroup.Root>` standing alone always points at an element that does not exist and axe
+      scores `aria-valid-attr-value` *incomplete*. Expected, not tolerated; a `Fieldset.Legend`
+      clears it and that is the composition, and nothing on the page says so.
+      **Shape E on its second reuse, again with nothing added** — the Item is `radio-group`'s with a
+      third slot map and its own item context, for the error message. `SegmentGroup.Items` is the
+      Chakra-only shortcut and it iterates **`<For each keyed={false}>`**: `normalize()` builds fresh
+      objects whenever `items` does, and the default identity-keyed `<For>` would replace the very
+      `<label>` the indicator is measuring.
+      Preset: **no `shadowedSlotBaseConditions` row**, verified against the installed body — the one
+      variant key is `size` and it sets `textStyle`/`px`/`gap`/`height` only. It does earn **four
+      review rows** in `base-condition-variants.test.ts`: the detector pairs each size's `height`
+      with `base.item._vertical`'s `_before { height: 1px }`, which is a declaration on a descendant
+      pseudo-element and shadows nothing (the `_horizontal` twin sets `width` and is not even
+      reported). Docs: upstream's page is `segmented-control.mdx` titled **Segmented Control**, and
+      the nav row moved to match; `segmented-control-with-hook-form` got the plain-`<form>` rewrite
+      and `segmented-control-with-icon` substitutes three Lucide glyphs we ship for three we do not
 - [ ] select — S:select · 15/16 · Z ⚠
       `+indicatorGroup`. Hidden native `<select>` → restrictive-content-model hazard. **No collision
       with `native-select`**, settled on that row's ship: its anatomy is `createAnatomy("select")`

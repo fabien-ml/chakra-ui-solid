@@ -89,6 +89,7 @@ export * from "./quote";
 export * from "./radio-card";
 export * from "./radio-group";
 export * from "./radiomark";
+export * from "./segment-group";
 export * from "./separator";
 export * from "./simple-grid";
 export * from "./skeleton";

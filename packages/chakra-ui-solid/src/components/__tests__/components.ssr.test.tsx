@@ -94,6 +94,7 @@ import {
   createPopover,
   createRadioCard,
   createRadioGroup,
+  createSegmentGroup,
   createSwitch,
   createTabs,
   DataListItem,
@@ -234,6 +235,16 @@ import {
   RadioGroupRoot,
   RadioGroupRootProvider,
   Radiomark,
+  SegmentGroupContext,
+  SegmentGroupIndicator,
+  SegmentGroupItem,
+  SegmentGroupItemContext,
+  SegmentGroupItemHiddenInput,
+  SegmentGroupItems,
+  SegmentGroupItemText,
+  SegmentGroupPropsProvider,
+  SegmentGroupRoot,
+  SegmentGroupRootProvider,
   Separator,
   SeparatorPropsProvider,
   SimpleGrid,
@@ -1661,6 +1672,80 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   // Checked, because that is the arm that renders a child — the unchecked one is an empty `span`
   // and would pass the "did any element come back" check with the dot never built.
   Radiomark: () => <Radiomark checked />,
+  SegmentGroupContext: () => (
+    <SegmentGroupRoot>
+      <SegmentGroupContext>{(group) => <span>{String(group.value)}</span>}</SegmentGroupContext>
+    </SegmentGroupRoot>
+  ),
+  // Checked, because the indicator is `hidden` while nothing is picked — an unchecked group would
+  // pass the "did any element come back" check with the highlight never measured.
+  SegmentGroupIndicator: () => (
+    <SegmentGroupRoot defaultValue="React">
+      <SegmentGroupIndicator />
+      <SegmentGroupItems items={["React", "Vue"]} />
+    </SegmentGroupRoot>
+  ),
+  // Two segments rather than one, everywhere below: a repeated part that works for N=1 proves
+  // nothing about the getter argument, since a single segment cannot be handed the wrong one.
+  SegmentGroupItem: () => (
+    <SegmentGroupRoot defaultValue="React">
+      <SegmentGroupItem value="React" />
+      <SegmentGroupItem value="Vue" />
+    </SegmentGroupRoot>
+  ),
+  SegmentGroupItemContext: () => (
+    <SegmentGroupRoot defaultValue="React">
+      <SegmentGroupItem value="React">
+        <SegmentGroupItemContext>{(item) => <span>{item.value}</span>}</SegmentGroupItemContext>
+      </SegmentGroupItem>
+    </SegmentGroupRoot>
+  ),
+  SegmentGroupItemHiddenInput: () => (
+    <SegmentGroupRoot defaultValue="React">
+      <SegmentGroupItem value="React">
+        <SegmentGroupItemHiddenInput />
+      </SegmentGroupItem>
+      <SegmentGroupItem value="Vue">
+        <SegmentGroupItemHiddenInput />
+      </SegmentGroupItem>
+    </SegmentGroupRoot>
+  ),
+  SegmentGroupItemText: () => (
+    <SegmentGroupRoot defaultValue="React">
+      <SegmentGroupItem value="React">
+        <SegmentGroupItemText>React</SegmentGroupItemText>
+      </SegmentGroupItem>
+      <SegmentGroupItem value="Vue">
+        <SegmentGroupItemText>Vue</SegmentGroupItemText>
+      </SegmentGroupItem>
+    </SegmentGroupRoot>
+  ),
+  // Both entry forms, because the shortcut normalises a bare string and a descriptor into the same
+  // three parts and only a server render shows whether either arm went missing.
+  SegmentGroupItems: () => (
+    <SegmentGroupRoot defaultValue="React">
+      <SegmentGroupItems items={["React", { value: "Vue", label: "Vue.js", disabled: true }]} />
+    </SegmentGroupRoot>
+  ),
+  SegmentGroupPropsProvider: () => (
+    <SegmentGroupPropsProvider value={{ size: "lg" }}>
+      <SegmentGroupRoot defaultValue="React">
+        <SegmentGroupItems items={["React", "Vue"]} />
+      </SegmentGroupRoot>
+    </SegmentGroupPropsProvider>
+  ),
+  SegmentGroupRoot: () => (
+    <SegmentGroupRoot defaultValue="React">
+      <SegmentGroupIndicator />
+      <SegmentGroupItems items={["React", "Vue"]} />
+    </SegmentGroupRoot>
+  ),
+  SegmentGroupRootProvider: () => (
+    <SegmentGroupRootProvider value={createSegmentGroup({ defaultValue: "React" })}>
+      <SegmentGroupIndicator />
+      <SegmentGroupItems items={["React", "Vue"]} />
+    </SegmentGroupRootProvider>
+  ),
   // Responsive, because that is the arm whose `role` is decided rather than fixed: a conditional
   // orientation has no single `aria-orientation`, so the element drops to `presentation` — and the
   // server is where that decision has to be made, since no effect runs to correct it later.

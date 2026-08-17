@@ -424,6 +424,20 @@ const reviewedShadowedConditions: ReviewedCondition[] = [
       "while the block styles its `.dot` child. `subtle` also respells `& .dot` for itself to scale " +
       "the dot to 0.6, so copying the base block in would merge `scale: 0.4` over that.",
   })),
+  ...["xs", "sm", "md", "lg"].map((value) => ({
+    recipe: "segmentGroup",
+    slot: "item",
+    condition: "_vertical",
+    variantKey: "size",
+    value,
+    reason:
+      "Root against descendant. The block is `_vertical: { _before: { height: '1px' } }` — the " +
+      "hairline between two stacked segments, drawn on the item's `::before` — and the size sets " +
+      "`height` on the segment itself. Measured in `segment-group.browser.test.tsx`, where a " +
+      "vertical group at the default `md` computes `1px` on the pseudo-element and `40px` on the " +
+      "item. The `_horizontal` twin sets `width` on the same pseudo-element and is not even " +
+      "reported, which is the pair that shows the collision is a name and not a cascade.",
+  })),
   {
     recipe: "nativeSelect",
     slot: "field",

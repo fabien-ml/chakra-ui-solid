@@ -213,6 +213,19 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/radio-card/__tests__/radio-card.ssr-entry.tsx",
   ),
+  // The same machine one more recipe over, and the first subject where the two builds are supposed
+  // to disagree about an attribute **a stylesheet reads**. `tabs` proves `data-ssr` is on every
+  // served node and on none after the machine's `entry` runs; here that clearing is what the page
+  // looks like. `segmentGroup` is one of the two recipes in the preset that select on the flag —
+  // `&[data-state=checked][data-ssr]` paints the served segment the shadow, background and radius
+  // the indicator will draw once it can measure something — so the round trip has to hand the
+  // drawing from a *style* to an *element*, on nodes the server sent `hidden` with no rect at all.
+  // Its second half is `<SegmentGroup.Items>`, an **index-keyed** `<For>` normalising two entry
+  // spellings, beside a hand-written list of the same length that must spend keys identically.
+  "segment-group": join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/segment-group/__tests__/segment-group.ssr-entry.tsx",
+  ),
   // The first subject whose branch is decided by a **context the Root opened around its own
   // element**. `Alert.Indicator` defaults its children to a glyph chosen from the Root's `status`,
   // so three roots give three shapes — the default glyph, nothing at all (a responsive `status`

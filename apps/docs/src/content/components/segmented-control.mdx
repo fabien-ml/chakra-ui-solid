@@ -1,0 +1,148 @@
+---
+title: Segmented Control
+description: Used to pick one choice from a linear set of options
+links:
+  source: packages/chakra-ui-solid/src/components/segment-group
+  chakra: https://chakra-ui.com/docs/components/segmented-control
+---
+
+<Example name="segmented-control-basic" />
+
+## Usage
+
+```tsx
+import { SegmentGroup } from "chakra-ui-solid";
+```
+
+```tsx
+<SegmentGroup.Root>
+  <SegmentGroup.Indicator />
+  <SegmentGroup.Item>
+    <SegmentGroup.ItemText />
+    <SegmentGroup.ItemHiddenInput />
+  </SegmentGroup.Item>
+</SegmentGroup.Root>
+```
+
+A segmented control is a radio group wearing a second set of styles, so one machine drives every
+`SegmentGroup.Item` inside a `SegmentGroup.Root`: the group owns the picked value and a segment owns
+only its `value`.
+
+`SegmentGroup.Item` renders the `<label>` and `SegmentGroup.ItemHiddenInput` renders the real
+`<input type="radio">` inside it, so a click anywhere on a segment picks it. The input is not
+optional — without it there is nothing focusable, nothing to submit, and nothing for the segment to
+point at.
+
+`SegmentGroup.Indicator` is the sliding highlight, and there is **one for the whole group**. The
+machine measures the picked segment and writes its position and size onto that element, so put it
+inside the root and let it find its own place.
+
+## Shortcuts
+
+The `SegmentGroup` component also provides a set of shortcuts for common use cases.
+
+### SegmentGroup.Items
+
+The `SegmentGroup.Items` shortcut renders a list of items based on the `items` prop.
+
+This works:
+
+```tsx
+<For each={items}>
+  {(item) => (
+    <SegmentGroup.Item value={item.value}>
+      <SegmentGroup.ItemText>{item.label}</SegmentGroup.ItemText>
+      <SegmentGroup.ItemHiddenInput />
+    </SegmentGroup.Item>
+  )}
+</For>
+```
+
+This might be more concise, if you don't need to customize the items:
+
+```tsx
+<SegmentGroup.Items items={items} />
+```
+
+## Examples
+
+### Sizes
+
+Use the `size` prop to change the size of the segmented control.
+
+<Example name="segmented-control-with-sizes" />
+
+### Controlled
+
+Use the `value` and `onValueChange` props to control the selected item.
+
+<Example name="segmented-control-controlled" />
+
+### Hook Form
+
+Here's an example of how to use the segmented control inside a form.
+
+<Example name="segmented-control-with-hook-form" />
+
+### Vertical
+
+By default, the segmented control is horizontal. Set the `orientation` prop to `vertical` to change
+the orientation of the segmented control.
+
+<Example name="segmented-control-vertical" />
+
+### Disabled
+
+Use the `disabled` prop to disable the segmented control.
+
+<Example name="segmented-control-with-disabled" />
+
+### Disabled Item
+
+Use the `disabled` prop on the item to disable it.
+
+<Example name="segmented-control-with-disabled-item" />
+
+### Custom Indicator
+
+Customize the indicator appearance using CSS variables like `--segment-indicator-bg` and
+`--segment-indicator-shadow`.
+
+<Example name="segmented-control-with-custom-indicator" />
+
+### Color Palette
+
+By default, the segment control doesn't support changing the design via the `colorPalette` prop. This
+example shows how to customize the segmented control to make the `colorPalette` prop work.
+
+<Example name="segmented-control-with-color-palette" />
+
+### Icon
+
+Render the `label` as markup to render an icon.
+
+<Example name="segmented-control-with-icon" />
+
+### Card
+
+Here's an example of how to use the segmented control within a `Card`.
+
+<Example name="segmented-control-in-card" />
+
+## Props
+
+### Root
+
+<PropsTable component="segment-group" interface="SegmentGroupRootProps" />
+
+### RootProvider
+
+<PropsTable component="segment-group" interface="SegmentGroupRootProviderProps" />
+
+### Item
+
+<PropsTable component="segment-group" interface="SegmentGroupItemProps" />
+
+### Items
+
+<PropsTable component="segment-group" interface="SegmentGroupItemsProps" />
