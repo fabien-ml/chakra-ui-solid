@@ -254,13 +254,13 @@ describe("what the list leaves alone", () => {
     expect(variantsOf("avatar")?.borderless).toEqual({});
   });
 
-  it("declares `variants` for those eight recipes and nothing else", () => {
+  it("declares `variants` for those nine recipes and nothing else", () => {
     const declared = { ...extension?.recipes, ...extension?.slotRecipes };
     const withVariants = Object.keys(declared).filter(
       (key) => declared[key]?.variants !== undefined,
     );
 
-    // `container` is the ninth for an unrelated reason: it is the one recipe this package declares
+    // `container` is the tenth for an unrelated reason: it is the one recipe this package declares
     // a whole body for, because nothing upstream declares it, and those are its own variants.
     expect(withVariants).toEqual([
       "input",
@@ -272,6 +272,7 @@ describe("what the list leaves alone", () => {
       "checkbox",
       "checkboxCard",
       "nativeSelect",
+      "radioGroup",
       "table",
     ]);
   });
@@ -345,6 +346,38 @@ const reviewedShadowedConditions: ReviewedCondition[] = [
       "declaration shadows nothing. `filled` is declared after `variant` too, so a copy here would " +
       "emit `scale: 0.4` after `variant.outline`'s `0.6` at equal specificity and take the smaller " +
       "dot back.",
+  },
+  {
+    recipe: "radioGroup",
+    slot: "itemControl",
+    condition: "& .dot",
+    variantKey: "variant",
+    value: "outline",
+    reason:
+      "The `itemControl` slot is `radiomark`'s whole body, so this is that recipe's three rows " +
+      "slot-scoped. Root against descendant: the variant sets `borderWidth`/`borderColor` on the " +
+      "circle and the block styles its `.dot` child. `outline` also respells `& .dot` for itself to " +
+      "scale the dot to 0.6, so copying the base block in would merge `scale: 0.4` over that.",
+  },
+  {
+    recipe: "radioGroup",
+    slot: "itemControl",
+    condition: "& .dot",
+    variantKey: "variant",
+    value: "subtle",
+    reason:
+      "Root against descendant, as with `outline`. `subtle`'s `bg` and `color` are the circle's; " +
+      "the block's `bg: currentColor` is the dot's, and reads whatever `color` resolves to.",
+  },
+  {
+    recipe: "radioGroup",
+    slot: "itemControl",
+    condition: "& .dot",
+    variantKey: "variant",
+    value: "solid",
+    reason:
+      "Root against descendant, as with `outline`. Only the coarse border family relates the two " +
+      "at all: the dot's own border declaration is `borderRadius`.",
   },
   {
     recipe: "nativeSelect",
@@ -602,11 +635,11 @@ describe("the base conditions a shipped recipe loses to its own variants", () =>
   });
 
   it("widens with the barrel rather than with anyone's memory", () => {
-    // The 11 recipes known to carry the same defect that nothing has ported yet. They are out of
+    // The 10 recipes known to carry the same defect that nothing has ported yet. They are out of
     // scope because `componentRecipes["."]` does not name them — not because this file does — and
     // `select` proves it: it reports collisions today and is simply not asked about. `checkboxCard`
-    // used to be the probe and is now shipped and corrected, which is exactly the transition this
-    // assertion exists to make visible.
+    // and then `radioGroup` were the probe in turn and are now shipped and corrected, which is
+    // exactly the transition this assertion exists to make visible.
     const unported = [
       "colorPicker",
       "combobox",
@@ -615,7 +648,6 @@ describe("the base conditions a shipped recipe loses to its own variants", () =>
       "pinInput",
       "progress",
       "radioCard",
-      "radioGroup",
       "select",
       "slider",
       "tagsInput",

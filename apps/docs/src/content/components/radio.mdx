@@ -1,0 +1,105 @@
+---
+title: Radio
+description: Used to select one option from several options
+links:
+  source: packages/chakra-ui-solid/src/components/radio-group
+  chakra: https://chakra-ui.com/docs/components/radio
+---
+
+<Example name="radio-basic" />
+
+## Usage
+
+```tsx
+import { RadioGroup } from "chakra-ui-solid";
+```
+
+```tsx
+<RadioGroup.Root>
+  <RadioGroup.Item>
+    <RadioGroup.ItemHiddenInput />
+    <RadioGroup.ItemIndicator />
+    <RadioGroup.ItemText />
+  </RadioGroup.Item>
+</RadioGroup.Root>
+```
+
+One machine drives every radio in the group, so `RadioGroup.Root` owns the checked value and each
+`RadioGroup.Item` owns only its `value`. Every part inside an item — the input, the circle, the text
+— reads that value from the item it sits in, which is why none of them takes one.
+
+`RadioGroup.Item` renders the `<label>` and `RadioGroup.ItemHiddenInput` renders the real
+`<input type="radio">` inside it, so a click anywhere in the row picks that radio. The input is not
+optional — without it there is nothing focusable, nothing to submit, and nothing for the row to point
+at.
+
+If you prefer a closed component composition, check out the [snippet below](#closed-component).
+
+## Examples
+
+### Controlled
+
+Pass the `value` and `onValueChange` props to the `RadioGroup.Root` component to control the selected
+radio button.
+
+<Example name="radio-controlled" />
+
+### Colors
+
+Pass the `colorPalette` prop to the `RadioGroup.Root` component to change the color scheme of the
+component.
+
+<Example name="radio-with-colors" />
+
+### Sizes
+
+Pass the `size` prop to the `RadioGroup.Root` component to change the size of the radio component.
+
+<Example name="radio-with-sizes" />
+
+### Variants
+
+Pass the `variant` prop to the `RadioGroup.Root` component to change the appearance of the radio
+component.
+
+<Example name="radio-with-variants" />
+
+### Disabled
+
+Pass the `disabled` prop to the `RadioGroup.Item` component to make the radio disabled.
+
+<Example name="radio-disabled" />
+
+### Form Validation
+
+Here's an example of a radio group driven by a signal, with a validation message on submit.
+
+<Example name="radio-with-hook-form" />
+
+### Closed Component
+
+Here's how to setup the Radio for a closed component composition.
+
+<Example name="radio-closed-component" />
+
+Here's how to use it:
+
+```tsx
+<RadioGroup>
+  <Radio value="1">Option 1</Radio>
+</RadioGroup>
+```
+
+## Props
+
+### Root
+
+<PropsTable component="radio-group" interface="RadioGroupRootProps" />
+
+### RootProvider
+
+<PropsTable component="radio-group" interface="RadioGroupRootProviderProps" />
+
+### Item
+
+<PropsTable component="radio-group" interface="RadioGroupItemProps" />

@@ -86,6 +86,7 @@ export * from "./native-select";
 export * from "./popover";
 export * from "./portal";
 export * from "./quote";
+export * from "./radio-group";
 export * from "./radiomark";
 export * from "./separator";
 export * from "./simple-grid";

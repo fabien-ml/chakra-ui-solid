@@ -187,6 +187,19 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/switch/__tests__/switch.ssr-entry.tsx",
   ),
+  // The first subject where **one machine drives N of every part**, and the first whose hydration
+  // keys are decided by a list's *length* rather than by which branch a gate took. Six items over
+  // four parts each, from a `<For>`, with the checked one in the middle — an item spends a fixed
+  // number of keys and the next item's start position depends on it, so a server that resolved any
+  // item differently shifts every node after it. Its second root writes the same shape statically,
+  // which must spend keys identically, and its `Radiomark` dot is one extra node in the checked item
+  // alone. `skeleton` and `color-swatch` already vary a `<For>`'s length; what is new here is that
+  // each row also carries a **per-item context** built inside the `<For>` callback — a strict-read
+  // phase — and every part below it reads its own identity back out of that context on both builds.
+  "radio-group": join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/radio-group/__tests__/radio-group.ssr-entry.tsx",
+  ),
   // The first subject whose branch is decided by a **context the Root opened around its own
   // element**. `Alert.Indicator` defaults its children to a glyph chosen from the Root's `status`,
   // so three roots give three shapes — the default glyph, nothing at all (a responsive `status`

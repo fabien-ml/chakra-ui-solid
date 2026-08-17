@@ -197,6 +197,7 @@ const inherited = chakraPreset.theme as unknown as {
     avatar: InheritedBody<{ root: StyleObject }>;
     checkbox: InheritedBody<{ control: StyleObject }>;
     checkboxCard: InheritedBody<{ indicator: StyleObject }>;
+    radioGroup: InheritedBody<{ itemControl: StyleObject }>;
   };
 };
 
@@ -231,6 +232,7 @@ const tableRecipe = inherited.slotRecipes.table;
 const avatarRecipe = inherited.slotRecipes.avatar;
 const checkboxRecipe = inherited.slotRecipes.checkbox;
 const checkboxCardRecipe = inherited.slotRecipes.checkboxCard;
+const radioGroupRecipe = inherited.slotRecipes.radioGroup;
 
 /**
  * The base conditions Panda's layering lets a variant defeat, written back into the variant values
@@ -256,10 +258,10 @@ const checkboxCardRecipe = inherited.slotRecipes.checkboxCard;
  * - **Only the variant values that actually shadow the condition carry it.** Panda emits variant
  *   rules in declaration order and these all land at equal specificity, so a correction written
  *   into a *later* variant key beats an earlier key's deliberate value.
- * - **A newly ported component may need a row.** The 11 recipes nothing has ported yet —
+ * - **A newly ported component may need a row.** The 10 recipes nothing has ported yet —
  *   `colorPicker`, `combobox`, `datePicker`, `numberInput`, `pinInput`, `progress`, `radioCard`,
- *   `radioGroup`, `select`, `slider`, `tagsInput` — are known to carry the same defect, and get
- *   their rows when they ship.
+ *   `select`, `slider`, `tagsInput` — are known to carry the same defect, and get their rows when
+ *   they ship.
  */
 const shadowedBaseConditions: Record<string, VariantStyles> = {
   // Each variant picks its own resting `borderColor`; `flushed` spells the longhand
@@ -377,6 +379,21 @@ const shadowedSlotBaseConditions: Record<string, VariantStyles> = {
       sm: { indicator: conditionsOf(checkboxCardRecipe.base.indicator, "_icon") },
       md: { indicator: conditionsOf(checkboxCardRecipe.base.indicator, "_icon") },
       lg: { indicator: conditionsOf(checkboxCardRecipe.base.indicator, "_icon") },
+    },
+  }),
+
+  // `itemControl` is the `radiomark` recipe's whole body on a slot, so this is that recipe's row
+  // slot-scoped — and it is `radiomark`'s ordering trap as well. All three variants give the circle
+  // a resting `borderColor` and defeat `_invalid`'s `red.500`, so all three carry it. **The four
+  // sizes carry nothing**: what they set is `boxSize`, `base.itemControl` declares no `_icon`, and
+  // the only other block a size could shadow is `& .dot` — which `variant.outline` respells to
+  // `scale: 0.6`. `size` is declared after `variant`, so a copy of the base dot under a size would
+  // be emitted later at equal specificity and take the 0.4 back on an outline radio.
+  radioGroup: inRecipeOrder(radioGroupRecipe, {
+    variant: {
+      outline: { itemControl: conditionsOf(radioGroupRecipe.base.itemControl, "_invalid") },
+      subtle: { itemControl: conditionsOf(radioGroupRecipe.base.itemControl, "_invalid") },
+      solid: { itemControl: conditionsOf(radioGroupRecipe.base.itemControl, "_invalid") },
     },
   }),
 };

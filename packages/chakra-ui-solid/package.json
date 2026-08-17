@@ -61,6 +61,7 @@
       "native-select": "src/components/native-select/index.ts",
       "popover": "src/components/popover/index.ts",
       "quote": "src/components/quote/index.ts",
+      "radio-group": "src/components/radio-group/index.ts",
       "radiomark": "src/components/radiomark/index.ts",
       "separator": "src/components/separator/index.ts",
       "simple-grid": "src/components/simple-grid/index.ts",
@@ -122,6 +123,7 @@
     "@zag-js/dialog": "catalog:",
     "@zag-js/file-utils": "catalog:",
     "@zag-js/popover": "catalog:",
+    "@zag-js/radio-group": "catalog:",
     "@zag-js/switch": "catalog:",
     "@zag-js/tabs": "catalog:"
   },

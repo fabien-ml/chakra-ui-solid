@@ -92,6 +92,11 @@ catalog:
   # `anatomy`, `dom-query` and `focus-visible`, all of which the entries above already resolve at
   # 1.43.0. Nothing new arrives underneath it.
   "@zag-js/switch": 1.43.0
+  # The eighth, and the first that drives N controls from one machine: its getters take an item props
+  # bag (`{ value, disabled, invalid }`) rather than describing a single element. Its dependency list
+  # adds nothing — `core`, `types`, `utils`, `anatomy`, `dom-query` and `focus-visible` all resolve at
+  # 1.43.0 already.
+  "@zag-js/radio-group": 1.43.0
   # A machine package `@chakra-ui-solid/core` depends on directly, unlike every other one: presence
   # is a *primitive* rather than a component, and `createPresence` is what nine components' exit
   # animations are built on.

@@ -331,10 +331,11 @@ verbatim case, and the `switch` row shipped on exactly that. What the misspellin
 class name — `swittch`'s own `className` is `switch`, so `switch__control` is what reaches the DOM —
 it is the `cursor` token of the same name, which `preset.ts` restores with one `theme.extend` key.
 
-### 3.2 The four part shapes
+### 3.2 The five part shapes
 
-Every part component that **renders an element** is one of these. Full code in §11. `parity-matrix.md`
-§7 hands the fifth — the repeated part — and one part component renders nothing at all, below.
+Every part component that **renders an element** is one of these. Full code in §11, except shape E,
+which is written out below. One part component renders nothing at all — the `Context` part, further
+down.
 
 | Shape | Has | Example | Body |
 |---|---|---|---|
@@ -342,6 +343,85 @@ Every part component that **renders an element** is one of these. Full code in �
 | **B** Presence-gated machine part | A + presence | `Content`, `Backdrop` | A + a `<Show>` gate, presence's `presenceProps`, and presence's `setNode` as the internal ref |
 | **C** Slot-only part | recipe slot only | `Header`, `Body`, `Footer` | `renderStyled` with a `recipeClass` and nothing else |
 | **D** Behavior-only part | context behavior, no slot | `ActionTrigger` | `renderStyled` with a composed handler and no `recipeClass` |
+| **E** Repeated part | A + a **per-item context** it opens | `RadioGroup.Item` and everything under it | A, wrapped in a provider carrying the item's props bag and its machine-derived state |
+
+#### Shape E — the repeated part
+
+Written from what RadioGroup needed (`radio-group-parts.tsx`), against `parity-matrix.md` §7's five
+proofs. It applies to any component where **one machine drives N of something**: the machine's prop
+getters take an item props bag instead of describing a single element, and the parts inside one item
+have to be told which item they are in.
+
+**The item's own part opens the context; every part below reads it.** There are two components in
+the shape, not one.
+
+```tsx
+export const RadioGroupItem: Component<RadioGroupItemProps> = (props) => {
+  const ctx = useRadioGroupContext();
+
+  // Getters, never a copy: this bag is read again on every transition, by every part below.
+  const itemProps: RadioGroupItemBaseProps = {
+    get value() { return props.value },
+    get disabled() { return props.disabled },
+    get invalid() { return props.invalid },
+  };
+
+  // One memo for the whole item — `getItemState` builds a fresh object per call.
+  const state = createMemo(() => ctx.getItemState(itemProps));
+  const item = createMachineStore(state, { itemProps });
+
+  const elementProps = mergeProps(
+    () => ctx.getItemProps(itemProps),
+    omit(props, "value", "disabled", "invalid"),
+  ) as LabelProps;
+
+  return (
+    <RadioGroupItemProvider value={item}>
+      {renderStyled<LabelProps, HTMLLabelElement>({
+        as: (props.as ?? "label") as ValidComponent,
+        props: elementProps,
+        render: props.render,
+        recipeClass: () => ctx.slots().item,   // the Root's map — never a recipe call of its own
+      })}
+    </RadioGroupItemProvider>
+  );
+};
+
+export const RadioGroupItemText: Component<RadioGroupItemTextProps> = (props) => {
+  const ctx = useRadioGroupContext();
+  const item = useRadioGroupItemContext();
+
+  const elementProps = mergeProps(() => ctx.getItemTextProps(item.itemProps), props) as SpanProps;
+  // …shape A from here.
+};
+```
+
+Five rules, and each is the thing a proof measured:
+
+1. **The per-item context carries identity, not behavior.** `itemProps` plus the machine's derived
+   state for that item — nothing a part could have asked the Root for directly. §3.3's rule survives:
+   a part still reads `api`, `slots` and now `item`, and nothing else.
+2. **The props bag round-trips through the *Root's* getters, unmodified.**
+   `ctx.getItemTextProps(item.itemProps)`, never a bag the part rebuilt. One bag per item, shared by
+   every part in it — so the machine still owns every attribute and the context owns only the
+   argument.
+3. **The state is `createMachineStore` over one memo**, not a plain object and not N getters calling
+   the machine. Same primitive as the Root's store, for the same two reasons: property access is what
+   Solid tracks through, and a state a Zag minor adds arrives without an edit. **This is where the
+   React shape stops porting** — Ark needs *two* contexts here, a snapshot `ItemState` re-provided on
+   every render plus the props bag beside it, because a snapshot is all React can put on a context.
+   Solid re-reads instead of re-rendering, so one context carries both and the item is built once.
+4. **Nothing is read untracked.** The item component is constructed inside a `<For>` callback, which
+   Solid 2.0 labels a strict-read phase (§2.2) — so every read of `props.value` sits inside the memo
+   or inside a getter, and `mount()` failing on a `[STRICT_READ_UNTRACKED]` there is a genuine defect.
+   Never wrap the construction to silence one.
+5. **The slot class map stays on the Root.** `recipeClass: () => ctx.slots().item` — every item in a
+   group carries the identical string, and a per-item `sva()` call would be correct and wasteful.
+   This is what lets a larger collection scale.
+
+**Iterate with `<For>`, and mind the key.** The default `For` is identity-keyed and tears down a row's
+whole subtree on every tick of a recomputed array; index-keyed is `<For each={…} keyed={false}>`, and
+`Repeat` is the count-based primitive. **SolidJS 2.0 has no `Index`.**
 
 **The `Context` part is none of the shapes** — it renders no element, takes no props but `children`,
 has no slot, and never reaches `renderStyled`. 43 components ship one (`parity-matrix.md` §10). Its
@@ -412,7 +492,7 @@ so a member a Zag minor release adds reaches both without an edit. `Readonly` is
 
 Anything a part needs that is none of those four is a smell: it means the part is reaching for state
 the machine already owns. The one legitimate addition is a **per-item context** for repeated parts
-(§0.2), and it carries the item's identity, not behavior.
+(§0.2), and it carries the item's identity, not behavior — shape E in §3.2, settled on `radio-group`.
 
 Use `createComponentContext(name)` — Solid 2.0's `createContext` already returns the Provider
 directly and already throws when unmounted; the wrapper adds an error naming the component family.

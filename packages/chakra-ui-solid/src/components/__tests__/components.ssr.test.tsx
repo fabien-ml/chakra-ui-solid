@@ -92,6 +92,7 @@ import {
   createDialog,
   createDrawer,
   createPopover,
+  createRadioGroup,
   createSwitch,
   createTabs,
   DataListItem,
@@ -206,6 +207,17 @@ import {
   PopoverTrigger,
   Portal,
   Quote,
+  RadioGroupContext,
+  RadioGroupItem,
+  RadioGroupItemContext,
+  RadioGroupItemControl,
+  RadioGroupItemHiddenInput,
+  RadioGroupItemIndicator,
+  RadioGroupItemText,
+  RadioGroupLabel,
+  RadioGroupPropsProvider,
+  RadioGroupRoot,
+  RadioGroupRootProvider,
   Radiomark,
   Separator,
   SeparatorPropsProvider,
@@ -1437,6 +1449,88 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
     </Portal>
   ),
   Quote: () => <Quote>quoted</Quote>,
+  RadioGroupContext: () => (
+    <RadioGroupRoot>
+      <RadioGroupContext>{(group) => <span>{String(group.value)}</span>}</RadioGroupContext>
+    </RadioGroupRoot>
+  ),
+  // Two items rather than one, everywhere below: a repeated part that works for N=1 proves nothing
+  // about the getter argument, since a single item cannot be handed the wrong one.
+  RadioGroupItem: () => (
+    <RadioGroupRoot defaultValue="solid">
+      <RadioGroupItem value="solid" />
+      <RadioGroupItem value="vue" />
+    </RadioGroupRoot>
+  ),
+  RadioGroupItemContext: () => (
+    <RadioGroupRoot defaultValue="solid">
+      <RadioGroupItem value="solid">
+        <RadioGroupItemContext>{(item) => <span>{item.value}</span>}</RadioGroupItemContext>
+      </RadioGroupItem>
+    </RadioGroupRoot>
+  ),
+  RadioGroupItemControl: () => (
+    <RadioGroupRoot defaultValue="solid">
+      <RadioGroupItem value="solid">
+        <RadioGroupItemControl />
+      </RadioGroupItem>
+    </RadioGroupRoot>
+  ),
+  RadioGroupItemHiddenInput: () => (
+    <RadioGroupRoot defaultValue="solid">
+      <RadioGroupItem value="solid">
+        <RadioGroupItemHiddenInput />
+      </RadioGroupItem>
+    </RadioGroupRoot>
+  ),
+  // Checked, because that is the arm where the Radiomark renders its dot — an unchecked circle is
+  // an empty `span` and would pass the "did any element come back" check with nothing drawn.
+  RadioGroupItemIndicator: () => (
+    <RadioGroupRoot defaultValue="solid">
+      <RadioGroupItem value="solid">
+        <RadioGroupItemIndicator />
+      </RadioGroupItem>
+    </RadioGroupRoot>
+  ),
+  RadioGroupItemText: () => (
+    <RadioGroupRoot defaultValue="solid">
+      <RadioGroupItem value="solid">
+        <RadioGroupItemText>Solid</RadioGroupItemText>
+      </RadioGroupItem>
+    </RadioGroupRoot>
+  ),
+  RadioGroupLabel: () => (
+    <RadioGroupRoot>
+      <RadioGroupLabel>Framework</RadioGroupLabel>
+    </RadioGroupRoot>
+  ),
+  RadioGroupPropsProvider: () => (
+    <RadioGroupPropsProvider value={{ size: "lg" }}>
+      <RadioGroupRoot>
+        <RadioGroupItem value="solid">
+          <RadioGroupItemIndicator />
+        </RadioGroupItem>
+      </RadioGroupRoot>
+    </RadioGroupPropsProvider>
+  ),
+  RadioGroupRoot: () => (
+    <RadioGroupRoot defaultValue="solid">
+      <RadioGroupLabel>Framework</RadioGroupLabel>
+      <RadioGroupItem value="solid">
+        <RadioGroupItemHiddenInput />
+        <RadioGroupItemIndicator />
+        <RadioGroupItemText>Solid</RadioGroupItemText>
+      </RadioGroupItem>
+    </RadioGroupRoot>
+  ),
+  RadioGroupRootProvider: () => (
+    <RadioGroupRootProvider value={createRadioGroup({ defaultValue: "solid" })}>
+      <RadioGroupItem value="solid">
+        <RadioGroupItemHiddenInput />
+        <RadioGroupItemIndicator />
+      </RadioGroupItem>
+    </RadioGroupRootProvider>
+  ),
   // Checked, because that is the arm that renders a child — the unchecked one is an empty `span`
   // and would pass the "did any element come back" check with the dot never built.
   Radiomark: () => <Radiomark checked />,

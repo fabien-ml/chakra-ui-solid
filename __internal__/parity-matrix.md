@@ -724,11 +724,17 @@ gate, and axe finds nothing on any of the five shapes its suite runs.
 
 ## 7. The fifth part shape — the repeated part
 
-`component-blueprint.md` §3.2 has four shapes (A machine part, B presence-gated machine part, C
-slot-only part, D behavior-only part) and §0.2 hands the fifth here: a part that renders **once per
+> **Settled. `radio-group` defined shape E, not Accordion, and the five proofs below all hold** —
+> `component-blueprint.md` §3.2 carries the shape. The reasoning in §7.1 is sound and kept; **its
+> choice of component was a prediction, and the measurement refuted it** (§7.3). §7.2's proofs are
+> what the row was accepted against, verbatim, and the gate they closed — *"until then, no other
+> component with a repeated part starts"* — is open.
+
+`component-blueprint.md` §3.2 had four shapes (A machine part, B presence-gated machine part, C
+slot-only part, D behavior-only part) and §0.2 handed the fifth here: a part that renders **once per
 item** under one Root, each instance needing a per-item context.
 
-### 7.1 The component that settles it: **Accordion**
+### 7.1 The component this section nominated: **Accordion**
 
 Not because it is first alphabetically, and not because P5 mentioned it — because it is the smallest
 component that carries a per-item context of the *general* shape, and because it settles a second
@@ -741,20 +747,25 @@ unknown in the same pass.
 | **It settles family M at the same time** | Its `aria-controls` gate is the collapsible machine's `isUnmounted` (§6.2). One component, two open shapes |
 | **It exercises shape C inside the repeat** | `itemBody` is a Chakra-only slot with no machine part, rendered per item |
 
+Every row of that table is still true of Accordion, and the second one is why it stayed the *default*
+answer for a year. What it never was is the **only** answer: three of the four criteria describe a
+component that would be *pleasant* to settle the shape on, not one that is required to.
+
 **Rejected alternatives, each for a reason:**
 
 - **`listbox` / `select` / `menu`** — their items come from `@zag-js/collection`, so the per-item
   context would carry a *collection item* and the shape would over-fit to a mechanism only three
   components use. Settling the general shape on the special case is how a pattern gets stamped wrong
-  100 times.
-- **`radio-group`** — a fine second data point, but its item context is `{ value }` alone, which is
-  too thin to reveal whether the shape generalises.
+  100 times. **This one holds.**
+- **`radio-group`** — *"a fine second data point, but its item context is `{ value }` alone, which is
+  too thin to reveal whether the shape generalises."* **Refuted — see §7.3.**
 - **`tree-view`** — the repeated part is also **recursive** (branches nest). That is a strictly harder
-  problem and the right place to *stress* the shape (B7), not to define it.
+  problem and the right place to *stress* the shape (B7), not to define it. **This one holds.**
 - **`table` / `timeline` / `data-list`** — repeated parts with **no machine**, so they exercise the
-  repetition without the context-plus-getter interaction that is the actual question.
+  repetition without the context-plus-getter interaction that is the actual question. **This one
+  holds.**
 
-### 7.2 What Accordion must prove
+### 7.2 What the definer had to prove
 
 Do not write the shape's code before these five hold. Each is a test, not an argument.
 
@@ -769,12 +780,45 @@ Do not write the shape's code before these five hold. Each is a test, not an arg
    absence.
 4. **N items allocate the same `_hk` keys on server and client.** An SSR→hydrate round-trip fixture
    with a non-trivial item list, not a green typecheck (`component-blueprint.md` §10.1).
-5. **The slot class map is resolved once on the Root, not once per item.** Every `Accordion.ItemTrigger`
-   carries the *same* `itemTrigger` class string; a per-item `sva()` call would be correct and wasteful,
-   and proving it is unnecessary is what lets B5/B7's larger collections scale.
+5. **The slot class map is resolved once on the Root, not once per item.** Every repeated part
+   carries the *same* class string; a per-item `sva()` call would be correct and wasteful, and
+   proving it is unnecessary is what lets B5/B7's larger collections scale.
 
-When those hold, `component-blueprint.md` §3.2 gains **shape E — repeated part**, written from what
-Accordion actually needed. Until then, no other component with a repeated part starts.
+### 7.3 Why `radio-group` defined it instead
+
+**The rejection rested on a count, and the count was wrong.** `@zag-js/radio-group@1.43.0`'s
+`ItemState` (`radio-group.types.ts:156`, and identical in the installed package) is **eight** fields,
+not one:
+
+```ts
+{ value, invalid, disabled, checked, focused, focusVisible, hovered, active }
+```
+
+`getItemState` feeds `getItemDataAttrs`, which writes **nine** `data-*` attributes onto **three**
+parts — `item`, `itemText`, `itemControl` — and `getItemControlProps` adds a tenth. Four of Zag's 51
+machines carry a wider item state; none of the four is smaller than Accordion's. So the item context
+here is exactly what §7.1's first row asked for and this bullet denied it was: identity plus derived
+state, consumed by the *Root's* getters.
+
+That is a note written before the component's code was read, which is what `roadmap.md`
+§*Reading a row* says a prediction is. The two things Accordion would additionally have settled —
+family M's `aria-controls` gate, and shape C inside the repeat — are unrelated to the fifth shape and
+are still Accordion's to settle; it did not lose a reason to exist, only a dependency on it.
+
+**How each proof was discharged** (all five in `radio-group.browser.test.tsx` and
+`radio-group.ssr.test.tsx`, and the shape in `component-blueprint.md` §3.2):
+
+| Proof | The measurement |
+|---|---|
+| 1 | Three items, three distinct context objects captured through the public `ItemContext` render prop; after a selection change **the same three objects** report the new state, which is only true of a context built once per item over reactive getters. A second test reads per-item `data-state` and ids off `ItemText`/`ItemControl`/`ItemHiddenInput`, none of which takes a `value` |
+| 2 | The Root's `getItemTextProps`/`getItemControlProps` wrapped on a machine the test owns, so the *real* argument is captured: exactly the three `ItemProps` keys, the same object for both parts, and still live — a signal changing the item's `value` moves the captured bag with it |
+| 3 | Six items from a signal-driven `<For>`, disposed inside the test body rather than in `afterEach`, so `mount()`'s console guard raising a `[STRICT_READ_UNTRACKED]` **is** the assertion. Nothing is wrapped in `untrack` to get there |
+| 4 | `HYDRATION_ENTRIES["radio-group"]` — six items from a `<For>` with the checked one fifth, two more written statically, one under a `Fieldset`, and an empty group, plus an `after` sibling. The `Radiomark` dot is one extra node in the checked item alone, so a miscount lands every node after it on the wrong marker |
+| 5 | The `item`, `itemText` and `itemControl` class strings compared across items — one distinct value each — and the computed box compared alongside, because a per-item resolution could agree by accident while the recipe was never run |
+
+One thing the shape gained by *not* being settled on Accordion: RadioGroup's item context is
+consumed by **three** later components (`radio-card`, `segment-group`, and `rating-group`'s own
+repeat), so the first use of shape E is also its first reuse.
 
 ---
 

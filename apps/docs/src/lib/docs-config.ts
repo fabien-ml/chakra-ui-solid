@@ -15,8 +15,12 @@
  * which component owes a page is `roadmap.md` §4, read mechanically by `check:docs-inventory`
  * (**D-140**).
  *
- * The component groups are Chakra's, applied to **our** folder names, which differ in a dozen
- * places (`radio-group` for their `radio`, `segment-group` for their `segmented-control`).
+ * The component groups are Chakra's, and so is **the address of every page in them**: a row's `url`
+ * is upstream's page name, not our folder name, wherever the two differ — `radio` for the
+ * `radio-group` directory, `segmented-control` for `segment-group`. This line read the other way
+ * round until the `radio-group` ship, on a guess made before any such page existed; a reader
+ * arriving from chakra-ui.com is owed the address they already have, and a page's own folder is not
+ * something they can see.
  * **An entry here needs a counterpart entry in chakra-ui.com's own nav** — a component the React
  * version documents inside another page is documented there too, and one it documents nowhere gets
  * no entry (`docs-site.md` §2.3). The three `input-*` rows are the open exception that section
@@ -155,7 +159,7 @@ export const docsNav: NavItem[] = [
           { title: "Number Input", url: "number-input" },
           { title: "Pin Input", url: "pin-input" },
           { title: "Radio Card", url: "radio-card" },
-          { title: "Radio Group", url: "radio-group" },
+          { title: "Radio", url: "radio" },
           { title: "Rating Group", url: "rating-group" },
           { title: "Segment Group", url: "segment-group" },
           { title: "Select (Native)", url: "native-select" },

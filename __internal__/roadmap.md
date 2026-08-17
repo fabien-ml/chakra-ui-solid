@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 70 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 71 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -475,23 +475,52 @@ asks, correct **both** in the same commit.
 - [ ] progress-circle — progress · S:progressCircle · 9/9
       Second public component on one machine
 - [ ] qr-code — S:qrCode · 5/5
-- [ ] radio-group — S:radioGroup · 6/8
-      `+itemAddon`, `+itemIndicator`. Repeated part. **Both compose, and this line said only
-      "Composes the `radiomark` atomic recipe" until the `radiomark` row measured it** (§*Reading a
-      row*, the propagation rule): the preset's `radioGroup` slot recipe inlines
-      `radiomarkRecipe.base` into `itemControl` plus every size and variant, so those styles are
-      already in our generated CSS; and `RadioGroupItemControl` *also* renders `<Radiomark unstyled>`
-      with `css={[styles.itemControl, props.css]}`. The load-bearing prop is `unstyled`.
+- [x] radio-group — S:radioGroup · 6/8
+      `+itemAddon`, `+itemIndicator`, neither with a body in *this* recipe. **The row that defines
+      shape E** — the repeated part — and `parity-matrix.md` §7 is rewritten to say so: its stated
+      reason for rejecting this component ("its item context is `{ value }` alone") was a prediction,
+      and Zag's `ItemState` is **eight** fields (`value invalid disabled checked focused
+      focusVisible hovered active`) feeding nine `data-*` attributes across three parts. One machine
+      drives N items; each `RadioGroup.Item` publishes a context of the item's props bag plus those
+      eight as reactive getters over one memo, and every part below hands the bag straight back to
+      the *group's* getters. **Ark needs two contexts for this and we need one** — a snapshot
+      `ItemState` it re-provides per render, plus the props bag — which is the port rule's "same
+      feature, different mechanism" at its plainest.
+      **`RadioGroupItemIndicator`, not `ItemControl`, renders `<Radiomark unstyled>`** with
+      `css={[styles.itemControl, props.css]}` (`radio-group.tsx:119-140`); `ItemControl` is a plain
+      part, and the two describe the same machine element. This line and the `radiomark` row both
+      said `ItemControl` and both were wrong — corrected together, which is the propagation rule.
+      Both halves of the composition do hold: the preset inlines `radiomarkRecipe.base` and its
+      sizes and variants into `itemControl`, so `unstyled` is the load-bearing prop and `class="dot"`
+      is what the slot's own `& .dot` rule finds on the way back in.
       **Its item emits `data-ssr`, and no `radioGroup` rule reads it** — the only other emitter is
       `tabs`, and the only two consumers are the `tabs` and `segmentGroup` recipes, so this machine's
-      attribute is styled entirely by a *different* component's recipe (measured on the `tabs` row)
+      attribute is styled entirely by a *different* component's recipe (measured on the `tabs` row).
+      Asserted here, styled nowhere.
+      Three measurements the notes did not predict: the machine's `orientation` defaults to
+      **`vertical`**, not horizontal, and the recipe lays out neither — every example puts the row in
+      an `HStack` of its own; `value` on an untouched group is **`undefined`** where Zag types it
+      `string | null`, because the bindable is seeded straight from `defaultValue`; and it adopts a
+      **Fieldset**, not a Field, taking the legend's id as its own label id — so a group rendering
+      both a `Fieldset.Legend` and a `RadioGroup.Label` puts one id on two elements, in Ark and in
+      ours, and the legend is the composition. Preset: `shadowedSlotBaseConditions` row on
+      `itemControl`, three variants, `_invalid` only — the four sizes take nothing, because copying
+      `& .dot` under a size would be emitted after `variant.outline`'s respelt `scale: 0.6` and take
+      it back. Docs: upstream's page is `radio.mdx` titled **Radio**, and the nav row moved to match
 - [ ] radio-card — radio-group · S:radioCard · 6/10
       Extends Chakra's *extended* radioGroup anatomy: `+itemContent`, `+itemDescription`.
       Composes `radiomark` the same two ways as `radio-group`, on `itemIndicator` rather than
       `itemControl`, and adds `aria-hidden` at the call site — measured on the `radiomark` row,
-      where this line said nothing at all
+      where this line said nothing at all. **Shape E is settled** (`component-blueprint.md` §3.2, the
+      `radio-group` ship): reuse `createRadioGroup` and the item context as-is, and note the contrast
+      this row carries — `RadioCardItemIndicator` is *not* a machine part, so it inherits no
+      `aria-hidden`, where `RadioGroupItemIndicator` renders the machine's `itemControl` and inherits
+      one. Its `ItemControl` is hand-written and deliberately omits seven of the attributes the
+      machine would have written
 - [ ] rating-group — S:ratingGroup · 4/5
-      `+itemIndicator`. Repeated part
+      `+itemIndicator`. Repeated part — **unblocked**: `parity-matrix.md` §7's "no other component
+      with a repeated part starts" closed on the `radio-group` ship, and shape E is
+      `component-blueprint.md` §3.2
 - [ ] scroll-area — S:scrollArea · 6/6
       Browser tests keep real scrollbars (`brief-plan` §2.8)
 - [ ] segment-group — radio-group · S:segmentGroup · 6/6
@@ -500,7 +529,11 @@ asks, correct **both** in the same commit.
       the *radio-group* machine writes, and `tabs` is the only other emitter/consumer pair in either
       set (measured on the `tabs` row). It is the pre-hydration stand-in for the indicator, so a
       served segment keeps its highlight until the machine starts and its `entry` action clears the
-      flag
+      flag — **confirmed at the `radio-group` ship**: the machine writes `data-ssr` on `item`,
+      `itemText` and `itemControl`, on the server only, and the hydrated nodes lose it once `entry`
+      runs. Shape E is settled there too, and `orientation` is the trap this row inherits: the
+      *machine's* default is `vertical`, and upstream's `forwardProps: ["orientation"]` with a
+      `"horizontal"` default is Chakra's own, so both halves have to be checked rather than assumed
 - [ ] select — S:select · 15/16 · Z ⚠
       `+indicatorGroup`. Hidden native `<select>` → restrictive-content-model hazard. **No collision
       with `native-select`**, settled on that row's ship: its anatomy is `createAnatomy("select")`
@@ -1300,11 +1333,13 @@ The seam's own suite gained the test that would have caught it.
       **Both compose, differently.** The preset's `radioGroup`/`radioCard` slot recipes inline
       `radiomarkRecipe.base` and its size/variant objects, so those styles are already in our
       generated CSS and this row owes them nothing. What B4 consumes is the **component**:
-      `RadioGroupItemControl` and `RadioCardItemIndicator` each render `<Radiomark unstyled>` and
+      `RadioGroupItemIndicator` and `RadioCardItemIndicator` each render `<Radiomark unstyled>` and
       hand it their own slot's styles through `css`, and `radio-card` adds `aria-hidden` at the call
-      site. `class="dot"` is the seam that survives `unstyled` — the slot recipes carry the `& .dot`
-      rule the dropped `.radiomark` class would have supplied. Four `variant` values, not five: no
-      `plain`
+      site. **This line said `RadioGroupItemControl` until the `radio-group` ship**, which is the one
+      name upstream does not use — `ItemControl` is a plain part there, and the indicator is what
+      composes the mark onto the same machine element through `asChild` (`render`, here). `class="dot"`
+      is the seam that survives `unstyled` — the slot recipes carry the `& .dot` rule the dropped
+      `.radiomark` class would have supplied. Four `variant` values, not five: no `plain`
 - [x] separator — A:separator · —/1
       **Its page needs `responsive: { separator: ["orientation"] }`**, and the prediction held only
       in the weak sense: `separator-with-responsive-orientation` writes `orientation={{ base:
