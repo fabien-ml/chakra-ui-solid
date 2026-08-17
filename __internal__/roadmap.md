@@ -1,6 +1,6 @@
 # Roadmap
 
-v0.1.0 is the whole port: 110 components. 66 done. The five under *Not ported* are outside that
+v0.1.0 is the whole port: 110 components. 70 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
 ## Done, per component
@@ -305,8 +305,11 @@ asks, correct **both** in the same commit.
       unprefixed `var()` dies there the same way. That is the port rule's **second** case — both
       wrong the same way, ship it — not the first, so **measure chakra-ui.com's date picker in a
       browser before touching this**, and expect to record it as expected rather than fix it.
-      `switch`'s cursor is the row that looks like this one and is not. The `outline-color` beside it
-      still rings the focused trigger, so this is a second ring lost, not the indicator.
+      `switch`'s cursor is the row that looks like this one and is not, and it has now shipped: the
+      preset restores `cursor.switch` with one token key and the browser test measures `pointer` on
+      the track, because there upstream's own theme spells the key correctly and only the Panda
+      preset renames it. Nothing here has that asymmetry. The `outline-color` beside it still rings
+      the focused trigger, so this is a second ring lost, not the indicator.
       **Owes the input-group opt-in** (~3 lines, settled on the `input-group` row):
       `date-picker-with-input-group` puts a `DatePicker.Input` inside an `InputGroup`, and the
       `input` slot declares `--input-height: var(--datepicker-input-height)`.
@@ -513,14 +516,50 @@ asks, correct **both** in the same commit.
       **Duplicate slot `resizeTriggerIndicator`**. `+resizeTriggerSeparator`. The machine writes a gesture cursor rule — **audited and cleared** at P4 (`zag-solid-adapter.md` §5.3)
 - [ ] steps — S:steps · 10/12
       Chakra's anatomy is its **own** `createAnatomy("steps")` with 12 parts, not Zag's 10 (`+title`, `+description`)
-- [ ] switch — S:swittch · 4/5
-      **The generated recipe function will be named `swittch`** (§1.3c). **And its `cursor: "switch"`
-      references a token the preset registers as `swittch`, so the pointer cursor is silently lost** —
-      one `theme.extend.tokens.cursor.switch` key in our preset restores it, and **that restoration is
-      the port working, not a divergence**: upstream's `theme/tokens/cursor.ts` registers the key as
-      `switch`, so the React version renders the pointer and only the Panda preset's rename drops it.
-      The port rule's **first** case, measured — where `date-picker`'s focus ring, which reads like
-      the same defect, is the second. `+indicator`
+- [x] switch — S:swittch · 4/5
+      **The cursor half of this note was already landed work when the row was ported, not owed
+      work.** `theme.extend.tokens.cursor.switch` has been in
+      [preset.ts](../packages/panda-preset/src/preset.ts) since the preset's own delta was written,
+      asserted by `preset.test.ts` and `generated-css.test.ts`. What it never had was a browser
+      assertion, and that is what this row added: `getComputedStyle(control).cursor` is `pointer`
+      on a real element. The port-rule reading stands unchanged — upstream's
+      `theme/tokens/cursor.ts` spells the key `switch`, so the React version renders the pointer and
+      only the Panda preset's rename drops it, which makes the restoration the port working rather
+      than a divergence. `date-picker`'s focus ring still reads like the same defect and is not.
+      **The misspelling is a key, never a class.** `swittch`'s `className` is `switch`, so the Root
+      hands `createSlotClasses` the typo and every class it gets back is spelled correctly —
+      `switch__control`, `switch__thumb`. The SSR suite asserts `swittch` appears in no markup, which
+      is what would catch an alias emitting the body twice (`recipe-registry.ts`).
+      **No `shadowedSlotBaseConditions` row, verified against the installed body rather than
+      assumed.** `base.control._invalid` is an `outline` and neither variant declares one;
+      `base.control._disabled`, `base.thumb._checked`, `base.label._disabled` and
+      `base.indicator._checked` are shadowed by nothing either — `variant.solid`'s
+      `focusVisibleRing` is a nested selector, not a flat `outline`. The browser test rings an
+      invalid track under **both** variants, which is what would catch a preset bump that added one.
+      **`+indicator` is Chakra's fifth slot and carries no anatomy at all** — no `data-scope`, no
+      `data-part`, no `data-state`, because the component calls no prop getter. Its one attribute is
+      `data-checked`, which the slot's `_checked` block selects on to slide the glyph across the
+      track; **we write it after the props spread where upstream writes it before**, so a wrapper
+      forwarding `data-checked={undefined}` cannot delete the one attribute the position hangs off
+      (`CLAUDE.md`, *The third hazard* — the same split `CheckboxCard.Description` already makes).
+      **`ThumbIndicator` is a sixth component that is not a slot**: no anatomy part, no recipe body,
+      no class at all. It exists because one docs example needs somewhere to put a state-dependent
+      child inside the thumb.
+      `Indicator` and `ThumbIndicator` share a `children`/`fallback` pair, and **both arms are two
+      `children()` memos rather than one ternary read off props** — the arm the gate does not select
+      is never constructed, which is what the hydration subject and the construction counts exist to
+      hold. That pair is the divergence this subject is first to probe.
+      The machine takes a `label` prop (`"switch"` by default) that `switch.connect.ts` never reads
+      in 1.43.0 — exposed for parity, and nothing is said about it on the page. Zag's computed key
+      here is `isDisabled` where checkbox's is `disabled`, and only the machine's own effects read
+      it; `connect()` reports `!!prop("disabled")` on both.
+      A Fieldset's `disabled` reaches a switch through a `Field.Root` and its `invalid` does not —
+      Field reads only the one key. `Checkbox` looks like the counter-example and is not: there it is
+      `CheckboxGroup` that reads both, and Switch has no group.
+      **Docs: `switch-with-tooltip` is omitted rather than substituted**, because `tooltip` is
+      unported and the page ships the other ten slots. Add the section when Tooltip lands; the
+      example is `<Tooltip ids={{ trigger: id }}>` over a `<Switch.Root ids={{ root: id }}>`.
+      `switch-with-hook-form` got the plain-`<form>` rewrite `checkbox` settled
 - [x] tabs — S:tabs · 5/6 · Z
       **Three anatomies carry the name, and only one of them produces DOM.** Zag's
       `createAnatomy("tabs")` has the five parts the machine writes `data-part` for; Ark re-exports

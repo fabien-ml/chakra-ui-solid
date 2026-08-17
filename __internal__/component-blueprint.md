@@ -326,8 +326,10 @@ selector.
 
 **One live trap in the preset while you are here.** `dialog`'s `slots` array lists `backdrop`
 **twice**, and the slot-recipe registry key for Switch is misspelled **`swittch`** upstream
-(`prior-art.md` §4.2). Neither is ours to fix from outside; both are `plan.md` §1.3's "consume the
-upstream key verbatim, file an issue" case.
+(`prior-art.md` §4.2). Neither is ours to fix from outside: both are `plan.md` §1.3's consume-the-key-
+verbatim case, and the `switch` row shipped on exactly that. What the misspelling costs is *not* a
+class name — `swittch`'s own `className` is `switch`, so `switch__control` is what reaches the DOM —
+it is the `cursor` token of the same name, which `preset.ts` restores with one `theme.extend` key.
 
 ### 3.2 The four part shapes
 

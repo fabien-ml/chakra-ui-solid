@@ -100,6 +100,7 @@ export * from "./stat";
 export * from "./status";
 export * from "./sticky";
 export * from "./strong";
+export * from "./switch";
 export * from "./table";
 export * from "./tabs";
 export * from "./tag";

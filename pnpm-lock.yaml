@@ -259,6 +259,9 @@ catalogs:
     '@zag-js/presence':
       specifier: 1.43.0
       version: 1.43.0
+    '@zag-js/switch':
+      specifier: 1.43.0
+      version: 1.43.0
     '@zag-js/tabs':
       specifier: 1.43.0
       version: 1.43.0
@@ -459,6 +462,9 @@ importers:
         specifier: 'catalog:'
         version: 1.43.0
       '@zag-js/popover':
+        specifier: 'catalog:'
+        version: 1.43.0
+      '@zag-js/switch':
         specifier: 'catalog:'
         version: 1.43.0
       '@zag-js/tabs':
@@ -2444,6 +2450,9 @@ packages:
 
   '@zag-js/remove-scroll@1.43.0':
     resolution: {integrity: sha512-2cE7yS3G6JffdlKMzECDQm2ro3mAqWf2ovSylFcsHh/xLx4RIgtv3EivJrNTcr1d+H0YF2/uVyDuUwYlycWNsQ==}
+
+  '@zag-js/switch@1.43.0':
+    resolution: {integrity: sha512-WH6i+0H9l7iIg7gYlcq5EcbJpwBjdYgxxFOGqyr04+q2WV46ytEnkW+iu61TVFr9vpE75wgtkLEG/gc080Y/zw==}
 
   '@zag-js/tabs@1.43.0':
     resolution: {integrity: sha512-Nll5xQUPGOdVTYd+DYGA3wF+0xlJc+kRmQoAuE5ZHIsLuJrXn9jhRwkmQHL2rh/lln3cT9Ecp4UDWl/qyqBecQ==}
@@ -6393,6 +6402,15 @@ snapshots:
   '@zag-js/remove-scroll@1.43.0':
     dependencies:
       '@zag-js/dom-query': 1.43.0
+
+  '@zag-js/switch@1.43.0':
+    dependencies:
+      '@zag-js/anatomy': 1.43.0
+      '@zag-js/core': 1.43.0
+      '@zag-js/dom-query': 1.43.0
+      '@zag-js/focus-visible': 1.43.0
+      '@zag-js/types': 1.43.0
+      '@zag-js/utils': 1.43.0
 
   '@zag-js/tabs@1.43.0':
     dependencies:

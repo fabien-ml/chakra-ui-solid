@@ -1,0 +1,29 @@
+export type {
+  SwitchCheckedChangeDetails as CheckedChangeDetails,
+  SwitchContextProps as ContextProps,
+  SwitchControlProps as ControlProps,
+  SwitchElementIds as ElementIds,
+  SwitchHiddenInputProps as HiddenInputProps,
+  SwitchIndicatorProps as IndicatorProps,
+  SwitchLabelProps as LabelProps,
+  SwitchPropsProviderProps as PropsProviderProps,
+  SwitchRootBaseProps as RootBaseProps,
+  SwitchRootProps as RootProps,
+  SwitchRootProviderProps as RootProviderProps,
+  SwitchThumbIndicatorProps as ThumbIndicatorProps,
+  SwitchThumbProps as ThumbProps,
+} from "./switch.types";
+export {
+  SwitchContext as Context,
+  SwitchControl as Control,
+  SwitchHiddenInput as HiddenInput,
+  SwitchIndicator as Indicator,
+  SwitchLabel as Label,
+  SwitchThumb as Thumb,
+  SwitchThumbIndicator as ThumbIndicator,
+} from "./switch-parts";
+export {
+  SwitchPropsProvider as PropsProvider,
+  SwitchRoot as Root,
+  SwitchRootProvider as RootProvider,
+} from "./switch-root";

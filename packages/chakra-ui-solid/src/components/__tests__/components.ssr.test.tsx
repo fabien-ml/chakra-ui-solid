@@ -92,6 +92,7 @@ import {
   createDialog,
   createDrawer,
   createPopover,
+  createSwitch,
   createTabs,
   DataListItem,
   DataListItemLabel,
@@ -236,6 +237,16 @@ import {
   StatValueUnit,
   Sticky,
   Strong,
+  SwitchContext,
+  SwitchControl,
+  SwitchHiddenInput,
+  SwitchIndicator,
+  SwitchLabel,
+  SwitchPropsProvider,
+  SwitchRoot,
+  SwitchRootProvider,
+  SwitchThumb,
+  SwitchThumbIndicator,
   TableBody,
   TableCaption,
   TableCell,
@@ -1552,6 +1563,74 @@ const SUBJECTS: Record<string, () => JSX.Element> = {
   ),
   Sticky: () => <Sticky top="0">pinned</Sticky>,
   Strong: () => <Strong>bold</Strong>,
+  SwitchContext: () => (
+    <SwitchRoot>
+      <SwitchContext>{(api) => <span>{String(api.checked)}</span>}</SwitchContext>
+    </SwitchRoot>
+  ),
+  // No children, which is the arm that builds the default `<Switch.Thumb />` inside a `children()`
+  // call — the one shape a server render of this part can get wrong.
+  SwitchControl: () => (
+    <SwitchRoot defaultChecked>
+      <SwitchControl />
+    </SwitchRoot>
+  ),
+  SwitchHiddenInput: () => (
+    <SwitchRoot>
+      <SwitchHiddenInput />
+    </SwitchRoot>
+  ),
+  // Checked, so the arm the server takes is `children` rather than `fallback`.
+  SwitchIndicator: () => (
+    <SwitchRoot defaultChecked>
+      <SwitchControl>
+        <SwitchThumb />
+        <SwitchIndicator fallback="off">on</SwitchIndicator>
+      </SwitchControl>
+    </SwitchRoot>
+  ),
+  SwitchLabel: () => (
+    <SwitchRoot>
+      <SwitchLabel>Activate</SwitchLabel>
+    </SwitchRoot>
+  ),
+  SwitchPropsProvider: () => (
+    <SwitchPropsProvider value={{ size: "lg" }}>
+      <SwitchRoot>
+        <SwitchControl />
+      </SwitchRoot>
+    </SwitchPropsProvider>
+  ),
+  SwitchRoot: () => (
+    <SwitchRoot>
+      <SwitchHiddenInput />
+      <SwitchControl />
+      <SwitchLabel>Activate</SwitchLabel>
+    </SwitchRoot>
+  ),
+  SwitchRootProvider: () => (
+    <SwitchRootProvider value={createSwitch({ defaultChecked: true })}>
+      <SwitchHiddenInput />
+      <SwitchControl />
+    </SwitchRootProvider>
+  ),
+  SwitchThumb: () => (
+    <SwitchRoot>
+      <SwitchControl>
+        <SwitchThumb />
+      </SwitchControl>
+    </SwitchRoot>
+  ),
+  // Unchecked, which is the `fallback` arm — the sibling above takes the other one.
+  SwitchThumbIndicator: () => (
+    <SwitchRoot>
+      <SwitchControl>
+        <SwitchThumb>
+          <SwitchThumbIndicator fallback="✕">✓</SwitchThumbIndicator>
+        </SwitchThumb>
+      </SwitchControl>
+    </SwitchRoot>
+  ),
   TableBody: () => (
     <TableRoot>
       <TableBody>

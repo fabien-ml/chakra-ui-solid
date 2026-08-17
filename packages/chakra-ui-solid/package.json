@@ -75,6 +75,7 @@
       "status": "src/components/status/index.ts",
       "sticky": "src/components/sticky/index.ts",
       "strong": "src/components/strong/index.ts",
+      "switch": "src/components/switch/index.ts",
       "table": "src/components/table/index.ts",
       "tabs": "src/components/tabs/index.ts",
       "tag": "src/components/tag/index.ts",
@@ -121,6 +122,7 @@
     "@zag-js/dialog": "catalog:",
     "@zag-js/file-utils": "catalog:",
     "@zag-js/popover": "catalog:",
+    "@zag-js/switch": "catalog:",
     "@zag-js/tabs": "catalog:"
   },
   "devDependencies": {

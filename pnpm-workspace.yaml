@@ -88,6 +88,10 @@ catalog:
   # effect — and that package already has an entry of its own for Storybook's warm-up, so the two
   # resolve one copy.
   "@zag-js/checkbox": 1.43.0
+  # The seventh, and a sibling of the sixth: its dependency list is `core`, `types`, `utils`,
+  # `anatomy`, `dom-query` and `focus-visible`, all of which the entries above already resolve at
+  # 1.43.0. Nothing new arrives underneath it.
+  "@zag-js/switch": 1.43.0
   # A machine package `@chakra-ui-solid/core` depends on directly, unlike every other one: presence
   # is a *primitive* rather than a component, and `createPresence` is what nine components' exit
   # animations are built on.

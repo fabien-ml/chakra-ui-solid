@@ -176,6 +176,17 @@ export const HYDRATION_ENTRIES: Record<string, string> = {
     repoRoot,
     "packages/chakra-ui-solid/src/components/checkbox/__tests__/checkbox.ssr-entry.tsx",
   ),
+  // The first subject with a slot whose **two arms are both the consumer's**, competing for one
+  // position. `Switch.Indicator` and `Switch.ThumbIndicator` each take a `children` and a
+  // `fallback`, the machine's `checked` picks one, and the arm it does not pick must cost nothing —
+  // no `createComponent`, no hydration key. Every earlier conditional subject branches between a
+  // subtree and *nothing* (`checkmark`, `radiomark`) or between slots that can render together
+  // (`loader`); here two consumer subtrees of different sizes compete four times over, and its two
+  // opposite-state roots take opposite arms of all four gates.
+  switch: join(
+    repoRoot,
+    "packages/chakra-ui-solid/src/components/switch/__tests__/switch.ssr-entry.tsx",
+  ),
   // The first subject whose branch is decided by a **context the Root opened around its own
   // element**. `Alert.Indicator` defaults its children to a glyph chosen from the Root's `status`,
   // so three roots give three shapes — the default glyph, nothing at all (a responsive `status`
