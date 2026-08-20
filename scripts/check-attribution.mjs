@@ -26,6 +26,7 @@ import {
   findNoticeRowProblems,
   findOrphanNoticeRows,
   findPackageFilesProblems,
+  LICENSE_HEADER_WINDOW,
 } from "./lib/attribution.mjs";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -161,7 +162,7 @@ for (const item of readdirSync(join(repoRoot, "packages"), { withFileTypes: true
   const promised = new Set();
   for (const attribution of attributions.filter((entry) => entry.package === item.name)) {
     const contents = readFileSync(join(repoRoot, attribution.file), "utf8");
-    for (const match of contents.slice(0, 1200).matchAll(promisedFilePattern)) {
+    for (const match of contents.slice(0, LICENSE_HEADER_WINDOW).matchAll(promisedFilePattern)) {
       promised.add(match[1]);
     }
   }

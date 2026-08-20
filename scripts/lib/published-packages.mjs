@@ -4,6 +4,10 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
+// `npm pack --json` lists every file in the tarball; the whole report arrives on one pipe,
+// and the default 1 MB stdio buffer truncates it into invalid JSON.
+const PACK_REPORT_MAX_BUFFER = 64 * 1024 * 1024;
+
 export function listPublishedPackages(repoRoot) {
   const packages = [];
   for (const entry of readdirSync(join(repoRoot, "packages"), { withFileTypes: true })) {
@@ -38,7 +42,7 @@ export function listPackedFiles(directory) {
     encoding: "utf8",
     // npm writes its file listing to stderr as human-readable notices; the JSON is on stdout.
     stdio: ["ignore", "pipe", "ignore"],
-    maxBuffer: 64 * 1024 * 1024,
+    maxBuffer: PACK_REPORT_MAX_BUFFER,
   });
   const [report] = JSON.parse(output);
   return (report?.files ?? []).map((file) => file.path);

@@ -23,6 +23,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
 
+const JSDOC_OPENER = "/**";
+const JSDOC_CLOSER_LENGTH = "*/".length;
+
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const componentsSrc = join(repoRoot, "packages/chakra-ui-solid/src/components");
 const outputFile = join(repoRoot, "apps/docs/src/generated/props-tables.ts");
@@ -66,12 +69,14 @@ function sourceFilesFor(componentDir) {
 function jsDocOf(node, sourceFile) {
   const text = sourceFile.getFullText();
   const ranges = ts.getLeadingCommentRanges(text, node.getFullStart()) ?? [];
-  const doc = ranges.filter((range) => text.slice(range.pos, range.pos + 3) === "/**").at(-1);
+  const doc = ranges
+    .filter((range) => text.slice(range.pos, range.pos + JSDOC_OPENER.length) === JSDOC_OPENER)
+    .at(-1);
   if (doc === undefined) {
     return "";
   }
   return text
-    .slice(doc.pos + 3, doc.end - 2)
+    .slice(doc.pos + JSDOC_OPENER.length, doc.end - JSDOC_CLOSER_LENGTH)
     .split("\n")
     .map((line) => line.replace(/^\s*\*?\s?/, ""))
     .join(" ")

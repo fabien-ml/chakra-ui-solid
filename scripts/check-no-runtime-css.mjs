@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// check:no-runtime-css — the one rule this library is built on, at its three boundaries.
+// check:no-runtime-css — the hard constraint this library is built on, at its three boundaries.
 //
 //   A. No CSS-in-JS engine anywhere in the INSTALLED dependency closure. Judges what a dependency
 //      *is*. A transitive edge is the one nobody adds deliberately, so this reads the installed
@@ -46,6 +46,10 @@ import {
   listPublishedPackages,
 } from "./lib/published-packages.mjs";
 
+// `pnpm ls --depth Infinity --recursive` prints the entire installed tree as one JSON blob.
+// The default 1 MB stdio buffer truncates it, and the parse fails on valid output.
+const DEPENDENCY_TREE_MAX_BUFFER = 256 * 1024 * 1024;
+
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const fail = (message) => {
@@ -61,7 +65,7 @@ try {
     execFileSync("pnpm", ["ls", "--json", "--depth", "Infinity", "--recursive"], {
       cwd: repoRoot,
       encoding: "utf8",
-      maxBuffer: 256 * 1024 * 1024,
+      maxBuffer: DEPENDENCY_TREE_MAX_BUFFER,
     }),
   );
 } catch (error) {

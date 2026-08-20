@@ -24,6 +24,16 @@
       "preset": "recommended",
       "style": {
         "useBlockStatements": "error"
+        // `style/noMagicNumbers` was tried on 2026-08-20 and rejected: it flags the operands of any
+        // arithmetic, including inside the named `const` it tells you to extract — `const
+        // DEFAULT_RATIO = 4 / 3` and `maxBuffer: 64 * 1024 * 1024` both fail — and Biome 2.5.7
+        // gives the rule no options (ESLint's `ignore` array has no equivalent). A rule whose only
+        // satisfying answer is a `biome-ignore` teaches suppression, so the style review keeps this.
+      },
+      "complexity": {
+        // `const x = function x()` names the same thing twice. The rule does not reach a
+        // top-level `function foo()` declaration — that half stays the style review's work.
+        "useArrowFunction": "error"
       }
     }
   },
@@ -57,6 +67,9 @@
       }
     },
     {
+      // Browser tests deliberately build markup a component would never ship: an element carrying a
+      // role its tag does not imply, a `<button>` with no `type`. That is the defect under test, and
+      // the a11y lint would reject the test instead of the bug.
       "includes": ["**/*.browser.test.tsx"],
       "linter": {
         "rules": {
@@ -65,7 +78,8 @@
             "useSemanticElements": "off",
             "useFocusableInteractive": "off",
             "useAriaActivedescendantWithTabindex": "off",
-            "useKeyWithClickEvents": "off"
+            "useKeyWithClickEvents": "off",
+            "useButtonType": "off"
           }
         }
       }

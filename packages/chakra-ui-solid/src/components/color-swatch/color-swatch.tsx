@@ -140,7 +140,10 @@ export interface ColorSwatchMixProps extends Omit<ColorSwatchProps, "value"> {
 }
 
 /** Chakra's message, kept verbatim: it is what a consumer greps for. */
-const TOO_MANY_COLORS = "ColorSwatchMix doesn't support more than 4 colors";
+const MAX_MIX_COLORS = 4;
+const TOO_MANY_COLORS = `ColorSwatchMix doesn't support more than ${MAX_MIX_COLORS} colors`;
+// Three colours leave an odd cell in a 2×2 grid, so the last one spans the bottom row.
+const COLORS_THAT_SPAN_A_ROW = 3;
 
 /**
  * ColorSwatchMix — up to four colours inside one swatch, in the space a single swatch takes.
@@ -171,12 +174,12 @@ export const ColorSwatchMix: Component<ColorSwatchMixProps> = (props) => {
 
   // `untrack` because the read really is untracked and Solid is right to say so: this is a
   // construction-time check, and the alternative is the halted graph described above.
-  if (untrack(() => merged.items.length) > 4) {
+  if (untrack(() => merged.items.length) > MAX_MIX_COLORS) {
     throw new Error(TOO_MANY_COLORS);
   }
 
   const spansTwoColumns = (index: number) =>
-    merged.items.length === 3 && index === merged.items.length - 1;
+    merged.items.length === COLORS_THAT_SPAN_A_ROW && index === merged.items.length - 1;
 
   // Named rather than spread inline. A **call expression** in a JSX spread is compiled to a memo,
   // and the receiving component then reads a reactive value in its own body — `STRICT_READ_UNTRACKED`,

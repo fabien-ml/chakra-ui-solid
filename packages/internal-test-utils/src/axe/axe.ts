@@ -12,12 +12,15 @@ export interface A11yCheckOptions {
   allowIncomplete?: readonly string[];
 }
 
+// A violation can match hundreds of nodes; the first few identify it, the rest are noise.
+const REPORTED_TARGETS_PER_VIOLATION = 3;
+
 function summarize(results: readonly axe.Result[]): string {
   return results
     .map((result) => {
       const targets = result.nodes
         .map((node) => node.target.join(" "))
-        .slice(0, 3)
+        .slice(0, REPORTED_TARGETS_PER_VIOLATION)
         .join(", ");
       return `- [${result.impact ?? "needs review"}] ${result.id}: ${result.help}\n    ${targets}`;
     })

@@ -10,6 +10,12 @@
  */
 
 /**
+ * How far into a file the opening comment is looked for. A license header sits at the top or it
+ * is not a header — and reading the whole file would match an `@license` in unrelated prose.
+ */
+export const LICENSE_HEADER_WINDOW = 1200;
+
+/**
  * The header must be tagged `@license`, name the upstream **file**, and promise the license file
  * that travels with the package.
  *
@@ -20,7 +26,7 @@
  */
 export function checkLicenseHeader(entry, contents) {
   const problems = [];
-  const header = contents.slice(0, 1200);
+  const header = contents.slice(0, LICENSE_HEADER_WINDOW);
 
   if (!header.includes("@license")) {
     problems.push(
