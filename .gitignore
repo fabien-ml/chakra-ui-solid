@@ -1,5 +1,6 @@
 # Read-only reference checkouts for the port (chakra-ui, ark-ui, zag, zag-v2). Never committed.
 __reference-impl__/
+.claude/settings.json
 
 # Dependencies
 node_modules/
