@@ -8,9 +8,10 @@ history than one maintained by hand.
 
 ## Where we are
 
-Phase: **the comprehension walk has not started.** 73 of 110 components are ported and green; none of
-them has been walked. No concept is validated yet — [concepts/index.md](concepts/index.md) is empty
-until L0 fills it.
+Phase: **the comprehension walk has a backlog and no validated concept yet.** 73 of 110 components
+are ported and green; none of them has been walked. L0 read the tree and produced the 77 rows of
+[concepts/index.md](concepts/index.md); every one is still `not started`, because a row turns
+`validated` only on a passed QCM.
 
 The workflow itself landed on 2026-08-20: the loop, six new skills, `useArrowFunction` as a lint
 rule, the branch-per-feature convention, and these three files. `CLAUDE.md` is the whole of it.
@@ -18,19 +19,32 @@ rule, the branch-per-feature convention, and these three files. `CLAUDE.md` is t
 **New component ports are frozen** (`CLAUDE.md`, *The one rule*). The roadmap's checkboxes are the
 port status and nothing else; they say nothing about what is understood.
 
+**L0 ran on 2026-08-20.** [concepts/index.md](concepts/index.md) holds the backlog — **77 concepts**
+in ten sections, ordered so nothing depends on a concept numbered after it. The pass also produced
+[notes/l0-findings.md](notes/l0-findings.md) (30 items, none fixed) and five rows in
+[notes/verified-facts.md](notes/verified-facts.md).
+
 ## Next action
 
-**L0 — derive the comprehension backlog.** Read the tree layer by layer and produce
-[concepts/index.md](concepts/index.md): the numbered concept list, ordered so nothing is learned
-twice, each row naming the files in *this repo* that rest on it.
+**Run C1 through the loop.** *Panda writes the CSS at build time; the runtime only recomputes the
+name the rule was generated under* — `components/box/box.tsx`, `core/src/system/system.tsx`,
+`styled-system/panda.config.ts`, `components/box/__tests__/factory-extraction.test.ts`.
 
-*Facts are the agent's job* — L0 is delegated reading, and its output is what makes the rest
-schedulable. It is a doc-only pass, so it commits straight to `develop`.
+One concept, one round: **explain → validate knowledge**. A diagram, a table, a snippet — never a
+document. Then a QCM through `AskUserQuestion` with the answer order randomized. Wrong or dismissed
+→ stop, re-explain lower and slower, re-ask. There is no round budget.
+
+`Box` is the entry point because it is one line of authored code — `export const Box = chakra("div")`
+— and its `__tests__/` folder is the only place in the repo where a mechanism and its complete
+evidence sit together.
+
+A passed QCM is a `validated` row + date in [concepts/index.md](concepts/index.md). Nothing else
+changes; C1 through C13 are reading, not building.
 
 ### The layer order, and the reading surface
 
-The unit is **the mechanism, not the component**. 78 component folders rest on far fewer distinct
-mechanisms, and walking them alphabetically would teach the same five things fifteen times.
+Kept because it is how the backlog is sectioned and how a re-read of any layer is scoped. The unit
+is **the mechanism, not the component**: 78 component folders rest on 12 of the 77 rows.
 
 | # | Layer | Where | src LOC |
 |---|---|---|---|
