@@ -1,6 +1,5 @@
 # Read-only reference checkouts for the port (chakra-ui, ark-ui, zag, zag-v2). Never committed.
 __reference-impl__/
-.claude/settings.json
 
 # Dependencies
 node_modules/
@@ -54,3 +53,4 @@ packages/*/src/**/__fixtures__/**/styled-system-app/
 packages/*/src/**/__fixtures__/**/styled-system-hashed/
 packages/*/src/**/__fixtures__/**/consumer.css
 packages/*/src/**/__fixtures__/**/consumer-hashed.css
+.claude/settings.local.json
