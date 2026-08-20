@@ -10,8 +10,14 @@ history than one maintained by hand.
 
 Phase: **the comprehension walk is running.** 73 of 110 components are ported and green; none of
 them has been walked. L0 read the tree and produced the 77 rows of
-[concepts/index.md](concepts/index.md). **C1 is validated** (2026-08-20); the other 76 are still
+[concepts/index.md](concepts/index.md). **C1 is validated** (2026-08-20); the rest are still
 `not started`, because a row turns `validated` only on a passed QCM.
+
+**The walk is cut to what unfreezes ports** — decided 2026-08-20. The goal is porting the 33 machine
+components left, not finishing the backlog, so each row carries a `Pri`: `must` when misunderstanding
+it produces a **silent** defect, `later` when the failure is loud enough to teach itself. **53 `must`
+(52 left), 24 `later`.** The unfreeze gate is the 52, not the 76. A `later` row promotes the moment
+something depends on it — see [concepts/index.md](concepts/index.md) §*What `Pri` means*.
 
 The workflow itself landed on 2026-08-20: the loop, six new skills, `useArrowFunction` as a lint
 rule, the branch-per-feature convention, and these three files. `CLAUDE.md` is the whole of it.
