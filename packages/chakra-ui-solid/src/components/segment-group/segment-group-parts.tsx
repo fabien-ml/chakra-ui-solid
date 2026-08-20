@@ -119,7 +119,7 @@ export const SegmentGroupItemText: Component<SegmentGroupItemTextProps> = (props
  * It is not drawn by CSS: the machine measures the checked `<SegmentGroup.Item>` with
  * `getOffsetRect` and writes `--left`, `--top`, `--width` and `--height` onto this element as inline
  * custom properties, which the recipe reads back through `var()`. An inline `style` is the legal
- * route for a value no build can see (`CLAUDE.md`, *the one rule*), and the machine keeps the four
+ * route for a value no build can see (`CLAUDE.md`, *the hard constraint*), and the machine keeps the four
  * in step with a `ResizeObserver` on the segment.
  *
  * The machine also decides when it exists to be seen: `hidden` while nothing is picked or the rect

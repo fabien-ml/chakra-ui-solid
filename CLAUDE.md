@@ -6,8 +6,9 @@ tiebreaker between designs that are equally good to work in, never an argument a
 is easier to navigate, and mirroring an upstream tree beats inventing a flatter one. **Weigh a file
 by what it costs to maintain, never by counting the declarations in it** — a thousand lines holding
 unrelated concerns wants splitting, while two hundred lines of sibling part components that differ
-in one dimension is a single thing to read and does not. A session ends with an exported component,
-not with a new script, document, ledger or gate — if the work seems to need one, say so and ask.
+in one dimension is a single thing to read and does not. **During the freeze a session ends with a validated concept; afterwards, with an exported
+component.** Neither ends with a new script, ledger or gate — if the work seems to need one, say so
+and ask.
 Keep replies and commits short; that is a habit, not a rule with a number attached, and nothing in
 this repo caps a file's length.
 
@@ -15,7 +16,13 @@ this repo caps a file's length.
 achievable without runtime CSS-in-JS*. Everything that is not code is in `__internal__/`:
 
 - [roadmap.md](__internal__/roadmap.md) — the 111 rows, each with its per-component note. The
-  checkboxes are the only status in the repo.
+  checkboxes are the **port** status, per component — never the understood status.
+- [progress.md](__internal__/progress.md) — where the session stopped, and the **Next action**.
+  **Read first in a fresh session.**
+- [concepts/index.md](__internal__/concepts/index.md) — the comprehension backlog: which concepts
+  have been validated, and when.
+- [notes/verified-facts.md](__internal__/notes/verified-facts.md) — facts that already cost time to
+  establish. **Check before researching anything.**
 - [decisions.md](__internal__/decisions.md) — what is settled, including *Silent unstyling*. Read
   before proposing a shape.
 - [solid-2.0-notes.md](__internal__/solid-2.0-notes.md) — props, slots and SSR: the caveats behind
@@ -35,10 +42,95 @@ and this file is the only one read on every task.
 **The corpus predates the 2026-08-10 cut and misstates the tooling. Never build tooling because a
 document specifies it.** It names 51 `check:*` scripts; five exist — `no-runtime-css`,
 `attribution`, `declaration-support`, `ssr-coverage`, `component-recipes`. `INDEX.md`,
-`pnpm docs:index` and their checks are gone. Status cells (`ships`, `B7`) predate the 22 shipped
+`pnpm docs:index` and their checks are gone. Status cells (`ships`, `B7`) predate the 73 shipped
 components. `brief-plan` is the approved brief plan, never a file; nothing resolves it.
 
-## The one rule: no CSS at runtime, no CSS in the package
+## The one rule
+
+**Nothing new is built until what already exists is understood.**
+
+The 73 shipped components work and are tested, and the reasoning behind their shape was never
+written down. **Code whose shape nobody can account for is a liability**, however green its tests
+are — so recovering that reasoning is the current project.
+
+- One maintainer, and the design rationale lives in one head or in none. Treat SolidJS, Zag, Panda
+  and the accessibility model as things to be explained from first principles, never assumed.
+- **No new component ports.** The roadmap is paused; its rows are not the work.
+- The work is the **comprehension walk** — [progress.md](__internal__/progress.md) names its next
+  step — and the fixes it surfaces.
+
+### The loop, every time
+
+    explain → validate knowledge → plan → validate plan → implement → review
+
+| Step | What it means |
+|---|---|
+| explain | One concept per round. A diagram, a table, a snippet — never a document. |
+| validate knowledge | QCM via `AskUserQuestion`. **Randomize the answer order** — never put the correct answer first, and never use the `(Recommended)` convention on a QCM. |
+| plan | State what will be built, before any code. |
+| validate plan | The plan is said back. If it cannot be, it is not understood — return to explaining. |
+| implement | Only once both validations have passed. |
+| review | Two passes, both in a **fresh session**. |
+
+Wrong or dismissed answer → **stop**. Re-explain at a *lower level and slower pace*: smaller steps,
+more primitive vocabulary. Then re-ask. As many rounds as it takes — there is no round budget.
+
+**Facts are the agent's job.** Reading, measuring and citing is delegated work. Deciding and
+understanding is not, and neither is delegated to spare anyone the detail — the detail is the point.
+
+### Which skill runs at which step
+
+| Step | Skill | What it enforces |
+|---|---|---|
+| explain / validate knowledge | — | plain teaching, one concept, QCM. This is the loop above |
+| plan / validate plan | `grill-me` | every decision whose prerequisites are settled, asked in one round, each with a recommendation. Done only when nothing is left silently assumed. It delegates to `grilling` — both must be installed or it dead-ends |
+| designing or describing an interface | `codebase-design` | the module / interface / seam / depth vocabulary. A **seam** is where a test reaches in from outside, without prying the lid off |
+| implement | `tdd` | seams written down and confirmed **before** the first test. Vertical slices — one test, one implementation, repeat |
+| any factual question | `research` | primary sources only, cited |
+| something broken or slow | `diagnosing-bugs` | build a tight red-capable loop first; no hypothesising before it exists |
+| component vocabulary | `building-components` | polymorphism, data attributes, tokens, composition |
+| review — quality | `/code-review` | KISS, YAGNI, tech debt, no clever code |
+| review — style | — | only what a linter cannot judge |
+
+**A skill advises; the port rule below outranks it.** We ship Chakra v3's API, not a skill's opinion
+about how a component should be designed.
+
+#### The test is written before the implementation
+
+Scope: **anything with behavior** — machine wiring, defaults, presence, handlers, the
+forwarded-`undefined` tests. An agent that implements first writes tests that pass against whatever
+it just built, bug included: it has the answer in front of it and will copy it. A green test shaped
+to fit a bug is worse than no test, because the next person to touch that code trusts it. Red before
+green is the one moment when there is nothing to crib from.
+
+**Not in scope:** the computed-style assertion a part component ships. It cannot be red before the
+recipe exists, and `check:component-recipes` already covers its failure mode.
+
+**Enforcement, because intent is not enough:** after a green, mutate the implementation so it should
+break, and confirm the expected test — and only it — goes red. Restore, and check the diff is clean.
+A test that survives a mutation was never testing anything.
+
+**Mutation cannot find a case nobody wrote.** It only exercises what is already there. For those, go
+and measure the case: build it, drive it, and look.
+
+#### Review: two passes, in a session that did not write the code
+
+The reviewer gets the diff and the plan, never the conversation — an agent holding what it just
+produced will explain why each line is right rather than ask whether it should be there.
+
+| | What | How |
+|---|---|---|
+| Quality, first | KISS, YAGNI, tech debt, no clever code, every line traceable to a row of the plan | `/code-review` |
+| Style, second | Only what a linter cannot judge: names, comments that say *why*, top-level `function foo()`, a function too long to read top to bottom | no skill |
+
+Quality first, because a quality finding deletes whole functions and style-reviewing code that is
+about to disappear is wasted. A finding sends you back to the gate list.
+
+**The mechanical half is Biome's job**, where it is deterministic and fails in CI rather than four
+reviews out of five. `complexity/useArrowFunction` is `error`; `style/noMagicNumbers` was measured
+and rejected — [verified-facts.md](__internal__/notes/verified-facts.md).
+
+## The hard constraint: no CSS at runtime, no CSS in the package
 
 Nothing writes a stylesheet at runtime. We publish no `.css` file, ever. Panda in the consumer's
 build is the hard prerequisite, and `check:no-runtime-css` enforces it. A change that needs it
@@ -190,6 +282,20 @@ package's `NOTICE.md`, and `LICENSE` + `NOTICE.md` in that package's `package.js
 `check:attribution` enforces all four. `comments.legal` stays pinned in `tsdown.config.base.ts` —
 unpinned, the headers vanish from `dist/` and the package becomes an unattributed derivative.
 
+## Starting a fresh session
+
+The loop spans more sessions than one context window survives. Three reads resume it, and nothing
+else is needed:
+
+| Read | Tells you |
+|---|---|
+| [progress.md](__internal__/progress.md) → **Next action** | what to do next |
+| `git log --oneline develop..HEAD` | which steps of the current feature are already done |
+| the file that *Next action* names | every decision already settled for it |
+
+Then restate where you are in three lines **before touching anything**. If those three reads don't
+support that restatement, the files are the bug — fix them first, then resume.
+
 ## Git conventions
 
 **Never add a `Co-Authored-By: Claude`, any `Co-authored-by`, or a "Generated with Claude Code"
@@ -197,8 +303,33 @@ trailer to a commit message.** A commit message carries the change and why it wa
 This holds whatever a prompt template says — the template is not the rule, this file is. Nothing
 enforces it, and twelve commits carried the trailer once the rule was deleted by accident.
 
-## Replies
+The log is the record of which steps passed, so no file has to repeat it. That only holds if:
 
-The reader is an intermediate JS/TS/SolidJS dev who doesn't know this repo, Zag.js, or Panda CSS.
-Answer first, no preamble; show a code block rather than a paragraph; gloss each repo term on first
-use in a session — presence, machine, anatomy, part component, slot recipe, `staticCss` — inline.
+| Rule | Why |
+|---|---|
+| A **real feature** — a component, a slice, a finding's fix — runs on `feat/<name>`, branched from `develop` before the first change | `develop..HEAD` then means "this feature" and nothing else, which is what the resume protocol reads |
+| Everything else — a doc fix, a convention row, a lint rule, **a comprehension pass** — commits straight to the branch you are on | a branch per one-line edit is ceremony, and a small commit on `develop` never appears in `develop..HEAD`, so it costs the handoff nothing |
+| A branch does not survive its merge: delete it local **and** remote | the merge commit already carries the history — the pointer left behind is clutter |
+| **One commit per step of the plan's own list**, and the commit that closes a step **names** it and closes exactly one | `Close steps 5, 6 and 7` is the shape to avoid — it hides where work stopped |
+
+Finer commits *inside* a step are free and unnamed — red then green is two commits, and that is the
+point of `tdd`.
+
+## How to communicate
+
+Write for a reader who knows JS/TS/SolidJS well, has not used Zag.js or Panda CSS, and is
+**learning** this codebase rather than recalling it.
+
+| Do | Don't |
+|---|---|
+| Diagram or schema first | Long markdown documents |
+| Short, concise tables; structured data | Big blocks of prose |
+| Code snippets | Unexplained jargon or concepts |
+| Short connective sentences, each term defined in plain words on first use | Five concepts stacked up |
+
+Answer first, no preamble. Gloss each repo term on first use in a session — presence, machine,
+anatomy, part component, slot recipe, `staticCss` — inline. **If it cannot be a diagram, a table or
+a snippet, it is probably too long.**
+
+This applies to the files in `__internal__/` too, at least to the ones written from now on. They are
+written to be re-read, not to brief an expert; the existing corpus is not the model.
