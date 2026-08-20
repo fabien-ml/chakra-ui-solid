@@ -24,6 +24,10 @@ in ten sections, ordered so nothing depends on a concept numbered after it. The 
 [notes/l0-findings.md](notes/l0-findings.md) (30 items, none fixed) and five rows in
 [notes/verified-facts.md](notes/verified-facts.md).
 
+**L0's findings stay parked until the walk surfaces them** — decided 2026-08-20. A concept round
+that reaches the code an item sits in is when it gets picked up, and then it is that round's
+`feat/<name>`. Do not open one off the list, and do not re-propose the list.
+
 ## Next action
 
 **Run C1 through the loop.** *Panda writes the CSS at build time; the runtime only recomputes the
