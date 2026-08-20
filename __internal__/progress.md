@@ -8,10 +8,10 @@ history than one maintained by hand.
 
 ## Where we are
 
-Phase: **the comprehension walk has a backlog and no validated concept yet.** 73 of 110 components
-are ported and green; none of them has been walked. L0 read the tree and produced the 77 rows of
-[concepts/index.md](concepts/index.md); every one is still `not started`, because a row turns
-`validated` only on a passed QCM.
+Phase: **the comprehension walk is running.** 73 of 110 components are ported and green; none of
+them has been walked. L0 read the tree and produced the 77 rows of
+[concepts/index.md](concepts/index.md). **C1 is validated** (2026-08-20); the other 76 are still
+`not started`, because a row turns `validated` only on a passed QCM.
 
 The workflow itself landed on 2026-08-20: the loop, six new skills, `useArrowFunction` as a lint
 rule, the branch-per-feature convention, and these three files. `CLAUDE.md` is the whole of it.
@@ -30,17 +30,18 @@ that reaches the code an item sits in is when it gets picked up, and then it is 
 
 ## Next action
 
-**Run C1 through the loop.** *Panda writes the CSS at build time; the runtime only recomputes the
-name the rule was generated under* — `components/box/box.tsx`, `core/src/system/system.tsx`,
-`styled-system/panda.config.ts`, `components/box/__tests__/factory-extraction.test.ts`.
+**Run C2 through the loop.** *Silent unstyling — a class whose rule was never generated renders
+nothing and raises nothing* — `internal-test-utils/src/stylesheet/stylesheet.ts`,
+`internal-test-utils/src/stylesheet/dev-stylesheet.ts`,
+`components/box/__tests__/box.browser.test.tsx`, `components/box/__tests__/box.ssr.test.tsx`.
+
+C1 supplies the ground: the two sides compute the same name independently, so nothing at either end
+notices when they disagree. C2 is what this repo does about that — the assertion helpers that ask
+the engine for declarations rather than reading a class attribute.
 
 One concept, one round: **explain → validate knowledge**. A diagram, a table, a snippet — never a
 document. Then a QCM through `AskUserQuestion` with the answer order randomized. Wrong or dismissed
 → stop, re-explain lower and slower, re-ask. There is no round budget.
-
-`Box` is the entry point because it is one line of authored code — `export const Box = chakra("div")`
-— and its `__tests__/` folder is the only place in the repo where a mechanism and its complete
-evidence sit together.
 
 A passed QCM is a `validated` row + date in [concepts/index.md](concepts/index.md). Nothing else
 changes; C1 through C13 are reading, not building.

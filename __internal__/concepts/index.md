@@ -25,7 +25,7 @@ Status is `not started` on every row until its QCM is passed.
 
 | # | Concept | Rests in | Backs | Status | Date |
 |---|---|---|---|---|---|
-| C1 | Panda writes the CSS at **build time**; the runtime only recomputes the name the rule was generated under | `components/box/box.tsx` · `core/src/system/system.tsx` (`CssFn`) · `styled-system/panda.config.ts` (`include`) · `components/box/__tests__/factory-extraction.test.ts` | | not started | |
+| C1 | Panda writes the CSS at **build time**; the runtime only recomputes the name the rule was generated under | `components/box/box.tsx` · `core/src/system/system.tsx` (`CssFn`) · `styled-system/panda.config.ts` (`include`) · `components/box/__tests__/factory-extraction.test.ts` | | validated | 2026-08-20 |
 | C2 | **Silent unstyling** — a class whose rule was never generated renders nothing and raises nothing | `internal-test-utils/src/stylesheet/stylesheet.ts` · `dev-stylesheet.ts` · `components/box/__tests__/box.browser.test.tsx` · `.../box.ssr.test.tsx` | | not started | |
 | C3 | The **three routes** a style value can take — a static literal, a `staticCss` row, a CSS custom property. There is no fourth | `panda-preset/src/preset.ts` §`staticCss` · `components/grid/grid.tsx` · `components/bleed/bleed.tsx` · `components/color-swatch/color-swatch.tsx` · `core/src/render-styled/render-styled.tsx` (`composeStyle`) | | not started | |
 | C4 | A preset is a plain config object, and this one carries its own base chain | `panda-preset/src/preset.ts` · `panda-preset/src/index.ts` · `styled-system/panda.config.ts` | | not started | |
