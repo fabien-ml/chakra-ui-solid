@@ -6,6 +6,10 @@ green.
 
 Recorded 2026-08-20. Ordered by how much it would cost to be wrong about, not by where it lives.
 
+**These stay parked.** A port that reaches the code an item sits in picks it up, and then it is that
+port's `feat/<name>`; whatever is left when the last row ships belongs to
+[roadmap.md](../roadmap.md) §*Stabilization*. Do not open one off this list.
+
 ## 1 — Eleven `check:*` scripts are cited from live source and do not exist
 
 Five exist: `no-runtime-css`, `attribution`, `declaration-support`, `ssr-coverage`,
@@ -154,7 +158,8 @@ undocumented behaviour, and it records it wrong.
 `packages/panda-preset/src/preset.ts:263-265` names nine recipes — `colorPicker`, `combobox`,
 `datePicker`, `numberInput`, `pinInput`, `progress`, `select`, `slider`, `tagsInput` — *"known to
 carry the same defect"* as the cascade-layer correction, awaiting rows when they ship. The note is
-correct; it is also the only place that list lives, and those rows are behind the freeze.
+correct; it is also the only place that list lives, and every one of those nine is an unported
+roadmap row. Each ship is where its entry gets closed — check this list when one of them comes up.
 
 ## 10 — Two things a reader will re-find, already settled
 

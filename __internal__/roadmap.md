@@ -3,6 +3,9 @@
 v0.1.0 is the whole port: 110 components. 73 done. The five under *Not ported* are outside that
 count, and four of them left the utilities section after it was written.
 
+Then **[Stabilization](#stabilization--after-the-110)**, at the end of this file: the last phase of
+v0.1.0, and the only one that is not a component.
+
 ## Done, per component
 
 1. Source + export from the package index and a subpath.
@@ -1663,3 +1666,23 @@ The seam's own suite gained the test that would have caught it.
       Same. Plus `useFilter`, which is `createFilter` from `@zag-js/i18n-utils` — the same MIT package we already take `isRTL` from. No machine
 - for / show — excluded
       Solid has `<For>` and `<Show>`; a re-export would be a wrapper around nothing
+
+## Stabilization — after the 110
+
+The last phase of v0.1.0. Not a component row, and not a checkbox: it is where the comprehension
+debt on the 73 that shipped before any of them was explained gets paid — **minus everything the
+ports paid on the way**, which is the whole point of running it last.
+
+| What lands here | Where it is already tracked |
+|---|---|
+| Every concept no port ever turned on | [concepts/index.md](concepts/index.md) — the rows still `not started` when the last row above ships. `Pri` decides what is still owed |
+| The findings L0 parked | [notes/l0-findings.md](notes/l0-findings.md) — 30 items, none fixed, each its own `feat/<name>` |
+| Bugs the ports surfaced in already-shipped components | a `feat/<name>` each, listed here as they are found |
+
+Nothing is added to this section speculatively. A concept lands in it by **not** being taught —
+there is no list to write, because [concepts/index.md](concepts/index.md) already is one. A bug
+lands in it because a port ran into it and the port was not the place to fix it.
+
+**The order inside the phase is the concepts index's own order** — no concept depends on one
+numbered after it — with `must` before `later`, and a `later` row that no port needed and no failure
+ever fired closed by recording that rather than by a round.

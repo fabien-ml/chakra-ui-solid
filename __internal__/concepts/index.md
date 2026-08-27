@@ -1,12 +1,14 @@
 # Concepts
 
 What has been confirmed understood, and when. A concept is `validated` only once its QCM has been
-answered correctly. **Nothing that depends on a concept gets implemented before that.**
+answered correctly. **Nothing that depends on a concept gets implemented before that** — which is
+what makes this list something a port reads, rather than something a port waits on.
 
 A row carries where the concept *lives in this repo* — that column is what makes this comprehension
 of the codebase rather than a lecture. `Backs` points at the `D-nn` entries already cited from code
 comments ([decisions.md](../decisions.md), [decisions-ledger.md](../decisions-ledger.md),
-`decisions/3.x-*.md`), so the existing corpus gets indexed by the walk rather than reorganized.
+`decisions/3.x-*.md`), so the existing corpus gets indexed as rows are validated rather than
+reorganized.
 
 ## The backlog
 
@@ -21,24 +23,59 @@ together — the five checks, the two ambient contexts — it is one row with a 
 
 Status is `not started` on every row until its QCM is passed.
 
+### The layers the sections are named after
+
+`L1` on a heading below is a row of this table — the reading surface L0 split the tree into, and
+what scopes a re-read of any one layer.
+
+| # | Layer | Where | src LOC |
+|---|---|---|---|
+| L1 | The styling seam, and why the hard constraint exists | `packages/panda-preset/src`, `packages/styled-system/panda.config.ts` | 2 762 |
+| L2 | The Zag adapter — the fork, and what it withholds | `core/src/zag` (900), `core/src/machine-store` (62) | 962 |
+| L3 | The spine — how a component is built at all | `core/src/factory` (294), `render-styled` (346), `recipe` (699), `system` (254), `render` (72), `render-strategy` (50) | 1 715 |
+| L4 | Support modules | `core/src/presence` (123), `utils` (329), `environment` (74), `locale` (59), `internal` (106) | 691 |
+| L5 | The four component families | `packages/chakra-ui-solid/src/components`, 78 folders | 18 741 |
+| L6 | The test apparatus | `packages/internal-test-utils/src`, `vitest.config.ts`, `vitest-hydration-bridge.ts`, `scripts/check-*.mjs` | ~1 400 |
+| L7 | The docs site | `apps/docs/src` — 630 files, 72 `.mdx` pages | — |
+
+L5 was never read linearly and does not need to be: it splits by [roadmap.md](../roadmap.md)'s own
+four headings — styled primitives and layout (25) · atomic-recipe (21) · multi-part, no machine (15)
+· machine components (45) — and each family is understood through one worked example plus a
+spot-check. A port supplies the worked example for free.
+
+### How a row gets taught — one port at a time, never in a batch
+
+**This is a backlog to draw a round from, not a queue to work through.** Ports resumed on
+2026-08-27; `investigate`, the first step of the loop (`CLAUDE.md`, *The one rule*), reads the
+component being ported and names the concepts its decisions turn on. Every one of those not already
+`validated` runs its round — explain → QCM — **before** the plan reaches the decision that needs it.
+
+| | |
+|---|---|
+| A pass | `validated` + the date on the row here, committed on the port's own branch, in a commit of its own |
+| A row nothing has needed yet | left `not started`. It is not behind schedule; it has no schedule |
+| The leftovers, once the last row of the roadmap ships | **stabilization** — [roadmap.md](../roadmap.md) §*Stabilization* |
+
+The ordering above still does its job: no concept depends on one numbered after it, so a port that
+turns on C53 may have to turn on C31 and C14 first. That chain is the round list, and it is read off
+the source, never guessed from the numbering.
+
 ### What `Pri` means
 
-The goal is **unfreezing ports**, not finishing the walk. So a row is `must` when misunderstanding
-it produces a **silent** defect — something that renders, passes, and is wrong. A row is `later`
-when the failure is **loud**: a red test, a failed check, a type error, a stack trace. A loud
-failure teaches itself the day it fires; a silent one is why the freeze exists.
+It gates nothing now. What it decides is **what stabilization still owes** when the last component
+ships: a row is `must` when misunderstanding it produces a **silent** defect — something that
+renders, passes, and is wrong. A row is `later` when the failure is **loud**: a red test, a failed
+check, a type error, a stack trace. A loud failure teaches itself the day it fires; a silent one
+never announces itself at all.
 
-| Pri | Rows | Means |
+| Pri | Rows | At stabilization |
 |---|---|---|
-| `must` | 53 | Gates the unfreeze. Needed to build a component, maintain it, or find a bug in it |
-| `later` | 24 | Learn it when it breaks, or when a port actually needs it |
+| `must` | 53 | Taught, unless a port already taught it. Nothing else closes a silent defect |
+| `later` | 24 | Taught if it is still unknown **and** still load-bearing. A row no port needed and no failure ever fired can be closed by recording that |
 
 `later` is **not** "never" and not "unimportant" — C67 carries the attribution obligations, C69 the
 dev-aliases-`src` / build-resolves-`dist` split behind most confusing docs failures. It means the
 codebase will tell you when you need it, in a message that names a file.
-
-A `later` row promotes to `must` the moment something depends on it: a port that needs a new Panda
-utility promotes C8, a docs build that breaks promotes C69. Promote it, run the round, move on.
 
 ### §A — The styling seam: what happens at build time (L1)
 
@@ -169,8 +206,8 @@ utility promotes C8, a docs build that breaks promotes C69. Promote it, run the 
 
 ## How L0 read the tree
 
-Six parallel reading passes over the **source**, one per layer of
-[progress.md](../progress.md)'s table, plus a direct read of the spine (`core/src/factory`,
+Six parallel reading passes over the **source**, one per layer of the table above, plus a direct
+read of the spine (`core/src/factory`,
 `render-styled`, `render`, `render-strategy`, `recipe`, `system`, `utils`, `internal`). The corpus
 was not read. Every `D-nn` above was verified to be cited from a **code comment** — there are 15
 distinct ids across 24 sites, and none of them is in `packages/core/src` outside one test.

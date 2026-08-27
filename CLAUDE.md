@@ -6,21 +6,22 @@ tiebreaker between designs that are equally good to work in, never an argument a
 is easier to navigate, and mirroring an upstream tree beats inventing a flatter one. **Weigh a file
 by what it costs to maintain, never by counting the declarations in it** — a thousand lines holding
 unrelated concerns wants splitting, while two hundred lines of sibling part components that differ
-in one dimension is a single thing to read and does not. **During the freeze a session ends with a validated concept; afterwards, with an exported
-component.** Neither ends with a new script, ledger or gate — if the work seems to need one, say so
-and ask.
+in one dimension is a single thing to read and does not. **A session ends with an exported
+component, or with a concept a port turned on.** Neither ends with a new script, ledger or gate — if
+the work seems to need one, say so and ask.
 Keep replies and commits short; that is a habit, not a rule with a number attached, and nothing in
 this repo caps a file's length.
 
 `chakra-ui-solid` is Chakra UI v3's component API for SolidJS — *as close to v3 parity as is
 achievable without runtime CSS-in-JS*. Everything that is not code is in `__internal__/`:
 
-- [roadmap.md](__internal__/roadmap.md) — the 111 rows, each with its per-component note. The
-  checkboxes are the **port** status, per component — never the understood status.
+- [roadmap.md](__internal__/roadmap.md) — the 111 rows, each with its per-component note, and
+  *Stabilization* at the end. The checkboxes are the **port** status, per component — never the
+  understood status.
 - [progress.md](__internal__/progress.md) — where the session stopped, and the **Next action**.
   **Read first in a fresh session.**
-- [concepts/index.md](__internal__/concepts/index.md) — the comprehension backlog: which concepts
-  have been validated, and when.
+- [concepts/index.md](__internal__/concepts/index.md) — the 77 concepts, which are validated, and
+  when. A backlog to draw a round from, never a queue to work through.
 - [notes/verified-facts.md](__internal__/notes/verified-facts.md) — facts that already cost time to
   establish. **Check before researching anything.**
 - [decisions.md](__internal__/decisions.md) — what is settled, including *Silent unstyling*. Read
@@ -47,25 +48,43 @@ components. `brief-plan` is the approved brief plan, never a file; nothing resol
 
 ## The one rule
 
-**Nothing new is built until what already exists is understood.**
-
-The 73 shipped components work and are tested, and the reasoning behind their shape was never
-written down. **Code whose shape nobody can account for is a liability**, however green its tests
-are — so recovering that reasoning is the current project.
+**Nothing is built until the concepts it rests on are understood.**
 
 - One maintainer, and the design rationale lives in one head or in none. Treat SolidJS, Zag, Panda
   and the accessibility model as things to be explained from first principles, never assumed.
-- **No new component ports.** The roadmap is paused; its rows are not the work.
-- The work is the **comprehension walk** — [progress.md](__internal__/progress.md) names its next
-  step — and the fixes it surfaces.
+- **The scope is the row in front of you.** `investigate` names the concepts that row turns on, and
+  each of them runs a teaching round before the plan. Nothing else is taught to get it shipped.
+- The work is **the roadmap, one row at a time** — [progress.md](__internal__/progress.md) names the
+  next row.
+
+### The 73 already shipped are a debt, and it is paid at the end
+
+They work and are tested, and the reasoning behind their shape was never written down. **Code whose
+shape nobody can account for is a liability**, however green its tests are. That still holds; what
+changed on 2026-08-27 is *when* it gets paid.
+
+[concepts/index.md](__internal__/concepts/index.md) holds 77 concepts, one row per mechanism. **It is
+not a queue to work through.** A row is taught when `investigate` finds the component in front of you
+resting on it — taught there, stamped there, and the component ships. What no port ever reintroduces
+is what **stabilization** closes: the last phase of the roadmap
+([roadmap.md](__internal__/roadmap.md) §*Stabilization*), where the leftover concepts, L0's parked
+findings and the bugs the ports surfaced are worked through together.
+
+Two reasons for that order, and neither is impatience. A concept taught against the component that
+needs it lands somewhere it is about to be used; one taught off a list has nothing to attach to. And
+a concept 37 more ports never reintroduce is, by that fact, one that little depends on — which is
+what makes it the right thing to learn last rather than first.
 
 ### The loop, every time
 
-    explain → validate knowledge → plan → validate plan → implement → review
+    investigate → explain → validate knowledge → plan → validate plan → implement → review
+                     ▲                             │
+                     └───── untaught concept ──────┘
 
 | Step | What it means |
 |---|---|
-| explain | One concept per round. A diagram, a table, a snippet — never a document. |
+| investigate | Read the sources **before** deciding what to teach. Two lists out — see *Investigation comes first* below. |
+| explain | One concept per round, off that second list. A diagram, a table, a snippet — never a document. |
 | validate knowledge | QCM via `AskUserQuestion`. **Randomize the answer order** — never put the correct answer first, and never use the `(Recommended)` convention on a QCM. |
 | plan | State what will be built, before any code. |
 | validate plan | The plan is said back. If it cannot be, it is not understood — return to explaining. |
@@ -75,13 +94,44 @@ are — so recovering that reasoning is the current project.
 Wrong or dismissed answer → **stop**. Re-explain at a *lower level and slower pace*: smaller steps,
 more primitive vocabulary. Then re-ask. As many rounds as it takes — there is no round budget.
 
+**The plan sending you back to `explain` is the loop working, not a failure of it.** A decision that
+turns on a concept nobody taught is the edge in the diagram above: stop, teach that one concept, run
+its QCM, resume the plan. Late counts.
+
 **Facts are the agent's job.** Reading, measuring and citing is delegated work. Deciding and
 understanding is not, and neither is delegated to spare anyone the detail — the detail is the point.
+
+#### Investigation comes first, and it decides what gets taught
+
+Teaching before investigating is teaching a guess. The step that finds out what a row *is* is the
+same step that finds out **which concepts a decision on it turns on**, so it has to run first — and
+it produces two lists, not one:
+
+| Investigation produces | Feeds |
+|---|---|
+| the decisions left to settle | the plan, and `grill-me`'s questions |
+| the concepts those decisions turn on | `explain`, one per round |
+
+The second list is read off the first, which is what makes it the right list rather than a guess at
+one. Check it against [concepts/index.md](__internal__/concepts/index.md): a row already `validated`
+is skipped, a row that is not is taught before the plan reaches the decision that needs it.
+
+| For a row named `x`, read | Because |
+|---|---|
+| `__reference-impl__/chakra-ui/packages/react/src/x/` | the row **is** that folder; `roadmap.md` only says it exists, and the note under it is a prediction — *the port rule*, below |
+| every *other* component that imports `x` | `radiomark`'s composition question was answered in `radioGroup` and `radioCard`, one row away, and two ports went past it |
+| `node_modules/@zag-js/x` — the **installed** machine | `__reference-impl__/zag-v2/` is an unreleased branch and disagrees with what ships |
+| upstream's docs page for it | nothing ships before its docs page, and that page's examples name the components this row depends on |
+
+Every claim carries the path it came from, and the lists go in the port's **plan file** — the same
+file the phases live in. No sweep note and no new ledger: the plan file is already the durable
+artifact, and the phase that implements opens those paths rather than trusting the sentence.
 
 ### Which skill runs at which step
 
 | Step | Skill | What it enforces |
 |---|---|---|
+| investigate | `research` | primary sources only, every claim carrying its path. Judging what the sources *mean* is the plan's job, not this one |
 | explain / validate knowledge | — | plain teaching, one concept, QCM. This is the loop above |
 | plan / validate plan | `grill-me` | every decision whose prerequisites are settled, asked in one round, each with a recommendation. Done only when nothing is left silently assumed. It delegates to `grilling` — both must be installed or it dead-ends |
 | designing or describing an interface | `codebase-design` | the module / interface / seam / depth vocabulary. A **seam** is where a test reaches in from outside, without prying the lid off |
@@ -262,13 +312,12 @@ Solid redraws what a signal invalidated. Three cases fall out, and only the midd
 A divergence that does land is recorded in `__internal__/`, never on a docs page.
 
 **`__reference-impl__` is what a row *is*; the roadmap only says that it exists.** A note under an
-unchecked row is a **prediction written before that component's code was read**, and all four
-component rows ported so far have found theirs wrong — expect it and budget for it rather than
+unchecked row is a **prediction written before that component's code was read**, and four of the
+five component rows ported so far have found theirs wrong — expect it and budget for it rather than
 reporting it as a finding. A note under a **checked** row was verified against the reference when it
-shipped and can be read as fact. Open the counterpart under
-`__reference-impl__/chakra-ui/packages/react/src/` before planning a row, grep its real consumers,
-and correct the note in the same commit as the code — **including every *other* row's note the same
-measurement settles**, which is how `radio-group` kept a wrong one through two ports that had
+shipped and can be read as fact. `investigate` is where the counterpart gets opened and its real
+consumers grepped; what this rule adds is the **correction**, in the same commit as the code —
+**including every *other* row's note the same measurement settles**, which is how `radio-group` kept a wrong one through two ports that had
 already answered it. `roadmap.md` §*Reading a row* carries the detail.
 
 Reading a reference for reasoning, public API shape, or an ARIA pattern owes nothing. Reproducing its
