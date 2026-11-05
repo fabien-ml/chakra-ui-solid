@@ -1,0 +1,3 @@
+# A machine component's Root renders no host element
+
+A Root is providers only, like Chakra's. Solid matches server and client nodes by position (its `_hk` hydration key), so a wrapper `<div>` would shift every key after it in the consumer's own markup. A Root injects `id` (`props.id ?? createUniqueId()`), `dir` and `getRootNode`, then its own props. Part ids derived from the scope id must survive SSR to hydration, which is why the Root creates the id with `createUniqueId`. A Root defaults behaviour (`unmountOnExit`, `lazyMount`) through `withDefaults`, never variants, which belong to the recipe's `defaultVariants`.

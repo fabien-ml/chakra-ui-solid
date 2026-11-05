@@ -1,0 +1,7 @@
+# We publish no CSS and ship no runtime CSS-in-JS
+
+No package publishes a `.css` file, and Panda in the consumer's build is a hard prerequisite, declared as a non-optional peer dependency so the package manager warns. A prebuilt stylesheet path was rejected: it cannot carry the consumer's own style props (`<Box p={4}>` is extracted by their Panda run), it cannot carry theming beyond CSS custom properties, and it creates a second support tier that every later knob must be documented into twice. A consumer who will not run Panda is not a consumer of this library. Without the peer, every component renders naked and no tool says why.
+
+**Two scopes, not one:** a *dependency* is judged by what it is, so no runtime CSS-in-JS engine (Emotion, styled-components, goober, stitches) may appear in the dependency manifest or lockfile. *Our own source* is judged by what it does: it writes no stylesheet at runtime (`createElement("style")`, `insertRule`, `adoptedStyleSheets`). Applying the source grep to dependencies fails things that were never the target.
+
+**Allowed at runtime:** the DOM `style` attribute, inline CSS custom properties (`style={{ "--x": v }}`, the sanctioned escape hatch for dynamic values), Panda's `css` / `cva` / `sva` / `cx` and `/patterns` helpers (pure string or object computation), and global CSS emitted at build time. The dev stylesheet the browser tests assert against is never published.

@@ -1,5 +1,5 @@
-# Read-only reference checkouts for the port (chakra-ui, ark-ui, zag, zag-v2). Never committed.
-__reference-impl__/
+# Read-only reference checkouts, filled by `pnpm references`. Never committed.
+__reference__/
 
 # Dependencies
 node_modules/
@@ -54,3 +54,6 @@ packages/*/src/**/__fixtures__/**/styled-system-hashed/
 packages/*/src/**/__fixtures__/**/consumer.css
 packages/*/src/**/__fixtures__/**/consumer-hashed.css
 .claude/settings.local.json
+
+# Agent scratch space nobody keeps: worktrees, handoffs, pokes. `.scratch/<name>/` stays tracked on its branch.
+/.scratch/local/
