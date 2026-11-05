@@ -54,3 +54,6 @@ packages/*/src/**/__fixtures__/**/styled-system-hashed/
 packages/*/src/**/__fixtures__/**/consumer.css
 packages/*/src/**/__fixtures__/**/consumer-hashed.css
 .claude/settings.local.json
+
+# Agent scratch space nobody keeps: worktrees, handoffs, pokes. `.scratch/<name>/` stays tracked on its branch.
+/.scratch/local/
