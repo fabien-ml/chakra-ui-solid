@@ -64,10 +64,35 @@ not `$TMPDIR`; `to-questionnaire` writes to `.scratch/<name>/`, or `.scratch/loc
 
 ## Communicating
 
+Visual beats text. Reach for the first form that fits:
+
+| Content | Form |
+|---|---|
+| a flow, a structure, a dependency | a Mermaid diagram |
+| a comparison, a list of items with attributes | a table |
+| a finding or a fix | three short sentences: problem, cause, solution |
+| a change | a code snippet or the diff |
+| anything else | short connective sentences, never a block of prose |
+
+Every text, in the chat and on disk, follows the unslop rules
+([cursor/plugins `pstack/skills/unslop`](https://github.com/cursor/plugins/blob/main/pstack/skills/unslop/SKILL.md)):
+
+| Cut | Write instead |
+|---|---|
+| AI vocabulary (crucial, delve, enhance, leverage, robust, seamless, pivotal, showcase) and "serves as" / "boasts" | the plain word, "is", "has", "use" |
+| filler ("in order to", "it is important to note"), hedging, adverbs propping a weak verb | the short form, one hedge at most, a stronger verb or the number |
+| "not just X but Y", forced groups of three, synonym cycling, false "from X to Y" ranges | the point stated once, the natural count, one term repeated |
+| em dashes, colons as mid-sentence connectors, bold on every noun, bold-label-colon list items | periods and commas, bold only what must not be missed |
+| abstract metaphor nouns (surface, substrate, primitive as a noun, north star) and mannered prose | the concrete word, literal phrasing |
+| sentences that name a feeling ("feels fast") | what it does, or the number |
+| passive voice | the actor named |
+| dense or over-compressed lines (dropped articles, arrows, symbol-speak) | one idea per sentence, whole sentences |
+| chatbot phrases, flattery, generic conclusions, decorative emoji, Title Case headings, curly quotes | nothing; sentence-case headings, straight quotes |
+
 | Rule |
 |---|
 | Talk to the driver in their language. Everything on disk is English. Technical terms stay English in the chat too |
-| A table over a paragraph; prose only as short connective sentences, each term defined on first use |
+| Each term is defined in plain words on first use |
 | A decision is a question with a recommendation, the whole frontier in one round, worded so "yes" accepts |
 | An instruction already given is carried out, not asked again |
 | A question from the driver is answered, never acted on as a decision |
@@ -91,6 +116,7 @@ not `$TMPDIR`; `to-questionnaire` writes to `.scratch/<name>/`, or `.scratch/loc
 | why something is built the way it is | `docs/adr/` |
 | a fact already measured | `docs/<subject>/` |
 | the upstream checkouts | `__reference-impl__/` (gitignored) |
+| the code base before the rebuild: the docs app's look and prose, the style props system | tag `pre-rebuild` (`git show pre-rebuild:<path>`), read as reference, never restored |
 
 ## Agent skills
 
