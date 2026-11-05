@@ -1,0 +1,3 @@
+# No runtime style system: `createSystem`, `recipe.extend` and typegen are dropped
+
+The React version builds its theme at runtime with `createSystem`, extends recipes with `recipe.extend`, and generates types with a CLI. This port has no runtime style system ([0067](0067-zero-published-css.md)), so those APIs do not exist, and customization is done in Panda config (see [0046](0046-override-paths.md)). Docs pages whose only content is those APIs, such as a field's "Customization" section, are dropped rather than rewritten, because rewriting them into Panda config would be invented content. This is the precedent for any later page in the same position.
