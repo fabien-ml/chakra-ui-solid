@@ -64,6 +64,15 @@ Judgement calls a reviewer applies to a diff. Anything a linter, a type check or
 - **Do not silence `STRICT_READ_UNTRACKED` with a redundant `untrack` or by wrapping construction in `For`; fix the read.** Every `props.value` read sits in a memo or a getter, and an item context built in a `For` callback is a real defect when it fires.
   Why: a blanket suppression hides the diagnostic the day a component really reads a prop untracked. See [`docs/solid/strict-read-untracked.md`](docs/solid/strict-read-untracked.md).
 
+## Comments
+
+- **A comment says what the code does not: the why, a constraint, a trap, a link to the measurement.** A comment that restates what the code already says is removed.
+  Why: a restating comment drifts from the code it repeats, and the reader trusts the wrong one.
+- **A comment is short.** One or two lines; a block of prose above a function is a doc file in `docs/<subject>/` with a one-line pointer to it.
+  Why: a long comment goes unread, then unmaintained.
+- **JSDoc is short too: one sentence of what it is, then at most one minimal example.** No toolchain rationale, no history, no restated parameter types.
+  Why: JSDoc is what a consumer reads on hover, in a tooltip a few lines tall.
+
 ## Styling
 
 - **The custom-property route cannot carry a responsive value; narrow such props to `PlainCssValue`.**
