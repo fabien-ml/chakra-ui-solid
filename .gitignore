@@ -1,5 +1,5 @@
-# Read-only reference checkouts for the port (chakra-ui, ark-ui, zag, zag-v2). Never committed.
-__reference-impl__/
+# Read-only reference checkouts, filled by `pnpm references`. Never committed.
+__reference__/
 
 # Dependencies
 node_modules/

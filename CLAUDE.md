@@ -1,10 +1,15 @@
 # CLAUDE.md
 
-`chakra-ui-solid` aims to be the de facto Chakra UI for **SolidJS 2.0**: Chakra UI v4's component
-API, built the way Chakra builds it. Components sit on `@ark-ui/solid`, which runs Zag.js machines
+`chakra-ui-solid` aims to be the de facto Chakra UI for **SolidJS 2.0**: Chakra UI v4's components
+and features, on the same layers. Components sit on `@ark-ui/solid`, which runs Zag.js machines
 through `@zag-js/solid`, and are styled with Panda CSS. No component imports `@zag-js/*` directly,
-as no Chakra component does. The **driver** is the human running the
-session and makes every product decision. Agents write every line of code, every file and every
+as no Chakra component does.
+
+**Chakra says what to build, never how.** React's JSX, re-renders and hooks answer questions Solid
+does not ask. Each feature is designed as idiomatic Solid that meets the same need, or a close one;
+a React shape carried over is a defect, even when it works.
+
+The **driver** is the human running the session and makes every product decision. Agents write every line of code, every file and every
 name. Nothing is published until the dependencies are stable, so a breaking change costs only the
 edit and the test run.
 
@@ -115,7 +120,7 @@ Every text, in the chat and on disk, follows the unslop rules
 | a domain term | `GLOSSARY.md` |
 | why something is built the way it is | `docs/adr/` |
 | a fact already measured | `docs/<subject>/` |
-| the upstream checkouts | `__reference-impl__/` (gitignored) |
+| the upstream checkouts | `__reference__/`, filled by `pnpm references`; see `docs/agents/references.md` |
 | the code base before the rebuild: the docs app's look and prose, the style props system | tag `pre-rebuild` (`git show pre-rebuild:<path>`), read as reference, never restored |
 
 ## Agent skills

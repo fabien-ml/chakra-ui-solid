@@ -9,10 +9,15 @@
   "scripts": {
     "postinstall": "git config core.hooksPath .githooks || true",
     "lint": "biome check .",
-    "format": "biome format --write ."
+    "format": "biome format --write .",
+    "references": "scripts/sync-references.sh"
   },
   "devEngines": {
-    "packageManager": { "name": "pnpm", "version": "12.16.1", "onFail": "download" }
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.16.1",
+      "onFail": "download"
+    }
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.7"
