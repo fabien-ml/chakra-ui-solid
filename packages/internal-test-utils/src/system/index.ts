@@ -1,1 +1,0 @@
-export { testSystem } from "./system";
