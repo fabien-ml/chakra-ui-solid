@@ -70,6 +70,8 @@ not `$TMPDIR`; `to-questionnaire` writes to `.scratch/<name>/`, or `.scratch/loc
 | A table over a paragraph; prose only as short connective sentences, each term defined on first use |
 | A decision is a question with a recommendation, the whole frontier in one round, worded so "yes" accepts |
 | An instruction already given is carried out, not asked again |
+| A question from the driver is answered, never acted on as a decision |
+| When the driver pushes back, concede what is right first, then bring the evidence. A technical opinion is checked against the real artifact before it is stated |
 | A change is announced in one line; the driver reads the diff in the IDE |
 | A durable preference is written into the repo, never into auto-memory |
 
