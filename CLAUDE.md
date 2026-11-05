@@ -1,7 +1,9 @@
 # CLAUDE.md
 
-`chakra-ui-solid` is Chakra UI v4's component API for **SolidJS 2.0**: Zag.js machines for
-behaviour, Ark UI's parts, Panda CSS for tokens and recipes. The **driver** is the human running the
+`chakra-ui-solid` aims to be the de facto Chakra UI for **SolidJS 2.0**: Chakra UI v4's component
+API, built the way Chakra builds it. Components sit on `@ark-ui/solid`, which runs Zag.js machines
+through `@zag-js/solid`, and are styled with Panda CSS. No component imports `@zag-js/*` directly,
+as no Chakra component does. The **driver** is the human running the
 session and makes every product decision. Agents write every line of code, every file and every
 name. Nothing is published until the dependencies are stable, so a breaking change costs only the
 edit and the test run.
