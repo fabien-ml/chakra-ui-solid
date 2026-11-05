@@ -1,3 +1,3 @@
-# Goal: Chakra v3's component API on SolidJS 2.0 with no runtime CSS-in-JS
+# Goal: the de facto Chakra UI for SolidJS 2.0, written as idiomatic Solid
 
-chakra-ui-solid is Chakra UI v3's component API for SolidJS 2.0, styled with Panda CSS and the Chakra Panda preset. It is as close to v3 parity as that allows, not a 1:1 port, and says so ([0048](0048-parity-statement-placement.md)). The constraint that costs parity is the point of the project: no library or code here generates stylesheets at runtime ([0067](0067-zero-published-css.md)). Solid-only: see [0068](0068-solidjs-only.md).
+chakra-ui-solid ships Chakra UI v4's components and features for SolidJS 2.0, on the layers Chakra uses: Ark UI's headless parts and Panda CSS, with no stylesheet generated at runtime ([0067](0067-zero-published-css.md)). Chakra decides what a component does; how it is written comes from Solid, because React's shape answers questions Solid does not ask. It says where it differs from Chakra ([0048](0048-parity-statement-placement.md)). Solid-only: see [0068](0068-solidjs-only.md).

@@ -6,8 +6,8 @@ Judgement calls a reviewer applies to a diff. Anything a linter, a type check or
 
 - **Break ties with UX, then DX, then simpler, then smarter.** The consumer's experience outranks the maintainer's, and both outrank cleverness.
   Why: a design argued on cleverness is the one nobody can review.
-- **Mirror the upstream tree; fewer files only breaks a tie between layouts equally easy to navigate.** Package layout follows `packages/react/src`. It never argues against the layout that is easier to find your way in.
-  Why: a reader who knows the React version should find a part where they expect it.
+- **Keep Chakra's names; let Solid decide the layout.** A component, a part and its folder carry the name Chakra gives them, so a reader who knows Chakra finds them. How the files inside are split follows what the Solid code needs, never React's file shape.
+  Why: names are what a reader searches for; React's file split answers re-render questions Solid does not have.
 - **Weigh a file by what it costs to maintain, not by its declaration count.** A thousand lines of unrelated concerns wants splitting; two hundred lines of sibling parts differing in one dimension is one thing to read. Do not argue a line count back.
   Why: the point was one thing to read, and a count says nothing about that.
 - **Ours observably worse than the React version: fix it, no argument owed.** Measure both sides first, in a browser if that is what it takes.
