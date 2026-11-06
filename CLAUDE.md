@@ -64,7 +64,9 @@ not `$TMPDIR`; `to-questionnaire` writes to `.scratch/<name>/`, or `.scratch/loc
 ## Rules the skills run under
 
 - A vendored skill (`.agents/skills/`) stays as published; a need it misses is a rule in this file. Install and update per `docs/agents/skills.md`.
-- Dependencies track their newest line, `next` tags included. A prerelease is never a blocker.
+- Dependencies track their newest line, `next` tags included. A prerelease is never a blocker; a
+  layer with no npm release for Solid 2 is, because porting Ark, Zag or Chakra's preset is their
+  core team's work, not ours.
 - `grilling` asks with a recommendation on every question, naming the reference files read.
 
 ## Communicating

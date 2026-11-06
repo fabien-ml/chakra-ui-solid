@@ -1,0 +1,32 @@
+name: Upstream releases
+
+# Comments once on deps-bump for each upstream layer that gets the release it waits for.
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  ISSUE: 2
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with: { node-version: 24 }
+      - name: Comment on newly met conditions
+        run: |
+          posted="$(gh issue view "$ISSUE" --json comments --jq '.comments[].body')"
+          node scripts/check-upstream-releases.mjs | while IFS='|' read -r key message; do
+            marker="<!-- upstream-release:$key -->"
+            case "$posted" in *"$marker"*) continue ;; esac
+            gh issue comment "$ISSUE" --body "$marker
+          @${{ github.repository_owner }} $message"
+          done
