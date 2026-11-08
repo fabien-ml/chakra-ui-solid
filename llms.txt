@@ -1,0 +1,13 @@
+# chakra-ui-solid
+
+> An unofficial SolidJS port of Chakra UI, the component system for building SaaS products with speed. 
+
+## Core Resources
+
+- [GitHub Repository](https://github.com/fabien-ml/chakra-ui-solid): Source code, documentation, and issue tracker.
+- [Website](https://chakra-ui-solid.pages.dev/): Official website and documentation.
+
+## AI Agent & LLM Indexing
+
+- Structured following the standard /llms.txt specification for AI search engines and coding assistants.
+- Validated via [AccessGuard AI-Readiness Suite](https://ronanchnlps-bit.github.io/).
